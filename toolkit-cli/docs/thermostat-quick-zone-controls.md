@@ -22,6 +22,13 @@ workflow. Select `--temperature-preference celsius` explicitly; this is required
 before client construction for any quick-zone/plant record. The process
 preference is separate from the device's TemperatureUnits field.
 
+The owning load decodes all 15 temperature fields into the shared live model;
+each issued save encodes final model integers once. Raw, loaded, live and
+encoded snapshots remain separate in its diagnostic result. Read the
+[temperature model boundary](thermostat-temperature-model.md) for casts,
+raw-edit survival, owner seals and the difference between repeated
+serialization and a distinct new load.
+
 The loaded control model must have MinimumSetTemperature 15,
 MaximumSetTemperature 32 and GuardEnable 0. PlantMinimumOnTime and
 PlantMinimumOffTime must each be integers 0–8; their sum plus 2 must be strictly

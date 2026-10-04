@@ -29,7 +29,9 @@ from .thermostat_post_load import (DISABLED_REMOTE_DEFAULTS, TEMPERATURE_SAVE_RU
                                     damper_modulation_save, form_save_disabled_remotes, form_save_fans,
                                     form_save_scalars, form_save_temperatures, virtual_plant_type)
 from .thermostat_output_groups import normalize_output_operations
-from .thermostat_quick_zone_controls import MODEL_SAVED_FIELDS, normalize_quick_zone_operation
+from .thermostat_quick_zone_controls import (MODEL_SAVED_FIELDS, ThermostatControlModel,
+    normalize_quick_zone_operation, prepare_quick_zone_save)
+from .thermostat_temperature_model import TEMPERATURE_FIELDS
 from .thermostat_settings_guard import recovered_dialog_rules
 from .thermostat_templates import (FAMILIES, NativeThermostatTemplates, ThermostatTemplateError,
                                    _native_integer, _path, _unit_record, family_for_unit_type)
@@ -132,10 +134,7 @@ class SettingsPlan:
                 'dialog_enable_rules_reproduced': False, 'physical_device_programmed': False}
 
 
-def plan_settings(store: UnitSpecStore, unit_type: str, snapshot: Mapping[str, str],
-                  edits: Mapping[str, object], *, temperature_preference=None,
-                  _model_overrides=None, _defer_model_owned=()) -> SettingsPlan:
-    _temperature_preference(temperature_preference)
+def _parse_setting_inputs(store, unit_type, snapshot, edits):
     family = family_for_unit_type(unit_type)
     if not isinstance(edits, Mapping):
         raise ThermostatTemplateError('Supply a mapping of setting edits')
@@ -171,6 +170,16 @@ def plan_settings(store: UnitSpecStore, unit_type: str, snapshot: Mapping[str, s
             current[name] = _native_integer(text, name)
         except ThermostatTemplateError:
             continue
+    return spec, current, parsed
+
+
+def plan_settings(store: UnitSpecStore, unit_type: str, snapshot: Mapping[str, str],
+                  edits: Mapping[str, object], *, temperature_preference=None,
+                  _model_overrides=None, _defer_model_owned=(),
+                  _control_owner=None, _control_save=None) -> SettingsPlan:
+    _temperature_preference(temperature_preference)
+    family = family_for_unit_type(unit_type)
+    spec, current, parsed = _parse_setting_inputs(store, unit_type, snapshot, edits)
     after = dict(current, **parsed)
     model_overrides = {} if _model_overrides is None else dict(_model_overrides)
     for name, value in model_overrides.items():
@@ -181,8 +190,23 @@ def plan_settings(store: UnitSpecStore, unit_type: str, snapshot: Mapping[str, s
     missing = sorted(set(parsed) - set(current))
     if missing:
         raise ThermostatTemplateError('Unit snapshot lacks one-byte setting: ' + ', '.join(missing))
+    owned_temperatures = None
+    if _control_owner is not None or _control_save is not None:
+        # Only the original current issued owner may replace the raw roundtrip.
+        # Raw scalar requests retain their survival check against final bytes.
+        projection = prepare_quick_zone_save(_control_owner, _control_save)
+        if (_control_owner.output.family != family
+                or _control_owner.output.unit_type != unit_type
+                or _control_owner.temperature_preference != temperature_preference
+                or any(_control_owner.source.get(name) != after.get(name)
+                       for name in _control_owner.source)):
+            raise ThermostatTemplateError('Issued temperature owner differs from raw settings inputs')
+        owned_temperatures = {name: projection[name] for name in TEMPERATURE_FIELDS}
     try:
-        saved = form_save(after, family, temperature_preference=temperature_preference)
+        saved = form_save(after, family, temperature_preference=(
+            None if owned_temperatures is not None else temperature_preference))
+        if owned_temperatures is not None:
+            saved.update(owned_temperatures)
     except KeyError as error:
         raise ThermostatTemplateError('Unit snapshot lacks a form-save dependency: ' + str(error)) from error
     except ThermostatPostLoadError as error:
@@ -319,13 +343,35 @@ class NativeThermostatSettings(NativeThermostatTemplates):
                     deferred.add('DamperModulationEnable')
                 elif operation['op'] == 'damper-installed-zones':
                     deferred.update(('InstalledZones', 'ControlledZones'))
-            settings = plan_settings(self.store, identity['UnitType'], values, edits,
-                temperature_preference=temperature_preference, _defer_model_owned=deferred)
+            # Full controls parse raw edits first, then serialize only after
+            # an exact fresh owner issues its save. Other histories keep the
+            # legacy preliminary raw settings projection.
+            issued_controls = []
+            if controls_active:
+                _spec, _current, parsed_edits = _parse_setting_inputs(
+                    self.store, identity['UnitType'], values, edits)
+                settings = None
+            else:
+                settings = plan_settings(self.store, identity['UnitType'], values, edits,
+                    temperature_preference=temperature_preference, _defer_model_owned=deferred)
+                parsed_edits = dict(settings.edits)
             project_xml = self._xml('//' + project)
             remote = plan_remote_references(self.store, identity['UnitType'], values,
-                dict(settings.edits), project_xml=project_xml, unit_path=path,
+                parsed_edits, project_xml=project_xml, unit_path=path,
                 level_prompts=level_prompts, output_selections=output_selections,
-                output_operations=output_operations, temperature_preference=temperature_preference)
+                output_operations=output_operations, temperature_preference=temperature_preference,
+                _control_save_consumer=(lambda owner, result: issued_controls.append((owner, result)))
+                    if controls_active else None)
+            if controls_active:
+                if len(issued_controls) != 1:
+                    raise ThermostatTemplateError('Full settings require exactly one issued control owner')
+                control_owner, control_save = issued_controls[0]
+                projection = prepare_quick_zone_save(control_owner, control_save)
+                if any(remote.expected.get(name) != projection[name] for name in TEMPERATURE_FIELDS):
+                    raise ThermostatTemplateError('Issued temperature result differs from remote projection')
+                settings = plan_settings(self.store, identity['UnitType'], values, edits,
+                    temperature_preference=temperature_preference, _defer_model_owned=deferred,
+                    _control_owner=control_owner, _control_save=control_save)
             output_projection = json.loads(remote.output_projection_json)
             damper = output_projection.get('damper_controls') if output_projection is not None else None
             if damper is not None and not controls_active:

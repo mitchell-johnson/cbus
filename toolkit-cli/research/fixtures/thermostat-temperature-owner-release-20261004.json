@@ -1,0 +1,2884 @@
+{
+  "actual_raw_backend_reviews": {
+    "source3": {
+      "backend_parent_bodies": 40,
+      "later_hardware_traffic": 0,
+      "limits": [
+        "Refusal equality/no-mutation is established by passed test assertions and wire checks; a second refusal PP/project snapshot was not separately serialized",
+        "Basic101/Programmable109 whole PP and leaf-preserving project comparisons are synthetic owned-backend profiles",
+        "Uncertain successful saves are not retried or rolled back; successful-only fresh reopen assertions are distinct"
+      ],
+      "owned_processes_cleaned": 40,
+      "review": {
+        "bytes": 33301,
+        "sha256": "4790b9e9db40fe1f3b4007b9ac8f01079f2276b47f26cf1fcf1b3ebf45975198"
+      },
+      "scope": "Artifact-only raw review; author of test literals excludes independent oracle semantic approval",
+      "totals": {
+        "calls": 64,
+        "commands": 3624,
+        "connections": 64,
+        "exit0": 32,
+        "expected_exit1": 32,
+        "lost_upstream200": 16,
+        "startup_pci_frames": 160
+      },
+      "trap_contacts": 0
+    },
+    "wheel2": {
+      "backend_parent_bodies": 40,
+      "later_hardware_traffic": 0,
+      "limits": [
+        "Refusal equality/no-mutation is established by passed test assertions and wire checks; a second refusal PP/project snapshot was not separately serialized",
+        "Basic101/Programmable109 whole PP and leaf-preserving project comparisons are synthetic owned-backend profiles",
+        "Uncertain successful saves are not retried or rolled back; successful-only fresh reopen assertions are distinct"
+      ],
+      "owned_processes_cleaned": 40,
+      "review": {
+        "bytes": 33261,
+        "sha256": "efa8f855f3ebbc0216eace30334e2967ccebd23b7b2c5ad45865ca1c5e8ba815"
+      },
+      "scope": "Artifact-only raw review; author of test literals excludes independent oracle semantic approval",
+      "totals": {
+        "calls": 64,
+        "commands": 3624,
+        "connections": 64,
+        "exit0": 32,
+        "expected_exit1": 32,
+        "lost_upstream200": 16,
+        "startup_pci_frames": 160
+      },
+      "trap_contacts": 0
+    }
+  },
+  "captured_input_scope": {
+    "count": 1177,
+    "documentation_annotations": "Prepared after validation; not package files or tested input-map members",
+    "make_ci_rosters": "Current hash readback and passing CI guard bodies; not phase before/after members",
+    "map": {
+      "bytes": 193149,
+      "sha256": "ea21e3a515375f74f433d5650381b7fed00289cf67e4602405757faffb9d3feb"
+    },
+    "named_research_inputs": [
+      "toolkit-cli/research/fixtures/thermostat-temperature-vectors.json",
+      "toolkit-cli/research/fixtures/thermostat-settings-temperature-roundtrip-vectors.json",
+      "toolkit-cli/research/fixtures/thermostat-temperature-model-source-review.json",
+      "toolkit-cli/research/experiments/2026-09-30/thermostat-settings-temperature-static.json"
+    ],
+    "package_files": 395,
+    "python_test_files": 778,
+    "scope": "Selected package/test/research map only; not whole Git/Rust/private-harness/fixture closure"
+  },
+  "completion": {
+    "accepted_obligations": 0,
+    "category_count_is_functionality_percentage": false,
+    "category_ledger_implemented": 18,
+    "category_ledger_total": 42,
+    "census_complete": false,
+    "coverage_exit": 1,
+    "coverage_invocation": {
+      "bytes": 263,
+      "sha256": "f525d0773f5b8951f1b6b62ec5e31e74b21d4d6b9f75879aee3510a00b922adf"
+    },
+    "functional_percentage_available": false,
+    "provisional_obligations": 487,
+    "provisional_scope_items": 22103,
+    "trusted_evidence_root_supplied": false
+  },
+  "current_repository_bindings": {
+    ".github/workflows/ci.yml": {
+      "bytes": 28781,
+      "sha256": "5c81648a7b8358e1021c491505a80c5a5824e778fa9e5d736f3d7b09c5400872"
+    },
+    "toolkit-cli/Makefile": {
+      "bytes": 147647,
+      "sha256": "d005b6538eb520774e4279f1a17f53b4148f05dc8388dfeeb77b5f367888b9af"
+    },
+    "toolkit-cli/src/cbus_toolkit/capabilities.json": {
+      "bytes": 234922,
+      "sha256": "a6c6e71630dcdcf53d1f3b57de7192ddc3ed735b83187c908431cc402eede951"
+    },
+    "toolkit-cli/src/cbus_toolkit/parity-evidence.json": {
+      "bytes": 33071,
+      "sha256": "261e43f11d03984f5df3960c0162f641b5bc35159020761cf8548d33312b55e4"
+    },
+    "toolkit-cli/src/cbus_toolkit/parity-obligations.json": {
+      "bytes": 12931091,
+      "sha256": "6b1ac6600d21ae2ff39aa984c9a5c62effc42ff4e2bd521e55266149e9dfdc5f"
+    },
+    "toolkit-cli/src/cbus_toolkit/thermostat_quick_zone_controls.py": {
+      "bytes": 51554,
+      "sha256": "053ca14db4a93e9a5cca7428af9b47df5cf47c27a9a3cc48709b225ee1a671a8"
+    },
+    "toolkit-cli/src/cbus_toolkit/thermostat_remote_references.py": {
+      "bytes": 53634,
+      "sha256": "3495c4f7b15a3c5ac5b7d6f6c9da204c8ceb47e95f2cb98e85b130098c2e4713"
+    },
+    "toolkit-cli/src/cbus_toolkit/thermostat_settings.py": {
+      "bytes": 42013,
+      "sha256": "1e701d8e78d55751cc40753d69bb5e7f6bbb18a81ffe8e94291f2b39aa0b9003"
+    },
+    "toolkit-cli/src/cbus_toolkit/thermostat_temperature_model.py": {
+      "bytes": 3606,
+      "sha256": "c7818b336ec182e13de96ce64401aa9f66891c028bb729b15d248b0b6cbd7f63"
+    },
+    "toolkit-cli/tests/test_ci_test_results.py": {
+      "bytes": 84913,
+      "sha256": "b325005d9cd9ad8c58cc8ee50ad08f1d71fdc97b09820e7e5665d1bd3660609e"
+    },
+    "toolkit-cli/tests/test_thermostat_quick_zone_controls.py": {
+      "bytes": 14033,
+      "sha256": "9b5e180984b0ba98e8b19e34accda6527288391532134521b70e0edf27ec571e"
+    },
+    "toolkit-cli/tests/test_thermostat_quick_zone_controls_backends.py": {
+      "bytes": 35667,
+      "sha256": "43d311dbbee364fb31729449a5f1225c40d8a11d8f12113587fd8474e00c49d0"
+    },
+    "toolkit-cli/tests/test_thermostat_remote_references.py": {
+      "bytes": 17895,
+      "sha256": "5d3c61f39fd22ec461007119820ed8b02d2b9c9ee4e4c4d73e9d702eb4189ccb"
+    },
+    "toolkit-cli/tests/test_thermostat_settings.py": {
+      "bytes": 21901,
+      "sha256": "5b1b19437a53f57282755f4990638c69e1750b2e5e7466e5ec5317f6fef2cea2"
+    },
+    "toolkit-cli/tests/test_thermostat_settings_guard.py": {
+      "bytes": 1904,
+      "sha256": "7615eeefd9e71870d644baefeebe641e0a0287d59ad623c1d88f18e3c8be6a0f"
+    },
+    "toolkit-cli/tests/test_thermostat_settings_temperature_vectors.py": {
+      "bytes": 5039,
+      "sha256": "5cfc8615e1e91d0ae098873f368f55ca9cd26219c7c5f75e5ea6f790d6c861d0"
+    },
+    "toolkit-cli/tests/test_thermostat_temperature.py": {
+      "bytes": 4774,
+      "sha256": "249b882d850538046a4b2c812be64a3b676a8a4ea51bee90b83150565dedee27"
+    },
+    "toolkit-cli/tests/test_thermostat_temperature_model.py": {
+      "bytes": 13176,
+      "sha256": "3f94e1d2c8adb691fbe06f2d4f1a352d0f5e435ce9b5155578103b4634f0b23f"
+    },
+    "toolkit-cli/tests/test_thermostat_temperature_owner.py": {
+      "bytes": 15966,
+      "sha256": "aa93a897e07df65236431f1cdd80b84d6da256d68d569ee888ecde1cd5310085"
+    },
+    "toolkit-cli/tests/test_thermostat_temperature_owner_backends.py": {
+      "bytes": 15447,
+      "sha256": "1aa115fde24ee03166e434b5bb32c12b8e0430d01e3580255f676b5f5cdfd45d"
+    }
+  },
+  "current_scoped_epochs": {
+    "metadata1": {
+      "audit_passed": true,
+      "captured_inputs_before_after_equal": true,
+      "captured_inputs_count": 1177,
+      "duration_seconds": 9.035226333000537,
+      "interpreter": {
+        "digest": {
+          "bytes": 52640,
+          "sha256": "e1ab0abf4365a2d400998c9c8cd52733170ed568118d03b4b005d418c140d6da"
+        },
+        "role": "primary source Python"
+      },
+      "modules": [
+        "tests/test_skip_census.py",
+        "tests/test_cgate_tagged_session_differential.py",
+        "tests/test_cgate_dbsetxml_unit_differential.py"
+      ],
+      "parents": {
+        "collected": 22,
+        "errors": 0,
+        "failed": 0,
+        "passed": 22,
+        "skipped": 0
+      },
+      "pytest_exit": 0,
+      "raw_artifact_descriptors": {
+        "audit.json": {
+          "bytes": 15169,
+          "sha256": "c8ea2dd05157bc4d1ae5a6d37ef0aa97dd77f384ff0be7e5843f3688d6efacd1"
+        },
+        "inputs-after.json": {
+          "bytes": 193149,
+          "sha256": "ea21e3a515375f74f433d5650381b7fed00289cf67e4602405757faffb9d3feb"
+        },
+        "inputs-before.json": {
+          "bytes": 193149,
+          "sha256": "ea21e3a515375f74f433d5650381b7fed00289cf67e4602405757faffb9d3feb"
+        },
+        "invocation.json": {
+          "bytes": 1884,
+          "sha256": "b07a9a6ceb7668dbcad299f04c1e52b0e90f8012aa6a6a210268ce59bad549c6"
+        },
+        "junit.xml": {
+          "bytes": 7953,
+          "sha256": "c5f2e18cd048b87248f27b03ad40d12fada4b083bbe0298040039c7b87b1015a"
+        },
+        "origins.json": {
+          "bytes": 227,
+          "sha256": "e210f859bc40270c4da6e707ecd34fb80b123b40fb3626ca54c80e94f464c967"
+        },
+        "pytest.log": {
+          "bytes": 113,
+          "sha256": "21a659ed338d5283f38dac566f061f6fe7964825d5d2a7d26029dc829fcd2fd4"
+        },
+        "trace.json": {
+          "bytes": 10180,
+          "sha256": "ea18227acbca590e595cc7306dde54316c971037e5c79583c4aab75fbb6d5786"
+        }
+      },
+      "result": "PASS_SCOPED",
+      "separate_subtests": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 5,
+        "reported": 5,
+        "skipped": 0
+      },
+      "summary": {
+        "bytes": 1706,
+        "sha256": "4eff3fa40427a7c86e200c63f6c68bf832e6dd2403773ab167026757358862af"
+      }
+    },
+    "source3": {
+      "audit_passed": true,
+      "captured_inputs_before_after_equal": true,
+      "captured_inputs_count": 1177,
+      "duration_seconds": 90.99733399999968,
+      "interpreter": {
+        "digest": {
+          "bytes": 52640,
+          "sha256": "e1ab0abf4365a2d400998c9c8cd52733170ed568118d03b4b005d418c140d6da"
+        },
+        "role": "primary source Python"
+      },
+      "modules": [
+        "tests/test_thermostat_temperature_owner_backends.py"
+      ],
+      "parents": {
+        "collected": 40,
+        "errors": 0,
+        "failed": 0,
+        "passed": 40,
+        "skipped": 0
+      },
+      "pytest_exit": 0,
+      "raw_artifact_descriptors": {
+        "audit.json": {
+          "bytes": 27370,
+          "sha256": "fae548a227ca57eae279ad9525394336f6ff53ac5c49495d902cec2227d259bc"
+        },
+        "inputs-after.json": {
+          "bytes": 193149,
+          "sha256": "ea21e3a515375f74f433d5650381b7fed00289cf67e4602405757faffb9d3feb"
+        },
+        "inputs-before.json": {
+          "bytes": 193149,
+          "sha256": "ea21e3a515375f74f433d5650381b7fed00289cf67e4602405757faffb9d3feb"
+        },
+        "invocation.json": {
+          "bytes": 1795,
+          "sha256": "42d1a39cb0d9afbb5d4f8cb9cbc0b7aca79e14006ff02da915c0d7a2c635488a"
+        },
+        "junit.xml": {
+          "bytes": 15355,
+          "sha256": "c97e144e67c9b14c3d141f77ac59d5825a67145e5bf4654c458b461089541d0e"
+        },
+        "origins.json": {
+          "bytes": 14406,
+          "sha256": "5ceb4a1dd81ff1361842dad84863d60e7f458d18709dc9b1ab3476637565b620"
+        },
+        "pytest.log": {
+          "bytes": 110,
+          "sha256": "922bc8e9739a3a666bcfd66a4a76b19e25a9fd8356e7ae3f7c76ac18e6732ff0"
+        },
+        "trace.json": {
+          "bytes": 18580,
+          "sha256": "5b2adfaf7c521d92cb55358bdc9b2b42450c9d8d987bb4c399c8b2d811287c9f"
+        }
+      },
+      "result": "PASS_SCOPED",
+      "separate_subtests": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 0,
+        "reported": 0,
+        "skipped": 0
+      },
+      "summary": {
+        "bytes": 1708,
+        "sha256": "5fe69e1d7a0e98281e7123c3a6e3be1361aaa374e276ed36fd650f03e6282b4e"
+      }
+    },
+    "wheel2": {
+      "audit_passed": true,
+      "captured_inputs_before_after_equal": true,
+      "captured_inputs_count": 1177,
+      "duration_seconds": 184.4067192500006,
+      "interpreter": {
+        "digest": {
+          "bytes": 52640,
+          "sha256": "e1ab0abf4365a2d400998c9c8cd52733170ed568118d03b4b005d418c140d6da"
+        },
+        "role": "fresh installed venv Python"
+      },
+      "modules": [
+        "tests/test_thermostat_temperature_model.py",
+        "tests/test_thermostat_temperature_owner.py",
+        "tests/test_thermostat_temperature_owner_backends.py",
+        "tests/test_thermostat_temperature.py",
+        "tests/test_thermostat_settings_temperature_vectors.py",
+        "tests/test_thermostat_quick_zone_controls.py",
+        "tests/test_thermostat_settings.py",
+        "tests/test_thermostat_settings_guard.py",
+        "tests/test_thermostat_remote_references.py",
+        "tests/test_thermostat_quick_zone_controls_backends.py",
+        "tests/test_ci_test_results.py"
+      ],
+      "parents": {
+        "collected": 319,
+        "errors": 0,
+        "failed": 0,
+        "passed": 318,
+        "skipped": 1
+      },
+      "pytest_exit": 0,
+      "raw_artifact_descriptors": {
+        "audit.json": {
+          "bytes": 343119,
+          "sha256": "e2a1bbe4e12d1c6b6e25a8e951278edb130c8d533b8b5a9a83f18cab97b56ddb"
+        },
+        "inputs-after.json": {
+          "bytes": 193149,
+          "sha256": "ea21e3a515375f74f433d5650381b7fed00289cf67e4602405757faffb9d3feb"
+        },
+        "inputs-before.json": {
+          "bytes": 193149,
+          "sha256": "ea21e3a515375f74f433d5650381b7fed00289cf67e4602405757faffb9d3feb"
+        },
+        "invocation.json": {
+          "bytes": 2275,
+          "sha256": "7c878402af6517bf2b9446735140246d1a0b8aa470c5efe40c7800ccd98aab53"
+        },
+        "junit.xml": {
+          "bytes": 116122,
+          "sha256": "06a69bfdb21e8be85f95f691fc5e48f9532bece105f1c1c83a848a89a6bfd20c"
+        },
+        "origins.json": {
+          "bytes": 17244,
+          "sha256": "408cf564a25daa62777c60116dfe65819861baadc580888d00861f384cb6fe50"
+        },
+        "pytest.log": {
+          "bytes": 468,
+          "sha256": "55b5010530e2737f646e304958d660c2f7e7c88b8c00dfcc811da767ab96cc39"
+        },
+        "trace.json": {
+          "bytes": 265453,
+          "sha256": "34244144f544f0a2ef652347eb3f72075f3a40dd76e3a6acefdb48d8072405c1"
+        }
+      },
+      "result": "PASS_SCOPED",
+      "separate_subtests": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 636,
+        "reported": 636,
+        "skipped": 0
+      },
+      "summary": {
+        "bytes": 1718,
+        "sha256": "a393466a9dafa847586aa93305edffcb4ec1018815c22aafcd082d47dd39564b"
+      }
+    }
+  },
+  "date": "2026-10-04",
+  "implementation": "15-field decode-once/live-owner/encode-once settings transaction",
+  "junit_count_qualification": "Actual testcase parent elements319 for wheel cohort;955 suite aggregate includes636 unitemized passing subtest events, not955 parents",
+  "links": {
+    "guide": "docs/thermostat-temperature-model.md",
+    "report": "docs/feature-batch-2026-10-04-thermostat-temperature-owner.md"
+  },
+  "metadata": {
+    "additional_metadata_test_scope": [
+      "tests/test_skip_census.py",
+      "tests/test_cgate_tagged_session_differential.py",
+      "tests/test_cgate_dbsetxml_unit_differential.py"
+    ],
+    "checks_are_separate_from_backend_epochs": true,
+    "contract_inventory_check_exit": 0,
+    "parity_register_check_exit": 0,
+    "skip_census_check_exit": 0
+  },
+  "publication_at_preparation": {
+    "merged_main_acceptance_claimed": false,
+    "new_feature_pull_request_not_yet_published": true,
+    "overlay_bound_by_file_digests": true,
+    "parent_ci_pending_as_reported_at_preparation": true,
+    "parent_pull_request": 117,
+    "tested_baseline_revision": "3497204ba319ad6de2cbddefac8ce9215ee19436"
+  },
+  "red_epoch_explanations": {
+    "no_unified_green_source319_epoch_claimed": true,
+    "production_source_changed_after_first_frozen_integration": false,
+    "red_to_successor_exact_input_deltas": {
+      "source1_source2": {
+        "after": {
+          "bytes": 15456,
+          "sha256": "2ea046c2aa6781a06f338720bdb3ce834eb7f102de9c88af5853349a6d3b2a84"
+        },
+        "all395_package_inputs_equal": true,
+        "before": {
+          "bytes": 15399,
+          "sha256": "36fb0129fc106868d69db0bf1a961d53425fc152ced1dc87f00d76fcd9e43e1a"
+        },
+        "changed_input": "toolkit-cli/tests/test_thermostat_temperature_owner_backends.py"
+      },
+      "source2_source3": {
+        "after": {
+          "bytes": 15447,
+          "sha256": "1aa115fde24ee03166e434b5bb32c12b8e0430d01e3580255f676b5f5cdfd45d"
+        },
+        "all395_package_inputs_equal": true,
+        "before": {
+          "bytes": 15456,
+          "sha256": "2ea046c2aa6781a06f338720bdb3ce834eb7f102de9c88af5853349a6d3b2a84"
+        },
+        "changed_input": "toolkit-cli/tests/test_thermostat_temperature_owner_backends.py"
+      }
+    },
+    "source1": "Changed-only preview oracle incorrectly included an unchanged capped127 field; test-only correction",
+    "source2_and_wheel1": "Second backup name exceeded existing 8-character project-name contract; test-only distinct THBACK2 correction"
+  },
+  "registration": {
+    "focused_target": "check-thermostat-temperature-owner",
+    "manifest": {
+      "bytes": 8565,
+      "sha256": "fd16e770b49ce65e38926163d123167102ee7bfdf12787ad6c3f7e197e3d7dff"
+    },
+    "modules": [
+      "tests/test_thermostat_temperature_model.py",
+      "tests/test_thermostat_temperature_owner.py",
+      "tests/test_thermostat_temperature_owner_backends.py",
+      "tests/test_thermostat_temperature.py",
+      "tests/test_thermostat_settings_temperature_vectors.py",
+      "tests/test_thermostat_quick_zone_controls.py",
+      "tests/test_thermostat_settings.py",
+      "tests/test_thermostat_settings_guard.py",
+      "tests/test_thermostat_remote_references.py",
+      "tests/test_thermostat_quick_zone_controls_backends.py",
+      "tests/test_ci_test_results.py"
+    ],
+    "new_exact_ids": [
+      "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_chained_saves[pc_tsa-daemon]",
+      "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_chained_saves[pc_tsa-mock]",
+      "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_chained_saves[pc_tsa5-daemon]",
+      "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_chained_saves[pc_tsa5-mock]",
+      "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_chained_saves[pc_tsb-daemon]",
+      "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_chained_saves[pc_tsb-mock]",
+      "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_chained_saves[pc_tsb5-daemon]",
+      "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_chained_saves[pc_tsb5-mock]",
+      "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-pp-save-pc_tsa-daemon]",
+      "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-pp-save-pc_tsa-mock]",
+      "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-pp-save-pc_tsa5-daemon]",
+      "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-pp-save-pc_tsa5-mock]",
+      "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-pp-save-pc_tsb-daemon]",
+      "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-pp-save-pc_tsb-mock]",
+      "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-pp-save-pc_tsb5-daemon]",
+      "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-pp-save-pc_tsb5-mock]",
+      "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-project-save-pc_tsa-daemon]",
+      "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-project-save-pc_tsa-mock]",
+      "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-project-save-pc_tsa5-daemon]",
+      "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-project-save-pc_tsa5-mock]",
+      "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-project-save-pc_tsb-daemon]",
+      "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-project-save-pc_tsb-mock]",
+      "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-project-save-pc_tsb5-daemon]",
+      "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-project-save-pc_tsb5-mock]",
+      "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[raw-set-rewritten-pc_tsa-daemon]",
+      "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[raw-set-rewritten-pc_tsa-mock]",
+      "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[raw-set-rewritten-pc_tsa5-daemon]",
+      "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[raw-set-rewritten-pc_tsa5-mock]",
+      "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[raw-set-rewritten-pc_tsb-daemon]",
+      "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[raw-set-rewritten-pc_tsb-mock]",
+      "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[raw-set-rewritten-pc_tsb5-daemon]",
+      "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[raw-set-rewritten-pc_tsb5-mock]",
+      "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[unsigned-overflow-pc_tsa-daemon]",
+      "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[unsigned-overflow-pc_tsa-mock]",
+      "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[unsigned-overflow-pc_tsa5-daemon]",
+      "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[unsigned-overflow-pc_tsa5-mock]",
+      "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[unsigned-overflow-pc_tsb-daemon]",
+      "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[unsigned-overflow-pc_tsb-mock]",
+      "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[unsigned-overflow-pc_tsb5-daemon]",
+      "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[unsigned-overflow-pc_tsb5-mock]"
+    ],
+    "new_per_backend": 20,
+    "new_temperature_owner_ids": 40,
+    "old907829813745_digest_guards_preserved": true,
+    "old945_roster_sha256": "86fe25ab6de68f773b8130bd198631dc0a4a8dc939597aaf590c9b5ab1eea850",
+    "preserved_exact_ids": 945,
+    "total_exact_backend_ids": 985
+  },
+  "remaining_boundaries": [
+    "Issue42 full thermostat workflow and issue72 manual/native source prerequisites remain open",
+    "Existing Celsius15/32/Guard0 and settled timing/enum admission unchanged",
+    "Broader slider/time/initialization and Fahrenheit owner admission not added",
+    "No implicit Windows callbacks/native server/physical thermostat acceptance",
+    "Application migration/Delete/whole form parity not established",
+    "Only successful saves have fresh reopen verification; lost successful responses remain outcome-uncertain and unreplayed",
+    "One optional EXE/MAP static-source test skipped in the wheel cohort"
+  ],
+  "retained_red_epochs": {
+    "source1": {
+      "audit_passed": false,
+      "captured_inputs_before_after_equal": true,
+      "captured_inputs_count": 1177,
+      "duration_seconds": 160.38174195900137,
+      "interpreter": {
+        "digest": {
+          "bytes": 52640,
+          "sha256": "e1ab0abf4365a2d400998c9c8cd52733170ed568118d03b4b005d418c140d6da"
+        },
+        "role": "primary source Python"
+      },
+      "modules": [
+        "tests/test_thermostat_temperature_model.py",
+        "tests/test_thermostat_temperature_owner.py",
+        "tests/test_thermostat_temperature_owner_backends.py",
+        "tests/test_thermostat_temperature.py",
+        "tests/test_thermostat_settings_temperature_vectors.py",
+        "tests/test_thermostat_quick_zone_controls.py",
+        "tests/test_thermostat_settings.py",
+        "tests/test_thermostat_settings_guard.py",
+        "tests/test_thermostat_remote_references.py",
+        "tests/test_thermostat_quick_zone_controls_backends.py",
+        "tests/test_ci_test_results.py"
+      ],
+      "parents": {
+        "collected": 319,
+        "errors": 0,
+        "failed": 8,
+        "passed": 310,
+        "skipped": 1
+      },
+      "pytest_exit": 1,
+      "raw_artifact_descriptors": {
+        "audit.json": {
+          "bytes": 343128,
+          "sha256": "d3d63d18b2880a48cd03d2277bae64013c3f2f9501aa7533d933a27aec0c60cf"
+        },
+        "inputs-after.json": {
+          "bytes": 193149,
+          "sha256": "4730e000cd69f91e6f737c33cc042c4fc6123fb68724bd0c96c3e090e7e35629"
+        },
+        "inputs-before.json": {
+          "bytes": 193149,
+          "sha256": "4730e000cd69f91e6f737c33cc042c4fc6123fb68724bd0c96c3e090e7e35629"
+        },
+        "invocation.json": {
+          "bytes": 2288,
+          "sha256": "6d43ff3cc575753fc0cecfbabe6cac88563a84c5bbe5ee529dfcda71f27ad536"
+        },
+        "junit.xml": {
+          "bytes": 129022,
+          "sha256": "9d5bc9a798a86b34e1677863ef4de25d9f31a78acb3d6254c88de482a7ddf423"
+        },
+        "origins.json": {
+          "bytes": 14406,
+          "sha256": "e7829433439beb14188533ba68eeb74250afb8bf7241bcca41f261385503c8a0"
+        },
+        "pytest.log": {
+          "bytes": 12868,
+          "sha256": "f3df3a9e94b3fa5c319b0690ef4891426611b74df9ebc7daeba16976c6fec162"
+        },
+        "trace.json": {
+          "bytes": 265453,
+          "sha256": "385fb9b2ca9076da302712bf88ecef79c52d7c1a43da450f5a664c4eafd77ff1"
+        }
+      },
+      "result": "RETAINED_RED",
+      "separate_subtests": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 636,
+        "reported": 636,
+        "skipped": 0
+      },
+      "summary": {
+        "bytes": 1723,
+        "sha256": "4a6f98e22a51f93e9d08b9cb4efc2dedb45ed2224600146a761cb0d3f9f14176"
+      }
+    },
+    "source2": {
+      "audit_passed": false,
+      "captured_inputs_before_after_equal": true,
+      "captured_inputs_count": 1177,
+      "duration_seconds": 87.87933395899927,
+      "interpreter": {
+        "digest": {
+          "bytes": 52640,
+          "sha256": "e1ab0abf4365a2d400998c9c8cd52733170ed568118d03b4b005d418c140d6da"
+        },
+        "role": "primary source Python"
+      },
+      "modules": [
+        "tests/test_thermostat_temperature_owner_backends.py"
+      ],
+      "parents": {
+        "collected": 40,
+        "errors": 0,
+        "failed": 8,
+        "passed": 32,
+        "skipped": 0
+      },
+      "pytest_exit": 1,
+      "raw_artifact_descriptors": {
+        "audit.json": {
+          "bytes": 27379,
+          "sha256": "c4e64213625b656ffd643b86403cd7c6af2276254b01cf11f924d3e524741822"
+        },
+        "inputs-after.json": {
+          "bytes": 193149,
+          "sha256": "b17edc8d3f23605165449c342f3d4f6b6d6f3036fda839a3d3d02ded17a8910c"
+        },
+        "inputs-before.json": {
+          "bytes": 193149,
+          "sha256": "b17edc8d3f23605165449c342f3d4f6b6d6f3036fda839a3d3d02ded17a8910c"
+        },
+        "invocation.json": {
+          "bytes": 1795,
+          "sha256": "8959cf0caa9167098d0fb58d4dd99768cebaa60d11ec1b4f34814a2e81aa64ec"
+        },
+        "junit.xml": {
+          "bytes": 70743,
+          "sha256": "0e654f3a033803aca726b694eaa01cb00d71303a7ef20f62edd74d9a9179c802"
+        },
+        "origins.json": {
+          "bytes": 14406,
+          "sha256": "cb56b8866c74177a8772f4b246286bec4c37ef112d308ea33e28fc7572f43cfb"
+        },
+        "pytest.log": {
+          "bytes": 52170,
+          "sha256": "66f81fece751a4a702ca109c17050fe0cfdf29d543cc69f5ba332b48f91b1c4d"
+        },
+        "trace.json": {
+          "bytes": 18580,
+          "sha256": "8f05751716730ec7d39d0b22921be8e8651d602d0658387ef37581fb6431efc0"
+        }
+      },
+      "result": "RETAINED_RED",
+      "separate_subtests": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 0,
+        "reported": 0,
+        "skipped": 0
+      },
+      "summary": {
+        "bytes": 1711,
+        "sha256": "ad4aaf6e9c6fcc6fdb4af6e7aba4fd888f6d9f9c840cfb18f4b88330732c159a"
+      }
+    },
+    "wheel1": {
+      "audit_passed": false,
+      "captured_inputs_before_after_equal": true,
+      "captured_inputs_count": 1177,
+      "duration_seconds": 181.7933693750001,
+      "interpreter": {
+        "digest": {
+          "bytes": 52640,
+          "sha256": "e1ab0abf4365a2d400998c9c8cd52733170ed568118d03b4b005d418c140d6da"
+        },
+        "role": "fresh installed venv Python"
+      },
+      "modules": [
+        "tests/test_thermostat_temperature_model.py",
+        "tests/test_thermostat_temperature_owner.py",
+        "tests/test_thermostat_temperature_owner_backends.py",
+        "tests/test_thermostat_temperature.py",
+        "tests/test_thermostat_settings_temperature_vectors.py",
+        "tests/test_thermostat_quick_zone_controls.py",
+        "tests/test_thermostat_settings.py",
+        "tests/test_thermostat_settings_guard.py",
+        "tests/test_thermostat_remote_references.py",
+        "tests/test_thermostat_quick_zone_controls_backends.py",
+        "tests/test_ci_test_results.py"
+      ],
+      "parents": {
+        "collected": 319,
+        "errors": 0,
+        "failed": 8,
+        "passed": 310,
+        "skipped": 1
+      },
+      "pytest_exit": 1,
+      "raw_artifact_descriptors": {
+        "audit.json": {
+          "bytes": 343128,
+          "sha256": "e0a99dc5d3d981fa8dd9fab7223209217b02490121fe8d37d8b9c1148767432e"
+        },
+        "inputs-after.json": {
+          "bytes": 193149,
+          "sha256": "b17edc8d3f23605165449c342f3d4f6b6d6f3036fda839a3d3d02ded17a8910c"
+        },
+        "inputs-before.json": {
+          "bytes": 193149,
+          "sha256": "b17edc8d3f23605165449c342f3d4f6b6d6f3036fda839a3d3d02ded17a8910c"
+        },
+        "invocation.json": {
+          "bytes": 2275,
+          "sha256": "74fabe43efeaa0ae8e886c0f85624d3b4df57a4954f80b82149dbf2b3669e7fc"
+        },
+        "junit.xml": {
+          "bytes": 171494,
+          "sha256": "7071211f6357d417cc4358aff72b79066fb88278067ae87913b8f39f52c548e4"
+        },
+        "origins.json": {
+          "bytes": 17244,
+          "sha256": "f4d98f19ddbdc241ede7db8a85114992b9850a3cd506cff8f2aa804172d9e9c7"
+        },
+        "pytest.log": {
+          "bytes": 52512,
+          "sha256": "81f7b594a18224cb56ca30ac22ac4822a50fa01a6e9c6a1e83fbcd1cfefa7d92"
+        },
+        "trace.json": {
+          "bytes": 265453,
+          "sha256": "385fb9b2ca9076da302712bf88ecef79c52d7c1a43da450f5a664c4eafd77ff1"
+        }
+      },
+      "result": "RETAINED_RED",
+      "separate_subtests": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 636,
+        "reported": 636,
+        "skipped": 0
+      },
+      "summary": {
+        "bytes": 1721,
+        "sha256": "aaa4cbcac0afe9789d649d12d6607452b3d885720caacfbeeac2c1294d558516"
+      }
+    }
+  },
+  "reviews": {
+    "changed_delta_test_correction": {
+      "bytes": 3378,
+      "sha256": "2e411d2f615040f37febbb310b10cae3c97f9af235b63b7b7d2bcf017c51e15c"
+    },
+    "current_acceptance_handoff": {
+      "bytes": 4818,
+      "sha256": "a5428f59d5af9e5b4b816712e6b67ab05088199c7ceb30541de6d637ae5e0a9f"
+    },
+    "current_terminal_acceptance": {
+      "bytes": 10957,
+      "sha256": "2a02366fa6d6d4f775d6fcad006ae4153f4019f4422042f07212aed6216f679e"
+    },
+    "public_safe_review_summary": {
+      "bytes": 10941,
+      "sha256": "8c6b67c067d4cf6628ae5df8bfcd4de361848c991c9e37befb51dd5bbc1d7f02"
+    },
+    "registration_and_closures": {
+      "bytes": 10030,
+      "sha256": "7dc934b4c8aaacdae235a6232cc57b5d466f567bfeac84b834f4d62e903cb46c"
+    },
+    "second_backup_name_test_correction": {
+      "bytes": 13201,
+      "sha256": "be3c403b50c50c7acef0cb70228608b702ee1e59fa73b0e3fddd1d671ed98ff8"
+    },
+    "source_association": {
+      "bytes": 3493,
+      "sha256": "83a7965f9ec67fabd970c48da926c1ab4a739a381e61fff4705b06f17b1b9e12"
+    }
+  },
+  "schema": "cbus-thermostat-temperature-owner-scoped-release-v1",
+  "scope_issue": 119,
+  "separate_rust_only_receipt_refresh": {
+    "binary_inputs": {
+      "cgate-mock": {
+        "bytes": 18075640,
+        "sha256": "0cbc6c40377cb75a1b83679c8293ffd3a9026df801a7e5c87397f07dd7bc28e5"
+      },
+      "cmqttd": {
+        "bytes": 54860840,
+        "sha256": "657a04a65691f321d3431d6d1a86648caad9eaeb2995741a150a16ef8710b956"
+      }
+    },
+    "combined_network_reads_passed_per_backend": 2,
+    "derivatives_readback": {
+      "bytes": 6295,
+      "sha256": "ff204bf743e908fb39d54967303e4950d995f186f44a4a1fe1982eed14c7db8c"
+    },
+    "no_rust_phase_input_quiet_claim_for_pytest": true,
+    "rust_binary_profile": "existing debug executables",
+    "rust_inputs_before_after_equal": 473,
+    "scope": "Earlier two producer commands only; no fresh Cargo gates in this feature batch",
+    "summary": {
+      "bytes": 3310,
+      "sha256": "680b45ac938c7f320ea63c9efd5c06d51d71f4958df33e30581b1422dbd08815"
+    },
+    "tagged_cases_passed_per_backend": 11,
+    "unit_mapper_cases_wire_equal_per_backend": 12
+  },
+  "source_facts": {
+    "15_field_profiles_from_retained_source": true,
+    "association_fixture": {
+      "bytes": 7376,
+      "sha256": "e66b06df9b9cbb8870ae3777793d36b9c364a8fde99d2c84cc11121e008fd85a"
+    },
+    "independent_literal_fixture": {
+      "bytes": 138290,
+      "sha256": "cb30faa27ea7fc6a8e1e34c32b36d7cdb9da77c265917a2f0365544b869a1bbe"
+    },
+    "new_original_instructions_executed": false,
+    "original_capture_references_are_historical": true
+  },
+  "terminal_parent_origins": {
+    "source3": {
+      "artifact": {
+        "bytes": 14406,
+        "sha256": "5ceb4a1dd81ff1361842dad84863d60e7f458d18709dc9b1ab3476637565b620"
+      },
+      "product_modules": 43,
+      "pytest_pid": 56534,
+      "records": {
+        "cbus_toolkit": {
+          "bytes": 191,
+          "package_file": "__init__.py",
+          "sha256": "a39021e17c28b8e97c4b6ad7b20ffe35ce621332c0f4d006162f77c0703b5fed"
+        },
+        "cbus_toolkit.addressing": {
+          "bytes": 31133,
+          "package_file": "addressing.py",
+          "sha256": "0e0d23f0f0587fd90278f8c734a071966adf299ee0b257fae481e062f873f926"
+        },
+        "cbus_toolkit.barcode_scanner": {
+          "bytes": 31324,
+          "package_file": "barcode_scanner.py",
+          "sha256": "e0ee1cc2b20c073c1dcf83431829800fa461070caeacef0ca511328b34537c89"
+        },
+        "cbus_toolkit.cgate": {
+          "bytes": 15779,
+          "package_file": "cgate.py",
+          "sha256": "f394cf5675f006ec652d98338e3c1bd843b018f7047bab1b67ede697657bf670"
+        },
+        "cbus_toolkit.classic_replacement": {
+          "bytes": 21219,
+          "package_file": "classic_replacement.py",
+          "sha256": "4be1118513549ffb65c45d4c1ee3fc142f46da59bf21aa249bc9be3808e54b62"
+        },
+        "cbus_toolkit.edlt": {
+          "bytes": 32892,
+          "package_file": "edlt.py",
+          "sha256": "c7f20a67c015144a2b62bda64c2fa634e9b30430e308ba877d4a1a9e89dca958"
+        },
+        "cbus_toolkit.edlt_activation": {
+          "bytes": 12885,
+          "package_file": "edlt_activation.py",
+          "sha256": "d9ef076dfbf71d39cbdce0ff2b5ae27fc29be8f2a547fd4507a51a36dfe34cd0"
+        },
+        "cbus_toolkit.edlt_add_dialog": {
+          "bytes": 12863,
+          "package_file": "edlt_add_dialog.py",
+          "sha256": "c772e0c978847d2e8bba41ec67c985a8a985ff9f88afb6d37e9c3829adb6a6d3"
+        },
+        "cbus_toolkit.edlt_mra": {
+          "bytes": 26507,
+          "package_file": "edlt_mra.py",
+          "sha256": "700371d34cb362773df8829cbf73097ec939038022ff9236048be8e68fa6ea04"
+        },
+        "cbus_toolkit.file_transfer": {
+          "bytes": 3453,
+          "package_file": "file_transfer.py",
+          "sha256": "c02f4be2536204c9a28739ac2fb848fad6a98651a3ffb813f2eee315dc72db22"
+        },
+        "cbus_toolkit.lighting_state": {
+          "bytes": 5677,
+          "package_file": "lighting_state.py",
+          "sha256": "b5c62265aa98883e42d9d24767d7b97be11371d833ea2b943ba27d9c7bec8fff"
+        },
+        "cbus_toolkit.memory": {
+          "bytes": 18803,
+          "package_file": "memory.py",
+          "sha256": "372cbc3a79710b743d23aa6690a8b56b1780de091ffe8a1d0a543e4cfa9c1f31"
+        },
+        "cbus_toolkit.native": {
+          "bytes": 13127,
+          "package_file": "native.py",
+          "sha256": "285c574c8d7a1714d8f40742d92c469316f0a1b9ff9741a8644356d82fecb241"
+        },
+        "cbus_toolkit.native_thermostat_schedule": {
+          "bytes": 22869,
+          "package_file": "native_thermostat_schedule.py",
+          "sha256": "c1cefaa53d0012dae24967e6288305fc33fed7ee12bb74ff5a22e5b8d0b86186"
+        },
+        "cbus_toolkit.native_thermostat_scheduling": {
+          "bytes": 32753,
+          "package_file": "native_thermostat_scheduling.py",
+          "sha256": "a0eebf9a06f7eb95264bddc78ebce9e3c92f84c11771202cbc8a46a16b7409d2"
+        },
+        "cbus_toolkit.offline_conversion": {
+          "bytes": 14181,
+          "package_file": "offline_conversion.py",
+          "sha256": "dce62b0374fa3104b93c7a92e4d8ce79aea4f1095f6becb0f362c9bdf58a6fbd"
+        },
+        "cbus_toolkit.programming": {
+          "bytes": 28651,
+          "package_file": "programming.py",
+          "sha256": "7a09752990d138afee36d49710db6f9af26a88aae899d5d1a65da19514e626e7"
+        },
+        "cbus_toolkit.project": {
+          "bytes": 39396,
+          "package_file": "project.py",
+          "sha256": "491f948dd391a2b29014f10393dd1c74227345b8c181a84a0557ebcf8cb3a7fc"
+        },
+        "cbus_toolkit.serials": {
+          "bytes": 13064,
+          "package_file": "serials.py",
+          "sha256": "34afb08690d5c7905aa66596bd187aff4dcf38487cb246ad5f50587484652cbc"
+        },
+        "cbus_toolkit.simulator": {
+          "bytes": 48609,
+          "package_file": "simulator.py",
+          "sha256": "28cafec8fc4bbd504b5c946c8965d86803761e1f7cbc833e601d7f3276bf04e5"
+        },
+        "cbus_toolkit.simulator_addressing": {
+          "bytes": 4674,
+          "package_file": "simulator_addressing.py",
+          "sha256": "2e5053dfa11dd4ce63b2a4229acb320f8a775c5d22bbff5eafe667eda3482f5a"
+        },
+        "cbus_toolkit.simulator_applications": {
+          "bytes": 5470,
+          "package_file": "simulator_applications.py",
+          "sha256": "65c45880434ada8b7605cf22bd7c860ca7fd7f170f75c4bfc5a6f0634801760b"
+        },
+        "cbus_toolkit.simulator_enable": {
+          "bytes": 2625,
+          "package_file": "simulator_enable.py",
+          "sha256": "2f3bc4c37b3a48122ebdba12a85f609df15995f60a74f48616887e2b6dec78da"
+        },
+        "cbus_toolkit.simulator_labels": {
+          "bytes": 13400,
+          "package_file": "simulator_labels.py",
+          "sha256": "effa49020aa5d1fbb419ab64940eaf3170f86fd16245459a521c8a8c3d037c2c"
+        },
+        "cbus_toolkit.simulator_serial_addressing": {
+          "bytes": 3485,
+          "package_file": "simulator_serial_addressing.py",
+          "sha256": "aa2d1b3aabc33bba5f51b658b275b96550c44ec967f3be607884fc671e7bd91f"
+        },
+        "cbus_toolkit.thermostat_damper_controls": {
+          "bytes": 13802,
+          "package_file": "thermostat_damper_controls.py",
+          "sha256": "536d95f14ddcc3d8d41c8e0e209b6ab5dfb142cdcf4c7270e9e73d00f6d50917"
+        },
+        "cbus_toolkit.thermostat_output_groups": {
+          "bytes": 22984,
+          "package_file": "thermostat_output_groups.py",
+          "sha256": "706a091268bfb5c8e3529426fdfa5becbaf5f854df82ccaecbb5c0aa56329b00"
+        },
+        "cbus_toolkit.thermostat_plant_types": {
+          "bytes": 49508,
+          "package_file": "thermostat_plant_types.py",
+          "sha256": "b0e855df3eed44bd5aa108c4c90f38a2612943804674dfd5bdf48b18252b94b4"
+        },
+        "cbus_toolkit.thermostat_post_load": {
+          "bytes": 43048,
+          "package_file": "thermostat_post_load.py",
+          "sha256": "6ca049e0d97e70cdb0ea9210a47676f9fb92996d46afd6e6c57f8539caac5afd"
+        },
+        "cbus_toolkit.thermostat_posted_changes": {
+          "bytes": 3787,
+          "package_file": "thermostat_posted_changes.py",
+          "sha256": "ff6294936ec966dcea100482de3afc66753d6e67cd9b8e9e98ddca269227ef02"
+        },
+        "cbus_toolkit.thermostat_quick_zone_controls": {
+          "bytes": 51554,
+          "package_file": "thermostat_quick_zone_controls.py",
+          "sha256": "053ca14db4a93e9a5cca7428af9b47df5cf47c27a9a3cc48709b225ee1a671a8"
+        },
+        "cbus_toolkit.thermostat_remote_levels": {
+          "bytes": 4430,
+          "package_file": "thermostat_remote_levels.py",
+          "sha256": "9fb1fa0a6a3e6093bcb5e665ebf793cf797779540dc80379940d4b728b694747"
+        },
+        "cbus_toolkit.thermostat_remote_references": {
+          "bytes": 53634,
+          "package_file": "thermostat_remote_references.py",
+          "sha256": "3495c4f7b15a3c5ac5b7d6f6c9da204c8ceb47e95f2cb98e85b130098c2e4713"
+        },
+        "cbus_toolkit.thermostat_schedule_levels": {
+          "bytes": 13927,
+          "package_file": "thermostat_schedule_levels.py",
+          "sha256": "aab440e9233d531fa3d59044bfec7f9080873063e080f94faa16e960b8395dc8"
+        },
+        "cbus_toolkit.thermostat_scheduling": {
+          "bytes": 15427,
+          "package_file": "thermostat_scheduling.py",
+          "sha256": "68ada0ab5d8f279b3c1d83db3e5e1bcebfd6634cda006062d515801af0c5413e"
+        },
+        "cbus_toolkit.thermostat_settings": {
+          "bytes": 42013,
+          "package_file": "thermostat_settings.py",
+          "sha256": "1e701d8e78d55751cc40753d69bb5e7f6bbb18a81ffe8e94291f2b39aa0b9003"
+        },
+        "cbus_toolkit.thermostat_settings_guard": {
+          "bytes": 10787,
+          "package_file": "thermostat_settings_guard.py",
+          "sha256": "6e2932565c174b5ebcd925c383cc0e18c79b5e4e612606fe2228d9984d864829"
+        },
+        "cbus_toolkit.thermostat_temperature": {
+          "bytes": 4782,
+          "package_file": "thermostat_temperature.py",
+          "sha256": "a6db5f7e6a334a2aca7eeacd57d900e353fb6049adbca3497c8647899cac05ae"
+        },
+        "cbus_toolkit.thermostat_temperature_model": {
+          "bytes": 3606,
+          "package_file": "thermostat_temperature_model.py",
+          "sha256": "c7818b336ec182e13de96ce64401aa9f66891c028bb729b15d248b0b6cbd7f63"
+        },
+        "cbus_toolkit.thermostat_templates": {
+          "bytes": 36366,
+          "package_file": "thermostat_templates.py",
+          "sha256": "2b5492d84d0cb46916059c5e96b126a9b550f8cebaed7d04f84e88ca3a333738"
+        },
+        "cbus_toolkit.thermostat_unit_load": {
+          "bytes": 7600,
+          "package_file": "thermostat_unit_load.py",
+          "sha256": "a8ded5ac86b72f366abd302aaa72504eea7cc1cc0d2522b5409c0fa887a7e677"
+        },
+        "cbus_toolkit.thermostat_zone_defaults": {
+          "bytes": 11513,
+          "package_file": "thermostat_zone_defaults.py",
+          "sha256": "f39f310c3cad079f56d87740181a86030e4e60b4882b1cfc64d9a244b07f6dc7"
+        },
+        "cbus_toolkit.unitspec": {
+          "bytes": 17981,
+          "package_file": "unitspec.py",
+          "sha256": "f8d9e2f30c0ab431b0897959328781fac6a7c9825a4d9d2bb5ecf348acb66747"
+        }
+      },
+      "scope": "Terminal loaded modules in the parent pytest process only; no startup, continuous or CLI-child import proof",
+      "violations": 0
+    },
+    "wheel2": {
+      "artifact": {
+        "bytes": 17244,
+        "sha256": "408cf564a25daa62777c60116dfe65819861baadc580888d00861f384cb6fe50"
+      },
+      "product_modules": 43,
+      "pytest_pid": 56536,
+      "records": {
+        "cbus_toolkit": {
+          "bytes": 191,
+          "package_file": "__init__.py",
+          "sha256": "a39021e17c28b8e97c4b6ad7b20ffe35ce621332c0f4d006162f77c0703b5fed"
+        },
+        "cbus_toolkit.addressing": {
+          "bytes": 31133,
+          "package_file": "addressing.py",
+          "sha256": "0e0d23f0f0587fd90278f8c734a071966adf299ee0b257fae481e062f873f926"
+        },
+        "cbus_toolkit.barcode_scanner": {
+          "bytes": 31324,
+          "package_file": "barcode_scanner.py",
+          "sha256": "e0ee1cc2b20c073c1dcf83431829800fa461070caeacef0ca511328b34537c89"
+        },
+        "cbus_toolkit.cgate": {
+          "bytes": 15779,
+          "package_file": "cgate.py",
+          "sha256": "f394cf5675f006ec652d98338e3c1bd843b018f7047bab1b67ede697657bf670"
+        },
+        "cbus_toolkit.classic_replacement": {
+          "bytes": 21219,
+          "package_file": "classic_replacement.py",
+          "sha256": "4be1118513549ffb65c45d4c1ee3fc142f46da59bf21aa249bc9be3808e54b62"
+        },
+        "cbus_toolkit.edlt": {
+          "bytes": 32892,
+          "package_file": "edlt.py",
+          "sha256": "c7f20a67c015144a2b62bda64c2fa634e9b30430e308ba877d4a1a9e89dca958"
+        },
+        "cbus_toolkit.edlt_activation": {
+          "bytes": 12885,
+          "package_file": "edlt_activation.py",
+          "sha256": "d9ef076dfbf71d39cbdce0ff2b5ae27fc29be8f2a547fd4507a51a36dfe34cd0"
+        },
+        "cbus_toolkit.edlt_add_dialog": {
+          "bytes": 12863,
+          "package_file": "edlt_add_dialog.py",
+          "sha256": "c772e0c978847d2e8bba41ec67c985a8a985ff9f88afb6d37e9c3829adb6a6d3"
+        },
+        "cbus_toolkit.edlt_mra": {
+          "bytes": 26507,
+          "package_file": "edlt_mra.py",
+          "sha256": "700371d34cb362773df8829cbf73097ec939038022ff9236048be8e68fa6ea04"
+        },
+        "cbus_toolkit.file_transfer": {
+          "bytes": 3453,
+          "package_file": "file_transfer.py",
+          "sha256": "c02f4be2536204c9a28739ac2fb848fad6a98651a3ffb813f2eee315dc72db22"
+        },
+        "cbus_toolkit.lighting_state": {
+          "bytes": 5677,
+          "package_file": "lighting_state.py",
+          "sha256": "b5c62265aa98883e42d9d24767d7b97be11371d833ea2b943ba27d9c7bec8fff"
+        },
+        "cbus_toolkit.memory": {
+          "bytes": 18803,
+          "package_file": "memory.py",
+          "sha256": "372cbc3a79710b743d23aa6690a8b56b1780de091ffe8a1d0a543e4cfa9c1f31"
+        },
+        "cbus_toolkit.native": {
+          "bytes": 13127,
+          "package_file": "native.py",
+          "sha256": "285c574c8d7a1714d8f40742d92c469316f0a1b9ff9741a8644356d82fecb241"
+        },
+        "cbus_toolkit.native_thermostat_schedule": {
+          "bytes": 22869,
+          "package_file": "native_thermostat_schedule.py",
+          "sha256": "c1cefaa53d0012dae24967e6288305fc33fed7ee12bb74ff5a22e5b8d0b86186"
+        },
+        "cbus_toolkit.native_thermostat_scheduling": {
+          "bytes": 32753,
+          "package_file": "native_thermostat_scheduling.py",
+          "sha256": "a0eebf9a06f7eb95264bddc78ebce9e3c92f84c11771202cbc8a46a16b7409d2"
+        },
+        "cbus_toolkit.offline_conversion": {
+          "bytes": 14181,
+          "package_file": "offline_conversion.py",
+          "sha256": "dce62b0374fa3104b93c7a92e4d8ce79aea4f1095f6becb0f362c9bdf58a6fbd"
+        },
+        "cbus_toolkit.programming": {
+          "bytes": 28651,
+          "package_file": "programming.py",
+          "sha256": "7a09752990d138afee36d49710db6f9af26a88aae899d5d1a65da19514e626e7"
+        },
+        "cbus_toolkit.project": {
+          "bytes": 39396,
+          "package_file": "project.py",
+          "sha256": "491f948dd391a2b29014f10393dd1c74227345b8c181a84a0557ebcf8cb3a7fc"
+        },
+        "cbus_toolkit.serials": {
+          "bytes": 13064,
+          "package_file": "serials.py",
+          "sha256": "34afb08690d5c7905aa66596bd187aff4dcf38487cb246ad5f50587484652cbc"
+        },
+        "cbus_toolkit.simulator": {
+          "bytes": 48609,
+          "package_file": "simulator.py",
+          "sha256": "28cafec8fc4bbd504b5c946c8965d86803761e1f7cbc833e601d7f3276bf04e5"
+        },
+        "cbus_toolkit.simulator_addressing": {
+          "bytes": 4674,
+          "package_file": "simulator_addressing.py",
+          "sha256": "2e5053dfa11dd4ce63b2a4229acb320f8a775c5d22bbff5eafe667eda3482f5a"
+        },
+        "cbus_toolkit.simulator_applications": {
+          "bytes": 5470,
+          "package_file": "simulator_applications.py",
+          "sha256": "65c45880434ada8b7605cf22bd7c860ca7fd7f170f75c4bfc5a6f0634801760b"
+        },
+        "cbus_toolkit.simulator_enable": {
+          "bytes": 2625,
+          "package_file": "simulator_enable.py",
+          "sha256": "2f3bc4c37b3a48122ebdba12a85f609df15995f60a74f48616887e2b6dec78da"
+        },
+        "cbus_toolkit.simulator_labels": {
+          "bytes": 13400,
+          "package_file": "simulator_labels.py",
+          "sha256": "effa49020aa5d1fbb419ab64940eaf3170f86fd16245459a521c8a8c3d037c2c"
+        },
+        "cbus_toolkit.simulator_serial_addressing": {
+          "bytes": 3485,
+          "package_file": "simulator_serial_addressing.py",
+          "sha256": "aa2d1b3aabc33bba5f51b658b275b96550c44ec967f3be607884fc671e7bd91f"
+        },
+        "cbus_toolkit.thermostat_damper_controls": {
+          "bytes": 13802,
+          "package_file": "thermostat_damper_controls.py",
+          "sha256": "536d95f14ddcc3d8d41c8e0e209b6ab5dfb142cdcf4c7270e9e73d00f6d50917"
+        },
+        "cbus_toolkit.thermostat_output_groups": {
+          "bytes": 22984,
+          "package_file": "thermostat_output_groups.py",
+          "sha256": "706a091268bfb5c8e3529426fdfa5becbaf5f854df82ccaecbb5c0aa56329b00"
+        },
+        "cbus_toolkit.thermostat_plant_types": {
+          "bytes": 49508,
+          "package_file": "thermostat_plant_types.py",
+          "sha256": "b0e855df3eed44bd5aa108c4c90f38a2612943804674dfd5bdf48b18252b94b4"
+        },
+        "cbus_toolkit.thermostat_post_load": {
+          "bytes": 43048,
+          "package_file": "thermostat_post_load.py",
+          "sha256": "6ca049e0d97e70cdb0ea9210a47676f9fb92996d46afd6e6c57f8539caac5afd"
+        },
+        "cbus_toolkit.thermostat_posted_changes": {
+          "bytes": 3787,
+          "package_file": "thermostat_posted_changes.py",
+          "sha256": "ff6294936ec966dcea100482de3afc66753d6e67cd9b8e9e98ddca269227ef02"
+        },
+        "cbus_toolkit.thermostat_quick_zone_controls": {
+          "bytes": 51554,
+          "package_file": "thermostat_quick_zone_controls.py",
+          "sha256": "053ca14db4a93e9a5cca7428af9b47df5cf47c27a9a3cc48709b225ee1a671a8"
+        },
+        "cbus_toolkit.thermostat_remote_levels": {
+          "bytes": 4430,
+          "package_file": "thermostat_remote_levels.py",
+          "sha256": "9fb1fa0a6a3e6093bcb5e665ebf793cf797779540dc80379940d4b728b694747"
+        },
+        "cbus_toolkit.thermostat_remote_references": {
+          "bytes": 53634,
+          "package_file": "thermostat_remote_references.py",
+          "sha256": "3495c4f7b15a3c5ac5b7d6f6c9da204c8ceb47e95f2cb98e85b130098c2e4713"
+        },
+        "cbus_toolkit.thermostat_schedule_levels": {
+          "bytes": 13927,
+          "package_file": "thermostat_schedule_levels.py",
+          "sha256": "aab440e9233d531fa3d59044bfec7f9080873063e080f94faa16e960b8395dc8"
+        },
+        "cbus_toolkit.thermostat_scheduling": {
+          "bytes": 15427,
+          "package_file": "thermostat_scheduling.py",
+          "sha256": "68ada0ab5d8f279b3c1d83db3e5e1bcebfd6634cda006062d515801af0c5413e"
+        },
+        "cbus_toolkit.thermostat_settings": {
+          "bytes": 42013,
+          "package_file": "thermostat_settings.py",
+          "sha256": "1e701d8e78d55751cc40753d69bb5e7f6bbb18a81ffe8e94291f2b39aa0b9003"
+        },
+        "cbus_toolkit.thermostat_settings_guard": {
+          "bytes": 10787,
+          "package_file": "thermostat_settings_guard.py",
+          "sha256": "6e2932565c174b5ebcd925c383cc0e18c79b5e4e612606fe2228d9984d864829"
+        },
+        "cbus_toolkit.thermostat_temperature": {
+          "bytes": 4782,
+          "package_file": "thermostat_temperature.py",
+          "sha256": "a6db5f7e6a334a2aca7eeacd57d900e353fb6049adbca3497c8647899cac05ae"
+        },
+        "cbus_toolkit.thermostat_temperature_model": {
+          "bytes": 3606,
+          "package_file": "thermostat_temperature_model.py",
+          "sha256": "c7818b336ec182e13de96ce64401aa9f66891c028bb729b15d248b0b6cbd7f63"
+        },
+        "cbus_toolkit.thermostat_templates": {
+          "bytes": 36366,
+          "package_file": "thermostat_templates.py",
+          "sha256": "2b5492d84d0cb46916059c5e96b126a9b550f8cebaed7d04f84e88ca3a333738"
+        },
+        "cbus_toolkit.thermostat_unit_load": {
+          "bytes": 7600,
+          "package_file": "thermostat_unit_load.py",
+          "sha256": "a8ded5ac86b72f366abd302aaa72504eea7cc1cc0d2522b5409c0fa887a7e677"
+        },
+        "cbus_toolkit.thermostat_zone_defaults": {
+          "bytes": 11513,
+          "package_file": "thermostat_zone_defaults.py",
+          "sha256": "f39f310c3cad079f56d87740181a86030e4e60b4882b1cfc64d9a244b07f6dc7"
+        },
+        "cbus_toolkit.unitspec": {
+          "bytes": 17981,
+          "package_file": "unitspec.py",
+          "sha256": "f8d9e2f30c0ab431b0897959328781fac6a7c9825a4d9d2bb5ecf348acb66747"
+        }
+      },
+      "scope": "Terminal loaded modules in the parent pytest process only; no startup, continuous or CLI-child import proof",
+      "violations": 0
+    }
+  },
+  "wheel_package": {
+    "artifact": {
+      "bytes": 3013547,
+      "sha256": "b3f8f3a50373dd21967e5324fa467cc7a58bb5dbd2a8da09e8e3604e8bc4244f"
+    },
+    "editable_source_pth_absent": true,
+    "files": {
+      "__init__.py": {
+        "bytes": 191,
+        "sha256": "a39021e17c28b8e97c4b6ad7b20ffe35ce621332c0f4d006162f77c0703b5fed"
+      },
+      "__main__.py": {
+        "bytes": 48,
+        "sha256": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d"
+      },
+      "_toolkit_update_registry_conditions.py": {
+        "bytes": 8835,
+        "sha256": "50d35a214de2bb0a3660acb05fb2d032b13356179c72bab29e14a811ef1b28ff"
+      },
+      "_windows_condition_registry_worker.py": {
+        "bytes": 8878,
+        "sha256": "4df70deaa78d746306a406ec018733041fd12e7a3141d143f16420e359942fe2"
+      },
+      "_windows_process_token.py": {
+        "bytes": 6003,
+        "sha256": "1cbb897b4fa891dc6b3f1c1e43b4826df70e344ee9390889063a03659e712fae"
+      },
+      "addressing.py": {
+        "bytes": 31133,
+        "sha256": "0e0d23f0f0587fd90278f8c734a071966adf299ee0b257fae481e062f873f926"
+      },
+      "application_events.py": {
+        "bytes": 5251,
+        "sha256": "80c3ecc708ce23a5a4236a55d558f0853221bd3d0d41ac1abd9cdf0e620b98b9"
+      },
+      "applications.py": {
+        "bytes": 8769,
+        "sha256": "3471b6ecad4b31ead84e5370a709a68962f930340383eb9aff8333bc61c9bd13"
+      },
+      "barcode_cli.py": {
+        "bytes": 2836,
+        "sha256": "c9a62b804d350f8fea503f8c3f8e549e466aa29a5b11c9785891bb72c771bf82"
+      },
+      "barcode_database.py": {
+        "bytes": 16955,
+        "sha256": "ca07c6d2d83b1fca50b57b1d15706cadb837b7e8e51d328b0bf4ee083e9ebb6e"
+      },
+      "barcode_scanner.py": {
+        "bytes": 31324,
+        "sha256": "e0ee1cc2b20c073c1dcf83431829800fa461070caeacef0ca511328b34537c89"
+      },
+      "calculator.py": {
+        "bytes": 10892,
+        "sha256": "41507b751d0e6f341d2116b2c8e787e88abc24456837553060071f72ddfa2ec5"
+      },
+      "capabilities.json": {
+        "bytes": 234922,
+        "sha256": "a6c6e71630dcdcf53d1f3b57de7192ddc3ed735b83187c908431cc402eede951"
+      },
+      "cgate-contract-inventory.json": {
+        "bytes": 4277587,
+        "sha256": "e11f2a12dbe633e3227eb43e4d24f712102de2f3497a0900ec974aa7464af8ca"
+      },
+      "cgate.py": {
+        "bytes": 15779,
+        "sha256": "f394cf5675f006ec652d98338e3c1bd843b018f7047bab1b67ede697657bf670"
+      },
+      "cgl.py": {
+        "bytes": 6536,
+        "sha256": "52e2f1fc09303c148221ff255eee673d7d3bf3b163e238af7076f2c1f79035fd"
+      },
+      "cgl_differential.py": {
+        "bytes": 3498,
+        "sha256": "4c3e2905d8483b5a37128855c0f74539b0fdd367ad3e1743f2d900b20f4c4067"
+      },
+      "classic_replacement.py": {
+        "bytes": 21219,
+        "sha256": "4be1118513549ffb65c45d4c1ee3fc142f46da59bf21aa249bc9be3808e54b62"
+      },
+      "cli.py": {
+        "bytes": 280107,
+        "sha256": "91fde87b8724468f8ab4c88e57e4692ce9c551fb49cceda7a3cda0c56ad9d6d3"
+      },
+      "clocks.py": {
+        "bytes": 12240,
+        "sha256": "26f4418494e603684f57ca0fd136191ad614bce81638ad7bfa1f7cc881eaf151"
+      },
+      "cmqtt.py": {
+        "bytes": 37775,
+        "sha256": "5a5ea0efae8e027e063b70d9dc613d1bbba355944220bcf7e01bfb73d7b589bb"
+      },
+      "cni_discovery.py": {
+        "bytes": 24805,
+        "sha256": "eca9df92c0c01d53f9a639344dcb9d02d57aa9d57f62226c7ab3e0fc225cbc88"
+      },
+      "commissioning_lease.py": {
+        "bytes": 4774,
+        "sha256": "9cee9a5f401914bcdc1c8c8aa7978f8ded917fc3342a03743149535e3476c95b"
+      },
+      "commissioning_route.py": {
+        "bytes": 17122,
+        "sha256": "58a4ad901f1031fdcc0492ea8bd5962a670fbd3caea418b0239c50455518251a"
+      },
+      "conversion.py": {
+        "bytes": 9648,
+        "sha256": "824ef5e6d9c3c076ead6efed7dbbf715ed131c3eb8ef9fe65f24fea612113d2c"
+      },
+      "conversion_guard.py": {
+        "bytes": 3234,
+        "sha256": "cda6eb34b301165f9d43b4881a56b90d47994562dd80dbb5cc95c42bb8c1c71b"
+      },
+      "conversion_mapping.py": {
+        "bytes": 22878,
+        "sha256": "5bf59e4c0317a8c88fb79b09c6f4cc090951cbf9256a6a886a037d092a6dbf09"
+      },
+      "conversion_workflow.py": {
+        "bytes": 33953,
+        "sha256": "d92c2cffa79dbedfba2db3633ee7980be37fd2cde7b4e8de265a1b4a5da5cfec"
+      },
+      "conversion_workflow_cli.py": {
+        "bytes": 3216,
+        "sha256": "713a920f095e94523f13c73b040b7e1f6d3368d3e030d44d2f9d04288c97ea5d"
+      },
+      "dali_commissioning.py": {
+        "bytes": 46334,
+        "sha256": "ba025c212ac399f67becd7a9891b3d7737949f328b49686e6e2010c37d1e99e4"
+      },
+      "dali_commissioning_cli.py": {
+        "bytes": 4719,
+        "sha256": "e567b41f7d87f55a0d7672daeaef83b9f8276cf91a06aecb1411d5de0fd9f89c"
+      },
+      "dali_extended_proxy.py": {
+        "bytes": 6692,
+        "sha256": "f0798690855f0acffaccf1d6cede59e80302ce72d8b1d9cdec5e0404a4bc4678"
+      },
+      "device_dialogs.py": {
+        "bytes": 29843,
+        "sha256": "e8080bf0f9ff2852d66724e8703ed5131d69085dc2a9e93d7c9e9f54eaf48c4e"
+      },
+      "device_scenes.py": {
+        "bytes": 15904,
+        "sha256": "81b0a2fd8b73bd1e22e33c2e9b83e79b7f6fdef8511d138b44865af0175894cc"
+      },
+      "dfu.py": {
+        "bytes": 9567,
+        "sha256": "09f425f84f818ee3b1d89cc524cacd9d77265d1aebdb314adc64f3ff712462c8"
+      },
+      "dfu_simulator.py": {
+        "bytes": 16428,
+        "sha256": "3c2c0c0a695f0a8052032ffefe0819c2d0d412f54437fd429b93e56bbd9d35c6"
+      },
+      "dfu_transport.py": {
+        "bytes": 23554,
+        "sha256": "3fabc25cb866ee44a78b3e0e6eaee814c1c13bcca78b7cde24ba8245990ca081"
+      },
+      "differential.py": {
+        "bytes": 62209,
+        "sha256": "3f4c529e99195e58ffcb90ad46e1c2e8654514a09d11f6183c2d2e35d35cb39b"
+      },
+      "din_output_controls.py": {
+        "bytes": 15543,
+        "sha256": "8b56ede26100887175e8eeba88927c24d8bf21d5f91ae3d03b8630d4a02b08bc"
+      },
+      "din_output_settings.py": {
+        "bytes": 38976,
+        "sha256": "efc0c4831ff756059b76ac231fe2c475599100c3320d55ba806474b50bc26b16"
+      },
+      "dlt_broadcast.py": {
+        "bytes": 16919,
+        "sha256": "704deded0ccb1d6dc23a4976fc9ed09bbde10c7dd77e8d93b59f39f5251eb46f"
+      },
+      "dlt_broadcast_cli.py": {
+        "bytes": 2033,
+        "sha256": "c5fdbebcb941fd97584f4588f818cf503d3362d29b7f0040b792b83883f35778"
+      },
+      "dlt_cli.py": {
+        "bytes": 15164,
+        "sha256": "a3114754e94363e46281adf1f126fba84efa1ac816d1f5b874dc684b01e09faa"
+      },
+      "dlt_controls.py": {
+        "bytes": 9172,
+        "sha256": "7c099a5593cd2049276703d757b5563eab843489f1858c6291eaa1b5d4a51c2d"
+      },
+      "dlt_display.py": {
+        "bytes": 11548,
+        "sha256": "b96157e25b1d0503f2358bfd761f7ba7523d513467efabca710d83ad946d4c74"
+      },
+      "dlt_icon_dialog.py": {
+        "bytes": 11057,
+        "sha256": "fc334fc3b12a1218b83bc4717642282ac7ed52b0d7b2f10d67309f28ecad9ec3"
+      },
+      "dlt_icon_dialog_cli.py": {
+        "bytes": 3148,
+        "sha256": "a056a993e553e85e790a16eb457a81125d2f6b08ef3ea587ac172606514622a0"
+      },
+      "dlt_indicators.py": {
+        "bytes": 15747,
+        "sha256": "3aee9c5a3ac6c7b8c4461ace0b0b0dc101097a109a877618217b0f2c61d0b08c"
+      },
+      "dlt_labels.py": {
+        "bytes": 16985,
+        "sha256": "3cd9b13b62f955984511bb2f94195a210242bfee56abe5f49e292b7038adb004"
+      },
+      "dlt_language_dialog.py": {
+        "bytes": 14727,
+        "sha256": "eeb2e0351f489a0316337590abf9a9dd4d11e103a339b6d931470b1f116b164a"
+      },
+      "dlt_language_dialog_cli.py": {
+        "bytes": 3818,
+        "sha256": "aacf2dc9a1ec7467e5818752b102e074d27e0738e725ac617e9e2ca9945a7afa"
+      },
+      "dlt_physical_programming.py": {
+        "bytes": 10841,
+        "sha256": "ca74aae60c4052b45976ca08c9de5d6c01b0e44fcb2fd8abb882e36801bf242a"
+      },
+      "dlt_profiles.py": {
+        "bytes": 19925,
+        "sha256": "fa91d46f25b6fda3fb536aa9c2cce220beb053f03ad1cfb079a5adb51102312d"
+      },
+      "dlt_project_cli.py": {
+        "bytes": 3468,
+        "sha256": "3ccd372c3b2ab24f49eb1d09a38233134f87be6a2812ee2cfd13db332dbce9e8"
+      },
+      "dlt_project_labels.py": {
+        "bytes": 13731,
+        "sha256": "28b6d2fb8f818bb4bb5b05eebf3140251e2505794d7e5e2816fa2bce582da919"
+      },
+      "dlt_unit_delivery.py": {
+        "bytes": 19897,
+        "sha256": "8d89923849f5828e399841fd101e5a43c1dfb217fe68d601fa15cadfacba7735"
+      },
+      "dlt_unit_delivery_cli.py": {
+        "bytes": 1450,
+        "sha256": "27c7ea1d04a75366a4fe326a4be486b14e3b6b0201a76fc57e3e618c5127f614"
+      },
+      "duplicate_resolution.py": {
+        "bytes": 8056,
+        "sha256": "00e40abbee576b35ce517fdd19b10955749b8ba7f320061470a71e016392f814"
+      },
+      "edlt.py": {
+        "bytes": 32892,
+        "sha256": "c7f20a67c015144a2b62bda64c2fa634e9b30430e308ba877d4a1a9e89dca958"
+      },
+      "edlt_activation.py": {
+        "bytes": 12885,
+        "sha256": "d9ef076dfbf71d39cbdce0ff2b5ae27fc29be8f2a547fd4507a51a36dfe34cd0"
+      },
+      "edlt_add_dialog.py": {
+        "bytes": 12863,
+        "sha256": "c772e0c978847d2e8bba41ec67c985a8a985ff9f88afb6d37e9c3829adb6a6d3"
+      },
+      "edlt_app_group_label_controls.py": {
+        "bytes": 14768,
+        "sha256": "4f2d2fadef3e4b0db0d2dba75016920821646412af5a0b62664e3838ccdeefe1"
+      },
+      "edlt_app_group_label_properties.py": {
+        "bytes": 8428,
+        "sha256": "b98b7207b0645c23fdbab9310354c916ad0b61f81fdcf28a93c45e49bf785ae1"
+      },
+      "edlt_application_add_dialog.py": {
+        "bytes": 5012,
+        "sha256": "cc33e5c86fac7a5fcb8937ae6d5816c5a56bbd15efa225fee96abb5e5be54920"
+      },
+      "edlt_application_cache.py": {
+        "bytes": 8035,
+        "sha256": "c7dc8c133fd08f3b5c974c6429add4a82f7dda2d69154165c05935b02ecd6bd4"
+      },
+      "edlt_applications.py": {
+        "bytes": 20297,
+        "sha256": "5c06e2a0ec30ef42c17cd4d13924db5eeb1634830b5ab5bd7556f34ba64ce881"
+      },
+      "edlt_blank.py": {
+        "bytes": 9328,
+        "sha256": "d111b6afee5b37f304aeec64b717bfecfe8b89b80d0b55a649cd29efc4e5ed6f"
+      },
+      "edlt_colours.py": {
+        "bytes": 13178,
+        "sha256": "48f248040581a3d6b542800bc8c828814ecfcf58b10531c8394eaf92bcb24dc0"
+      },
+      "edlt_control_cli.py": {
+        "bytes": 7897,
+        "sha256": "90807283d24976e753835a191f982f538187be2c2b5347492f34d15207e19a48"
+      },
+      "edlt_corridor.py": {
+        "bytes": 17008,
+        "sha256": "a00e918af4ddba1a31ce804c396f927c29c5378589d066fd33a7c01597aca0a9"
+      },
+      "edlt_display.py": {
+        "bytes": 8440,
+        "sha256": "4903078af7c5dfb59baafa68177cb49e3d4a7bdea60a41db4de082f70d1e1087"
+      },
+      "edlt_display_model.py": {
+        "bytes": 14366,
+        "sha256": "4a56bb503c5c82391021a8a14dcf516825243c05a5ea0b4ab9027596f91641d2"
+      },
+      "edlt_dltp_index.py": {
+        "bytes": 7109,
+        "sha256": "b569af2fb13a01c61d5bf60772a592b36b7e452d66c0c7d2514d3aa724109036"
+      },
+      "edlt_dual_key_control_properties.py": {
+        "bytes": 13314,
+        "sha256": "0d02ff67a149a93ad6485c3eedd6d4eb07036d6058b96a995b2f2987a0c0fe02"
+      },
+      "edlt_dual_key_controls.py": {
+        "bytes": 24799,
+        "sha256": "7250a5c6d7fc01d897b51ba6df1982da8f723e90380c3fae95f1e0324efb2ce9"
+      },
+      "edlt_dual_key_parent_controls.py": {
+        "bytes": 5181,
+        "sha256": "fe05a106a59b69bbc6cb1e9e8d549ebdffcc3ac42c21f3e95b95fa37ccf81e5e"
+      },
+      "edlt_dynamic_label_control.py": {
+        "bytes": 17527,
+        "sha256": "7e2ee51983ccbd254f7ded33c43655d5ca70ba9c041d21c4cef064f35bc858a6"
+      },
+      "edlt_enable.py": {
+        "bytes": 11819,
+        "sha256": "95e1360da4f43b051c4f23d66cb956d37e28c3e2457e373eef2e533902de25c0"
+      },
+      "edlt_factory_default.py": {
+        "bytes": 7277,
+        "sha256": "d75faf780589599fe91b61592f614d69eae168d0baede7c8252075c2435a0073"
+      },
+      "edlt_fan.py": {
+        "bytes": 15863,
+        "sha256": "bf0f1b6cbf89527af2fb378e81d937dafcfe68f68ee1f7fc8a8fac8b32924aec"
+      },
+      "edlt_first_open.py": {
+        "bytes": 7539,
+        "sha256": "02709d77c7b3a851288a9ddd753e0da8645c024657a515e903a8761539f63119"
+      },
+      "edlt_general.py": {
+        "bytes": 9396,
+        "sha256": "6ce6abeaa55dfe36401645a8c432eb40490d350adcf1e46e5ce005b0430e0420"
+      },
+      "edlt_global_cli.py": {
+        "bytes": 16364,
+        "sha256": "f24bd528722e28abe39a4352a893792710f0d36fd6d0953cdf9824fc74b332de"
+      },
+      "edlt_global_image_context.py": {
+        "bytes": 11603,
+        "sha256": "f0c3352044b4a95bf4d7589ffc5f9ab2efd040d02a18e4f87a28b3629aa12731"
+      },
+      "edlt_global_preparation.py": {
+        "bytes": 28739,
+        "sha256": "efcdc8957e06c6f6bdfac5c3480d68731ddfa8e4f5b51e3d3499f08fe23344e4"
+      },
+      "edlt_global_programming.py": {
+        "bytes": 17303,
+        "sha256": "06e1879222ef35dd76d0e7ecc75b818e5e103eca3f61cf3fc82ac30305647105"
+      },
+      "edlt_hvac.py": {
+        "bytes": 12518,
+        "sha256": "1425551576911a14cebdfbbfda303d42a0bf71cd1d6582aa47f29a1c7a572e34"
+      },
+      "edlt_label_audit.py": {
+        "bytes": 17911,
+        "sha256": "9c449c57768a14e9ff6cab272da2c7063ded68f28b6e84b2d1dfdf2cbf06d252"
+      },
+      "edlt_label_clear.py": {
+        "bytes": 11566,
+        "sha256": "875fa93eb6add9ea65e679ecca62d1f6a59e70cf1eac2d0231393e79e759ad36"
+      },
+      "edlt_label_type_control.py": {
+        "bytes": 11412,
+        "sha256": "4c1976c67fda1dfa68eaf8c7aaa32b5f421dfed4e0e62897b0edca7896b75569"
+      },
+      "edlt_language_add_dialog.py": {
+        "bytes": 14069,
+        "sha256": "32b938a193ef0ae660a264170a16542c6ea120fdf025df6944fe7a949edad2da"
+      },
+      "edlt_lifecycle.py": {
+        "bytes": 52645,
+        "sha256": "ab5f8d1c3b1c12d1223ebc3e53b263aa0ebd5f3a626bb16f09c095f3ffeda0fc"
+      },
+      "edlt_lighting_label_controls.py": {
+        "bytes": 11100,
+        "sha256": "08106f4d28075dfafdf30ed53060756c75681a5e8474f18476de74cfec5c30ce"
+      },
+      "edlt_measurement.py": {
+        "bytes": 23134,
+        "sha256": "f2bf45c3328deb883f79f4047e462b9aef2a4f2fa624c31f16b2b6310d020f53"
+      },
+      "edlt_mra.py": {
+        "bytes": 26507,
+        "sha256": "700371d34cb362773df8829cbf73097ec939038022ff9236048be8e68fa6ea04"
+      },
+      "edlt_mra_control_properties.py": {
+        "bytes": 11496,
+        "sha256": "5ace1ef4b27986fef6812dd8e437c379ab954049e69050b0e27c3f7f6c11efdc"
+      },
+      "edlt_mra_controls.py": {
+        "bytes": 21971,
+        "sha256": "6b786b544d7e901ac7974f1b76d6bde177eb127c9238861b863c420d11b6d489"
+      },
+      "edlt_mra_parent_controls.py": {
+        "bytes": 9027,
+        "sha256": "b85288b5ac0aafd28527b6e73fd4aa0c6ffb56c3a19d016a32eea65dcde7fa60"
+      },
+      "edlt_multilevel.py": {
+        "bytes": 15831,
+        "sha256": "1481fdf1546347e51b76c3d08ab54eab429bdffa3e368698744a71a45309fa82"
+      },
+      "edlt_navigation.py": {
+        "bytes": 17673,
+        "sha256": "3a0cf8903c3c0413ed9393dfa7ff0ae23a248938bdc26e1f8d0be575cd8f1775"
+      },
+      "edlt_page_control.py": {
+        "bytes": 6817,
+        "sha256": "0321a5cc12a0894bdae1668d38f2bd932b2fc5e810b2ea58c3d05dd7f3e026ee"
+      },
+      "edlt_parent_add_dialog.py": {
+        "bytes": 9878,
+        "sha256": "be740e532d9c930347e775c4d3e32279af1a14d5f5b2c7a17e52ee156f916ab4"
+      },
+      "edlt_parent_form.py": {
+        "bytes": 21788,
+        "sha256": "0428d405ae903204f90ba4d50874b39d1200dce566855a5876e9b249de22f20c"
+      },
+      "edlt_parent_label_bindings.py": {
+        "bytes": 2381,
+        "sha256": "c7d5a2cd1c22dbc0025da93beb44daab3fcbd67b10be086a0147a66bdd065a00"
+      },
+      "edlt_parent_metadata.py": {
+        "bytes": 163423,
+        "sha256": "346471897529002c394861dcee6c0ef40c3f95060bcaa01d11689b98b1ba48da"
+      },
+      "edlt_parent_transaction.py": {
+        "bytes": 110606,
+        "sha256": "ec009971f032078c03a9d3c71cd8e907272a72337d5ec014505be6b7a89498f1"
+      },
+      "edlt_parent_transaction_cli.py": {
+        "bytes": 11108,
+        "sha256": "bc913a7914d8d07eece0c15c2d5593999903d766f05cafe6cf852bb8187a9102"
+      },
+      "edlt_percentage.py": {
+        "bytes": 3326,
+        "sha256": "5c076ea7f4e3a9a3985087f4a65ccc33d553fb41d4cb36b3eaf9ececcc0123e9"
+      },
+      "edlt_project_images_cli.py": {
+        "bytes": 1397,
+        "sha256": "5a8301da7943ff04c7e2f4378e164a927669b17ebd570b966a14bbda2d6d29c9"
+      },
+      "edlt_project_labels.py": {
+        "bytes": 6188,
+        "sha256": "da9f1b3d962323cf859167541256fac47e0a0c64548feab08030aa1d54d2ab13"
+      },
+      "edlt_quick_status.py": {
+        "bytes": 11669,
+        "sha256": "df19a640a4aacd8559fd3adbe34f16f1bbf2ffdf86638168c88de71c8902d359"
+      },
+      "edlt_reset.py": {
+        "bytes": 43361,
+        "sha256": "9867423a87ae4e4d5390287b1d086df48ad59e1eada8370c78d9311ab9a49605"
+      },
+      "edlt_reset_cli.py": {
+        "bytes": 1799,
+        "sha256": "6e661865721c04d43af9244f0b3d38ab2e91000934e9927e55304d0ded0244f0"
+      },
+      "edlt_restore_levels.py": {
+        "bytes": 14352,
+        "sha256": "2ae1cba7de13161959ee4c1cf76db29a9dbd2897a1f425c300d595739b18aa9b"
+      },
+      "edlt_room_courtesy.py": {
+        "bytes": 14933,
+        "sha256": "24d886f38e4612a83c81c8284951f886c4e7702ab7b1aeec517c0feb78b57713"
+      },
+      "edlt_scene.py": {
+        "bytes": 16416,
+        "sha256": "abf70fce4416aed9fba9d0d734b0d9ba9c563382d38e1a2b1ba3d520bf52b7b3"
+      },
+      "edlt_scene_add_dialog.py": {
+        "bytes": 3846,
+        "sha256": "c85bd9b34cec6d9b9bc310e27f620ce6f1e1f5d5f306376beb04d59cd560b1cd"
+      },
+      "edlt_scene_button_control.py": {
+        "bytes": 17102,
+        "sha256": "041d116ba57ea5f11443adb19f315ebc41e8f7757739658b2d12ff0c607402fb"
+      },
+      "edlt_scene_inventory_timeline.py": {
+        "bytes": 23199,
+        "sha256": "7e1ddea602b671378591d1348aaaa46a1741f787a5f57e1e975db475037e5004"
+      },
+      "edlt_scene_label_images.py": {
+        "bytes": 17829,
+        "sha256": "4216d545d779619d977dc80f2baa8fdf3aaef2c4aee5c00b4618176e4a295c2f"
+      },
+      "edlt_scene_language_initializer.py": {
+        "bytes": 20279,
+        "sha256": "53f27d9b0982b4de6a6443900ac978a1e16541ad5e3234ec4cb2a46337a4bdbe"
+      },
+      "edlt_scene_live.py": {
+        "bytes": 14907,
+        "sha256": "60b4018263dc28406e2b52e1f9fe8179c32d8ca7b57f0886bedb23984a8e8a0c"
+      },
+      "edlt_scene_live_cli.py": {
+        "bytes": 8799,
+        "sha256": "9e231455c8c00d470a7e5e769866374ceb0395afbf65ed259feae4b34e5abcca"
+      },
+      "edlt_scene_manager.py": {
+        "bytes": 69536,
+        "sha256": "a5dd034ec13ae6dae0749ae397b4443ff3a99d9b8f57beaef38d5fd6e0371b30"
+      },
+      "edlt_scene_manager_cli.py": {
+        "bytes": 8041,
+        "sha256": "8366c490d73f1c26a0764a75c10fd1690a9260588d116ac6b996c6dbfdc9d0d0"
+      },
+      "edlt_scene_metadata.py": {
+        "bytes": 92467,
+        "sha256": "902009f19bd21e67bff8bfd2131a142064971e53155cb890f3b834a25d77356c"
+      },
+      "edlt_scene_name_control.py": {
+        "bytes": 11772,
+        "sha256": "a5d40fe662239d7b4f8b4b5e9b1aaeb9e26ff3820f3a6c26fa9491b5e72d6a5e"
+      },
+      "edlt_scene_names.py": {
+        "bytes": 7089,
+        "sha256": "a6e689d4f30b89586a15f78579751f54c750a9fee74e7b73fa43c39ed7b70d93"
+      },
+      "edlt_scene_selector_control.py": {
+        "bytes": 18022,
+        "sha256": "1dc1c2fa9d0809174fafe71e78b0bc70977017f0e3a22be2919cfb7510bced6b"
+      },
+      "edlt_scene_selector_views.py": {
+        "bytes": 8264,
+        "sha256": "e00ce55ccf1079f95d1a507144674661742c29bae6b38ab7ac5ff63758432316"
+      },
+      "edlt_scene_trigger.py": {
+        "bytes": 7659,
+        "sha256": "59cdac1d8ea97f9daf6726ecadc3afd91570594759395e5424b9cbbe62c51fd2"
+      },
+      "edlt_scene_widget_controls.py": {
+        "bytes": 21699,
+        "sha256": "a873684ac3a98180f8ca3701a49ad53cba05163946efe5de5dd6738e85c493a4"
+      },
+      "edlt_scene_widget_properties.py": {
+        "bytes": 10144,
+        "sha256": "a856d17eee70ff5130ce95a873db9f80a40c91dabcca2bd5e02c2c10752dc8c3"
+      },
+      "edlt_scenes.py": {
+        "bytes": 16151,
+        "sha256": "c1255531d8417e1ad85050a1d19578b6bbeeac963ce7145d2d7b96a12edaca68"
+      },
+      "edlt_shutter.py": {
+        "bytes": 14244,
+        "sha256": "3e26601332080d17a6d4638f7337405906138be54788ee81ab06f63ea64e92c9"
+      },
+      "edlt_standby.py": {
+        "bytes": 10975,
+        "sha256": "e78b2c2cd4d3c29239eb06c3b3c2f1e677ebe2e363a58aef515f7ef1f8c15a1f"
+      },
+      "edlt_static_grid.py": {
+        "bytes": 6216,
+        "sha256": "2d8f1e065c31ee12713bad70e1c6eb52fd3060faf650aa35bda37ffa351b2b60"
+      },
+      "edlt_static_text_dialog.py": {
+        "bytes": 7365,
+        "sha256": "b0cf4bfcac0a7f2fb0765148cb4df881e29def84f9f816bd3b2d8641998db646"
+      },
+      "edlt_template_lifecycle_stage.py": {
+        "bytes": 9459,
+        "sha256": "311f52b196e6db81601a0a4e61feb98f7b4d3ffa4161ea8193f99e369360e15a"
+      },
+      "edlt_template_model_stage.py": {
+        "bytes": 11858,
+        "sha256": "dc4d5ae8f027a99b513a8ffabd84518dee4adcd90bcb9d51147a5842b4f6874f"
+      },
+      "edlt_template_reset_prelude.py": {
+        "bytes": 16968,
+        "sha256": "9c01873ab25de3d83d3d7f3b47bc98491676e60b0624a624dab8fa959d67be85"
+      },
+      "edlt_template_save_predicates.py": {
+        "bytes": 6003,
+        "sha256": "79c5903ffe3e44b41be9e57d13cbca3646dcf956abf085fc81e052205cd7e00c"
+      },
+      "edlt_template_save_validation.py": {
+        "bytes": 21016,
+        "sha256": "6bd1336e59384e8ed9bdd8012935742a9b212ee7f1d9675ab5c7667f74b76882"
+      },
+      "edlt_template_staging.py": {
+        "bytes": 14175,
+        "sha256": "1a3e5e5f78cc473daf96efe4fd1eafb67325b7682e4da209af35391793de5017"
+      },
+      "edlt_template_terminal_stage.py": {
+        "bytes": 10333,
+        "sha256": "0371ab7c8dc37c808d8a509ef55250a8cc89aaae959a2893abfb353949d348be"
+      },
+      "edlt_templates.py": {
+        "bytes": 17854,
+        "sha256": "80ebcbece133e0df5adce7c56cd951ba1720807af4eaef91e50764325487c129"
+      },
+      "edlt_templates_cli.py": {
+        "bytes": 8461,
+        "sha256": "c01e60ba6d56f5e400ef6411f4403491a30611c30e68ceec7ed072edc1b7b0b7"
+      },
+      "edlt_time_date.py": {
+        "bytes": 12272,
+        "sha256": "35e3117cccdc5592cca2fed8d9fb4e9eff367faff397d33ebe652515769577d7"
+      },
+      "edlt_time_date_control_properties.py": {
+        "bytes": 7901,
+        "sha256": "f5e04796aa82460832bae9944f69b5ee536c71b6b24ec10382ef19639807c45f"
+      },
+      "edlt_time_date_controls.py": {
+        "bytes": 21623,
+        "sha256": "97351f2de6a22db7880f3adfc80fe6cadc7708988520488290d751293c0d4dcf"
+      },
+      "edlt_time_date_parent_controls.py": {
+        "bytes": 6220,
+        "sha256": "348c53294c74ab6e6ebe50ccd6fff2f9ac584241ac233af31f5ea4ca58d96827"
+      },
+      "edlt_timer.py": {
+        "bytes": 15256,
+        "sha256": "33172d6acea2456fa499020bfbe160ebdba05d6088361fc5535adab65a64ee89"
+      },
+      "edlt_widget_groups.py": {
+        "bytes": 5601,
+        "sha256": "4dd7c0b581d6d9590b47ff4d7fc6a735604ee801722438fc9119f561636d97c1"
+      },
+      "enable.py": {
+        "bytes": 3999,
+        "sha256": "0d6fcca3354179a72e26e777dea35b70e34896057cf7bfcbe88441e0e9aa4b99"
+      },
+      "event_stream.py": {
+        "bytes": 5862,
+        "sha256": "6ca9bbe8557180042d196b34d0f33a96ba4ccd6e5d8d988834358f42b5a5916e"
+      },
+      "events.py": {
+        "bytes": 2108,
+        "sha256": "45d28ebac2215475e6fe4dc70a2be744b5992a67a9f27a3388f083874172626e"
+      },
+      "evidence_audit.py": {
+        "bytes": 2757,
+        "sha256": "4c64c91b6622696b1dc4276947d5181852e51e5d1da9f4001c8c5461f4b05bfe"
+      },
+      "extended_macros.py": {
+        "bytes": 15916,
+        "sha256": "1b95067d373321de9889c431144056b074fc2707cda7233947e506ef2f92bd7b"
+      },
+      "file_transfer.py": {
+        "bytes": 3453,
+        "sha256": "c02f4be2536204c9a28739ac2fb848fad6a98651a3ffb813f2eee315dc72db22"
+      },
+      "firmware_diagnostics.py": {
+        "bytes": 20084,
+        "sha256": "cd636476392679df8e971bfb61427a2b5c2e3375bc0725d82cf2305990425c24"
+      },
+      "firmware_ncc.py": {
+        "bytes": 12471,
+        "sha256": "8fc702c72f00b581b9c898ee21e3bea8ec4445a99228f452d9522e856494ef7e"
+      },
+      "firmware_ncc_cli.py": {
+        "bytes": 4234,
+        "sha256": "ba702ef97da4bbd5fdde0046b3d5fcce48dab07e7045fd322278fe792ec1576e"
+      },
+      "firmware_payload.py": {
+        "bytes": 8338,
+        "sha256": "746f8822f4935ee2f404eb34f9a740b68c2bc1d6d4b6903ebb7a37958bedd7cf"
+      },
+      "firmware_update_cli.py": {
+        "bytes": 6810,
+        "sha256": "db1f36ff8ca7d8c9ed2809a9164e09d105c15fa2299aed69e066dbf8622698c0"
+      },
+      "firmware_update_plan.py": {
+        "bytes": 31150,
+        "sha256": "6075cfac67d79105b35735dd04e3f018bda59f41ac0a7078a1969f30a733a289"
+      },
+      "firmware_update_run.py": {
+        "bytes": 35131,
+        "sha256": "9c718b654b076eebb28495b38e5675ab95f78f4f3e7ca601b93fc93bd2e766bc"
+      },
+      "firmware_usb.py": {
+        "bytes": 6393,
+        "sha256": "1c82e6847b425aaf5b7854a71be91e894e43ed04764307c0e3b0c29e7d675a5a"
+      },
+      "form_save_order.py": {
+        "bytes": 4291,
+        "sha256": "797c40d5ed446fdb93fa81eaad44daa05068f95b8ee413fbb3f4f24b30fe88fe"
+      },
+      "input_power_up.py": {
+        "bytes": 5077,
+        "sha256": "795b27c9d9a59bf04024049c38348fc76b14de7ee641803a2fbc2969ddf59791"
+      },
+      "inventory.py": {
+        "bytes": 5781,
+        "sha256": "5bdc91682cd5cd66d9ccff0bd7e93b80cec556f52190f1f7693bc5d122cea1f6"
+      },
+      "iope_block_timer.py": {
+        "bytes": 8928,
+        "sha256": "7a787511857ce91a6aa4ff7f1f1bbc0b4b8e99e3de27bd7cbd821511cc6056d9"
+      },
+      "iope_cli.py": {
+        "bytes": 7699,
+        "sha256": "e5b900f7920c5b2821b5c4f917aa12ff6d4f9a5a429311fc93bd6a783786983d"
+      },
+      "iope_environment.py": {
+        "bytes": 15865,
+        "sha256": "0df69e68d59dbabf0493b244dff84c7b3f26612f9579545fe3150c7016ce1375"
+      },
+      "iope_join_groups.py": {
+        "bytes": 10035,
+        "sha256": "5fccafaadb52943e6fb3b38f6a31ff9ad81a099f5f9e4183713a5c3e0fb65a58"
+      },
+      "iope_join_recovery.py": {
+        "bytes": 9470,
+        "sha256": "e9d3d6a20a8044bb0ce034a0d44a41b4c6fd0876ed0ab7b8e8bee189343b7c3c"
+      },
+      "iope_logic.py": {
+        "bytes": 17074,
+        "sha256": "541c2bdf76d5ee33d59d7be7627ad111c5767aa95f9e3674d0e67c38b6c76905"
+      },
+      "iope_output_settings.py": {
+        "bytes": 11984,
+        "sha256": "cfab9a376a007618baa3024d11ce0058b5ab0f742aaea692f59a4df9011490c9"
+      },
+      "iope_scene_levels.py": {
+        "bytes": 8530,
+        "sha256": "deae0560cf158bc0c7f8b52ce8e95fbf49dc566e6e595d9abe8342ec8bbcf6d8"
+      },
+      "iope_scene_selectors.py": {
+        "bytes": 12206,
+        "sha256": "f18ef118b55448ad9c2be0fb1d9766e091e0a665e338d81a93b2229f027c172a"
+      },
+      "iope_settings.py": {
+        "bytes": 20713,
+        "sha256": "c9b03046c3a19ade6b1d31f2e146fcf62526ad7d2bf4957d9cd2bf2d2e15230b"
+      },
+      "iope_workflow_cli.py": {
+        "bytes": 16629,
+        "sha256": "febcfcbcc0ec973af2f386be8b69ba2378dbb56bf96464f4e606f7ebbbb31188"
+      },
+      "key_options_cli.py": {
+        "bytes": 11872,
+        "sha256": "e51e4def6fe41671e4ab1d69ab81466548c6827312d5bb4661bb87fcdd628308"
+      },
+      "label_transfer_plan.py": {
+        "bytes": 3744,
+        "sha256": "4fbc90f02aa7ee5de26444ec029d1693d95bd0c7644ddea1a94edef5d6643ec2"
+      },
+      "labels.py": {
+        "bytes": 11292,
+        "sha256": "b24f212d60652ca258347d06128c4744718db01099bb0a5bb3496f47ca7e14ec"
+      },
+      "light_level_sensors.py": {
+        "bytes": 39144,
+        "sha256": "4952e7a83d2136567b3ebcace6c9b44ea8826f4d6966a2145eb2c32c44df728c"
+      },
+      "lighting_state.py": {
+        "bytes": 5677,
+        "sha256": "b5c62265aa98883e42d9d24767d7b97be11371d833ea2b943ba27d9c7bec8fff"
+      },
+      "macros.py": {
+        "bytes": 22196,
+        "sha256": "9db99b787d510d3c3d6902e69a1a4eb03ff320564bf605970c2e0844cd57cc53"
+      },
+      "memory.py": {
+        "bytes": 18803,
+        "sha256": "372cbc3a79710b743d23aa6690a8b56b1780de091ffe8a1d0a543e4cfa9c1f31"
+      },
+      "native.py": {
+        "bytes": 13127,
+        "sha256": "285c574c8d7a1714d8f40742d92c469316f0a1b9ff9741a8644356d82fecb241"
+      },
+      "native_global_programming.py": {
+        "bytes": 28453,
+        "sha256": "b81fafccd0519fd3f403d3f824d5b1e9ebe06b862df878be93aa81f153753ae2"
+      },
+      "native_project_documentation.py": {
+        "bytes": 6863,
+        "sha256": "e6bd2130f3a9311212e635bdb5dbfdb291987f6a8ade8795248d6941f9a89eed"
+      },
+      "native_sensor_scenes.py": {
+        "bytes": 3000,
+        "sha256": "8d9a45e91ac116d65af7e3dccbc99b0c1ad090f75988a012b29bd66aa33ce5a8"
+      },
+      "native_thermostat_schedule.py": {
+        "bytes": 22869,
+        "sha256": "c1cefaa53d0012dae24967e6288305fc33fed7ee12bb74ff5a22e5b8d0b86186"
+      },
+      "native_thermostat_scheduling.py": {
+        "bytes": 32753,
+        "sha256": "a0eebf9a06f7eb95264bddc78ebce9e3c92f84c11771202cbc8a46a16b7409d2"
+      },
+      "neo_indicator_editor.py": {
+        "bytes": 22786,
+        "sha256": "327c82c1a7fafbfc6d52f9904276df29497cee7756acb1a9576a2f6f8793e9a5"
+      },
+      "neo_indicators.py": {
+        "bytes": 10805,
+        "sha256": "b214db9f2b83a9834136136e03e9a9ddc6802da2b56f2312ca99a9569b726ca0"
+      },
+      "network_definitions.py": {
+        "bytes": 4455,
+        "sha256": "b34be9d9fb1d78035a0f64575194d07c45f391c7e115bd651ed8cfac3f8a335e"
+      },
+      "networks.py": {
+        "bytes": 16313,
+        "sha256": "4c80c54931ea7f233a2fb8451580e9afbe0d68066fb63c1e542daaf8d20f7cc8"
+      },
+      "offline_conversion.py": {
+        "bytes": 14181,
+        "sha256": "dce62b0374fa3104b93c7a92e4d8ce79aea4f1095f6becb0f362c9bdf58a6fbd"
+      },
+      "parity-evidence.json": {
+        "bytes": 33071,
+        "sha256": "261e43f11d03984f5df3960c0162f641b5bc35159020761cf8548d33312b55e4"
+      },
+      "parity-obligations.json": {
+        "bytes": 12931091,
+        "sha256": "6b1ac6600d21ae2ff39aa984c9a5c62effc42ff4e2bd521e55266149e9dfdc5f"
+      },
+      "parity.py": {
+        "bytes": 132955,
+        "sha256": "6ec8fb6b143e55720de3118028305adc6323bb1184e003bd026d95a77e2093c2"
+      },
+      "pci.py": {
+        "bytes": 23787,
+        "sha256": "fc7e0176c23e99125ca5bd611089cfe7e4152dd6c10f378dd263e27849c7a0a4"
+      },
+      "pci_full_inventory.py": {
+        "bytes": 15921,
+        "sha256": "12187135060ee714ee8e956019864e16038aadf58f2aec190a48cae47f974615"
+      },
+      "pci_inventory.py": {
+        "bytes": 20409,
+        "sha256": "bf0a9f17a55b5c7bf4110abc7a030d899595375741a47dc78028182634f0c504"
+      },
+      "pci_local_options.py": {
+        "bytes": 9725,
+        "sha256": "a0d8dcc948cc9b5bd8392e899ce369203b1d2e58aa018649c6e745303b15423d"
+      },
+      "pci_routed_identify.py": {
+        "bytes": 14690,
+        "sha256": "bd4e45f7a8f6a6e6774be8355d504c22c321c4e59cc83e64786896367891c706"
+      },
+      "pci_routed_identify_cli.py": {
+        "bytes": 5113,
+        "sha256": "e55639c4fe1a01470d256baeba0ca9c9e9ae5d8e97e071e722efa345c433838f"
+      },
+      "pci_routed_read_topology.py": {
+        "bytes": 4488,
+        "sha256": "acc7e54d4cd76efa3999fc742c5a8b590e1b83183d0b9cdcbaf32eef4d33d448"
+      },
+      "pci_routed_recall.py": {
+        "bytes": 17558,
+        "sha256": "e3e90d732dfe586399a4f5837639918c6bcd92e03dbf3961848b1b81b6776c67"
+      },
+      "pci_routed_recall_cli.py": {
+        "bytes": 4915,
+        "sha256": "7fbf2e6ad640d54f3ccc394f58f4a37c108575cb476003f72fc606134157c556"
+      },
+      "pci_routed_write.py": {
+        "bytes": 15410,
+        "sha256": "a0806121f943b63ccf8797717dacdf522ebaa1d68825873e7e24c60a05769ecc"
+      },
+      "pci_routed_write_cli.py": {
+        "bytes": 9783,
+        "sha256": "d82cf122ef2f59fce00fa51be1c3b9ca50bfaa5577ef114e1d60522aba02430f"
+      },
+      "pci_routing.py": {
+        "bytes": 11448,
+        "sha256": "1eda04dd3201db4db8937f3d81e4dfc51b94a04ab3b66c5bd8e8302cdceee639"
+      },
+      "pci_routing_cli.py": {
+        "bytes": 3856,
+        "sha256": "c1805f5c99ade56614b1ab406dc103c7f34037c574ca4613ebd77fd780952762"
+      },
+      "pci_selected_serial.py": {
+        "bytes": 63191,
+        "sha256": "83d528dfbb325a6ed00f37e4757de78e448dde7d21d6a37eb9c11cfb15c3664b"
+      },
+      "pci_serial_address.py": {
+        "bytes": 10672,
+        "sha256": "535dce05bda4e6981913b4b17a98a529a97692bcfc7de1bf9452a28ebadb8af5"
+      },
+      "pci_serial_address_transport.py": {
+        "bytes": 13499,
+        "sha256": "f44fe5da1857c2d894396ce177c869320943f4e0b3c669196acdfea529da3d4b"
+      },
+      "pci_serial_probe.py": {
+        "bytes": 11655,
+        "sha256": "bf91e199f155f0f955ebe5e59293130c00081014d0cf52e9069aa64514b0ec84"
+      },
+      "pci_serials.py": {
+        "bytes": 20021,
+        "sha256": "1ded73cb747c9a85ca0340dc05f92a6506cfd9f5272ccba8b16dafad449fd066"
+      },
+      "physical_addressing.py": {
+        "bytes": 20060,
+        "sha256": "2ee599d69602b45c1cce94b473ce3230d186c1ed67fa0291bf60346bc472d867"
+      },
+      "physical_pp_journal.py": {
+        "bytes": 14040,
+        "sha256": "b3440866747a0bc9b3f7b7ccd1ec3fe1cf1186f7de172bfa3e5ba2c5fbc2b0d8"
+      },
+      "physical_programming.py": {
+        "bytes": 52201,
+        "sha256": "bc0d3dda1dce2143eafdc8c2ce0f69c6c63e4568706146f70236969c30594530"
+      },
+      "physical_programming_cli.py": {
+        "bytes": 4042,
+        "sha256": "d4e98fca8aeb25c3176ba8d804174b09a1904a33ea6d8c160a37ad940a8874da"
+      },
+      "pir_sensors.py": {
+        "bytes": 22638,
+        "sha256": "f4c7723f055daedd4a9363a4c95eba88f4b24286307af18d7103463003ea7adf"
+      },
+      "pp_editor.py": {
+        "bytes": 8251,
+        "sha256": "dcf5993d9096f58d17f9ba06d73debc82fdf249975284bb572e3b6739f93b785"
+      },
+      "programming.py": {
+        "bytes": 28651,
+        "sha256": "7a09752990d138afee36d49710db6f9af26a88aae899d5d1a65da19514e626e7"
+      },
+      "project.py": {
+        "bytes": 39396,
+        "sha256": "491f948dd391a2b29014f10393dd1c74227345b8c181a84a0557ebcf8cb3a7fc"
+      },
+      "project_documentation.py": {
+        "bytes": 63008,
+        "sha256": "25917cb1473d96235d269e9726e35f45906a842beec7055679b68bcc2cbfd212"
+      },
+      "project_documentation_architectural.py": {
+        "bytes": 7352,
+        "sha256": "6e9f43e484313b826367eaab09d871eed66084e9ed0bf934c83b6a86bbcbab60"
+      },
+      "project_documentation_architectural_loader.py": {
+        "bytes": 9816,
+        "sha256": "384f9c893ad5c9c30d81e3416ad97a780c61a2837a04bbc24a89050161fcbaee"
+      },
+      "project_documentation_architectural_usage.py": {
+        "bytes": 4450,
+        "sha256": "453bfd097123c84b99b1db9c6e27136bfcb548690471bff6e9324638e4545d37"
+      },
+      "project_documentation_bytecraft.py": {
+        "bytes": 8032,
+        "sha256": "90835ccc41be0590818a722263e99343c7653e0895d9babab9322f3844d31ffa"
+      },
+      "project_documentation_bytecraft_loader.py": {
+        "bytes": 3483,
+        "sha256": "7119d54f70b4c3ef9dd7cb9c7fd2f44a2ab4a6a796f01724333019b143914338"
+      },
+      "project_documentation_bytecraft_usage.py": {
+        "bytes": 4878,
+        "sha256": "36e6e1ef00471e6948a8cbe2d1a9f4796e59c41d1ba64b691e9b8f9b5a7328e4"
+      },
+      "project_documentation_classic_profiles.py": {
+        "bytes": 3395,
+        "sha256": "3411fe362256c68269b59aca2ac67bbf7dfe3aeee9849ee6e5c7ebe98f5b3c37"
+      },
+      "project_documentation_devices.py": {
+        "bytes": 16412,
+        "sha256": "b4a1749e75e58da39ac106cf970329b9b8e853fda71da0715540d0f4f456f07d"
+      },
+      "project_documentation_dlt.py": {
+        "bytes": 2124,
+        "sha256": "54f9db478cccc7071dc31b57d2190eacfbc38e11a1bfedf8c02752768130898a"
+      },
+      "project_documentation_gateways.py": {
+        "bytes": 12387,
+        "sha256": "e134ffbcd6c10f8b0a3ab0be3cc58b875977650d0a5c40c56a0be73567a44dab"
+      },
+      "project_documentation_light_level.py": {
+        "bytes": 6088,
+        "sha256": "4ce1858d3fed2b902afcf890ce57d69508248612ea29ae2abd08cfd620c27e0b"
+      },
+      "project_documentation_multisensor.py": {
+        "bytes": 8312,
+        "sha256": "f71093b8ce420e5ea02b4ffbb4c8fb3875c674b5c79541acf44646a7379c9641"
+      },
+      "project_documentation_native.py": {
+        "bytes": 12898,
+        "sha256": "874178ca95407f57e67fa65ea397916da6458de9bc8729ccba1ab2cc438a2fda"
+      },
+      "project_documentation_neo.py": {
+        "bytes": 15012,
+        "sha256": "358ed44bead92d9eddb2d40ef44f21cf4bc2741cf1ec85c6f82efe6e877df074"
+      },
+      "project_documentation_neo_profiles.py": {
+        "bytes": 4163,
+        "sha256": "cb6fb2add56d2b5e82600faa0cc0d9ff34b78c8e05e649ee9088bbde60fca117"
+      },
+      "project_documentation_neo_usage.py": {
+        "bytes": 7344,
+        "sha256": "83eb8ccf3a2099bfdb487c269bbabcee8d69639748c290a3e966de0422af4678"
+      },
+      "project_documentation_neoclassic.py": {
+        "bytes": 9623,
+        "sha256": "5f1da5fa69528526314bbab99182cd0a52562e88273ca8567b49b2d025381836"
+      },
+      "project_documentation_neoclassic_modify.py": {
+        "bytes": 2251,
+        "sha256": "e43ffc14941a6233d4e427a2958e95a489013ff986becf4e203cc2ffb61aa720"
+      },
+      "project_documentation_neoclassic_usage.py": {
+        "bytes": 6909,
+        "sha256": "3421d62d8610e629f9abad1f6058abb7326b75c4002bf210965b55fc7be066d3"
+      },
+      "project_documentation_outputs.py": {
+        "bytes": 2578,
+        "sha256": "39077da7a49e420e5de00ca90e41ff652de9c401f977e3b0f22fd318191c9fa0"
+      },
+      "project_documentation_pir.py": {
+        "bytes": 10303,
+        "sha256": "cfc30c10eea73fe1b5af6975265e2b30cf24ead5435cb2a278f3ae3403ac2eb3"
+      },
+      "project_documentation_scene_controller.py": {
+        "bytes": 9076,
+        "sha256": "0bee388297b82f475099127aedcae45576a2db9c3c4efbafd817e0014a396871"
+      },
+      "project_documentation_special_outputs.py": {
+        "bytes": 7849,
+        "sha256": "f1bc999eed6cf4bcdf28d90048718b90b6f11a55ac31b59e37edb45564b6da58"
+      },
+      "project_documentation_st7_light_level.py": {
+        "bytes": 2489,
+        "sha256": "45cc4e26e7dd237321680bee196e03fcbfed3dde60f30a018299685641428106"
+      },
+      "project_documentation_status.py": {
+        "bytes": 8728,
+        "sha256": "7798bcabba21bddf20e6c7a9cd465ce11f6e8087e6e58c732338cdfe93b0f235"
+      },
+      "project_documentation_temperature.py": {
+        "bytes": 12019,
+        "sha256": "62cfa3fa609ac8ce3751645c533c306ba50eaaf24944bbb3c88f71dfac74772b"
+      },
+      "project_documentation_thermostat.py": {
+        "bytes": 13205,
+        "sha256": "2b5fe8d47e695ce27468835bfc3eb1e5de8c773d4e2abf9596b584f1f597d59c"
+      },
+      "project_documentation_usage.py": {
+        "bytes": 19161,
+        "sha256": "8e06b28aea9e35fdc6bff8877b0865835698c27e9f2cbe9076f8ae4cd1b4ee45"
+      },
+      "project_documentation_wireless.py": {
+        "bytes": 13389,
+        "sha256": "289c8dda04fe4dc8c35b183719677b1ec3aa24be0fe91758915ee27d6ad08c92"
+      },
+      "project_documentation_wireless_facts.py": {
+        "bytes": 12006,
+        "sha256": "97251e8c53ee33f2ecc96a81931d555f62680f48881a97c432f3f9ab9817d73e"
+      },
+      "project_documentation_wireless_loader.py": {
+        "bytes": 11126,
+        "sha256": "2c148a5292b89b843f55762ab88b129e6efcf9fd212edd31c4516c115ff12279"
+      },
+      "project_documentation_wireless_usage.py": {
+        "bytes": 7350,
+        "sha256": "788ab0609d92b185499797a283ea2a37701399dafb0644454f4b1765f3427cfa"
+      },
+      "project_legacy_transform.py": {
+        "bytes": 22403,
+        "sha256": "4bbacfccd21d8c6c17b5caa74e1d29739ebd9c7b2ab0ab8684ab2791880e2e65"
+      },
+      "project_legacy_transform_cli.py": {
+        "bytes": 7415,
+        "sha256": "b60323254a2e362e1d1c60faba3cff2b0cd41b2a711899b601c8688120cea06e"
+      },
+      "project_repair.py": {
+        "bytes": 27682,
+        "sha256": "6ad258ba051f3e9fdeee6909168153e2b01f6293fe19f5bb794ce08e40fd0d66"
+      },
+      "project_repair_cli.py": {
+        "bytes": 9447,
+        "sha256": "3e7a323c0eb9c0b0b5264665ab13f4a79245f056466f887f78da328ccd2ab31c"
+      },
+      "project_topology.py": {
+        "bytes": 35834,
+        "sha256": "7d4de0c3ee8817e39984fdada3ef4a1e43acef23ba7b4df94f14450258b106af"
+      },
+      "recovery_journal.py": {
+        "bytes": 5087,
+        "sha256": "53f4697752dfd6cc833ee1f88bf4629a5da60a73bd435d9f38097f16746b77ef"
+      },
+      "repositories.py": {
+        "bytes": 4995,
+        "sha256": "9a4dfa92e099f319e73f4cb354702d2e762ea7f7657e65ba64bc8b9203bc71d2"
+      },
+      "repositories_cli.py": {
+        "bytes": 548,
+        "sha256": "7be3fcabde71d13aba69319c40a6ce24fd1e4cfb3feb35fdd8ef5dfcc8ca1d16"
+      },
+      "rust_serial_reconcile.py": {
+        "bytes": 18734,
+        "sha256": "add2b9451ded7cc318e44cd9c1e5d5e554ae76ce4a70c4a91b63bbba5d5fedc2"
+      },
+      "scan_topology.py": {
+        "bytes": 11700,
+        "sha256": "90fba7664b4c7c4eb1a065c06828e0e5d4971516da9fc975032e141c03ed763f"
+      },
+      "scene_binding_plan.py": {
+        "bytes": 3310,
+        "sha256": "56f62256c5129f01f0d002a70d57b0411969965e1af8dcf1b3437ec578f2a3f7"
+      },
+      "scene_sequence.py": {
+        "bytes": 3591,
+        "sha256": "67d05a7cc000ccd607043ed309f94869c86916413c408222f962ba09cec41d38"
+      },
+      "scenes.py": {
+        "bytes": 11127,
+        "sha256": "a36f757c1da8d6c769a0b53068c96de062f1e3978e64006df0b947c354268a18"
+      },
+      "senlla_surface.py": {
+        "bytes": 13161,
+        "sha256": "ca951132af46a2cc359fd6e9797e115318ba762e32132f45da1a6a00189db7c2"
+      },
+      "sensor_dialog_cli.py": {
+        "bytes": 11896,
+        "sha256": "0d05c1f31b163b3454a781385583969b6368e6cc7761be62002ccca97239db56"
+      },
+      "sensor_threshold_guard.py": {
+        "bytes": 2633,
+        "sha256": "f62ded16f1c29b8cc4e8ab2818cb9b450e468bf3cabc7d5ec7f4a9f086d9bfec"
+      },
+      "sensors.py": {
+        "bytes": 21316,
+        "sha256": "ba724a261ac491a01a5d4be50b2a2bed98137900faea72ca0957f5e45020d977"
+      },
+      "serial_commissioning.py": {
+        "bytes": 4136,
+        "sha256": "733b44d4d8d3e6171b57b17dc12747e213b342d0f24e876731d0657d40b2c29b"
+      },
+      "serial_population.py": {
+        "bytes": 12597,
+        "sha256": "634f115d785455447b2f7e9d85bdea7ae0b1025eab30daae3c686ef6a4e57da7"
+      },
+      "serial_reconcile.py": {
+        "bytes": 72319,
+        "sha256": "571030134f03ac3c859e8002547ee6f5550c6b9cd9b39aa37500f4133938fc91"
+      },
+      "serials.py": {
+        "bytes": 13064,
+        "sha256": "34afb08690d5c7905aa66596bd187aff4dcf38487cb246ad5f50587484652cbc"
+      },
+      "simulator.py": {
+        "bytes": 48609,
+        "sha256": "28cafec8fc4bbd504b5c946c8965d86803761e1f7cbc833e601d7f3276bf04e5"
+      },
+      "simulator_addressing.py": {
+        "bytes": 4674,
+        "sha256": "2e5053dfa11dd4ce63b2a4229acb320f8a775c5d22bbff5eafe667eda3482f5a"
+      },
+      "simulator_applications.py": {
+        "bytes": 5470,
+        "sha256": "65c45880434ada8b7605cf22bd7c860ca7fd7f170f75c4bfc5a6f0634801760b"
+      },
+      "simulator_duplicate_addressing.py": {
+        "bytes": 21278,
+        "sha256": "4993ed9e3086a5e08d7b9953fa4b08c1e50d2669fd314f921d6e9c1940d21337"
+      },
+      "simulator_duplicates.py": {
+        "bytes": 7801,
+        "sha256": "d7ecaa6c24cffa0ea4027c15ce7702678c16240a532000f58e80b727d15b8856"
+      },
+      "simulator_edlt_labels.py": {
+        "bytes": 15466,
+        "sha256": "d500c59ace847b787d6c6203b381336ae724ee4c52ebec0033ffff57d2a9bf7e"
+      },
+      "simulator_enable.py": {
+        "bytes": 2625,
+        "sha256": "2f3bc4c37b3a48122ebdba12a85f609df15995f60a74f48616887e2b6dec78da"
+      },
+      "simulator_labels.py": {
+        "bytes": 13400,
+        "sha256": "effa49020aa5d1fbb419ab64940eaf3170f86fd16245459a521c8a8c3d037c2c"
+      },
+      "simulator_serial_addressing.py": {
+        "bytes": 3485,
+        "sha256": "aa2d1b3aabc33bba5f51b658b275b96550c44ec967f3be607884fc671e7bd91f"
+      },
+      "template_exchange.py": {
+        "bytes": 4413,
+        "sha256": "bad0ad76c22577118bdbab9a5511412c65f141448af065146537d4983fe5fac1"
+      },
+      "template_transaction.py": {
+        "bytes": 9932,
+        "sha256": "7c8f41500660a9d4c815dc5e880ac05936c8ecff35e1bc5afe50509b59f628fe"
+      },
+      "thermostat_damper_controls.py": {
+        "bytes": 13802,
+        "sha256": "536d95f14ddcc3d8d41c8e0e209b6ab5dfb142cdcf4c7270e9e73d00f6d50917"
+      },
+      "thermostat_output_groups.py": {
+        "bytes": 22984,
+        "sha256": "706a091268bfb5c8e3529426fdfa5becbaf5f854df82ccaecbb5c0aa56329b00"
+      },
+      "thermostat_plant_types.py": {
+        "bytes": 49508,
+        "sha256": "b0e855df3eed44bd5aa108c4c90f38a2612943804674dfd5bdf48b18252b94b4"
+      },
+      "thermostat_post_load.py": {
+        "bytes": 43048,
+        "sha256": "6ca049e0d97e70cdb0ea9210a47676f9fb92996d46afd6e6c57f8539caac5afd"
+      },
+      "thermostat_posted_changes.py": {
+        "bytes": 3787,
+        "sha256": "ff6294936ec966dcea100482de3afc66753d6e67cd9b8e9e98ddca269227ef02"
+      },
+      "thermostat_quick_zone_controls.py": {
+        "bytes": 51554,
+        "sha256": "053ca14db4a93e9a5cca7428af9b47df5cf47c27a9a3cc48709b225ee1a671a8"
+      },
+      "thermostat_remote_levels.py": {
+        "bytes": 4430,
+        "sha256": "9fb1fa0a6a3e6093bcb5e665ebf793cf797779540dc80379940d4b728b694747"
+      },
+      "thermostat_remote_references.py": {
+        "bytes": 53634,
+        "sha256": "3495c4f7b15a3c5ac5b7d6f6c9da204c8ceb47e95f2cb98e85b130098c2e4713"
+      },
+      "thermostat_schedule_cli.py": {
+        "bytes": 14114,
+        "sha256": "3523a5bd4c4a90bc5d6a62e08251dbfbb42a9213fecca33bdf68ca18e5e03332"
+      },
+      "thermostat_schedule_levels.py": {
+        "bytes": 13927,
+        "sha256": "aab440e9233d531fa3d59044bfec7f9080873063e080f94faa16e960b8395dc8"
+      },
+      "thermostat_scheduling.py": {
+        "bytes": 15427,
+        "sha256": "68ada0ab5d8f279b3c1d83db3e5e1bcebfd6634cda006062d515801af0c5413e"
+      },
+      "thermostat_scheduling_cli.py": {
+        "bytes": 11500,
+        "sha256": "39754993520a2df13d58165cb475c7fa32095bd017a518300657b77efd83d4aa"
+      },
+      "thermostat_settings.py": {
+        "bytes": 42013,
+        "sha256": "1e701d8e78d55751cc40753d69bb5e7f6bbb18a81ffe8e94291f2b39aa0b9003"
+      },
+      "thermostat_settings_guard.py": {
+        "bytes": 10787,
+        "sha256": "6e2932565c174b5ebcd925c383cc0e18c79b5e4e612606fe2228d9984d864829"
+      },
+      "thermostat_temperature.py": {
+        "bytes": 4782,
+        "sha256": "a6db5f7e6a334a2aca7eeacd57d900e353fb6049adbca3497c8647899cac05ae"
+      },
+      "thermostat_temperature_cli.py": {
+        "bytes": 2532,
+        "sha256": "6b9142fa8e22fd3bfab7ea2ef7f9d6ce3d8e51c2412ff51c6e5ddae7c6528a0b"
+      },
+      "thermostat_temperature_model.py": {
+        "bytes": 3606,
+        "sha256": "c7818b336ec182e13de96ce64401aa9f66891c028bb729b15d248b0b6cbd7f63"
+      },
+      "thermostat_templates.py": {
+        "bytes": 36366,
+        "sha256": "2b5492d84d0cb46916059c5e96b126a9b550f8cebaed7d04f84e88ca3a333738"
+      },
+      "thermostat_templates_cli.py": {
+        "bytes": 11992,
+        "sha256": "32203c5ef07ee01ffbc0eacd478c2bc554465474cf11624a27a3dc300f8b465d"
+      },
+      "thermostat_unit_load.py": {
+        "bytes": 7600,
+        "sha256": "a8ded5ac86b72f366abd302aaa72504eea7cc1cc0d2522b5409c0fa887a7e677"
+      },
+      "thermostat_zone_defaults.py": {
+        "bytes": 11513,
+        "sha256": "f39f310c3cad079f56d87740181a86030e4e60b4882b1cfc64d9a244b07f6dc7"
+      },
+      "timer_duration_guard.py": {
+        "bytes": 2343,
+        "sha256": "01101ae9a1b053b287113b42c68cd326da11e21fa1efc2b1ce9b46dfd117e2d0"
+      },
+      "toolkit_about.py": {
+        "bytes": 13120,
+        "sha256": "6fe91432a5f58dcbb9a534f9684d0f2cda50d97d2b97db82098c8dd4e367b4d0"
+      },
+      "toolkit_about_cli.py": {
+        "bytes": 4048,
+        "sha256": "e95d8c76471f5fcd82d75ebc0beb9e3760ba6a58533314aac48ceaabad1fde6d"
+      },
+      "toolkit_conversion_coupler_to_neo.py": {
+        "bytes": 2974,
+        "sha256": "ed0ce2ae0fe2da2070642f120afd9870a57de5eb4db94f2a3b9c99fbc0bbfb93"
+      },
+      "toolkit_conversion_dlt.py": {
+        "bytes": 8925,
+        "sha256": "fb2f734b53a98c075f151e036c95a0a89cd625dc72d8da3074fe1702b6677170"
+      },
+      "toolkit_conversion_input_unit.py": {
+        "bytes": 2909,
+        "sha256": "86d4f60a649efd1d9b985097c040afc8209175aea5f64361d0b475b0ca1b5d5d"
+      },
+      "toolkit_conversion_key_to_neo.py": {
+        "bytes": 8764,
+        "sha256": "051831486d1aa0d49fd109484de5b9d84f7e983f777105f7b22f12cd134511c9"
+      },
+      "toolkit_conversion_reldn.py": {
+        "bytes": 2497,
+        "sha256": "d33c36c2e6218a7cdc83cb3132337ba7a37f1284b739270ed383bc8bf5560591"
+      },
+      "toolkit_conversion_remaining.py": {
+        "bytes": 12326,
+        "sha256": "6e4e1151121d1fcf19d6dc2438ced44c2a08bc48c16c538540482b82dfc0f7a9"
+      },
+      "toolkit_conversion_tweakers.py": {
+        "bytes": 33081,
+        "sha256": "4596035b463dc56927812d7b98a3b68f4698d98be71d45fa1ec00d4d40ab0c95"
+      },
+      "toolkit_database_csv.py": {
+        "bytes": 11617,
+        "sha256": "c3bd9e57f6312f6972e146afb8f228968856775cd57458a007815b4456cd45f2"
+      },
+      "toolkit_database_csv_area.py": {
+        "bytes": 10702,
+        "sha256": "80badc60a373d2e488cf4b969ce5a7e63c8e6f73f7056534794b5a20a95b5107"
+      },
+      "toolkit_database_csv_cli.py": {
+        "bytes": 29683,
+        "sha256": "333f1921e28720b57802c5aff9697ef5e4eacfbe447a0d422d1e4e87caefb6d6"
+      },
+      "toolkit_database_csv_last_profiles.py": {
+        "bytes": 4672,
+        "sha256": "4e0df95648d80418f45b289a812c7a161c91b1c2b65011921c243ed9a263703b"
+      },
+      "toolkit_database_csv_native.py": {
+        "bytes": 39329,
+        "sha256": "4339c483cb2e40fbe28afe675ff627663b9ddd0327698441971dabba20af7de4"
+      },
+      "toolkit_database_csv_projection.py": {
+        "bytes": 46297,
+        "sha256": "80b4b582f2d62b511771434746c83006880ebb80fde2330f3c7f883b22725b3d"
+      },
+      "toolkit_database_csv_registry.py": {
+        "bytes": 37361,
+        "sha256": "8ad7ce569fc7e08d5c304ff5b3588ac7ae4759d0e2fc1033956b3cc9044e63bf"
+      },
+      "toolkit_database_csv_selection.py": {
+        "bytes": 7178,
+        "sha256": "95453cbe39e059c687b383919c5297228bd6fb7f889ca2a34ee56452955560fc"
+      },
+      "toolkit_live_update_conditions.py": {
+        "bytes": 14153,
+        "sha256": "171f1318be694629ca9734008574a635df5d006167d2ec238cb7c20bbc62f5b1"
+      },
+      "toolkit_live_update_conditions_cli.py": {
+        "bytes": 8938,
+        "sha256": "5673c8635b8ad5f3b445529f4cadcf0aab25019e6bcfc1d69e834346262135f6"
+      },
+      "toolkit_numeric.py": {
+        "bytes": 5828,
+        "sha256": "10bb51a54321964f80720356fa5b2d09638fe3b0a5108c7379915a22ca0f221b"
+      },
+      "toolkit_obligation_reconcile.py": {
+        "bytes": 49608,
+        "sha256": "1ca1ab9e29e72ed7aa54720e73555398ee1384d5ef97596a98529c23a114663f"
+      },
+      "toolkit_preferences_cli.py": {
+        "bytes": 13444,
+        "sha256": "c070b5ed37b33310c00ce788b2da8b7729d906c36fdf9222919ddcecaea9b519"
+      },
+      "toolkit_preferences_controls.py": {
+        "bytes": 12879,
+        "sha256": "07ca6627405e28764c89ce94942056f7b75c76f5ff57c405bb171f5bc4d9caff"
+      },
+      "toolkit_preferences_effects.py": {
+        "bytes": 2766,
+        "sha256": "ca1af0d8086b8fa5ec07e0d6a390a7444b0fc13e20b18120c6eff536ce9f20ec"
+      },
+      "toolkit_preferences_initial_state.py": {
+        "bytes": 3163,
+        "sha256": "1669dcc774795f3d5820292a1142ed020cb7d51471f0f284020614335b36f3c5"
+      },
+      "toolkit_preferences_preview.py": {
+        "bytes": 492,
+        "sha256": "79170191c188062a47464c7f00f1653b1a6a52596052302533dcd4a26c7bacf3"
+      },
+      "toolkit_preferences_reset.py": {
+        "bytes": 9746,
+        "sha256": "7619bbe9e590eff202ff1a5cbd6c1825817df8ca15fa18dbe240caee5c3ff6c0"
+      },
+      "toolkit_preferences_store.py": {
+        "bytes": 21028,
+        "sha256": "833d9d057896cab472b23fdce945d69c01b52849f6a6cd1a146e65d636c00363"
+      },
+      "toolkit_tweaker_lifecycle.py": {
+        "bytes": 31441,
+        "sha256": "3cbcd54a2b5f8f7079071e10eb23debe4d770e7decb2caeaa5f4fa8eeed1b45c"
+      },
+      "toolkit_tweaker_workflow.py": {
+        "bytes": 24099,
+        "sha256": "bf5a7d349ca9089602ab9dc9e05648c25e77eea7f461647a2610d9e53c18c5ad"
+      },
+      "toolkit_update_applicability.py": {
+        "bytes": 13268,
+        "sha256": "d07d814a604c6fd1a98a635ddc05f0a71d6c57b862b47f6917824198bb6be5b7"
+      },
+      "toolkit_update_applicability_cli.py": {
+        "bytes": 1603,
+        "sha256": "6c6721b019690db2b88e9b93351fbd3bfc4f2c941a5c15470eccb60414b388f4"
+      },
+      "toolkit_update_applicability_cohort_cli.py": {
+        "bytes": 1980,
+        "sha256": "91c591476164cc28384cda20cca7e1dc7c933bc619d7c2d855529fda460cd029"
+      },
+      "toolkit_update_bundle.py": {
+        "bytes": 34762,
+        "sha256": "df82c64c0fbe46416243549a592593c7f4377448bf0e556c40ede99842e3f172"
+      },
+      "toolkit_update_bundle_cli.py": {
+        "bytes": 3610,
+        "sha256": "ddc73494a66ace2a54fd07ad8d2eb60afa440783d7dde3375e06bb800a110910"
+      },
+      "toolkit_update_composite.py": {
+        "bytes": 12229,
+        "sha256": "33d47f86869c75b1db78bbe384acdae6e05d6fd5868dc11cbc79c988c023f2a8"
+      },
+      "toolkit_update_composite_cli.py": {
+        "bytes": 4615,
+        "sha256": "035d5cb6ca36cc5a230f240935354d699476dc339e6297cc690aef3e79c0bb1b"
+      },
+      "toolkit_update_conditions.py": {
+        "bytes": 22316,
+        "sha256": "07fb9317345f239b339d87ec71de370ee1b869cc1277afc60c2919173cda0dfc"
+      },
+      "toolkit_update_conditions_cli.py": {
+        "bytes": 3884,
+        "sha256": "23219d1f687c207ce2010095b6ae7eda856d5630d16a4855d50d48733fb80d2a"
+      },
+      "toolkit_update_download.py": {
+        "bytes": 22134,
+        "sha256": "8b87acaf8d995a81c035156670d8b69030cc8f3801b769c1941b02fc5da78473"
+      },
+      "toolkit_update_download_cli.py": {
+        "bytes": 2383,
+        "sha256": "7f92fe421e5f074ac10ad209fe7646c19809b6700395f2c773d160bcf23b3529"
+      },
+      "toolkit_update_metadata.py": {
+        "bytes": 27952,
+        "sha256": "dcfa5990ca9f1ea8fb88e128edc2089f1045cc1b70c8f35314d84c80b4802b3f"
+      },
+      "toolkit_update_metadata_cli.py": {
+        "bytes": 5206,
+        "sha256": "fa497b357818ee678f52cc13e9f7e48ceaa81665c69a2ebbf00456fa5356b1f9"
+      },
+      "toolkit_update_package_bundle.py": {
+        "bytes": 8195,
+        "sha256": "4b48f5942dc33608a09a7573b19cf730273d085ee6a01c0b9404d01fe46c57a8"
+      },
+      "toolkit_update_package_bundle_cli.py": {
+        "bytes": 3322,
+        "sha256": "f86607373ae76b02c8f4c18ffb030996ebcaffdfb6ecde803394cfd9c3b19e14"
+      },
+      "toolkit_update_package_file.py": {
+        "bytes": 15015,
+        "sha256": "5773ffba56c66946c290438777f5c52dc050ab51a4bfd86d2e73e5d70b050cdc"
+      },
+      "toolkit_update_package_file_cli.py": {
+        "bytes": 1951,
+        "sha256": "20acdbd0213ab6bd090caafa313469c130bb88aee07d8025fc249368da800c24"
+      },
+      "toolkit_update_revocation.py": {
+        "bytes": 15752,
+        "sha256": "575bf1fccb3788ed891028dbf6ec10f1d94f1519d7a6d20341d131d17fc8d389"
+      },
+      "toolkit_update_revocation_cli.py": {
+        "bytes": 3882,
+        "sha256": "c724f333d8b8e83a6dfc11347507c50384fd4f456181547dcc85adc875930073"
+      },
+      "toolkit_update_rollout.py": {
+        "bytes": 5163,
+        "sha256": "da1e918cf361cfe378f6b27a151a05fce6733529d46d3b622f3379d8f7cbf8a8"
+      },
+      "toolkit_update_rollout_cli.py": {
+        "bytes": 1344,
+        "sha256": "a302c76c816651a3261d97b4b79bb500add13975881c1b4a2f3631acaafdc589"
+      },
+      "toolkit_update_rollout_current_user_cli.py": {
+        "bytes": 1299,
+        "sha256": "cea693a6f4fa9f9758dc26e4461d57ff43a2d7a0e7c3387504ba0b1465f3cb7e"
+      },
+      "toolkit_update_rollout_registry.py": {
+        "bytes": 9420,
+        "sha256": "8e1ef4a70f0b91e6c5560b4a7d6dee2723a1524732a7036e7c76d33ec7c6568c"
+      },
+      "toolkit_update_rollout_registry_cli.py": {
+        "bytes": 2140,
+        "sha256": "9dd01858a8c11ba92e8cb2000382d73875f7ecde1cf87e442b43616f1590743c"
+      },
+      "toolkit_update_trust.py": {
+        "bytes": 24376,
+        "sha256": "9091994e590970de1544779671073c64948bc84283edfc3cb8ba48d07b5df9d8"
+      },
+      "toolkit_update_trust_cli.py": {
+        "bytes": 3983,
+        "sha256": "9f0900ce1ab2477f82f09533ce135bf47eda76b4f708340ac66067112f7272a1"
+      },
+      "toolkit_update_version.py": {
+        "bytes": 3929,
+        "sha256": "b7adee52675f2b415253942b16127a9d892520c66945deda07039c380a16cd13"
+      },
+      "toolkit_updates.py": {
+        "bytes": 22641,
+        "sha256": "2e60b111a1c4f98fd548f645bad59031bfc1b4de05b621856a4003dd6a558244"
+      },
+      "toolkit_updates_cli.py": {
+        "bytes": 2551,
+        "sha256": "60d960a3abcf2e8789e7235d28e5779cd13f4a8fa7e47667caa3e9623b87172d"
+      },
+      "trigger_binding_guard.py": {
+        "bytes": 3087,
+        "sha256": "c188684cd823d7a23695e0db9cbbb68cc2c33301932909de04de334d0a2ae319"
+      },
+      "unit_diagnostics.py": {
+        "bytes": 14795,
+        "sha256": "8710ef7d1b79481c34ac31be2efd2a4be0b7efe99b993fc850ff4a64be358c39"
+      },
+      "unit_templates.py": {
+        "bytes": 21210,
+        "sha256": "f87bb5e348aaba56d58f90a5b1a113834d5b01bdae5cda5ed7ec397080f8498a"
+      },
+      "unitspec.py": {
+        "bytes": 17981,
+        "sha256": "f8d9e2f30c0ab431b0897959328781fac6a7c9825a4d9d2bb5ecf348acb66747"
+      },
+      "usb_dfu.py": {
+        "bytes": 19483,
+        "sha256": "859a3b377ec680b1c3eb695ce840d3e7b4750bb01a4997f67541f2afc149ebe5"
+      },
+      "usb_inspection.py": {
+        "bytes": 15847,
+        "sha256": "dadba114d023bdb0dc755d71e9b804f75f037d4ca73afac6a8a4fa1afefcf7a6"
+      },
+      "windows_condition_registry.py": {
+        "bytes": 26355,
+        "sha256": "539a96657fc2152dbc996bb497f67b4bc9ca2b45b8acf5a1b86fb09360dfe379"
+      },
+      "windows_csv_encoding.py": {
+        "bytes": 2621,
+        "sha256": "d0d7d171424fb91e974c283bd6a2f34ac6ac901f12f5957c6de180dcfb14ca84"
+      },
+      "windows_csv_selection.py": {
+        "bytes": 3156,
+        "sha256": "56a04211e41502ebf589e10b4d53f99a8573056ff8d964c45b9e6e092b8b69d4"
+      },
+      "windows_preferences.py": {
+        "bytes": 5850,
+        "sha256": "6a9b9abb6a2945acd11fca52b89ac47a7fcbe26625ce232e58019fceb46a6af6"
+      },
+      "windows_preferences_reset.py": {
+        "bytes": 4619,
+        "sha256": "d157d7e19586ec564dcc62feadbea4dbdfc82171fb2afe5cbbbb503b8d2858ea"
+      },
+      "windows_sesu_cohort_registry.py": {
+        "bytes": 2990,
+        "sha256": "f0142c2d0288c1951af39ebe7d578951aa0a127906065b1cfa2bbbf696344ab0"
+      },
+      "windows_sesu_current_user_cohort.py": {
+        "bytes": 8458,
+        "sha256": "ddca9907371eb93a2f949ee57a65d57ac5b63d75fd5f56a3d38364283cb8b048"
+      },
+      "wireless_actions.py": {
+        "bytes": 18019,
+        "sha256": "58da6f28dd4c3838ece9e13afdf483adf8a7fd3aa2b09765ede74c5a5b75c27c"
+      },
+      "wireless_cli.py": {
+        "bytes": 26988,
+        "sha256": "6e580b9be9203ad04b60c7f754dcea647a484b77451513ceeafbd184f98e3e49"
+      },
+      "wireless_commissioning.py": {
+        "bytes": 5483,
+        "sha256": "e8e0e701946649f3c091ddf2a207a8855e2efb5e485b2c3895c707cf2585bfc3"
+      },
+      "wireless_connection.py": {
+        "bytes": 29971,
+        "sha256": "08b84e89bf47f55a5fee9618cf4360ea16b0e58b449354c26dee0d687519ea85"
+      },
+      "wireless_gateway.py": {
+        "bytes": 23965,
+        "sha256": "d9d4c5a0a4afed1cf231d505ecec8ddfbf489e28f064f89cc4246fce45e05bdd"
+      },
+      "wireless_project_remotes.py": {
+        "bytes": 25291,
+        "sha256": "29861cab8c6c99e3e22ad5b23cf16c7b15d309f1e10b139ac8f818c0a77c96b2"
+      },
+      "wireless_scenes.py": {
+        "bytes": 24008,
+        "sha256": "9178625311673d3a1048dd1418b10f95baad37afab9d954f3b501be4391e3437"
+      },
+      "wireless_unit_globals.py": {
+        "bytes": 14884,
+        "sha256": "b6bea286395486c9c5bfe8af7c8597f1cef75cf9106005498832d508019224c3"
+      }
+    },
+    "integrity_record": {
+      "bytes": 39688,
+      "sha256": "78fd3dd0fd0200cfc938cf3e8de39f619c11d8883967832ef19ac13d031d3ba2"
+    },
+    "package_files": 395,
+    "source_snapshot_zip_installed_exact": true
+  }
+}

@@ -27,6 +27,9 @@
 #   make check-wheel    build a fresh wheel, install it with every supported
 #                       extra in an isolated Python 3.13 venv, and run the
 #                       full offline suite without importing from src/
+#   make check-thermostat-temperature-owner
+#                       focused temperature load/save owner and preserved settings
+#                       checks using explicitly supplied existing Rust executables
 #   make check-parity-register  verify generated scope/evidence accounting
 #   make refresh-parity-receipts
 #                       rebuild both servers, re-run every source-bound
@@ -63,6 +66,25 @@ check-offline: compile check-parity-register
 		--ignore=tests/test_cmqtt_programming_methods_interop.py \
 		--ignore=tests/test_cmqtt_dali_commissioning_interop.py \
 		$(PYTEST_EXTRA)
+
+check-thermostat-temperature-owner:
+	: $${CBUS_CGATE_MOCK_BIN:?Set CBUS_CGATE_MOCK_BIN to an existing owned cgate-mock executable}
+	: $${CBUS_CMQTTD_BIN:?Set CBUS_CMQTTD_BIN to an existing owned cmqttd executable}
+	test -x "$${CBUS_CGATE_MOCK_BIN}"
+	test -x "$${CBUS_CMQTTD_BIN}"
+	PYTHONDONTWRITEBYTECODE=1 $(PY) -m pytest \
+		tests/test_thermostat_temperature_model.py \
+		tests/test_thermostat_temperature_owner.py \
+		tests/test_thermostat_temperature_owner_backends.py \
+		tests/test_thermostat_temperature.py \
+		tests/test_thermostat_settings_temperature_vectors.py \
+		tests/test_thermostat_quick_zone_controls.py \
+		tests/test_thermostat_settings.py \
+		tests/test_thermostat_settings_guard.py \
+		tests/test_thermostat_remote_references.py \
+		tests/test_thermostat_quick_zone_controls_backends.py \
+		tests/test_ci_test_results.py \
+		-q -p no:cacheprovider $(PYTEST_EXTRA)
 
 check-parity-register:
 	$(PY) research/build_cgate_contract_inventory.py --check
@@ -565,6 +587,26 @@ check-cgate-interop: compile
 		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_lost_successful_save_never_replays[PP SAVE_TO_SOURCE-mock]' \
 		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_lost_successful_save_never_replays[PROJECT SAVE-mock]' \
 		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_opaque_level_stale_refuses[mock]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_chained_saves[pc_tsa-mock]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_chained_saves[pc_tsa5-mock]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_chained_saves[pc_tsb-mock]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_chained_saves[pc_tsb5-mock]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-pp-save-pc_tsa-mock]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-pp-save-pc_tsa5-mock]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-pp-save-pc_tsb-mock]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-pp-save-pc_tsb5-mock]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-project-save-pc_tsa-mock]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-project-save-pc_tsa5-mock]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-project-save-pc_tsb-mock]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-project-save-pc_tsb5-mock]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[raw-set-rewritten-pc_tsa-mock]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[raw-set-rewritten-pc_tsa5-mock]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[raw-set-rewritten-pc_tsb-mock]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[raw-set-rewritten-pc_tsb5-mock]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[unsigned-overflow-pc_tsa-mock]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[unsigned-overflow-pc_tsa5-mock]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[unsigned-overflow-pc_tsb-mock]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[unsigned-overflow-pc_tsb5-mock]' \
 		-q -p no:cacheprovider $(CGATE_INTEROP_PYTEST_EXTRA)
 
 check-cmqtt-interop: compile
@@ -1054,6 +1096,26 @@ check-cmqtt-interop: compile
 		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_lost_successful_save_never_replays[PP SAVE_TO_SOURCE-daemon]' \
 		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_lost_successful_save_never_replays[PROJECT SAVE-daemon]' \
 		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_opaque_level_stale_refuses[daemon]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_chained_saves[pc_tsa-daemon]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_chained_saves[pc_tsa5-daemon]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_chained_saves[pc_tsb-daemon]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_chained_saves[pc_tsb5-daemon]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-pp-save-pc_tsa-daemon]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-pp-save-pc_tsa5-daemon]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-pp-save-pc_tsb-daemon]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-pp-save-pc_tsb5-daemon]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-project-save-pc_tsa-daemon]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-project-save-pc_tsa5-daemon]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-project-save-pc_tsb-daemon]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-project-save-pc_tsb5-daemon]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[raw-set-rewritten-pc_tsa-daemon]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[raw-set-rewritten-pc_tsa5-daemon]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[raw-set-rewritten-pc_tsb-daemon]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[raw-set-rewritten-pc_tsb5-daemon]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[unsigned-overflow-pc_tsa-daemon]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[unsigned-overflow-pc_tsa5-daemon]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[unsigned-overflow-pc_tsb-daemon]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[unsigned-overflow-pc_tsb5-daemon]' \
 		-q -p no:cacheprovider $(CMQTT_INTEROP_PYTEST_EXTRA)
 
 check-session-differential: build-interop
@@ -1141,6 +1203,7 @@ compile:
 	$(PY) -m compileall -q src/cbus_toolkit
 
 .PHONY: check check-offline check-native check-hardware build-interop \
+	check-thermostat-temperature-owner \
 	check-session-differential \
 	check-tagged-session-differential \
 	check-dbsetxml-unit-differential \
