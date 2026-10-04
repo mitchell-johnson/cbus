@@ -10945,6 +10945,7 @@ impl Server {
             }
             if field == Some("TagName") {
                 if let Some(level) = self.level_mut(oid) {
+                    let element = if level.netvar { "NetVar" } else { "Level" };
                     level.tag = value.clone();
                     let level_path = format!("{}/{}", level.parent, level.address);
                     if let Some(project) = self.current.as_deref() {
@@ -10954,7 +10955,7 @@ impl Server {
                         for pending in self.db_pending.values_mut().filter(|pending| {
                             pending.project == project
                                 && pending.oid == oid
-                                && pending.element == "Level"
+                                && pending.element == element
                                 && pending.path.as_deref() == Some(level_path.as_str())
                         }) {
                             pending.fields.insert("TagName".to_string(), value.clone());
@@ -13916,6 +13917,157 @@ mod tests {
         assert_eq!(
             s.handle("[19] PROJECT DELETE MISSING").final_text,
             "408 Operation failed: Unable to delete file"
+        );
+    }
+
+    #[test]
+    fn netvar_tagname_imported_parent_oid_keeps_scalar_and_xml_agreed() {
+        let mut server = Server::new(AccessLevel::Program);
+        let parent = "00000000-0000-4000-8000-000000000012";
+        let child = "00000000-0000-4000-8000-000000000007";
+        let document = concat!(
+            "<Application><OID>00000000-0000-4000-8000-000000000203</OID>",
+            "<TagName>Variables</TagName><Address>203</Address>",
+            "<NetVar><OID>00000000-0000-4000-8000-000000000012</OID>",
+            "<TagName>Old</TagName><Address>12</Address>",
+            "<Level Value=\"13\"><OID>00000000-0000-4000-8000-000000000007</OID>",
+            "<TagName>Child</TagName><Address>7</Address></Level>",
+            "</NetVar></Application>"
+        );
+        // Restore a complete synthetic native XML envelope, matching the
+        // scalar and XML routing of an imported pending NetVar parent.
+        let document = format!(
+            "<Installation><DBVersion>2.3</DBVersion><Project>\
+             <TagName>NETVAR</TagName><Address>NETVAR</Address><Network>\
+             <OID>00000000-0000-4000-8000-000000000011</OID>\
+             <Address>11</Address><TagName>Local</TagName><NetworkNumber>11</NetworkNumber>\
+             <Interface><OID>00000000-0000-4000-8000-000000000111</OID>\
+             <InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress>\
+             </Interface>{document}</Network></Project></Installation>"
+        );
+        let archive = "Projects/archived/netvar-import.xml";
+        crate::file::create_parent_directories(&mut server, archive).unwrap();
+        crate::file::write_bytes(&mut server, archive, document.into_bytes()).unwrap();
+        server.native_project_archives = true;
+        assert_eq!(
+            server
+                .handle("[1] PROJECT RESTORE NETVAR netvar-import.xml")
+                .status,
+            200
+        );
+        assert_eq!(server.handle("[1] PROJECT USE NETVAR").status, 200);
+        assert!(server.level(parent).unwrap().netvar);
+        assert_eq!(
+            server.pending_object("NETVAR", parent).unwrap().element,
+            "NetVar"
+        );
+        assert_eq!(server.handle("[1] PROJECT COPY NETVAR COPY").status, 200);
+        assert_eq!(
+            server
+                .handle(&format!("[1] DBSETSAFE !{parent}/TagName New"))
+                .status,
+            200
+        );
+        for path in [format!("!{parent}"), "//NETVAR/11/203/12".to_string()] {
+            assert_eq!(
+                server
+                    .handle(&format!("[1] DBGET {path}/TagName"))
+                    .final_text,
+                format!("342 {path}/TagName=New")
+            );
+        }
+        for path in [format!("!{parent}"), "//NETVAR/11".to_string()] {
+            let response = server.handle(&format!("[1] DBGETXML {path}"));
+            assert_eq!(response.status, 200);
+            let xml = response.lines[0].strip_prefix("347-").unwrap();
+            let parsed = roxmltree::Document::parse(xml).unwrap();
+            let variable = parsed
+                .descendants()
+                .find(|node| {
+                    node.has_tag_name("NetVar")
+                        && node
+                            .children()
+                            .any(|field| field.has_tag_name("OID") && field.text() == Some(parent))
+                })
+                .unwrap();
+            assert!(variable
+                .children()
+                .any(|field| { field.has_tag_name("TagName") && field.text() == Some("New") }));
+            assert!(variable
+                .children()
+                .any(|field| { field.has_tag_name("Address") && field.text() == Some("12") }));
+        }
+        assert_eq!(
+            server
+                .handle(&format!("[1] DBGET !{child}/TagName"))
+                .final_text,
+            format!("342 !{child}/TagName=Child")
+        );
+        assert_eq!(
+            server
+                .handle(&format!("[1] DBGET !{child}/Value"))
+                .final_text,
+            format!("342 !{child}/Value=13")
+        );
+        assert_eq!(
+            server
+                .handle(&format!("[1] DBSETSAFE !{child}/TagName ChildNew"))
+                .status,
+            200
+        );
+        assert_eq!(
+            server
+                .handle(&format!("[1] DBGET !{child}/TagName"))
+                .final_text,
+            format!("342 !{child}/TagName=ChildNew")
+        );
+        assert!(server
+            .handle(&format!("[1] DBGETXML !{child}"))
+            .lines
+            .iter()
+            .any(|line| line.contains("<TagName>ChildNew</TagName>")));
+        assert_eq!(server.handle("[1] PROJECT USE COPY").status, 200);
+        assert_eq!(
+            server
+                .handle(&format!("[1] DBGET !{parent}/TagName"))
+                .final_text,
+            format!("342 !{parent}/TagName=Old")
+        );
+    }
+
+    #[test]
+    fn netvar_tagname_fresh_safe_owner_still_updates_without_pending_mirror() {
+        let mut server = Server::new(AccessLevel::Program);
+        assert_eq!(server.handle("[1] PROJECT NEW FRESH").status, 200);
+        assert_eq!(
+            server
+                .handle("[1] DBCREATENET 11 Local Cni 127.0.0.1:1")
+                .status,
+            200
+        );
+        assert_eq!(
+            server
+                .handle("[1] DBADDSAFE //FRESH/11 Application 203 Variables")
+                .status,
+            301
+        );
+        let created = server.handle("[1] DBADDSAFE //FRESH/11/203 NetVar 12 Old");
+        let oid = created.final_text.strip_prefix("301 OID=").unwrap();
+        assert!(server.level(oid).unwrap().netvar);
+        assert!(server.pending_object("FRESH", oid).is_none());
+        assert_eq!(
+            server
+                .handle(&format!("[1] DBSETSAFE !{oid}/TagName New"))
+                .status,
+            200
+        );
+        assert_eq!(server.level(oid).unwrap().tag, "New");
+        assert!(server.pending_object("FRESH", oid).is_none());
+        assert_eq!(
+            server
+                .handle(&format!("[1] DBGET !{oid}/TagName"))
+                .final_text,
+            format!("342 !{oid}/TagName=New")
         );
     }
 
