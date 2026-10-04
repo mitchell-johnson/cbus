@@ -100,6 +100,7 @@ check-conversion-xml-preservation:
 	PYTHONDONTWRITEBYTECODE=1 $(PY) -m pytest \
 		tests/test_conversion_xml_preservation.py \
 		tests/test_conversion_xml_preservation_backends.py \
+		tests/test_conversion_xml_restart_backends.py \
 		-q -p no:cacheprovider $(PYTEST_EXTRA)
 
 check-thermostat-zone-controls:
@@ -1272,6 +1273,8 @@ check-cmqtt-interop: compile
 		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_schema_refuses_before_connection[unprepared-standby]' \
 		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_schema_refuses_before_connection[nonboolean]' \
 		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_schema_refuses_before_connection[missing-celsius]' \
+		'tests/test_conversion_xml_restart_backends.py::test_public_conversion_completed_journal_daemon_restart_preserves_xml' \
+		'tests/test_conversion_xml_restart_backends.py::test_public_conversion_lost_save_daemon_restart_keeps_uncertainty' \
 		-q -p no:cacheprovider $(CMQTT_INTEROP_PYTEST_EXTRA)
 
 check-session-differential: build-interop

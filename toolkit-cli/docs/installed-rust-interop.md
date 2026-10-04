@@ -8,9 +8,10 @@ interop portion of [issue 121](https://github.com/mitchell-johnson/cbus/issues/1
 Provisioned native and physical release gates remain under
 [issue 22](https://github.com/mitchell-johnson/cbus/issues/22).
 
-The complete default declaration contains 1121 explicit selectors: 552 for
-the mock and 569 for the daemon. It preserves all 1067 inherited selectors and
-adds 18 conversion XML preservation and 36 prepared thermostat zone cases. One mock and six daemon
+The complete default declaration contains 1123 explicit selectors: 552 for
+the mock and 571 for the daemon. It preserves all 1121 preceding selectors and
+adds two daemon restart cases; the preceding batch added 18 conversion XML
+preservation and 36 prepared thermostat zone cases. One mock and six daemon
 whole-module selections expand into additional collected cases. These numbers
 describe the declaration, not a claim that a focused local run executed it.
 

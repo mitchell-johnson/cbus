@@ -424,7 +424,9 @@ journal; `tweak-recover` observes an interrupted attempt without replay. Read
 [Conversion XML checks](toolkit-cli/docs/conversion-xml-preservation.md) preserve
 inherited `xml:space`, mixed-content separators, CDATA and whitespace-only leaf
 values through creation, replacement, backup and recovery. Legacy journals
-remain read-only observations under their recorded policy.
+remain read-only observations under their recorded policy. After a cmqttd
+restart, retain the same durable state file and journal endpoint; matching
+readback never resolves a lost SAVE reply by itself.
 Physical programming remains separate work. The [firmware recovery contract](toolkit-cli/docs/firmware-update-recovery.md)
 also separates image verification from USB cleanup and explains explicit
 resume after a release failure. Full GUI and physical acceptance remain open
