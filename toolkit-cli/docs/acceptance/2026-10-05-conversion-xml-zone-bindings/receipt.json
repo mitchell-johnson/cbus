@@ -1,0 +1,537 @@
+{
+  "code": {
+    "toolkit-cli/src/cbus_toolkit/conversion_xml_preservation.py": {
+      "bytes": 5882,
+      "sha256": "c9791105bdee80c0f5bcf58b4b99e2b9166a1d5e5038cb1e0c82ba612067713e"
+    },
+    "toolkit-cli/src/cbus_toolkit/thermostat_quick_zone_controls.py": {
+      "bytes": 52390,
+      "sha256": "bf6e51207ae54d27251165fae316d4a279313b65feda0ce9966d3163d2c6dc8e"
+    },
+    "toolkit-cli/src/cbus_toolkit/thermostat_zone_controls.py": {
+      "bytes": 8760,
+      "sha256": "be41491bb3b9e1bace48e327d1391d6ccc6d727b44bcd18fa85cc0c9981eae0b"
+    },
+    "toolkit-cli/src/cbus_toolkit/toolkit_tweaker_lifecycle.py": {
+      "bytes": 35159,
+      "sha256": "321452bdd99246dae94e3536fcf727da9779e927bbe2ddba89d350b7486e97df"
+    },
+    "toolkit-cli/src/cbus_toolkit/toolkit_tweaker_workflow.py": {
+      "bytes": 24090,
+      "sha256": "7ba6fc8fbc8f8ddc0f7a6f3d4715fbef379507c1ca36ea3c28bdf8fc33eff2fc"
+    }
+  },
+  "code_commit": "58f32198dfde789d8a4f975c9f189c8929a892b5",
+  "date": "2026-10-05",
+  "declaration": {
+    "daemon": 569,
+    "explicit_ids": 1121,
+    "full_execution_claimed": false,
+    "inherited_ids_preserved": 1067,
+    "mock": 552,
+    "whole_modules": 7
+  },
+  "format": "cbus-conversion-xml-and-prepared-zone-focused-acceptance-v1",
+  "historical_failed_epochs": {
+    "xml_seed18": {
+      "junit": {
+        "bytes": 131636,
+        "sha256": "b92ce847b564359cc95b19ff0c64e861a6a90f1cf64200602566b46203ce4b13"
+      },
+      "outcome": "18 setup failures before workflow calls; successor restored complete XML before one raw setter"
+    },
+    "zone_basic_missing_literals": {
+      "junit": {
+        "bytes": 18435,
+        "sha256": "8d0af3d97997a2ec9a408ad18073c93c4ef2a3ee938dca83c760d9b445f3dd8c"
+      },
+      "outcome": "32 PASS /4 preview FAIL; source-based expected damper creation ledger corrected; production unchanged"
+    },
+    "zone_basic_wrapper_collection": {
+      "junit": {
+        "bytes": 597,
+        "sha256": "acfc73a38d38087b747e8651593fd17ebd61530ba27845a8e081b4bacd95c27f"
+      },
+      "outcome": "1 collection error, no body; test-only creates/ledger forwarding corrected"
+    },
+    "zone_wrong_environment": {
+      "junit": {
+        "bytes": 23259,
+        "sha256": "e4cbb61616e94cbb8c2b6574127f6d444d8a5cac04d5b215ef14fd61645fdb94"
+      },
+      "outcome": "4 schema PASS, 32 backend SKIP; not backend acceptance"
+    }
+  },
+  "implemented": {
+    "conversion_xml": "Inherited xml:space, mixed content, CDATA, whitespace-only leaves, namespace context and complete journal/backup comparisons",
+    "thermostat_zone_bindings": 34
+  },
+  "independent_readbacks": {
+    "basic_literal_source": {
+      "bytes": 6541,
+      "sha256": "fc13afbeebe71b8e1f07c0084cfb66556409aac045e79aceda41a1bcbcf8394d"
+    },
+    "basic_wrapper": {
+      "bytes": 1270,
+      "sha256": "a78f864dac275c7a6c822f7b329157c8f26587c6fe76fdb75e066b85cce82882"
+    },
+    "combined_registration": {
+      "bytes": 4103,
+      "sha256": "703f77229dd60660f7d271a52d4770804af2b32e1f5799435f21e7db0380fd1e"
+    },
+    "conversion_static": {
+      "bytes": 7370,
+      "sha256": "0910b5afca66fbccb2657eb58034cc50deb96a3dffee9027692c914cdcde5cd1"
+    },
+    "metadata_effects": {
+      "bytes": 17378,
+      "sha256": "cc974d23fe43f4b04aa62e8ce3e8432633d81fbd461f6c289139acfac615be9a"
+    },
+    "xml_source_effects": {
+      "bytes": 10921,
+      "sha256": "353b05c788c541dc36235baca860caaf22e8846b9d21d37781cec5fca9cd46d4"
+    },
+    "zone_source_effects": {
+      "bytes": 36624,
+      "sha256": "73b8d378c015ebe3efa686efce387246084e8aa900985c3601c5845372d04d7f"
+    },
+    "zone_wheel_effects": {
+      "bytes": 36126,
+      "sha256": "5d9413fffdf455fff96d97b0467e3181a37c2fd1995603e9eb7d71898f321790"
+    }
+  },
+  "installed_wheel": {
+    "binaries_quiet": true,
+    "commands": [
+      {
+        "exit": 0,
+        "name": "create-builder",
+        "seconds": 1.2937902910052799
+      },
+      {
+        "exit": 0,
+        "name": "build-wheel",
+        "seconds": 1.6588627079909202
+      },
+      {
+        "exit": 0,
+        "name": "create-installed",
+        "seconds": 1.1421496660041157
+      },
+      {
+        "exit": 0,
+        "name": "install-wheel",
+        "seconds": 1.6399390419974225
+      },
+      {
+        "exit": 0,
+        "name": "mock-collect",
+        "seconds": 1.0811882499983767
+      },
+      {
+        "exit": 0,
+        "name": "mock-pytest",
+        "seconds": 73.71707400000014
+      },
+      {
+        "exit": 0,
+        "name": "daemon-collect",
+        "seconds": 1.0934132919937838
+      },
+      {
+        "exit": 0,
+        "name": "daemon-pytest",
+        "seconds": 126.17697770800442
+      },
+      {
+        "exit": 0,
+        "name": "installed-console-help",
+        "seconds": 1.4331173749960726
+      }
+    ],
+    "errors": 0,
+    "failures": 0,
+    "parents": 54,
+    "passed": true,
+    "phases": {
+      "daemon": {
+        "junit": {
+          "bytes": 13228,
+          "sha256": "c263e65a53990a1983d63bfcc52a7854b6db3f47fe83d4baf9d1b03329e85830"
+        },
+        "maintained_audit": {
+          "bytes": 19694,
+          "sha256": "814a5f2c18f6fb9f8b5f92e990ff01bb1f7aa69578c5ec7775bdd92d34246151"
+        },
+        "origins": {
+          "origin_records": 9608,
+          "owned_rust_children": 25,
+          "owned_rust_reaped": 25,
+          "product_import_events": 9498,
+          "pytest_pid": 24152,
+          "python_processes": 55,
+          "scope": "guarded Python launches and observed product module loads",
+          "violations": 0
+        },
+        "parents": {
+          "passed": 29
+        },
+        "trace": {
+          "bytes": 13206,
+          "sha256": "78e0842b44b18dbfe4beb0f739338fbe5b3df073e9c702bd7df9feda0f00c579"
+        }
+      },
+      "mock": {
+        "junit": {
+          "bytes": 11617,
+          "sha256": "7b18dc69d3af04da3d75bb6ba515e7ab3e0070b397f25b063637d797e1b39399"
+        },
+        "maintained_audit": {
+          "bytes": 16870,
+          "sha256": "df7f79a10eacb729a0a408f1a03612fcc5d54144c2e9b70b1b5a0965a91cf8fe"
+        },
+        "origins": {
+          "origin_records": 8924,
+          "owned_rust_children": 25,
+          "owned_rust_reaped": 25,
+          "product_import_events": 8822,
+          "pytest_pid": 23777,
+          "python_processes": 51,
+          "scope": "guarded Python launches and observed product module loads",
+          "violations": 0
+        },
+        "parents": {
+          "passed": 25
+        },
+        "trace": {
+          "bytes": 11242,
+          "sha256": "234a1d73e42d26401657dc799457a0e7fea8e9d68116f840b506552267acaa05"
+        }
+      }
+    },
+    "product_files": 397,
+    "record_entries": 408,
+    "reference_quiet": true,
+    "scope": "focused-explicit-subset",
+    "selected_ids": {
+      "daemon": [
+        "tests/test_conversion_xml_preservation_backends.py::test_public_conversion_creation_preserve_and_default_reset[daemon]",
+        "tests/test_conversion_xml_preservation_backends.py::test_public_conversion_replace_backup_reopen_and_recovery_preserve[daemon]",
+        "tests/test_conversion_xml_preservation_backends.py::test_public_conversion_creation_mixed_separator_loss_refuses[daemon]",
+        "tests/test_conversion_xml_preservation_backends.py::test_public_conversion_backup_preserved_separator_loss_stops_before_add[daemon]",
+        "tests/test_conversion_xml_preservation_backends.py::test_public_conversion_predelete_preserve_parent_tail_loss_keeps_source[daemon]",
+        "tests/test_conversion_xml_preservation_backends.py::test_public_conversion_reopen_cdata_loss_refuses_completed_receipt[daemon]",
+        "tests/test_conversion_xml_preservation_backends.py::test_public_conversion_recovery_current_or_backup_space_loss_read_only[daemon]",
+        "tests/test_conversion_xml_preservation_backends.py::test_public_conversion_save_refusal_retains_preserved_graph[daemon]",
+        "tests/test_conversion_xml_preservation_backends.py::test_public_conversion_lost_save_200_retains_graph_without_replay[daemon]",
+        "tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-UIAllocatedZones-daemon]",
+        "tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-InternalPlantZones-daemon]",
+        "tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-InternalPlantModes-daemon]",
+        "tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-MeasuredZones-daemon]",
+        "tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-CoolingPlantInstalledZones-daemon]",
+        "tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-VentingPlantInstalledZones-daemon]",
+        "tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-HeatingPlantInstalledZones-daemon]",
+        "tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[empty-heating-callback-chain-daemon]",
+        "tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[vent-mode-family-fan-save-tail-daemon]",
+        "tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[basic-operation-zone-tail-pc_tsb-daemon]",
+        "tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[basic-operation-zone-tail-pc_tsb5-daemon]",
+        "tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_refuses_before_backup[unsettled-profile-daemon]",
+        "tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_refuses_before_backup[pending-queue-daemon]",
+        "tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_failed_stage_never_saves_or_inverts[daemon]",
+        "tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_lost_successful_save_never_replays[PP SAVE_TO_SOURCE-daemon]",
+        "tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_lost_successful_save_never_replays[PROJECT SAVE-daemon]",
+        "tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_schema_refuses_before_connection[unprepared-schedule]",
+        "tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_schema_refuses_before_connection[unprepared-standby]",
+        "tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_schema_refuses_before_connection[nonboolean]",
+        "tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_schema_refuses_before_connection[missing-celsius]"
+      ],
+      "mock": [
+        "tests/test_conversion_xml_preservation_backends.py::test_public_conversion_creation_preserve_and_default_reset[mock]",
+        "tests/test_conversion_xml_preservation_backends.py::test_public_conversion_replace_backup_reopen_and_recovery_preserve[mock]",
+        "tests/test_conversion_xml_preservation_backends.py::test_public_conversion_creation_mixed_separator_loss_refuses[mock]",
+        "tests/test_conversion_xml_preservation_backends.py::test_public_conversion_backup_preserved_separator_loss_stops_before_add[mock]",
+        "tests/test_conversion_xml_preservation_backends.py::test_public_conversion_predelete_preserve_parent_tail_loss_keeps_source[mock]",
+        "tests/test_conversion_xml_preservation_backends.py::test_public_conversion_reopen_cdata_loss_refuses_completed_receipt[mock]",
+        "tests/test_conversion_xml_preservation_backends.py::test_public_conversion_recovery_current_or_backup_space_loss_read_only[mock]",
+        "tests/test_conversion_xml_preservation_backends.py::test_public_conversion_save_refusal_retains_preserved_graph[mock]",
+        "tests/test_conversion_xml_preservation_backends.py::test_public_conversion_lost_save_200_retains_graph_without_replay[mock]",
+        "tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-UIAllocatedZones-mock]",
+        "tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-InternalPlantZones-mock]",
+        "tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-InternalPlantModes-mock]",
+        "tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-MeasuredZones-mock]",
+        "tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-CoolingPlantInstalledZones-mock]",
+        "tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-VentingPlantInstalledZones-mock]",
+        "tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-HeatingPlantInstalledZones-mock]",
+        "tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[empty-heating-callback-chain-mock]",
+        "tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[vent-mode-family-fan-save-tail-mock]",
+        "tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[basic-operation-zone-tail-pc_tsb-mock]",
+        "tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[basic-operation-zone-tail-pc_tsb5-mock]",
+        "tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_refuses_before_backup[unsettled-profile-mock]",
+        "tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_refuses_before_backup[pending-queue-mock]",
+        "tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_failed_stage_never_saves_or_inverts[mock]",
+        "tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_lost_successful_save_never_replays[PP SAVE_TO_SOURCE-mock]",
+        "tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_lost_successful_save_never_replays[PROJECT SAVE-mock]"
+      ]
+    },
+    "skips": 0,
+    "source_input_count": 4215,
+    "source_quiet": true,
+    "summary": {
+      "bytes": 739832,
+      "sha256": "f90393269d5ae607900ba335e1f37da7ae2fcefbfa88cc4ec727ca5de63f1b6a"
+    },
+    "wheel": {
+      "bytes": 3020205,
+      "sha256": "03e99b63bfa97b7bcc5f1c86068232aec0f44bce55b0906256a5575f7e7321bd"
+    }
+  },
+  "issues": [
+    135,
+    136
+  ],
+  "limits": [
+    "Focused software acceptance only; no full local suite or full1121 execution.",
+    "No new Rust code: unchanged484-file Rust proof and exact accepted debug pair reused.",
+    "No new native/original GUI, VM/oracle, hardware, house programming or deployment.",
+    "Projection faults alter client reads, not server data.",
+    "Source32PASS/4FAIL and corrected4PASS are separate epochs, not one fresh36PASS run.",
+    "Wider issues42/43, deferred72/74 and full required CI128 remain separate.",
+    "Global coverage still exits1; no functional90/100percent claim."
+  ],
+  "literal_xml_fixture": {
+    "bytes": 385,
+    "sha256": "946e94228e31ef5704a2f056f02235c17b048e5b4ea1dc3c7e8dd507432399e7"
+  },
+  "owned_metadata_refresh": {
+    "all_exit0": true,
+    "allowed_outputs": 11,
+    "changed_outputs": 10,
+    "commands": 18,
+    "inputs": 4215,
+    "protected_original_exact": true,
+    "quiet": true,
+    "rust_inputs": 484,
+    "summary": {
+      "bytes": 19336,
+      "sha256": "4172fdf8937ba6055757c639406edd42be5bc94c9696f9aba51665bc0a417ef1"
+    }
+  },
+  "source_epochs": [
+    {
+      "artifacts": {
+        "junit.xml": {
+          "bytes": 82403,
+          "sha256": "214e42f59a18ee3376583914ee24791c2792a7d8da5514cfc631c73f548634ce"
+        },
+        "pytest.log": {
+          "bytes": 340,
+          "sha256": "b57b85ee5962056856dac79251d58a256fc4cde440b002b726e471d1923d4363"
+        },
+        "trace.json": {
+          "bytes": 99224,
+          "sha256": "7dbf77fb99516b1c52ab535ac5d6dcf8366f0f33e97b9a5f4fdb97d42d51eaf2"
+        }
+      },
+      "audit": {
+        "bytes": 144729,
+        "sha256": "fb787c6be408495154064dbbf12b9a0d06743175ffc13f8e2f6d4b66926cd459"
+      },
+      "failures": 0,
+      "passed_parents": 228,
+      "passed_subtest_events": 0,
+      "scope": "root-combined-pure1",
+      "skips": 0
+    },
+    {
+      "artifacts": {
+        "junit.xml": {
+          "bytes": 58166,
+          "sha256": "5d12b9d7fb46c854d9cfc0fe846fbf4dc72135e9a8a062992fadc108739a2d4a"
+        },
+        "pytest.log": {
+          "bytes": 776,
+          "sha256": "698f64c18c6ef9aade760a487f88d5fa7e40ab2f2d47897e1e70f609f4678ad4"
+        },
+        "trace.json": {
+          "bytes": 70921,
+          "sha256": "437fe5d2e1ad3452c95a80004fb8bf02774550e7e9fcb269820370137b4bb7a2"
+        }
+      },
+      "audit": {
+        "bytes": 103704,
+        "sha256": "d440668aae2c49adb9ef7df4f30cce3a5e3b86e0b9aa6cd3e349d60f37b7e327"
+      },
+      "failures": 0,
+      "passed_parents": 175,
+      "passed_subtest_events": 14,
+      "scope": "root-registration1",
+      "skips": 0
+    },
+    {
+      "artifacts": {
+        "junit.xml": {
+          "bytes": 11083,
+          "sha256": "e637a505e8fe0c9c30de7777976b35dde1292d4885747e16c61996643cbdb0dd"
+        },
+        "pytest.log": {
+          "bytes": 100,
+          "sha256": "55503e55b472882e58169262709bcd42daf57459051c703ce1a2d1cbb6dca3ee"
+        },
+        "trace.json": {
+          "bytes": 8132,
+          "sha256": "81041f914b8fd17e1dc551978819ba9b23e2659e51475d32b7d828e35d10e33d"
+        }
+      },
+      "audit": {
+        "bytes": 12356,
+        "sha256": "415b31e303a1d2a739eae2b3f7186dd677701582b60d4d6ca22cc60dee868659"
+      },
+      "failures": 0,
+      "passed_parents": 18,
+      "passed_subtest_events": 0,
+      "scope": "root-xml-public3",
+      "skips": 0
+    },
+    {
+      "artifacts": {
+        "junit.xml": {
+          "bytes": 20499,
+          "sha256": "2675184e8e5ed4bddd2649cd226d9d8f2a2bc0888791192a19c0e004f05da558"
+        },
+        "pytest.log": {
+          "bytes": 110,
+          "sha256": "4f390ea21d7cbab207a6900ebe03f701e64610eb15b84847d00ed35bd21ce7b8"
+        },
+        "trace.json": {
+          "bytes": 24600,
+          "sha256": "eaa8a896844d63d82728100e18225c0eb8de1318a15f23bbdf9dd605c7413e63"
+        }
+      },
+      "audit": {
+        "bytes": 36323,
+        "sha256": "2161aed143512c5b73be61e867f6080bf7a84a0526d1158c37025039186eadf1"
+      },
+      "failures": 0,
+      "passed_parents": 56,
+      "passed_subtest_events": 0,
+      "scope": "root-conversion-regression1",
+      "skips": 0
+    },
+    {
+      "artifacts": {
+        "junit.xml": {
+          "bytes": 18435,
+          "sha256": "8d0af3d97997a2ec9a408ad18073c93c4ef2a3ee938dca83c760d9b445f3dd8c"
+        },
+        "pytest.log": {
+          "bytes": 4571,
+          "sha256": "e10d278448f26ec8fceb90a416b0b05337f09c4413f14b1beaf1e7701d14eebb"
+        },
+        "trace.json": {
+          "bytes": 16316,
+          "sha256": "9426f4c9896fe8875e637a2709447c9c67f6138d0447f5736d7d3f913e67dc0e"
+        }
+      },
+      "audit": null,
+      "failures": 4,
+      "passed_parents": 32,
+      "passed_subtest_events": 0,
+      "scope": "root-zones-public2",
+      "skips": 0
+    },
+    {
+      "artifacts": {
+        "junit.xml": {
+          "bytes": 1718,
+          "sha256": "832b9d4025a182017ef66eca3da20b44333e85ad6368369f325573f5d43fe012"
+        },
+        "pytest.log": {
+          "bytes": 99,
+          "sha256": "a15a26185ea869f50d14cdcebed312d995bc7798f1a5682507b56f9a4006677c"
+        },
+        "trace.json": {
+          "bytes": 1942,
+          "sha256": "ed1c6c7a2bcccb6bd01d1ac36e6567f3c6abf149e6153432007c0c69d914606d"
+        }
+      },
+      "audit": {
+        "bytes": 3386,
+        "sha256": "3f19806084f9aa1a46ad4729e81a917e6cae78ea8e9468485bc1e72fc68f2152"
+      },
+      "failures": 0,
+      "passed_parents": 4,
+      "passed_subtest_events": 0,
+      "scope": "root-zones-basic4",
+      "skips": 0
+    },
+    {
+      "artifacts": {
+        "junit.xml": {
+          "bytes": 55684,
+          "sha256": "9ec6e627d5cb066ce0675c67a118f8ff15634d76262a4735de2d7481ea991071"
+        },
+        "pytest.log": {
+          "bytes": 236,
+          "sha256": "bf7679da3f2d0dc0fbaf24ae4a8d5679d8612332045e37ec54e5455cbfaaf91d"
+        },
+        "trace.json": {
+          "bytes": 157435,
+          "sha256": "94770a95566e3b0390df8afa1ee7b147be25e014144548bd1c6ed416a53eb663"
+        }
+      },
+      "audit": {
+        "bytes": 200342,
+        "sha256": "8e85d9ba1568f1f8787c5833e01c691493ca8840880939964457d509d6b16e1b"
+      },
+      "failures": 0,
+      "passed_parents": 157,
+      "passed_subtest_events": 550,
+      "scope": "root-metadata1",
+      "skips": 0
+    }
+  ],
+  "tested_code_equivalence": "The 4215-file overlay was tested before commit; all files then matched the resulting code commit. This receipt and final status annotation were added afterwards.",
+  "tested_parent_revision": "7088af27b3161b8a68642883684b6db0648e7e53",
+  "tests_and_declarations": {
+    ".github/workflows/ci.yml": {
+      "bytes": 33280,
+      "sha256": "a44127f0b9e7ef1704911476e492e5d3aee9ac223aaca6d2f970a6e3b8fe1185"
+    },
+    "toolkit-cli/Makefile": {
+      "bytes": 165496,
+      "sha256": "04bacd254e64a2048562c666e3ee69f2c678f43d0ea47d5a5e413d77622f82d1"
+    },
+    "toolkit-cli/tests/test_cgate_toolkit_tweaker_interop.py": {
+      "bytes": 23575,
+      "sha256": "0e2a7d906ee13040eb8687fa9f5ed5d13b6b0bc4d4da97297acec3fe9615b735"
+    },
+    "toolkit-cli/tests/test_ci_test_results.py": {
+      "bytes": 105022,
+      "sha256": "a1819a7de963072e502d89a967f12c9823b4bc537bd5e7982608bca8b33df837"
+    },
+    "toolkit-cli/tests/test_conversion_xml_preservation.py": {
+      "bytes": 20346,
+      "sha256": "096cb0598842177cfa102a99b1d268a0fa77f39d158385ae5a5b10218c3e27a5"
+    },
+    "toolkit-cli/tests/test_conversion_xml_preservation_backends.py": {
+      "bytes": 38212,
+      "sha256": "d480b62c36b6e6e881e6f64289e510e56c8c841fafa50dd32265732372ba2ea5"
+    },
+    "toolkit-cli/tests/test_installed_rust_interop.py": {
+      "bytes": 53704,
+      "sha256": "b7a80b0c603ac6f7487aff90d9e6fd173fabfded3e4931a8ba01ccf82aead8eb"
+    },
+    "toolkit-cli/tests/test_installed_rust_interop_matrix.py": {
+      "bytes": 14766,
+      "sha256": "36a385c6d9ae587d0c13d54292601c07fbcf050fd5f33efda49007a14d7af89f"
+    },
+    "toolkit-cli/tests/test_thermostat_zone_controls.py": {
+      "bytes": 11532,
+      "sha256": "47bc2fc209d6e779cd93cf76917ce99ee0c5b328c8b050d63636153de741d115"
+    },
+    "toolkit-cli/tests/test_thermostat_zone_controls_backends.py": {
+      "bytes": 19688,
+      "sha256": "e1a8c94703c00da190898ef0932b23c106f95ac294276119e675276cacdf586a"
+    }
+  }
+}
