@@ -169,11 +169,7 @@ def journey(backend, variable, tmp_path):
         for name, value in parameter.fields.items():
             ET.SubElement(node, name).text = value
     spec_path = specs / 'KEYGL5.xml'; spec_path.write_bytes(ET.tostring(root))
-    launcher = work / 'owned-global-images-backend'
     flag = '--unitspec' if backend == 'cgate-mock' else '--cgate-unitspec'
-    launcher.write_text('#!' + sys.executable + '\nimport os,sys\nos.execv(' + repr(str(binary))
-        + ', [' + repr(str(binary)) + ', *sys.argv[1:], ' + repr(flag) + ', ' + repr(str(specs)) + '])\n')
-    launcher.chmod(0o700)
     image_path = tmp_path / 'images.json'
     image_path.write_bytes(source['project_images_raw'].encode())
     assert hashlib.sha256(image_path.read_bytes()).hexdigest() == source['project_images_sha256']
@@ -185,7 +181,7 @@ def journey(backend, variable, tmp_path):
                 'original_execution': False, 'physical_acceptance': False}
     relay = None
     try:
-        with no_contact_trap() as trap, owned_backend(backend, launcher, work) as (endpoint, record):
+        with no_contact_trap() as trap, owned_backend(backend, binary, work, extra_args=(flag, specs)) as (endpoint, record):
             evidence['processes'].append(record)
             with CGateClient(*endpoint, timeout=15) as owner, RecordedGate(endpoint) as relay:
                 document = ET.fromstring(source['project_xml'])

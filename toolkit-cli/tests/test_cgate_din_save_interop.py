@@ -116,12 +116,7 @@ def journey(backend, variable, unit_type, tmp_path):
     alias = specs / (unit_type + '.xml')
     if alias.name != spec.filename:
         alias.write_bytes((specs / spec.filename).read_bytes())
-    launcher = work / 'owned-din-spec-backend'
     flag = '--unitspec' if backend == 'cgate-mock' else '--cgate-unitspec'
-    launcher.write_text('#!' + sys.executable + '\nimport os,sys\nos.execv('
-                        + repr(str(binary)) + ', [' + repr(str(binary))
-                        + ', *sys.argv[1:], ' + repr(flag) + ', ' + repr(str(specs)) + '])\n')
-    launcher.chmod(0o700)
     evidence = {'format': 'cbus-din-toolkit-save-owned-v1', 'backend': backend,
                 'unit_type': unit_type, 'original_execution': False, 'physical_acceptance': False,
                 'binary_sha256': digest(binary.read_bytes()),
@@ -129,7 +124,7 @@ def journey(backend, variable, unit_type, tmp_path):
                 'calls': [], 'processes': [], 'wires': []}
     relay = None
     try:
-        with no_contact_trap() as trap, owned_backend(backend, launcher, work) as (endpoint, process):
+        with no_contact_trap() as trap, owned_backend(backend, binary, work, extra_args=(flag, specs)) as (endpoint, process):
             evidence['processes'].append(process)
             with CGateClient(*endpoint, timeout=15) as owner, RecordedGate(endpoint) as relay:
                 seed(owner, work, trap, unit_type, source_values(spec))

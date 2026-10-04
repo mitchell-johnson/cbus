@@ -30,11 +30,7 @@ def journey(backend, variable, tmp_path, source, target, *, auth_file=None):
     work = associated_work(tmp_path, 'backend')
     specs = tmp_path/'synthetic-specs'
     profile = profile_files(specs, source, target)
-    launcher = work/'owned-dlt-unitspec-backend'
     flag = '--unitspec' if backend == 'cgate-mock' else '--cgate-unitspec'
-    launcher.write_text('#!'+sys.executable+'\nimport os,sys\nos.execv('+repr(str(binary))+', ['+repr(str(binary))+
-                        ', *sys.argv[1:], '+repr(flag)+', '+repr(str(specs))+'])\n')
-    launcher.chmod(0o700)
     evidence = {'format':'cbus-toolkit-dlt-tweaker-owned-v1','backend':backend,'original_execution':False,
                 'physical_acceptance':False,'binary_sha256':create.digest(binary.read_bytes()),
                 'specifications':{p.name:create.digest(p.read_bytes()) for p in specs.iterdir()},
@@ -42,7 +38,7 @@ def journey(backend, variable, tmp_path, source, target, *, auth_file=None):
     relay = None
     try:
         with no_contact_trap() as trap:
-            with owned_backend(backend, launcher, work, auth_file=auth_file) as (endpoint, process):
+            with owned_backend(backend, binary, work, auth_file=auth_file, extra_args=(flag, specs)) as (endpoint, process):
                 evidence['processes'].append(process)
                 with CGateClient(*endpoint, timeout=15) as owner, RecordedGate(endpoint) as relay:
                     if auth_file is not None:

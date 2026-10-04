@@ -40,7 +40,7 @@ class VerificationHandoffTests(unittest.TestCase):
             # bytes on the socket. Production capture/evidence remains intact.
             response, confirmation = original_command(line, context)
             if line == CO_A.rstrip(b'\r'):
-                response += b'XX\r\n'
+                response = b'XX\r\n' + response
             return response, confirmation
 
         with sim.running() as endpoint:

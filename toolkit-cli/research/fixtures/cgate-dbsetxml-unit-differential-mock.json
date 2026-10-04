@@ -12,12 +12,12 @@
   },
   "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
   "binary": {
-    "sha256": "d3ba06e786718425bcbd5e43de5c8da9469434d3cf3e329a4ecbc39ce4db646b",
+    "sha256": "67e8578563779706a4c37ea685d65e0e666e62c50c3c6d59952cea1eb6e0e8d7",
     "name": "cgate-mock"
   },
-  "source_revision": "628ee6bbcb50d302f3d85805f1d770c3ae3fe459",
+  "source_revision": "6807786f5082c3a6b3c87f1da2662ab588bafde6",
   "source_fingerprint": {
-    ".github/workflows/ci.yml": "869558e4ffb013fb7db66ba9f05439b0dc991541b793430593123263efa07438",
+    ".github/workflows/ci.yml": "36d633b3268507b748d53aa71f2adfccc3d21f29f37081e68132b4e3901a4d30",
     "docs/cmqttd-cgate.md": "12a6251657c7151b7bb882aa5ba53b1b29dc2f2daf436eff1923684c32e96c99",
     "rust/Cargo.lock": "c137cde220381baa85eb156702e7bad75c3793410d9ce2e67cef6bf7f289aea0",
     "rust/Cargo.toml": "94a27eaadadeb233c09fb3fb65980d26cbfdb13df8f69c4573e5244f904c8e99",
@@ -200,7 +200,7 @@
     "rust/testdata/vectors/cgate_repository_uncertainty.json": "8fa6cf6ff466e700bf22ca55dd941f67c087893d57a967401e3084f5c478f880",
     "rust/testdata/vectors/cgate_unprobed_authorization.jsonl": "d61ab85647a793344e02f5c73f6ae0a5ceb395514260857679af9f3a59664438",
     "rust/testdata/vectors/selected_serial_plan.jsonl": "7d707b8e72436f528190025c93c3f018a31527b45152f85aa84b9e16b41120c1",
-    "toolkit-cli/Makefile": "cd8beea22b8a2dfaab6e375a1c346a2eec2b5f644f32d30862c3f464441683e2",
+    "toolkit-cli/Makefile": "4706fede20bcc8796012a3e192d61e4bd3a10c22537b143b16169a9e5a013d7f",
     "toolkit-cli/research/cgate_dbsetxml_unit_differential.py": "b75e484e851c36dc7ae838a62115ebade1c8aea94c19be7af29fbdf49624c555",
     "toolkit-cli/research/cgate_session_differential.py": "29fc1d9a5994c13522067c0b47d94fdadeb3b5f2b0e3ce0704f54102b4f986d4",
     "toolkit-cli/research/fixtures/dali-ext-proxy-original-vectors.json": "828bc12ec7bf628a48ffa412b8154211a4a1207a202fee0d8dd9809bae1c8715",
@@ -617,7 +617,7 @@
   "command": "\"${CBUS_EVIDENCE_PYTHON}\" research/cgate_dbsetxml_unit_differential.py --mock-bin \"${CBUS_CGATE_MOCK_BIN}\" --cmqttd-bin \"${CBUS_CMQTTD_BIN}\" --output-dir \"${CBUS_DIFFERENTIAL_OUTPUT_DIR}\"",
   "publication_sanitization": {
     "format": "cbus-evidence-sanitized-derivative-v1",
-    "raw_file_sha256": "7a9aca4a77831a0eee99996b7cc31f880c5316636d95fd5a767fb892fdfff77f",
+    "raw_file_sha256": "0f73c098595a7a0d50d37376b5c118a29cd6c52df8eb52af99e3d42b46bd91e3",
     "raw_retained_privately": true,
     "field_mapping": [
       {

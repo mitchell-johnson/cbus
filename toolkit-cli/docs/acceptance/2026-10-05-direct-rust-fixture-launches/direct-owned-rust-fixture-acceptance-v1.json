@@ -1,0 +1,552 @@
+{
+  "actual_input_closure": {
+    "count": 4174,
+    "current_root_equal": true,
+    "full_reference_equal_with_only_pinned_inert_git_extra": true,
+    "source_before_after_equal": true,
+    "wheel_before_after_equal": true
+  },
+  "actual_selected_identity_roster": {
+    "bytes": 177494,
+    "logical_name": "actual-selected-identities-v1.json",
+    "sha256": "18e3d144565762cd3f873e610383c27f48d3499cd1dc2bdcc830d965fe65aa3f"
+  },
+  "actual_selection_checks": {
+    "actual_source_set_equals_disjoint_wheel_phase_sets": true,
+    "each_wheel_phase_trace_JUnit_exact": true,
+    "no_manufactured_combined_JUnit_or_trace": true,
+    "source_trace_JUnit_exact": true
+  },
+  "artifacts": {
+    "fresh-wheel": {
+      "bytes": 3013777,
+      "logical_name": "fresh-wheel",
+      "sha256": "9faec19326a037e078e1ee3e6e0192718933052414b2cbe9e3dfcacd472816a4"
+    },
+    "package-origin-reader-v2": {
+      "bytes": 9873,
+      "logical_name": "package-origin-reader-v2",
+      "sha256": "6a31a5baf1558cfe82be9d680a732298ecc49c6d0359d66c0baead7a387aac99"
+    },
+    "package-reader-v1-failure": {
+      "bytes": 1967,
+      "logical_name": "package-reader-v1-failure",
+      "sha256": "39d89f9f59dd3e101c3b6e47c67f8ebbff0308527b657566b47f5a7eff79ca58"
+    },
+    "raw-reader-v4": {
+      "bytes": 26068,
+      "logical_name": "raw-reader-v4",
+      "sha256": "96975cf00816a59451522b07d4111e5e6852f562f69786409a7bf263d1c7287e"
+    },
+    "source-JUnit": {
+      "bytes": 241848,
+      "logical_name": "source-JUnit",
+      "sha256": "0d70937e5c2f7c2fd423cee829fd0a30923a4524a9545078519a5ea9020efe5b"
+    },
+    "source-author-handoff": {
+      "bytes": 9625,
+      "logical_name": "source-author-handoff",
+      "sha256": "0287f8d81a038bfe7c344eae3ad17ae7d4f2dd7daa42508ebd878cb142889e0a"
+    },
+    "source-inputs-after": {
+      "bytes": 743310,
+      "logical_name": "source-inputs-after",
+      "sha256": "8127737157a4e412bf74069be1181e1de226b182625633f2196809cbfaf447a8"
+    },
+    "source-inputs-before": {
+      "bytes": 743310,
+      "logical_name": "source-inputs-before",
+      "sha256": "8127737157a4e412bf74069be1181e1de226b182625633f2196809cbfaf447a8"
+    },
+    "source-maintained-audit": {
+      "bytes": 428322,
+      "logical_name": "source-maintained-audit",
+      "sha256": "0bf12f0d70b932f1be2b9fc535aee5e3cad5908cf0f4d621f8157bc1e1dce273"
+    },
+    "source-raw-author-reader": {
+      "bytes": 1577106,
+      "logical_name": "source-raw-author-reader",
+      "sha256": "ae2856bfcb717665dba6a713e32e51cb8d93c9c255b5f21d5c0f7b5a6d4887eb"
+    },
+    "source-reader-v2-failure": {
+      "bytes": 127372,
+      "logical_name": "source-reader-v2-failure",
+      "sha256": "6d773daa0168d7a9874dce744c84c61ee8c66c1f41edf167b1ddfc4e7924ca61"
+    },
+    "source-reader-v3-failure": {
+      "bytes": 1567066,
+      "logical_name": "source-reader-v3-failure",
+      "sha256": "56e12a18aaa66590936a5fb9955e94fdf437012a3315990f5b7548ddaf72af00"
+    },
+    "source-summary": {
+      "bytes": 180838,
+      "logical_name": "source-summary",
+      "sha256": "a500771ae7a559857ba2aef05ceb63d1b21ae034e60b5fe5f18944f1cb8ea028"
+    },
+    "source-trace": {
+      "bytes": 295582,
+      "logical_name": "source-trace",
+      "sha256": "47663ad25c989718bbaa0949625e6125c0a8c15885597f3a5ab38ebf2b97eed8"
+    },
+    "wheel-author-handoff": {
+      "bytes": 13627,
+      "logical_name": "wheel-author-handoff",
+      "sha256": "be22613e4663809dbc9a9d3588eaa36c8788300ad74199657582b6ee4e0dd3e8"
+    },
+    "wheel-commands": {
+      "bytes": 341279,
+      "logical_name": "wheel-commands",
+      "sha256": "76c9ed7efdd1d20fbd14f80cb6dc9bd8cbd8aa0cd022e4d003d44300f77548d5"
+    },
+    "wheel-daemon-JUnit": {
+      "bytes": 122597,
+      "logical_name": "wheel-daemon-JUnit",
+      "sha256": "997547da1fa8578a7793dc3efb4f525987ad0c44a40ae510a5234bb46e42a5f9"
+    },
+    "wheel-daemon-collection-guard-config": {
+      "bytes": 57983,
+      "logical_name": "wheel-daemon-collection-guard-config",
+      "sha256": "dcb601b0d0e2f72265955d6d579fdef20285f7b7a540fe7ed948ed2580f61930"
+    },
+    "wheel-daemon-collection-trace": {
+      "bytes": 45065,
+      "logical_name": "wheel-daemon-collection-trace",
+      "sha256": "fedb929249914c3cdda423f3b4347499495dcdecb9cee442fbee89e4ee84e9b5"
+    },
+    "wheel-daemon-maintained-audit": {
+      "bytes": 217944,
+      "logical_name": "wheel-daemon-maintained-audit",
+      "sha256": "d9c9cd83d2fb6d876d4ebea6165f4173c700f786effb3fd12634fb139a53f358"
+    },
+    "wheel-daemon-origin-data-set": {
+      "derivation": "Canonical compact JSON of actual terminal summary guard_data_files; each member independently rehashed in package/origin artifact readback.",
+      "logical_name": "wheel-daemon-origin-data-set",
+      "mapping_sha256": "82be6b1bd14e81adef87fa9232d39004979ec04103c9bba2c755d4f828911139",
+      "members": 1046
+    },
+    "wheel-daemon-pytest-guard-config": {
+      "bytes": 57975,
+      "logical_name": "wheel-daemon-pytest-guard-config",
+      "sha256": "cc6c35357e3d96b0bbf8f9a4162265b92279480aa241c2f7d6c9f16ddf5c716d"
+    },
+    "wheel-daemon-raw-author-reader": {
+      "bytes": 797191,
+      "logical_name": "wheel-daemon-raw-author-reader",
+      "sha256": "71ae40119893eebf20df738baf5cf935fc04200ce7a29499004156e210d3e35f"
+    },
+    "wheel-daemon-trace": {
+      "bytes": 149849,
+      "logical_name": "wheel-daemon-trace",
+      "sha256": "b6bfafd9caa3f9e80a1cfa3c60cb810ddfa9994ae81921c7b1c33f3a0d783b03"
+    },
+    "wheel-mock-JUnit": {
+      "bytes": 119581,
+      "logical_name": "wheel-mock-JUnit",
+      "sha256": "7610d1925da2635b0aeb19573b67598d197c83ac1c8eddfcf062ca3fa422f0f9"
+    },
+    "wheel-mock-collection-guard-config": {
+      "bytes": 57981,
+      "logical_name": "wheel-mock-collection-guard-config",
+      "sha256": "f87b4b7beb7a2685c96fb9ddfd626de54d294fa96b627fc5eb97698933338c42"
+    },
+    "wheel-mock-collection-trace": {
+      "bytes": 43822,
+      "logical_name": "wheel-mock-collection-trace",
+      "sha256": "7e1e93c33b1bd57e0c1ca27963703e6901fb67b06e29a139664f44a51a342d05"
+    },
+    "wheel-mock-maintained-audit": {
+      "bytes": 212402,
+      "logical_name": "wheel-mock-maintained-audit",
+      "sha256": "13ef44b4437d6f34a309e7cbd8a9e52b4d30d6a6c97a46d6cdd16b1fe873a606"
+    },
+    "wheel-mock-origin-data-set": {
+      "derivation": "Canonical compact JSON of actual terminal summary guard_data_files; each member independently rehashed in package/origin artifact readback.",
+      "logical_name": "wheel-mock-origin-data-set",
+      "mapping_sha256": "4ab92f89a28a289cc7f673cfd8f8a7b64183ada1266941cc3ee54aaa4010e493",
+      "members": 1039
+    },
+    "wheel-mock-pytest-guard-config": {
+      "bytes": 57973,
+      "logical_name": "wheel-mock-pytest-guard-config",
+      "sha256": "f83f83dd72d724442a26497b9418308a92529cd909cd34e81dd68ecd42899299"
+    },
+    "wheel-mock-raw-author-reader": {
+      "bytes": 784845,
+      "logical_name": "wheel-mock-raw-author-reader",
+      "sha256": "fefe44a1b038a610139b7a955330a136c3bce1ab1865c28584e36fc944bc51da"
+    },
+    "wheel-mock-trace": {
+      "bytes": 145885,
+      "logical_name": "wheel-mock-trace",
+      "sha256": "c0979d445f6c1eb7c81828205c005f7fe1af6fe1b7d4084e8613deb71d7a30c7"
+    },
+    "wheel-package-before": {
+      "bytes": 57593,
+      "logical_name": "wheel-package-before",
+      "sha256": "5e4898b0a202267ae74160a3090f427054ddc934430ac64b6870216be694fa2f"
+    },
+    "wheel-package-origin-reader": {
+      "bytes": 5039,
+      "logical_name": "wheel-package-origin-reader",
+      "sha256": "bdb8c2874128b7017bef606945463fac12e578c695fe8c7b6edd4402102eb9f1"
+    },
+    "wheel-source-after": {
+      "bytes": 743310,
+      "logical_name": "wheel-source-after",
+      "sha256": "8127737157a4e412bf74069be1181e1de226b182625633f2196809cbfaf447a8"
+    },
+    "wheel-source-before": {
+      "bytes": 743310,
+      "logical_name": "wheel-source-before",
+      "sha256": "8127737157a4e412bf74069be1181e1de226b182625633f2196809cbfaf447a8"
+    },
+    "wheel-summary": {
+      "bytes": 1971735,
+      "logical_name": "wheel-summary",
+      "sha256": "3db1c0deeb8352d79888078da5bbcea7c9178da6ad07a92073d188ee246666d0"
+    }
+  },
+  "authorship": {
+    "fixture_and_raw_reader_author_are_same": true,
+    "product_epoch_owner_and_independent_static_reviews_are_separate": true,
+    "raw_readback_is_not_independent_semantic_or_native_acceptance": true
+  },
+  "base_head": "ae8912d8f4aca3a9c02fe3430e2fd656b7660fd2",
+  "executed_fixture_and_protected_input_pins": {
+    ".github/workflows/ci.yml": {
+      "bytes": 30098,
+      "sha256": "869558e4ffb013fb7db66ba9f05439b0dc991541b793430593123263efa07438"
+    },
+    "toolkit-cli/Makefile": {
+      "bytes": 150164,
+      "sha256": "cd8beea22b8a2dfaab6e375a1c346a2eec2b5f644f32d30862c3f464441683e2"
+    },
+    "toolkit-cli/research/installed_interop_guard.py": {
+      "bytes": 8878,
+      "sha256": "e959fa88677881570d324862f783841ceef470b97d0e42dfe371655b6950755f"
+    },
+    "toolkit-cli/research/installed_rust_interop.py": {
+      "bytes": 38365,
+      "sha256": "ab963a8fb4797bbd99cc5a8f8579d58dac8ed8f1ee44de04ccf654609cefe002"
+    },
+    "toolkit-cli/tests/test_cgate_din_save_interop.py": {
+      "bytes": 16345,
+      "sha256": "da75bcd3d8035d4bbad14e83d2a1abae430d93d6508dc29850a5b45f2ff74b79"
+    },
+    "toolkit-cli/tests/test_cgate_edlt_global_images_interop.py": {
+      "bytes": 18585,
+      "sha256": "a47b0c050d3f10e408d8fb90d5c58c82d99321b4cb3080568421993a4d9688bd"
+    },
+    "toolkit-cli/tests/test_cgate_edlt_parent_add_dialog_interop.py": {
+      "bytes": 15922,
+      "sha256": "9a6d6735eafde4d067ff5beb19f8c53c159064d69b8252c4be0a233cb60efde8"
+    },
+    "toolkit-cli/tests/test_cgate_edlt_scene_add_dialog_interop.py": {
+      "bytes": 26494,
+      "sha256": "d45ec1924b56b630a8e0ef019c153d70ae22ad7edac4ce1d64843280df9c509e"
+    },
+    "toolkit-cli/tests/test_cgate_named_database_interop.py": {
+      "bytes": 72158,
+      "sha256": "879b9e3bad64739818c6cf34e13b6846384157650710551c60f7918cc1bf7c46"
+    },
+    "toolkit-cli/tests/test_cgate_senll_controls_interop.py": {
+      "bytes": 14029,
+      "sha256": "ecd387826f4236ceb7cb085bfa3552d437fb71cae7379e7eeb8efd68edd246cf"
+    },
+    "toolkit-cli/tests/test_cgate_senll_inventory_interop.py": {
+      "bytes": 11819,
+      "sha256": "d968ac7068b0140e38d9f8dc4a50f47acc41c35af36399ce481a4321caab44fd"
+    },
+    "toolkit-cli/tests/test_cgate_toolkit_tweaker_dlt_interop.py": {
+      "bytes": 13094,
+      "sha256": "311dd258a094ad135383a49c3e8b71f0c29d749d1df992685162de2935cb038a"
+    },
+    "toolkit-cli/tests/test_cgate_toolkit_tweaker_interop.py": {
+      "bytes": 23403,
+      "sha256": "2c54a10e828c5de9f8e11a6cb4b7d654d3d43920f4eb5721218e08f44a5e3e7c"
+    },
+    "toolkit-cli/tests/test_cgate_toolkit_tweaker_remaining_interop.py": {
+      "bytes": 10627,
+      "sha256": "ca9f9897e2049593a301a11f4481a0384e4c741cc31f4dee3975a651b7e5cc74"
+    }
+  },
+  "fault_limits": {
+    "effect_oracles_still_owned_by_original_passing_test_bodies": true,
+    "intentional_earlier_prebackup_save_kept_separate": true,
+    "no_mutation_replay_after_selected_occurrence": true,
+    "once_only_forwarding_and_actual_upstream_terminal_verified": true,
+    "selected_occurrence_and_issued_tag_verified": true
+  },
+  "format": "cbus-direct-owned-rust-fixture-release-v1",
+  "historical_failures": {
+    "artifact_reader_failures_retained": 3,
+    "full_hosted_lane_pending_and_issue128_open": true,
+    "hosted_312_wrapper_startups_remain_failed_epoch": true,
+    "reader_corrections_did_not_replay_products": true
+  },
+  "journal_case_join_limits": {
+    "one_to_one_join_claim": false,
+    "source_literal_nodeid_journals": 146,
+    "wheel_daemon_literal_nodeid_journals": 73,
+    "wheel_mock_literal_nodeid_journals": 73
+  },
+  "limits": [
+    "Focused631 explicit identities across24 modules only; full1007 plus7 whole modules not accepted by this run.",
+    "Native/original/vendor/physical/home network and universal parity acceptance are not claimed.",
+    "No Cargo build or Rust production change in this test-only fixture batch.",
+    "Seed/direct owner traffic outside retained relays is not part of raw command totals.",
+    "Missing raw nodeID and trap fields remain explicit; no invented journal-to-case joins."
+  ],
+  "origin_scope": "Maintained recognized Python launch/source-loader bytes and startup/terminal authority; PID/argv/reap equality to actual raw Rust journals. Data-only verifier reuses pinned maintained helpers.",
+  "package": {
+    "file_count": 395,
+    "record": {
+      "entries": 406,
+      "record": {
+        "bytes": 38563,
+        "sha256": "19eeef76ab3fc3f254dbcb3be3510350c7ffbb94a0a0b0ee83e9f2bc2d977417"
+      }
+    },
+    "wheel": {
+      "bytes": 3013777,
+      "sha256": "9faec19326a037e078e1ee3e6e0192718933052414b2cbe9e3dfcacd472816a4"
+    }
+  },
+  "privacy_scope": "Whitelisted counts and logical hash/byte descriptors only; no raw journals, XML, auth contents, private absolute paths or raw hex payloads.",
+  "process_limits": {
+    "cleanup_means_recorded_reaping_and_owned_resource_closure": true,
+    "daemon_actual_reap_exit": 0,
+    "live_process_probe_replay": false,
+    "mock_actual_reap_exit": -15
+  },
+  "raw_scopes": {
+    "source": {
+      "actual_auth_file_launches": 5,
+      "actual_fault_modes": {
+        "drop": 92,
+        "refuse": 10
+      },
+      "actual_owned_listener_endpoints": 946,
+      "actual_owned_processes": 629,
+      "actual_processes_by_backend": {
+        "cgate-mock": 312,
+        "cmqttd": 317
+      },
+      "actual_reap_exits": {
+        "-15": 312,
+        "0": 317
+      },
+      "actual_upstream_drops_by_status": {
+        "200": 86,
+        "301": 6
+      },
+      "cli_calls": 1814,
+      "cli_exit_counts": {
+        "0": 1526,
+        "1": 288
+      },
+      "direct_spec_launches": 629,
+      "journal_identity_fields_present": 146,
+      "later_PCI_rows": 0,
+      "offline_cli_calls": 140,
+      "offline_cli_exit_counts": {
+        "0": 136,
+        "1": 4
+      },
+      "raw_journals_verified": 629,
+      "recorded_cli_commands": 48796,
+      "recorded_document_rows": 0,
+      "recorded_wire_commands": 48796,
+      "recorded_wire_connections": 1792,
+      "startup_PCI_rows": 2536,
+      "trap_zero_records": 625,
+      "unmatched_wire_occurrences": 0,
+      "wire_terminal_status_counts": {
+        "200": 30244,
+        "300": 2954,
+        "301": 362,
+        "305": 48,
+        "315": 4200,
+        "316": 790,
+        "342": 3046,
+        "344": 6948,
+        "346": 96,
+        "408": 10,
+        "420": 6,
+        "None": 92
+      }
+    },
+    "wheel_daemon": {
+      "actual_auth_file_launches": 5,
+      "actual_fault_modes": {
+        "drop": 46,
+        "refuse": 5
+      },
+      "actual_owned_listener_endpoints": 634,
+      "actual_owned_processes": 317,
+      "actual_processes_by_backend": {
+        "cmqttd": 317
+      },
+      "actual_reap_exits": {
+        "0": 317
+      },
+      "actual_upstream_drops_by_status": {
+        "200": 43,
+        "301": 3
+      },
+      "cli_calls": 911,
+      "cli_exit_counts": {
+        "0": 764,
+        "1": 147
+      },
+      "direct_spec_launches": 317,
+      "journal_identity_fields_present": 73,
+      "later_PCI_rows": 0,
+      "offline_cli_calls": 70,
+      "offline_cli_exit_counts": {
+        "0": 68,
+        "1": 2
+      },
+      "raw_journals_verified": 317,
+      "recorded_cli_commands": 24424,
+      "recorded_document_rows": 0,
+      "recorded_wire_commands": 24424,
+      "recorded_wire_connections": 900,
+      "startup_PCI_rows": 2536,
+      "trap_zero_records": 315,
+      "unmatched_wire_occurrences": 0,
+      "wire_terminal_status_counts": {
+        "200": 15136,
+        "300": 1480,
+        "301": 181,
+        "305": 24,
+        "315": 2102,
+        "316": 395,
+        "342": 1523,
+        "344": 3478,
+        "346": 48,
+        "408": 5,
+        "420": 6,
+        "None": 46
+      }
+    },
+    "wheel_mock": {
+      "actual_auth_file_launches": 0,
+      "actual_fault_modes": {
+        "drop": 46,
+        "refuse": 5
+      },
+      "actual_owned_listener_endpoints": 312,
+      "actual_owned_processes": 312,
+      "actual_processes_by_backend": {
+        "cgate-mock": 312
+      },
+      "actual_reap_exits": {
+        "-15": 312
+      },
+      "actual_upstream_drops_by_status": {
+        "200": 43,
+        "301": 3
+      },
+      "cli_calls": 903,
+      "cli_exit_counts": {
+        "0": 762,
+        "1": 141
+      },
+      "direct_spec_launches": 312,
+      "journal_identity_fields_present": 73,
+      "later_PCI_rows": 0,
+      "offline_cli_calls": 70,
+      "offline_cli_exit_counts": {
+        "0": 68,
+        "1": 2
+      },
+      "raw_journals_verified": 312,
+      "recorded_cli_commands": 24372,
+      "recorded_document_rows": 0,
+      "recorded_wire_commands": 24372,
+      "recorded_wire_connections": 892,
+      "startup_PCI_rows": 0,
+      "trap_zero_records": 310,
+      "unmatched_wire_occurrences": 0,
+      "wire_terminal_status_counts": {
+        "200": 15108,
+        "300": 1474,
+        "301": 181,
+        "305": 24,
+        "315": 2098,
+        "316": 395,
+        "342": 1523,
+        "344": 3470,
+        "346": 48,
+        "408": 5,
+        "None": 46
+      }
+    }
+  },
+  "scope": {
+    "affected_modules": 24,
+    "changed_fixture_modules": 9,
+    "configured_explicit_ids_not_fully_executed": 1007,
+    "configured_whole_modules_not_fully_executed": 7,
+    "errors": 0,
+    "failures": 0,
+    "skips": 0,
+    "source_parents": 631,
+    "subtests": 0,
+    "wheel_daemon_parents": 318,
+    "wheel_mock_parents": 313
+  },
+  "separate_validation_scopes": {
+    "guard_CI_parents": 120,
+    "guard_CI_subtests": 14,
+    "not_added_to_631": true,
+    "process_free_forwarding_parents": 22,
+    "tiny_negative_predecessor_one_failure_preserved": true,
+    "tiny_negative_probe_parents": 2
+  },
+  "status": "FOCUSED_OWNED_SOURCE_AND_DISTINCT_INSTALLED_WHEEL_ACCEPTANCE_WITH_LIMITS",
+  "trap_limits": {
+    "source_explicit_zero_journals": 625,
+    "source_field_absent_journals": 4,
+    "universal_trap_zero_claim": false,
+    "wheel_daemon_explicit_zero_journals": 315,
+    "wheel_daemon_field_absent_journals": 2,
+    "wheel_mock_explicit_zero_journals": 310,
+    "wheel_mock_field_absent_journals": 2
+  },
+  "unchanged_maintained_protections": {
+    "auditor": {
+      "bytes": 12136,
+      "sha256": "78021b6dfef3150a09833dd08a6f293e5fa99820dec13e4d52ff3e69883d69d5"
+    },
+    "guard": {
+      "bytes": 8878,
+      "sha256": "e959fa88677881570d324862f783841ceef470b97d0e42dfe371655b6950755f"
+    },
+    "runner": {
+      "bytes": 38365,
+      "sha256": "ab963a8fb4797bbd99cc5a8f8579d58dac8ed8f1ee44de04ccf654609cefe002"
+    }
+  },
+  "wheel_origin_counts": {
+    "daemon": {
+      "origin_records": 202242,
+      "owned_rust_children": 317,
+      "owned_rust_reaped": 317,
+      "product_import_events": 200154,
+      "python_processes": 1044,
+      "scope": "guarded Python launches and observed product module loads",
+      "violations": 0
+    },
+    "mock": {
+      "origin_records": 200934,
+      "owned_rust_children": 312,
+      "owned_rust_reaped": 312,
+      "product_import_events": 198860,
+      "python_processes": 1037,
+      "scope": "guarded Python launches and observed product module loads",
+      "violations": 0
+    }
+  }
+}

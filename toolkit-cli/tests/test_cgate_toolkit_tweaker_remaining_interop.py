@@ -36,13 +36,7 @@ def journey(backend, variable, tmp_path, case):
     specs = tmp_path / 'synthetic-specs'
     profile = profile_files(specs, case['source'], case['target'])
     profile['source_values'].update(case.get('source_values', {}))
-    launcher = work / 'owned-remaining-conversion-spec-backend'
     flag = '--unitspec' if backend == 'cgate-mock' else '--cgate-unitspec'
-    launcher.write_text('#!' + sys.executable + '\nimport os,sys\nos.execv('
-                        + repr(str(binary)) + ', [' + repr(str(binary))
-                        + ', *sys.argv[1:], ' + repr(flag) + ', '
-                        + repr(str(specs)) + '])\n', encoding='utf-8')
-    launcher.chmod(0o700)
     evidence = {'format': 'cbus-remaining-conversion-owned-v1',
                 'backend': backend, 'original_execution': False,
                 'physical_acceptance': False,
@@ -52,7 +46,7 @@ def journey(backend, variable, tmp_path, case):
                                    for p in specs.iterdir()}}
     relay = None
     try:
-        with no_contact_trap() as trap, owned_backend(backend, launcher, work) as (endpoint, record):
+        with no_contact_trap() as trap, owned_backend(backend, binary, work, extra_args=(flag, specs)) as (endpoint, record):
             evidence['processes'].append(record)
             with CGateClient(*endpoint, timeout=15) as owner, RecordedGate(endpoint) as relay:
                 evidence['roles'] = create.seed(owner, work, trap, case['source'], profile)
