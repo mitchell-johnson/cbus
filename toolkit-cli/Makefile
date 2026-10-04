@@ -24,9 +24,13 @@
 #                       twelve exact-wire Unit mapper cases plus two full Network reads
 #   make check-dbgetxml-wire-interop
 #                       Python client and pipelined XML reads on both Rust servers
-#   make check-wheel    build a fresh wheel, install it with every supported
-#                       extra in an isolated Python 3.13 venv, and run the
+#   make check-wheel    build a fresh wheel with test/research/serial/usb
+#                       extras in an isolated Python 3.13 venv, and run the
 #                       full offline suite without importing from src/
+#   make check-wheel-interop
+#                       require an explicit retained output directory and both
+#                       existing Rust executables; install a fresh wheel and run
+#                       complete maintained interop selections with import guards
 #   make check-thermostat-temperature-owner
 #                       focused temperature load/save owner and preserved settings
 #                       checks using explicitly supplied existing Rust executables
@@ -1183,6 +1187,12 @@ check-interop: check-session-differential check-tagged-session-differential chec
 	$(MAKE) check-cgate-interop
 	$(MAKE) check-cmqtt-interop
 
+check-wheel-interop:
+	test -n "$(WHEEL_INTEROP_OUTPUT)"
+	PYTHONPATH= "$(WHEEL_PY)" research/installed_rust_interop.py \
+		--mock-bin "$(CGATE_MOCK_BIN)" --cmqttd-bin "$(CMQTTD_BIN)" \
+		--output "$(WHEEL_INTEROP_OUTPUT)"
+
 check-wheel:
 	@tmp=$$(mktemp -d); trap 'rm -rf "$$tmp"' EXIT; \
 	project=$$(pwd -P); source_root="$$project/src"; \
@@ -1207,5 +1217,5 @@ compile:
 	check-session-differential \
 	check-tagged-session-differential \
 	check-dbsetxml-unit-differential \
-	check-cgate-interop check-cmqtt-interop check-interop check-wheel \
+	check-cgate-interop check-cmqtt-interop check-interop check-wheel check-wheel-interop \
 	check-parity-register refresh-parity-receipts coverage require-complete compile

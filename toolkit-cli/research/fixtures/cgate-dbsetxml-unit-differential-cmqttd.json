@@ -15,9 +15,9 @@
     "sha256": "657a04a65691f321d3431d6d1a86648caad9eaeb2995741a150a16ef8710b956",
     "name": "cmqttd"
   },
-  "source_revision": "3497204ba319ad6de2cbddefac8ce9215ee19436",
+  "source_revision": "ef677d19a0d9e9e282fb00f5d65b8ab682e7f6b8",
   "source_fingerprint": {
-    ".github/workflows/ci.yml": "5c81648a7b8358e1021c491505a80c5a5824e778fa9e5d736f3d7b09c5400872",
+    ".github/workflows/ci.yml": "aca35b2a13516cba15a1f2f776312402309e8dc8b4dabe73135d78be854eb4b8",
     "docs/cmqttd-cgate.md": "0442c699163915a5ae61bb5811ef10dcf99e393fd12bc6a91d167c5bd72f1cad",
     "rust/Cargo.lock": "c137cde220381baa85eb156702e7bad75c3793410d9ce2e67cef6bf7f289aea0",
     "rust/Cargo.toml": "94a27eaadadeb233c09fb3fb65980d26cbfdb13df8f69c4573e5244f904c8e99",
@@ -218,7 +218,7 @@
     "rust/testdata/vectors/cgate_repository_uncertainty.json": "8fa6cf6ff466e700bf22ca55dd941f67c087893d57a967401e3084f5c478f880",
     "rust/testdata/vectors/cgate_unprobed_authorization.jsonl": "d61ab85647a793344e02f5c73f6ae0a5ceb395514260857679af9f3a59664438",
     "rust/testdata/vectors/selected_serial_plan.jsonl": "7d707b8e72436f528190025c93c3f018a31527b45152f85aa84b9e16b41120c1",
-    "toolkit-cli/Makefile": "d005b6538eb520774e4279f1a17f53b4148f05dc8388dfeeb77b5f367888b9af",
+    "toolkit-cli/Makefile": "fcb03065dbdcfaae7364d12041afb80d02fd528cd777dfbb402b58b303bc6cb9",
     "toolkit-cli/research/cgate_dbsetxml_unit_differential.py": "b75e484e851c36dc7ae838a62115ebade1c8aea94c19be7af29fbdf49624c555",
     "toolkit-cli/research/cgate_session_differential.py": "29fc1d9a5994c13522067c0b47d94fdadeb3b5f2b0e3ce0704f54102b4f986d4",
     "toolkit-cli/research/fixtures/dali-ext-proxy-original-vectors.json": "828bc12ec7bf628a48ffa412b8154211a4a1207a202fee0d8dd9809bae1c8715",
@@ -631,7 +631,7 @@
   "command": "\"${CBUS_EVIDENCE_PYTHON}\" research/cgate_dbsetxml_unit_differential.py --mock-bin \"${CBUS_CGATE_MOCK_BIN}\" --cmqttd-bin \"${CBUS_CMQTTD_BIN}\" --output-dir \"${CBUS_DIFFERENTIAL_OUTPUT_DIR}\"",
   "publication_sanitization": {
     "format": "cbus-evidence-sanitized-derivative-v1",
-    "raw_file_sha256": "708a92c5512ab1c6d0c9408170072974d7979d7898d16c870e1dc9090293428e",
+    "raw_file_sha256": "b738b69bcc2ed4459025c1647e69ab30e023ad71b303e038b16eee0f8cf31bcb",
     "raw_retained_privately": true,
     "field_mapping": [
       {
