@@ -221,6 +221,8 @@ jobs:
           --require-module tests/test_thermostat_quick_zone_controls_backends.py
           --require-module tests/test_thermostat_temperature_owner_backends.py
           --require-module tests/test_cgl_application_order_backends.py
+          --require-module tests/test_application_copy_safe_backends.py
+          --require-module tests/test_application_safe_set_backends.py
           --require-module tests/test_cgate_din_save_interop.py
           --summary "${GITHUB_STEP_SUMMARY}"
 
@@ -293,6 +295,8 @@ jobs:
           --require-module tests/test_thermostat_quick_zone_controls_backends.py
           --require-module tests/test_thermostat_temperature_owner_backends.py
           --require-module tests/test_cgl_application_order_backends.py
+          --require-module tests/test_application_copy_safe_backends.py
+          --require-module tests/test_application_safe_set_backends.py
           --require-module tests/test_cgate_din_save_interop.py
           --summary "${GITHUB_STEP_SUMMARY}"
 

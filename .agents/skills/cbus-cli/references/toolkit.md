@@ -1081,3 +1081,28 @@ The new `toolkit-cli/docs/thermostat-quick-zone-controls.md` describes that
 bounded explicit owner integration; its accepted source/wheel scope is recorded in `toolkit-cli/docs/feature-batch-2026-10-04-thermostat-quick-zone-controls.md`.
 The batch report separates failed 22-module predecessors from the corrected
 78-case source/installed-wheel follow-ups; do not combine their test counts.
+
+## Application SAFE database workflow
+
+For complete admitted Application database copy or Address/TagName edits, read
+`toolkit-cli/docs/application-database-safe.md` first. `cgate database copy`
+reads the source and sends one `DBCOPYSAFE`; `cgate database set` sends one
+`DBSETSAFE`. Supply `--project` on that same operation connection, check fresh
+issued identities and the complete graph, then explicitly save the project that
+changed. Address moves retain subtree identities and recorded order; copied
+descendants receive fresh OIDs. Incomplete sibling reservations and unsupported
+source metadata refuse before commit. Never retry an uncertain mutation or save.
+Existing Unit/shared-OID and raw owners remain unchanged.
+
+Application scalar acceptance does not prove numeric Level Value mutation.
+Issue 131 still covers the ordinary unassociated numeric false-success route;
+use only an admitted unique issued Level OID with fresh scalar and whole-XML
+readback. Raw values require their existing associated owner. Target 3.4 HELP*
+documents the copy/set business rules but not the missing exact mutation,
+error/no-op/case/whitespace receipts of issues 124/125. Those native boundaries,
+native/hardware acceptance and the general parity ledger remain open.
+
+The original full source Make interop checkpoint passed all 1,050 required IDs
+and seven whole core modules, with two optional UnitSpec skips. The fresh
+installed 28/31 focused phases are separate. Later matrix/serial/metadata
+composition and issue 131 adoption are outside that original acceptance.

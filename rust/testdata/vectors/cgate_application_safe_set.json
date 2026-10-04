@@ -1,0 +1,132 @@
+{
+  "format": "cbus-application-safe-set-owned-wire-v1",
+  "description": "Target 3.4 HELP* documents decimal byte and sibling uniqueness rules. These replies/no-op/lexeme/case policies are owned regressions, not target mutation captures.",
+  "target_mutation_native_acceptance": false,
+  "documented_rules_source": {
+    "path": "toolkit-cli/research/fixtures/native-cgate-help-differential-acceptance.json",
+    "sha256": "c8645c25686c43ee86360334694bcc3efbbaf83490aadb48afc25ac7457e1c4f",
+    "profile": "target_cgate_3_4",
+    "json_pointer": "/profiles/target_cgate_3_4/help_star/response/70",
+    "version": "3.4.0",
+    "build": 2001,
+    "jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630"
+  },
+  "setup": {
+    "project": "SAFEAPP",
+    "network": 254,
+    "application_creation_order": [
+      72,
+      0,
+      71,
+      66,
+      50
+    ],
+    "names": "App{address}"
+  },
+  "cases": [
+    {
+      "id": "plus",
+      "command": "DBSETSAFE //SAFEAPP/254/71/Address +70",
+      "status": 408,
+      "final": "408 Operation failed: Application Address must contain decimal digits only",
+      "state_unchanged": true
+    },
+    {
+      "id": "minus",
+      "command": "DBSETSAFE //SAFEAPP/254/71/Address -0",
+      "status": 408,
+      "final": "408 Operation failed: Application Address must contain decimal digits only",
+      "state_unchanged": true
+    },
+    {
+      "id": "hex",
+      "command": "DBSETSAFE //SAFEAPP/254/71/Address 0x46",
+      "status": 408,
+      "final": "408 Operation failed: Application Address must contain decimal digits only",
+      "state_unchanged": true
+    },
+    {
+      "id": "overflow",
+      "command": "DBSETSAFE //SAFEAPP/254/71/Address 256",
+      "status": 408,
+      "final": "408 Operation failed: Application Address must be in 0..255",
+      "state_unchanged": true
+    },
+    {
+      "id": "text",
+      "command": "DBSETSAFE //SAFEAPP/254/71/Address oops",
+      "status": 408,
+      "final": "408 Operation failed: Application Address must contain decimal digits only",
+      "state_unchanged": true
+    },
+    {
+      "id": "multiword",
+      "command": "DBSETSAFE //SAFEAPP/254/71/Address 70 1",
+      "status": 408,
+      "final": "408 Operation failed: Application Address must contain decimal digits only",
+      "state_unchanged": true
+    },
+    {
+      "id": "occupied",
+      "command": "DBSETSAFE //SAFEAPP/254/71/Address 72",
+      "status": 408,
+      "final": "408 Operation failed: database Address is already in use",
+      "state_unchanged": true
+    },
+    {
+      "id": "same-address",
+      "command": "DBSETSAFE //SAFEAPP/254/71/Address 71",
+      "status": 200,
+      "final": "200 OK",
+      "state_unchanged": true,
+      "result_address": 71
+    },
+    {
+      "id": "digit-lexeme",
+      "command": "DBSETSAFE //SAFEAPP/254/71/Address 070",
+      "status": 200,
+      "final": "200 OK",
+      "result_address": 70
+    },
+    {
+      "id": "byte255",
+      "command": "DBSETSAFE //SAFEAPP/254/71/Address 255",
+      "status": 200,
+      "final": "200 OK",
+      "result_address": 255
+    },
+    {
+      "id": "sibling-name",
+      "command": "DBSETSAFE //SAFEAPP/254/71/TagName App72",
+      "status": 408,
+      "final": "408 Operation failed: Application TagName is already in use",
+      "state_unchanged": true
+    },
+    {
+      "id": "blank-name-existing-syntax",
+      "command": "DBSETSAFE //SAFEAPP/254/71/TagName",
+      "status": 400,
+      "final": "400 DBSETSAFE requires a path and value",
+      "state_unchanged": true
+    },
+    {
+      "id": "same-name",
+      "command": "DBSETSAFE //SAFEAPP/254/71/TagName App71",
+      "status": 200,
+      "final": "200 OK",
+      "state_unchanged": true
+    },
+    {
+      "id": "unicode-name",
+      "command": "DBSETSAFE //SAFEAPP/254/71/TagName Renamed Ω",
+      "status": 200,
+      "final": "200 OK"
+    }
+  ],
+  "limits": [
+    "No original server or hardware execution.",
+    "Exact target Address mutation/status/error/no-op/case/lexical readback remains open.",
+    "Blank TagName retains the existing non-Unit syntax refusal.",
+    "TagName values retain existing whitespace-token join normalization."
+  ]
+}

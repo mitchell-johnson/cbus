@@ -25,6 +25,8 @@ use std::path::PathBuf;
 use chrono::{SecondsFormat, Utc};
 
 mod access;
+mod application_copy;
+mod application_set;
 pub mod auth;
 pub mod capability_matrix;
 mod config;
@@ -2983,6 +2985,16 @@ impl Server {
         if starts_with(&upper, "APPLICATIONS GET_CATALOG") {
             return service::applications_get_catalog(self, &cmd.tag, &words);
         }
+        // Complete typed Application SAFE copies have their own staged owner.
+        // All captured Unit/shared-OID and other tag routes still defer here.
+        if words
+            .first()
+            .is_some_and(|verb| verb.eq_ignore_ascii_case("DBCOPYSAFE"))
+        {
+            if let Some(response) = self.try_copy_application_safe(&cmd.tag, &words, &cmd.body) {
+                return response;
+            }
+        }
         if let Some(response) = self.tag_database_command(&cmd.tag, &words) {
             return response;
         }
@@ -3084,7 +3096,9 @@ impl Server {
                 self.dbset(&cmd.tag, &words)
             }
             _ if starts_with(&upper, "DBADDSAFE") => self.dbadd(&cmd.tag, &words),
-            _ if starts_with(&upper, "DBCOPYSAFE") => self.dbcopy(&cmd.tag, &words),
+            _ if starts_with(&upper, "DBCOPYSAFE") => {
+                self.dbcopy_with_body(&cmd.tag, &words, &cmd.body)
+            }
             _ if starts_with(&upper, "DBRENAMENETSAFE") => self.dbrename_net(&cmd.tag, &words),
             _ if starts_with(&upper, "DBDELETE") => self.dbdelete(&cmd.tag, &words),
             _ if starts_with(&upper, "DBVALIDATE") => self.dbvalidate(&cmd.tag, &words),
@@ -5094,6 +5108,30 @@ impl Server {
                             };
                         }
                         if let Some(object) = self.pending_object(project, oid) {
+                            // A copied typed NULL Level also has a pending
+                            // mirror. Keep its existing NULL getter without
+                            // discarding that mirror or its LOAD-time metadata.
+                            if field == "Value"
+                                && object.element == "Level"
+                                && !object.fields.contains_key("Value")
+                                && self.level(oid).is_some_and(|level| {
+                                    !level.netvar
+                                        && level.value.is_none()
+                                        && level.raw_value.is_none()
+                                        && object.path.as_deref()
+                                            == Some(
+                                                format!("{}/{}", level.parent, level.address)
+                                                    .as_str(),
+                                            )
+                                })
+                            {
+                                return Response {
+                                    tag: tag.to_string(),
+                                    lines: Vec::new(),
+                                    final_text: format!("342 {path}=null"),
+                                    status: 342,
+                                };
+                            }
                             let value = object
                                 .path
                                 .as_deref()
@@ -8914,6 +8952,21 @@ impl Server {
                 }
             }
         }
+        let application_aliases = Self::application_path_parts(from)
+            .zip(Self::application_path_parts(to))
+            .filter(
+                |((project, network, _), (destination_project, destination_network, _))| {
+                    project == destination_project && network == destination_network
+                },
+            )
+            .map(|((project, network, source), (_, _, destination))| {
+                (
+                    format!("//{project}/{network}-APPLICATION-{source}"),
+                    format!("//{project}/{network}-APPLICATION-{destination}"),
+                    format!("{from}-GROUP-"),
+                    format!("{to}-GROUP-"),
+                )
+            });
         let slash = format!("{from}/");
         self.db_fields = std::mem::take(&mut self.db_fields)
             .into_iter()
@@ -8930,12 +8983,32 @@ impl Server {
         self.objects = std::mem::take(&mut self.objects)
             .into_iter()
             .map(|k| {
+                if let Some((old_root, new_root, old_group, new_group)) = &application_aliases {
+                    if &k == old_root {
+                        return new_root.clone();
+                    }
+                    if let Some(rest) = k.strip_prefix(old_group) {
+                        return format!("{new_group}{rest}");
+                    }
+                }
                 if k == from {
                     to.to_string()
                 } else if let Some(rest) = k.strip_prefix(&slash) {
                     format!("{to}/{rest}")
                 } else {
                     k
+                }
+            })
+            .collect();
+        self.cgl_runtime = std::mem::take(&mut self.cgl_runtime)
+            .into_iter()
+            .map(|key| {
+                if key == from {
+                    to.to_string()
+                } else if let Some(rest) = key.strip_prefix(&slash) {
+                    format!("{to}/{rest}")
+                } else {
+                    key
                 }
             })
             .collect();
@@ -11318,6 +11391,11 @@ impl Server {
                     "409 Unsupported duplicate Application field mutation",
                 );
             }
+        }
+        // Existing Unit/shared-OID routing above retains its selection and
+        // envelope; only its resolved Application reaches this SAFE owner.
+        if let Some(response) = self.try_set_application_safe(tag, words) {
+            return response;
         }
         // Application/Group objects have both a canonical path and a stable
         // OID. Keep TagName and Description in the same project-scoped record

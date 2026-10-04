@@ -1892,6 +1892,69 @@ optional command gate is armed. See
 `rust/testdata/fixtures/native_cgate_broadcast_event.json` and
 `rust/testdata/fixtures/native_cgate_event_fanout.json`.
 
+### Application SAFE copy and identity edits (owned profile)
+
+For an admitted complete numeric or unique-OID Application, typed
+`cbus-toolkit cgate database copy SOURCE NETWORK ADDRESS NAME --project PROJECT`
+reads source XML and sends one `DBCOPYSAFE`. Copy stages the complete admitted
+Group/NetVar/Level subtree, preserves scalar fields and admitted TagsDLT content,
+assigns fresh OIDs throughout, and appends once to the destination Network's
+recorded order. Both projects must be loaded for a cross-project copy. An
+occupied or orphan-bearing destination, ambiguous/incomplete source, associated
+raw Level values or unclassified metadata refuses before commit; unsupported
+children are never silently dropped. Scalar references outside the subtree
+remain literal. This does not establish arbitrary XML or native archive parity.
+
+`database set APPLICATION/Address DECIMAL --project PROJECT` sends one
+`DBSETSAFE` and stages an identity-preserving move within that selected project's
+Network. It refuses a destination Address already assigned to an incomplete
+sibling Application, even before that sibling has a TagName/path. It preserves
+descendant OIDs, recorded order, existing opaque/missing Level values, unrelated
+Unit PP and physical observations. A retained Address lexeme such as `070` uses
+canonical Application path `70` for SAFE Application and Group scalar delegation;
+derive actual indexed positions from fresh data. Copied NULL Levels retain their
+absent Value and fresh OID, with the matching typed-owner null getter. A deferred
+empty TagsDLT child materializes on LOAD after SAVE only for the relevant pending
+copy; compare explicit whole-graph phases rather than pruning empty labels. TagName refuses blank
+or duplicate sibling names. Existing Unit/shared-OID resolution and raw DBSET
+routes remain under their original owners. SAFE names retain existing single-space
+word joining. Target 3.4.0.2001 HELP* indices 58/70 document business rules; they
+do not prove native Address mutation replies or case/no-op/whitespace behavior.
+Neither typed command saves a project or retries uncertain writes. Read back,
+then explicitly save the changed project. See
+[`application-database-safe.md`](../../../../toolkit-cli/docs/application-database-safe.md)
+for selectors, refusal scopes, persistence and the still-open native boundaries.
+
+An incomplete raw Application can reserve a sibling TagName before it has an
+Address/path. SAFE Application rename and copy refuse that same-project,
+same-Network name before mutation/allocation, including the exact retained
+Network-OID parent representation. Unrelated Network/project reservations do
+not block the target, and the current target's exact path remains excluded.
+Raw constructor and Network-OID retained-state evidence are distinct. Exact
+native name/no-op/case/whitespace/error behavior remains unproved.
+
+Do not infer numeric Level Value support from the Application scalar owner.
+[Issue 131](https://github.com/mitchell-johnson/cbus/issues/131) records an ordinary
+unassociated typed Network where numeric `DBSETSAFE .../Value` acknowledges
+`200` without changing authoritative Level XML. For byte edits, use a fresh
+unique issued Level OID, then check both the `342` scalar and full XML readback.
+The public creation result has `lines`, `final` and `status` with `301 OID=UUID`,
+not a top-level `oid` field. Raw Values require the existing admitted associated
+owner and matching typed/pending identity; a generic numeric alias or opaque
+field row is not that proof. The explicit public Languages association fixture
+and its Value-only whole-graph/342 checks must be qualified to actual execution.
+Current source 59 and separate installed mock 28/daemon 31 selections passed with
+no failures or skips; native issues 124/125 stay open. The configured full
+interop roster and ordinary numeric Level Value gap are separate scopes. Never relabel the issue 131 false-success captures as fixture errors.
+
+The separate full source offline repeat passed with 1,714 provisioning skips.
+The pre-matrix full source interop gate passed all 1,050 required IDs (519 mock,
+531 daemon) plus seven whole core modules, with exactly two optional UnitSpec
+skips. Later matrix/serial/metadata composition requires its separate checks.
+These source results do not establish native or hardware acceptance. The isolated 13-case issue
+131 candidate remains unadopted in this tested source and has no public/installed
+acceptance in this feature epoch. It does not close the numeric Value gap.
+
 ### PP administration and PROGRAMMER queues
 
 cmqttd implements the maintained local PP administrative surface against the

@@ -119,11 +119,25 @@ For example, `cgate database add //LAB/CustomA application 56 Lighting
 --project LAB` creates an Application in an existing independent named Network.
 Use its returned OID for subsequent Group/NetVar/Level edits. cmqttd preserves
 these ordered children, fresh copy identities and incomplete raw objects through
-explicit save/reload and internal JSON restart. A Level requires Value before
-project save; typed creation/copy initializes it to the requested address.
+explicit save/reload and internal JSON restart. For typed Level-specific
+`database add` and `database copy`, the CLI initializes Value to the requested
+address before a later project save. That initializer does not traverse an
+Application copy. A complete admitted whole-Application copy preserves NULL
+Levels in the owned Rust model; see its
+[copied NULL SAVE/LOAD profile](docs/application-database-safe.md#null-levels-and-copied-load-metadata).
+Exact native NULL Application-copy/save acceptance remains open.
 The [named workflow report](docs/feature-batch-2026-10-01-named-database-workflows.md)
 records software and bounded original-server checks. Full Project-OID operations,
 mixed payload copies and broader original/physical acceptance remain open.
+
+The [Application database guide](docs/application-database-safe.md) covers
+complete admitted Application SAFE copies with fresh descendant OIDs and staged
+Address/TagName edits that preserve identities, data and recorded creation order.
+Use `--project` on the operation's connection, read back the complete graph and
+save the changed project explicitly. Never replay an uncertain write. The
+bounded owned source and installed checks are separate from exact native
+acceptance in issues 124/125; ordinary unassociated numeric Level Value writes
+remain limited by issue 131.
 
 `cgate file-upload SERVER_PATH LOCAL_FILE [--project NAME]` sends a bounded binary
 snapshot through the server FILE protocol. cmqttd stores it in its virtual

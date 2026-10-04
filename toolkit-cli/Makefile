@@ -620,6 +620,27 @@ check-cgate-interop: compile
 		'tests/test_cgl_application_order_backends.py::test_public_cgl_project_copy_native_archive_and_graph_isolation[mock]' \
 		'tests/test_cgl_application_order_backends.py::test_public_cgl_lost_import_success_is_not_replayed_or_rolled_back[mock]' \
 		'tests/test_cgl_application_order_backends.py::test_public_cgl_invalid_python_document_has_no_prefix_mutation[mock]' \
+		'tests/test_application_copy_safe_backends.py::test_public_application_copy_lost_301_no_replay_or_inverse_cleanup[mock]' \
+		'tests/test_application_copy_safe_backends.py::test_public_application_copy_lost_project_save_preserves_complete_copy[mock]' \
+		'tests/test_application_copy_safe_backends.py::test_public_application_copy_sibling_conflicts_do_not_mutate[mock]' \
+		'tests/test_application_copy_safe_backends.py::test_public_application_copy_unsaved_close_drops_only_destination[mock]' \
+		'tests/test_application_copy_safe_backends.py::test_public_application_copy_wrong_parent_and_raw_level_refuse[mock]' \
+		'tests/test_application_copy_safe_backends.py::test_public_application_cross_project_copy_preserves_source[mock]' \
+		'tests/test_application_copy_safe_backends.py::test_public_application_oid_copy_to_network_oid[mock]' \
+		'tests/test_application_copy_safe_backends.py::test_public_numeric_application_copy_complete_save_reload_isolation[mock]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_lost_success_is_not_replayed[mock-lost-move]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_lost_success_is_not_replayed[mock-lost-save]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_move_preserves_full_graph[mock-numeric]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_move_preserves_full_graph[mock-oid]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_noop_rename_and_replacement_share_identity[mock]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_refusal_is_atomic[mock-blank-name]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_refusal_is_atomic[mock-hex]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_refusal_is_atomic[mock-minus]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_refusal_is_atomic[mock-name-collision]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_refusal_is_atomic[mock-occupied]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_refusal_is_atomic[mock-overflow]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_refusal_is_atomic[mock-plus]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_refusal_is_atomic[mock-text]' \
 		-q -p no:cacheprovider $(CGATE_INTEROP_PYTEST_EXTRA)
 
 check-cmqtt-interop: compile
@@ -1138,6 +1159,28 @@ check-cmqtt-interop: compile
 		'tests/test_cgl_application_order_backends.py::test_public_cgl_invalid_python_document_has_no_prefix_mutation[daemon]' \
 		'tests/test_cgl_application_order_backends.py::test_public_cmqttd_cgl_durable_restart_and_explicit_legacy_fallback[recorded-restart]' \
 		'tests/test_cgl_application_order_backends.py::test_public_cmqttd_cgl_durable_restart_and_explicit_legacy_fallback[legacy-missing-field]' \
+		'tests/test_application_copy_safe_backends.py::test_public_application_copy_lost_301_no_replay_or_inverse_cleanup[daemon]' \
+		'tests/test_application_copy_safe_backends.py::test_public_application_copy_lost_project_save_preserves_complete_copy[daemon]' \
+		'tests/test_application_copy_safe_backends.py::test_public_application_copy_sibling_conflicts_do_not_mutate[daemon]' \
+		'tests/test_application_copy_safe_backends.py::test_public_application_copy_unsaved_close_drops_only_destination[daemon]' \
+		'tests/test_application_copy_safe_backends.py::test_public_application_copy_wrong_parent_and_raw_level_refuse[daemon]' \
+		'tests/test_application_copy_safe_backends.py::test_public_application_cross_project_copy_preserves_source[daemon]' \
+		'tests/test_application_copy_safe_backends.py::test_public_application_oid_copy_to_network_oid[daemon]' \
+		'tests/test_application_copy_safe_backends.py::test_public_numeric_application_copy_complete_save_reload_isolation[daemon]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_cmqttd_restart_preserves_address_and_oid' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_lost_success_is_not_replayed[daemon-lost-move]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_lost_success_is_not_replayed[daemon-lost-save]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_move_preserves_full_graph[daemon-numeric]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_move_preserves_full_graph[daemon-oid]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_noop_rename_and_replacement_share_identity[daemon]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_refusal_is_atomic[daemon-blank-name]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_refusal_is_atomic[daemon-hex]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_refusal_is_atomic[daemon-minus]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_refusal_is_atomic[daemon-name-collision]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_refusal_is_atomic[daemon-occupied]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_refusal_is_atomic[daemon-overflow]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_refusal_is_atomic[daemon-plus]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_refusal_is_atomic[daemon-text]' \
 		-q -p no:cacheprovider $(CMQTT_INTEROP_PYTEST_EXTRA)
 
 check-session-differential: build-interop

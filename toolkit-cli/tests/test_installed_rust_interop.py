@@ -185,10 +185,13 @@ def test_complete_baseline_preserves_991_explicit_ids_and_seven_modules(runner):
     make = Path(os.environ.get("CBUS_INSTALLED_INTEROP_BASE_MAKE",
         str(Path(__file__).resolve().parents[1] / "Makefile")))
     plans = runner.declared_selections(make.read_text())
-    # Keep the exact inherited declaration digest; new CGL IDs have their own guard.
+    # Keep the exact inherited declaration digest; new CGL and SAFE IDs have their own roster guards.
     for plan in plans.values():
         for key in ("required_ids", "quoted_ids"):
-            plan[key] = [n for n in plan[key] if not n.startswith("tests/test_cgl_application_order_backends.py::")]
+            plan[key] = [n for n in plan[key] if not n.startswith((
+                "tests/test_cgl_application_order_backends.py::",
+                "tests/test_application_copy_safe_backends.py::",
+                "tests/test_application_safe_set_backends.py::"))]
     ids = sorted(n for p in plans.values() for n in p["required_ids"])
     quoted = sorted(n for p in plans.values() for n in p["quoted_ids"])
     assert len(ids) == 991 and len(quoted) == 985
