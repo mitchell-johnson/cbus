@@ -403,6 +403,13 @@ class NewInteropSelectionTests(unittest.TestCase):
         # Literal cases from the reviewed source dictionaries and test shapes.
         # The inherited selection is pinned separately to published main1cc79977.
         templates = (
+            'tests/test_thermostat_output_edit_backends.py::test_public_output_edit_histories_preserve_identity_and_graph[shared-object-repeated-quoted-edits-{backend}]',
+            'tests/test_thermostat_output_edit_backends.py::test_public_output_edit_histories_preserve_identity_and_graph[nbsp-temporary-name-swap-{backend}]',
+            'tests/test_thermostat_output_edit_backends.py::test_public_output_edit_histories_preserve_identity_and_graph[add-edit-issued-identity-and-reselect-original-{backend}]',
+            'tests/test_thermostat_output_edit_backends.py::test_public_output_edit_histories_preserve_identity_and_graph[cancel-and-omitted-long-name-noop-{backend}]',
+            'tests/test_thermostat_output_edit_backends.py::test_public_output_edit_histories_preserve_identity_and_graph[shared-object-edits-preserve-opaque-existing-value-{backend}]',
+            'tests/test_thermostat_output_edit_backends.py::test_public_output_edit_duplicate_refused_before_backup[{backend}]',
+            'tests/test_thermostat_output_edit_backends.py::test_public_output_edit_lost_successful_set_never_replays[{backend}]',
             'tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[basic-alias-shared-enable-and-accepted-levels-{backend}]',
             'tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[basic-interleaved-add-retained-after-reselection-{backend}]',
             'tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[cancel-provisional-name-collision-noop-{backend}]',
@@ -443,15 +450,15 @@ class NewInteropSelectionTests(unittest.TestCase):
             'tests/test_thermostat_remote_references_backends.py::test_public_remote_stale_snapshot_refused_before_backup[pp-{backend}]',
             'tests/test_thermostat_remote_references_backends.py::test_public_remote_stale_snapshot_refused_before_backup[unrelated-graph-{backend}]',
         )
-        public_modules = ('tests/test_thermostat_remote_references_backends.py', 'tests/test_thermostat_remote_levels_backends.py', 'tests/test_thermostat_output_groups_backends.py', 'tests/test_thermostat_output_add_backends.py')
+        public_modules = ('tests/test_thermostat_remote_references_backends.py', 'tests/test_thermostat_remote_levels_backends.py', 'tests/test_thermostat_output_groups_backends.py', 'tests/test_thermostat_output_add_backends.py', 'tests/test_thermostat_output_edit_backends.py')
         all_ids = re.findall(r"'(tests/[^']+::[^']+)'", make)
-        self.assertEqual(len(all_ids), 799)
-        self.assertEqual(len(set(all_ids)), 799)
+        self.assertEqual(len(all_ids), 813)
+        self.assertEqual(len(set(all_ids)), 813)
         new_ids = set()
         for backend, target, selection in (('mock', 'check-cgate-interop', 'cgate-mock'),
                                             ('daemon', 'check-cmqtt-interop', 'cmqttd')):
             expected = {row.format(backend=backend) for row in templates}
-            self.assertEqual(len(expected), 39)
+            self.assertEqual(len(expected), 46)
             body = make.split(target + ': compile\n', 1)[1].split('\n\n', 1)[0]
             actual = [row for row in re.findall(r"'(tests/[^']+::[^']+)'", body)
                       if row.split('::', 1)[0] in public_modules]
@@ -462,11 +469,11 @@ class NewInteropSelectionTests(unittest.TestCase):
             audit_body = workflow.split('--selection ' + selection + '\n', 1)[1].split('\n      - name:', 1)[0]
             for module in public_modules:
                 self.assertEqual(audit_body.count('--require-module ' + module + '\n'), 1)
-        self.assertEqual(len(new_ids), 54)
+        self.assertEqual(len(new_ids), 68)
         inherited = '\n'.join(sorted(set(all_ids) - new_ids)) + '\n'
         self.assertEqual(len(set(all_ids) - new_ids), 745)
         self.assertEqual(hashlib.sha256(inherited.encode()).hexdigest(), '1c530f89c4780322fffe47f24ef9aa6943ce387d58b5829ea181c31c741928d8')
-        pure_modules = ('tests/test_thermostat_remote_levels.py', 'tests/test_thermostat_output_groups.py', 'tests/test_thermostat_output_add.py', 'tests/test_thermostat_output_add_native.py')
+        pure_modules = ('tests/test_thermostat_remote_levels.py', 'tests/test_thermostat_output_groups.py', 'tests/test_thermostat_output_add.py', 'tests/test_thermostat_output_add_native.py', 'tests/test_thermostat_output_edit.py', 'tests/test_thermostat_output_edit_native.py', 'tests/test_thermostat_output_edit_opaque_values.py')
         for selection in ('offline', 'installed-wheel'):
             audit_body = workflow.split('--selection ' + selection + '\n', 1)[1].split('\n      - name:', 1)[0]
             for module in pure_modules:

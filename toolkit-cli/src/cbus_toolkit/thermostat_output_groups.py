@@ -1,4 +1,4 @@
-"""Ordinary thermostat output loading, ordered selections and typed Add outcomes.
+"""Ordinary thermostat loading and ordered Select, Add and Edit outcomes.
 
 This is a bounded projection of the recovered agent and group dialogs, not
 Load Template or the quick-zone lifecycle. The caller supplies one shared
@@ -12,7 +12,7 @@ from collections.abc import Mapping
 import json
 
 from .edlt_add_dialog import (AddDialogError, accept_group_dialog, default_group_name,
-    standard_group_name, _message, _rewrite)
+    standard_group_name, _message, _rewrite, _trim, _upper)
 from .native import _tail
 from .thermostat_post_load import (OUTPUTS, DAMPERS, RELAYS, INSTALLATION_NAMES,
     DAMPER_NAMES, _default_name, pp_name, virtual_plant_type)
@@ -72,17 +72,20 @@ def normalize_output_operations(operations):
             parameter, address = normalize_output_selections([
                 {'parameter': row['parameter'], 'address': row['address']}])[0]
             value = {'op': op, 'parameter': parameter, 'address': address}
-        elif op == 'add-output-group':
+        elif op in ('add-output-group', 'edit-output-group'):
+            action = 'Add' if op == 'add-output-group' else 'Edit'
+            optional = {'address', 'name'} if action == 'Add' else {'name'}
             if not {'op', 'parameter', 'outcome'} <= set(row) or set(row) - {
-                    'op', 'parameter', 'outcome', 'address', 'name'}:
-                _fail('Output Add requires op, parameter, outcome and optional address/name')
+                    'op', 'parameter', 'outcome'} - optional:
+                _fail('Output ' + action + ' requires op, parameter, outcome and optional '
+                      + ('address/name' if action == 'Add' else 'name'))
             parameter, outcome = row['parameter'], row['outcome']
             if type(parameter) is not str or parameter not in OUTPUT_FIELDS:
-                _fail('Unknown thermostat output Add parameter: ' + str(parameter))
+                _fail('Unknown thermostat output ' + action + ' parameter: ' + str(parameter))
             if type(outcome) is not str or outcome not in ('accept', 'cancel'):
-                _fail('Output Add outcome must be accept or cancel')
+                _fail('Output ' + action + ' outcome must be accept or cancel')
             if outcome == 'cancel' and set(row) != {'op', 'parameter', 'outcome'}:
-                _fail('Direct-cancel output Add admits no address or name edits')
+                _fail('Direct-cancel output ' + action + ' admits no address or name edits')
             value = {'op': op, 'parameter': parameter, 'outcome': outcome}
             if 'address' in row:
                 if type(row['address']) is not int or not 0 <= row['address'] <= 254:
@@ -91,13 +94,13 @@ def normalize_output_operations(operations):
             if 'name' in row:
                 name = row['name']
                 if type(name) is not str:
-                    _fail('Output Add name must be text')
+                    _fail('Output ' + action + ' name must be text')
                 try:
                     units = len(name.encode('utf-16-le')) // 2
                 except UnicodeEncodeError as error:
-                    raise ThermostatTemplateError('Output Add name contains unpaired UTF-16 surrogates') from error
+                    raise ThermostatTemplateError('Output ' + action + ' name contains unpaired UTF-16 surrogates') from error
                 if units > 32:
-                    _fail('Output Add name exceeds 32 UTF-16 code units before trimming')
+                    _fail('Output ' + action + ' name exceeds 32 UTF-16 code units before trimming')
                 value['name'] = name
         else:
             _fail('Unknown thermostat output operation: ' + str(op))
@@ -105,15 +108,15 @@ def normalize_output_operations(operations):
     return tuple(result)
 
 
-def _safe_added_name(name):
+def _safe_added_name(name, action='Add'):
     """Native command/XML admission after the source dialog has trimmed text."""
     try:
         _tail(name)
     except ValueError as error:
-        raise ThermostatTemplateError('Output Add native name domain: ' + str(error)) from error
+        raise ThermostatTemplateError('Output ' + action + ' native name domain: ' + str(error)) from error
     if any(not (0x20 <= ord(c) <= 0xd7ff or 0xe000 <= ord(c) <= 0xfffd
                 or 0x10000 <= ord(c) <= 0x10ffff) for c in name):
-        _fail('Output Add name cannot be represented by the native command/XML domain')
+        _fail('Output ' + action + ' name cannot be represented by the native command/XML domain')
     return name
 
 
@@ -145,6 +148,7 @@ class OutputGroupModel:
         self.history = []
         self.operations = None
         self.add_dialogs = []
+        self.edit_dialogs = []
         self.project_tag_name = None
         resolver.application(self.application, 'output_application', False,
             creation_name={56: 'Lighting', 95: 'DALI', 203: 'Enable Control'}.get(
@@ -241,8 +245,42 @@ class OutputGroupModel:
         for index, (parameter, address) in enumerate(selections, 1):
             self.history.append(self._select(parameter, address, index))
 
+    def _edit(self, row, role, position, project_tag_name):
+        # Edit opens against the currently bound object, not an independently
+        # addressed group. Its address is displayed as a label and never edited.
+        selected = self.resolver.current(self.references[role])
+        if selected is None or selected.address == 255:
+            _fail('Output Edit requires a selected non-unused group: ' + row['parameter'])
+        receipt = {'position': position, 'op': row['op'], 'parameter': row['parameter'],
+            'outcome': row['outcome'], 'application': self.application, 'kind': 'Group',
+            'address': selected.address, 'identity': selected.identity,
+            'previous_identity': selected.identity, 'previous_name': selected.name,
+            'shown_name': selected.name, 'operator_name': 'name' in row,
+            'entered_name': None, 'name': selected.name, 'changed': False, 'object_created': False}
+        if row['outcome'] == 'accept':
+            if type(project_tag_name) is not str:
+                _fail('Accepted output Edit requires an explicit scalar Project.TagName')
+            # SetValues uses WM_SETTEXT to preload the complete TagName;
+            # EM_LIMITTEXT constrains explicit entry, not that programmatic
+            # text. Omission can therefore retain more than32 UTF-16 units.
+            entered = row.get('name', selected.name)
+            name = _trim(entered)
+            noun = standard_group_name(self.application)
+            if not name:
+                _fail(_message(2202, noun).replace('Add dialog', 'Edit dialog'))
+            if name == project_tag_name:
+                _fail(_message(2204, noun).replace('Add dialog', 'Edit dialog'))
+            if any(group.identity != selected.identity and _upper(group.name) == _upper(name)
+                   for (app, _), group in self.resolver.live.items() if app == self.application):
+                _fail(_message(2203, noun, entered).replace('Add dialog', 'Edit dialog'))
+            name = _safe_added_name(name, 'Edit')
+            self.resolver.rename(selected, name,
+                'output_edit:' + str(position) + ':' + row['parameter'], output_edit=True)
+            receipt.update(entered_name=entered, name=name, changed=name != selected.name)
+        return receipt
+
     def operate(self, operations, *, project_tag_name=None, validate_address):
-        """Direct Delphi Add outcomes, interleaved with existing-object choices.
+        """Direct Delphi Add/Edit outcomes, interleaved with object choices.
 
         The prepared controllers are active and their optional BeforeChange/
         CanChange callbacks are unassigned. Source immediate group storage is
@@ -260,6 +298,11 @@ class OutputGroupModel:
                 self.operations.append(dict(receipt, op=row['op']))
                 continue
             role = self._role(parameter)
+            if row['op'] == 'edit-output-group':
+                receipt = self._edit(row, role, position, project_tag_name)
+                self.edit_dialogs.append(receipt)
+                self.operations.append(receipt)
+                continue
             groups = {address: group.name for (app, address), group in self.resolver.live.items()
                       if app == self.application}
             free = [address for address in range(255) if address not in groups]
@@ -333,4 +376,8 @@ class OutputGroupModel:
             result.update(profile='ordinary-agent-load-then-ordered-output-control-outcomes',
                 operations=self.operations, add_dialogs=self.add_dialogs,
                 project_tag_name=self.project_tag_name, original_add_storage_callbacks_reproduced=False)
+            if self.edit_dialogs:
+                result.update(edit_dialogs=self.edit_dialogs,
+                              original_edit_storage_callbacks_reproduced=False,
+                              original_manager_sort_timers_reproduced=False)
         return result

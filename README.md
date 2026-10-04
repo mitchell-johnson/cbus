@@ -374,6 +374,12 @@ the 15 recovered form temperature fields; this process preference is
 independent of the device's `TemperatureUnits` setting. Template 9 allocation
 requires its documented initially empty application and explicit
 `--group-sort address-ascending` profile.
+Ordered output controls now compose Select, accepted/cancelled Add and
+[Edit](toolkit-cli/docs/thermostat-output-edit.md) in the same settings owner.
+Edit renames the currently selected group while preserving its OID/address,
+shared references and existing Level metadata. See the
+[focused acceptance and remaining scope](toolkit-cli/docs/feature-batch-2026-10-04-thermostat-output-edit-integration.md);
+full thermostat GUI and hardware parity remain open.
 
 The [Toolkit conversion API and CLI](toolkit-cli/docs/toolkit-conversion-tweakers.md)
 admits 288 of 292 registered source/target pairs. The earlier 123 have historical
