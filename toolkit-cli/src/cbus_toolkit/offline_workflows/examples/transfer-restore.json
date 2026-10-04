@@ -1,0 +1,31 @@
+{
+  "format": "cbus-offline-transfer-restore-input-v1",
+  "surface": "restore-decision",
+  "bindings": {
+    "projects": [
+      {
+        "row_id": "synthetic-project-A",
+        "member_identity": "synthetic:archive/A.xml",
+        "source_project": "A",
+        "source_snapshot_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+        "selected": true,
+        "proposed_name": "A_REVIEW"
+      },
+      {
+        "row_id": "synthetic-project-B",
+        "member_identity": "synthetic:archive/B.xml",
+        "source_project": "B",
+        "source_snapshot_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+        "selected": false
+      }
+    ],
+    "archive_sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+    "destination_snapshot_sha256": "4444444444444444444444444444444444444444444444444444444444444444",
+    "destination_names": ["A"],
+    "name_profile": "cbus-toolkit-project-name-v1"
+  },
+  "history": [
+    {"kind": "choose-policy", "policy": "rename"},
+    {"kind": "cancel"}
+  ]
+}

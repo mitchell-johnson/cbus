@@ -323,6 +323,11 @@ jobs:
         run: >-
           python research/ci_test_results.py
           --selection installed-wheel
+          --require-module tests/offline_workflows/test_cli_installed.py
+          --require-module tests/offline_workflows/test_public_cli_integration.py
+          --require-installed-configuration
+          --require-passing-prefix tests/offline_workflows/test_cli_installed.py:: 18
+          --require-passing-prefix tests/offline_workflows/test_public_cli_integration.py::test_actual_installed 17
           --junit "${RUNNER_TEMP}/toolkit-wheel.xml"
           --trace "${RUNNER_TEMP}/toolkit-wheel-trace.json"
           --output "${RUNNER_TEMP}/toolkit-wheel-results.json"

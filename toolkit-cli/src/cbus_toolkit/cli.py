@@ -1390,6 +1390,8 @@ def build_parser():
     parser.add_argument("--version", action="version", version=__version__)
     parser.add_argument("--compact", action="store_true", help="Emit single-line JSON")
     commands = parser.add_subparsers(dest="area", required=True)
+    from .offline_workflows.cli import options as offline_workflow_options
+    offline_workflow_options(commands)
     from .edlt_templates_cli import options as edlt_template_options
     edlt_template_options(commands)
     from .toolkit_preferences_cli import options as preference_options
@@ -4574,6 +4576,14 @@ def run(args):
 
 
 def main(argv=None):
+    argv = list(sys.argv[1:] if argv is None else argv)
+    prefix = 0
+    while prefix < len(argv) and argv[prefix] == "--compact":
+        prefix += 1
+    if argv[prefix:prefix + 1] == ["offline-workflows"]:
+        from .offline_workflows.cli import main as offline_workflow_main
+        offline_args = (["--compact"] if prefix else []) + argv[prefix + 1:]
+        return offline_workflow_main(offline_args, prog="cbus-toolkit offline-workflows")
     args = build_parser().parse_args(argv)
     from .edlt_global_cli import error_payload as global_error_payload
     from .edlt_scene_live_cli import error_payload as live_error_payload

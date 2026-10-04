@@ -794,6 +794,212 @@ class CITestResultsTests(unittest.TestCase):
                 self.assertEqual(receipt["unitemized_subtests"][counter], 0)
                 self.write_junit()
 
+    def write_selection(self, cases, calls, *, installed_configuration=None):
+        """Build consistent synthetic JUnit/trace identities without running tests."""
+        nodeids = [nodeid for nodeid, _ in cases]
+        called = {event["id"] for event in calls}
+        setup_skips = sum(outcome == "skipped" and nodeid not in called
+                          for nodeid, outcome in cases)
+        root = ET.Element("testsuites")
+        suite = ET.SubElement(root, "testsuite",
+                              tests=str(len(calls) + len(set(nodeids) - called)),
+                              failures="0", errors="0",
+                              skipped=str(setup_skips + sum(
+                                  event["outcome"] == "skipped" for event in calls)))
+        for nodeid, outcome in cases:
+            module, name = nodeid.split("::", 1)
+            case = ET.SubElement(suite, "testcase",
+                                 classname=module.removesuffix(".py").replace("/", "."),
+                                 name=name)
+            if outcome == "skipped":
+                ET.SubElement(case, "skipped", message="synthetic unavailable installation")
+            properties = ET.SubElement(case, "properties")
+            ET.SubElement(properties, "property", name="cbus_ci_nodeid", value=nodeid)
+        self.junit.write_bytes(ET.tostring(root))
+        trace = {"format": "cbus-ci-pytest-trace-v1", "collected": nodeids,
+                 "deselected": [], "started": nodeids, "call_events": calls,
+                 "session_exitstatus": 0}
+        if installed_configuration is not None:
+            trace["installed_offline_configuration"] = installed_configuration
+        self.trace.write_text(json.dumps(trace))
+
+    def test_identifier_nested_required_modules_are_admitted(self):
+        for module in ("tests/offline_workflows/test_cli_installed.py",
+                       "tests/offline_workflows/synthetic_cases_2/test_installed.py"):
+            with self.subTest(module=module):
+                nodeid = module + "::test_installed_command"
+                self.write_selection([(nodeid, "passed")],
+                                     [{"id": nodeid, "outcome": "passed"}])
+                receipt = audit(self.junit, self.trace, [module])
+                self.assertTrue(receipt["passed"])
+                self.assertEqual(receipt["missing_required_modules"], [])
+
+    def test_required_modules_reject_unsafe_raw_paths_and_non_test_basenames(self):
+        for module in ("/tests/offline_workflows/test_installed.py",
+                       "./tests/offline_workflows/test_installed.py",
+                       "tests/./test_installed.py", "tests/../test_installed.py",
+                       "tests/offline_workflows/../test_installed.py",
+                       "tests//test_installed.py",
+                       "tests/offline_workflows//test_installed.py",
+                       "tests\\offline_workflows\\test_installed.py",
+                       "tests/offline-workflows/test_installed.py",
+                       "tests/offline_workflows/helpers.py",
+                       "tests/offline_workflows/test_installed.txt",
+                       "tests/offline_workflows/test_installed.py/",
+                       "test_installed.py"):
+            with self.subTest(module=module), self.assertRaises(AuditError):
+                audit(self.junit, self.trace, [module])
+
+    def test_exact_installed_prefix_and_configuration_have_positive_receipt(self):
+        module = "tests/offline_workflows/test_cli_installed.py"
+        prefix = module + "::test_installed_offline"
+        nodeids = [prefix + "[copy-paste]", prefix + "[transfer-restore]"]
+        self.write_selection([(nodeid, "passed") for nodeid in nodeids],
+                             [{"id": nodeid, "outcome": "passed"} for nodeid in nodeids],
+                             installed_configuration={"target_declared": True,
+                                                      "console_declared": True})
+        receipt = audit(self.junit, self.trace, [module],
+                        required_passing_prefixes={prefix: 2},
+                        require_installed_configuration=True)
+        self.assertTrue(receipt["passed"])
+        self.assertEqual(receipt["missing_required_passing_prefixes"], [])
+        self.assertEqual({case["id"] for case in receipt["cases"]}, set(nodeids))
+        self.assertEqual(receipt["unitemized_subtests"]["reported"], 0)
+
+    def test_green_source_cannot_substitute_for_skipped_installed_case(self):
+        module = "tests/offline_workflows/test_cli_installed.py"
+        source = module + "::test_source_offline[transfer-restore]"
+        installed_prefix = module + "::test_installed_offline"
+        installed = installed_prefix + "[transfer-restore]"
+        self.write_selection([(source, "passed"), (installed, "skipped")],
+                             [{"id": source, "outcome": "passed"}],
+                             installed_configuration={"target_declared": True,
+                                                      "console_declared": True})
+        self.assertTrue(audit(self.junit, self.trace, [module])["passed"])
+        receipt = audit(self.junit, self.trace, [module],
+                        required_passing_prefixes={installed_prefix: 1},
+                        require_installed_configuration=True)
+        self.assertFalse(receipt["passed"])
+        self.assertEqual(receipt["missing_required_modules"], [])
+        self.assertEqual(receipt["missing_required_passing_prefixes"], [installed_prefix])
+        self.assertEqual(receipt["counts"]["passed"], 1)
+        self.assertEqual(receipt["counts"]["skipped"], 1)
+
+    def test_missing_required_unique_case_count_is_red(self):
+        prefix = "tests/offline_workflows/test_cli_installed.py::test_installed_offline"
+        nodeid = prefix + "[copy-paste]"
+        self.write_selection([(nodeid, "passed")],
+                             [{"id": nodeid, "outcome": "passed"}])
+        receipt = audit(self.junit, self.trace, [],
+                        required_passing_prefixes={prefix: 2})
+        self.assertFalse(receipt["passed"])
+        self.assertEqual(receipt["missing_required_passing_prefixes"], [prefix])
+        self.assertEqual(receipt["counts"]["passed"], 1)
+
+    def test_extra_passing_cases_do_not_satisfy_an_exact_smaller_quota(self):
+        prefix = "tests/offline_workflows/test_cli_installed.py::test_installed_offline"
+        nodeids = [prefix + "[copy-paste]", prefix + "[transfer-restore]"]
+        self.write_selection([(nodeid, "passed") for nodeid in nodeids],
+                             [{"id": nodeid, "outcome": "passed"} for nodeid in nodeids])
+        receipt = audit(self.junit, self.trace, [],
+                        required_passing_prefixes={prefix: 1})
+        self.assertFalse(receipt["passed"])
+        self.assertEqual(receipt["missing_required_passing_prefixes"], [prefix])
+
+    def test_passed_subtests_cannot_inflate_unique_required_case_count(self):
+        one = audit(self.junit, self.trace, [], required_passing_prefixes={FIRST: 1})
+        inflated = audit(self.junit, self.trace, [], required_passing_prefixes={FIRST: 3})
+        self.assertTrue(one["passed"])
+        self.assertEqual(one["missing_required_passing_prefixes"], [])
+        self.assertEqual(one["counts"]["passed"], 3)
+        self.assertFalse(inflated["passed"])
+        self.assertEqual(inflated["missing_required_passing_prefixes"], [FIRST])
+        self.assertEqual(len(inflated["cases"]), 2)
+        self.assertEqual(len(inflated["call_events"]), 3)
+
+    def test_skipped_subtest_cannot_hide_behind_a_passed_junit_parent(self):
+        self.write_junit(skipped=2)
+        self.write_trace(calls=[{"id": FIRST, "outcome": "passed"},
+                                {"id": FIRST, "outcome": "skipped"},
+                                {"id": FIRST, "outcome": "passed"}])
+        self.assertTrue(audit(self.junit, self.trace, ["tests/test_first.py"])["passed"])
+        receipt = audit(self.junit, self.trace, ["tests/test_first.py"],
+                        required_passing_prefixes={FIRST: 1})
+        self.assertFalse(receipt["passed"])
+        self.assertEqual(receipt["cases"][0]["outcome"], "passed")
+        self.assertEqual(receipt["missing_required_modules"], [])
+        self.assertEqual(receipt["missing_required_passing_prefixes"], [FIRST])
+        self.assertEqual(receipt["counts"]["skipped"], 2)
+
+    def test_required_passing_counts_must_be_positive_exact_integers(self):
+        for count in (True, False, 0, -1, 1.0, "1"):
+            with self.subTest(count=count), self.assertRaises(AuditError):
+                audit(self.junit, self.trace, [], required_passing_prefixes={FIRST: count})
+
+    def test_required_installed_configuration_is_exact_true_for_both_declarations(self):
+        configurations = (None, {}, {"target_declared": True}, {"console_declared": True},
+                          {"target_declared": False, "console_declared": True},
+                          {"target_declared": True, "console_declared": False},
+                          {"target_declared": 1, "console_declared": True},
+                          {"target_declared": True, "console_declared": 1},
+                          {"target_declared": "true", "console_declared": True})
+        for configuration in configurations:
+            with self.subTest(configuration=configuration):
+                value = json.loads(self.trace.read_text())
+                value.pop("installed_offline_configuration", None)
+                if configuration is not None:
+                    value["installed_offline_configuration"] = configuration
+                self.trace.write_text(json.dumps(value))
+                self.assertTrue(audit(self.junit, self.trace, ["tests/test_first.py"])["passed"])
+                with self.assertRaisesRegex(AuditError, "configured target and console"):
+                    audit(self.junit, self.trace, ["tests/test_first.py"],
+                          require_installed_configuration=True)
+
+    def test_cli_appended_passing_prefixes_and_installed_guard_are_applied(self):
+        module = "tests/offline_workflows/test_cli_installed.py"
+        source_prefix = module + "::test_source_offline"
+        installed_prefix = module + "::test_installed_offline"
+        source = source_prefix + "[copy-paste]"
+        installed = installed_prefix + "[transfer-restore]"
+        self.write_selection([(source, "passed"), (installed, "passed")],
+                             [{"id": source, "outcome": "passed"},
+                              {"id": installed, "outcome": "passed"}],
+                             installed_configuration={"target_declared": True,
+                                                      "console_declared": True})
+        output = self.folder / "prefix-receipt.json"
+        arguments = ["ci_test_results.py", "--junit", str(self.junit), "--trace", str(self.trace),
+                     "--output", str(output), "--selection", "offline",
+                     "--require-module", module,
+                     "--require-passing-prefix", source_prefix, "1",
+                     "--require-passing-prefix", installed_prefix, "1",
+                     "--require-installed-configuration"]
+        with patch("sys.argv", arguments):
+            self.assertEqual(main(), 0)
+        receipt = json.loads(output.read_text())
+        self.assertTrue(receipt["passed"])
+        self.assertEqual(receipt["missing_required_passing_prefixes"], [])
+        self.write_selection([(source, "passed"), (installed, "skipped")],
+                             [{"id": source, "outcome": "passed"}],
+                             installed_configuration={"target_declared": True,
+                                                      "console_declared": True})
+        with patch("sys.argv", arguments):
+            self.assertEqual(main(), 1)
+        receipt = json.loads(output.read_text())
+        self.assertFalse(receipt["passed"])
+        self.assertEqual(receipt["missing_required_passing_prefixes"], [installed_prefix])
+
+    def test_cli_missing_installed_configuration_prevents_green_receipt(self):
+        output = self.folder / "configuration-receipt.json"
+        arguments = ["ci_test_results.py", "--junit", str(self.junit), "--trace", str(self.trace),
+                     "--output", str(output), "--selection", "offline",
+                     "--require-module", "tests/test_first.py", "--require-installed-configuration"]
+        with patch("sys.argv", arguments):
+            self.assertEqual(main(), 1)
+        receipt = json.loads(output.read_text())
+        self.assertFalse(receipt["passed"])
+        self.assertRegex(receipt["error"], "configured target and console")
+        self.assertNotIn("counts", receipt)
+
     def test_missing_input_writes_a_path_free_failure_receipt(self):
         output = self.folder / "receipt.json"
         arguments = ["ci_test_results.py", "--junit", str(self.folder / "private.xml"),
