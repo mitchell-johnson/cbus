@@ -192,7 +192,8 @@ def test_complete_baseline_preserves_991_explicit_ids_and_seven_modules(runner):
                 "tests/test_cgl_application_order_backends.py::",
                 "tests/test_application_copy_safe_backends.py::",
                 "tests/test_application_safe_set_backends.py::",
-                "tests/test_ordinary_level_value_backends.py::"))]
+                "tests/test_ordinary_level_value_backends.py::",
+                "tests/test_ordinary_level_value_followon_backends.py::"))]
     ids = sorted(n for p in plans.values() for n in p["required_ids"])
     quoted = sorted(n for p in plans.values() for n in p["quoted_ids"])
     assert len(ids) == 991 and len(quoted) == 985

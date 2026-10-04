@@ -647,6 +647,8 @@ check-cgate-interop: compile
 		'tests/test_ordinary_level_value_backends.py::test_public_numeric_then_issued_oid_keeps_coherent_aliases[mock]' \
 		'tests/test_ordinary_level_value_backends.py::test_public_selected_project_copy_retained_oid_bytes_are_isolated[mock]' \
 		'tests/test_ordinary_level_value_backends.py::test_public_associated_raw_level_owner_keeps_its_lexemes[mock]' \
+		'tests/test_ordinary_level_value_followon_backends.py::test_public_numeric_level_lost_success_is_not_replayed[mock-value]' \
+		'tests/test_ordinary_level_value_followon_backends.py::test_public_numeric_level_lost_success_is_not_replayed[mock-save]' \
 		-q -p no:cacheprovider $(CGATE_INTEROP_PYTEST_EXTRA)
 
 check-cmqtt-interop: compile
@@ -1193,6 +1195,9 @@ check-cmqtt-interop: compile
 		'tests/test_ordinary_level_value_backends.py::test_public_numeric_then_issued_oid_keeps_coherent_aliases[daemon]' \
 		'tests/test_ordinary_level_value_backends.py::test_public_selected_project_copy_retained_oid_bytes_are_isolated[daemon]' \
 		'tests/test_ordinary_level_value_backends.py::test_public_associated_raw_level_owner_keeps_its_lexemes[daemon]' \
+		'tests/test_ordinary_level_value_followon_backends.py::test_public_numeric_level_lost_success_is_not_replayed[daemon-value]' \
+		'tests/test_ordinary_level_value_followon_backends.py::test_public_numeric_level_lost_success_is_not_replayed[daemon-save]' \
+		'tests/test_ordinary_level_value_followon_backends.py::test_public_numeric_group_and_netvar_levels_survive_cmqttd_restart' \
 		-q -p no:cacheprovider $(CMQTT_INTEROP_PYTEST_EXTRA)
 
 check-session-differential: build-interop
