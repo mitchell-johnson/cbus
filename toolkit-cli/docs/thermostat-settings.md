@@ -169,8 +169,11 @@ only planned renames and creations, while preserving all retained metadata.
 The [source annex](thermostat-output-groups-source.md) describes this component
 projection. [Typed Add outcomes](thermostat-output-add.md) extend this ordered
 history on the same graph and save owner. [Typed output Edit](thermostat-output-edit.md)
-also shares this owner. Zone history, application changes, template callbacks,
-output Delete and complete initialized GUI behavior remain separate work.
+also shares this owner. The later [fresh quick-zone owner](thermostat-quick-zone-controls.md)
+and [34 prepared zone properties](thermostat-zone-controls.md) compose explicit
+source callbacks in this same settings transaction. Application changes,
+output Delete, implicit GUI admission and complete initialized original GUI
+behavior remain separate work.
 
 ## Explicit damper callbacks
 
@@ -179,8 +182,11 @@ The [damper guide](thermostat-damper-controls.md) describes seven typed
 assignment and zone update are separate explicit records. Checkbox binding
 assigns the model; Click records a warning request. Final form save owns
 modulation factor serialization. Cache identities belong to this fresh history.
-Complete quick-zone, subscriber dispatch and initialized original lifecycle
-remain open. See the [two-stage acceptance report](feature-batch-2026-10-04-thermostat-damper-controls.md).
+This damper-only checkpoint retains its separate profile. The later
+[fresh quick-zone owner](thermostat-quick-zone-controls.md) and
+[prepared zone properties](thermostat-zone-controls.md) add explicit synchronous
+source callbacks; implicit native dispatch and the complete initialized
+original lifecycle remain open. See the [two-stage acceptance report](feature-batch-2026-10-04-thermostat-damper-controls.md).
 
 ## Temperature preference
 

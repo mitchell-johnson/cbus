@@ -70,12 +70,17 @@ When the planned assignments are complete, the source is deleted once, the new
 Unit is readdressed to the original source address with `DBSET`, and fresh XML
 and PP are checked again. One `PROJECT SAVE`, `PROJECT CLOSE` and `PROJECT LOAD`
 then verify the reopened project, destination identity, metadata, PP and backup.
-The unrelated structural XML comparison retains attributes, namespaces,
-comments, processing instructions and non-whitespace text. Whitespace-only text
-is outside this comparison bound, including opaque and `xml:space="preserve"`
-content. The replacement copies the listed scalar metadata and transformed PP;
-it does not copy arbitrary source Unit extensions into the new Unit. The backup
-retains the full removed source document.
+The project and backup comparisons retain attributes, namespaces, comments,
+processing instructions and character data protected by inherited
+`xml:space="preserve"`. They also retain mixed-content separators, CDATA and
+whitespace-only leaf values. `xml:space="default"` resets the inherited scope;
+only formatting indentation in an element-only container under that default
+policy is ignored. Text following a child keeps the parent's scope. Detached
+Unit checks use the source's actual ancestor whitespace and namespace context.
+Read [conversion XML preservation](conversion-xml-preservation.md) for examples
+and failure handling. The replacement copies the listed scalar metadata and
+transformed PP; it does not copy arbitrary source Unit extensions into the new
+Unit. The backup retains the full removed source document.
 
 A possible-send record is fsynced before each mutation and PP staging write
 after the exclusive apply journal is created. Preview and the initial fresh
@@ -102,8 +107,14 @@ restoration or replay. Its JSON classifies `observed_before`, `observed_replaced
 `conflict` or `read_unavailable`; the command's success exit indicates that the
 observation was produced. `persistence_verified` requires a completed journal
 with every lifecycle send confirmed, fresh matching target PP and a fresh
-matching backup. A converted loaded tree after a lost `PROJECT SAVE` reply alone
-does not prove durable persistence. Journal files are unchanged by recovery.
+matching backup. New completed journals also prove the staged/final Unit and
+remaining project/backup XML under the recorded semantic whitespace profile;
+recovery reports this as `journal_xml_preservation_verified`.
+Admitted historical journals from the earlier whitespace comparison remain
+read-only observations. They cannot gain `persistence_verified=true` through
+recovery or be upgraded automatically. A converted loaded tree after a lost
+`PROJECT SAVE` reply alone does not prove durable persistence. Journal files are
+unchanged by recovery.
 
 The sanitized static receipt is
 [`toolkit-tweaker-lifecycle-source.json`](../research/fixtures/toolkit-tweaker-lifecycle-source.json).
@@ -112,5 +123,7 @@ bytes or original instruction execution. Owned mock/daemon subprocess tests use
 public synthetic specifications and preserve literal wire replies, uncertain
 send journals and independent cleanup evidence. These software checks do not
 claim original GUI/history behavior, physical programming, controller handoff,
-full XML whitespace fidelity or broad replacement parity. Issues #73 and #74
+native XML importer fidelity or broad replacement parity. The conversion XML
+checks protect parsed data returned by the selected service; they do not extend
+its XML schema or promise byte-identical serialization. Issues #73 and #74
 remain separate deferred associated-Level work and are not retried here.

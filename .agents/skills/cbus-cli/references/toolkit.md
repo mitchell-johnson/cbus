@@ -1119,3 +1119,26 @@ The original full source Make interop checkpoint passed all 1,050 required IDs
 and seven whole core modules, with two optional UnitSpec skips. The fresh
 installed 28/31 focused phases are separate. Later matrix/serial/metadata
 composition and issue 131 adoption are outside that original acceptance.
+
+
+## Conversion XML and prepared thermostat zone controls
+
+Conversion creation, replacement and read-only recovery use a conversion-only
+semantic XML comparator. Inherited `xml:space="preserve"`, mixed-content
+separators, CDATA and whitespace-only leaves are significant; only default-scope
+element-container formatting indentation is ignored. Detached Units retain
+actual ancestor scope and namespace context. Invalid directives refuse locally.
+Read `toolkit-cli/docs/conversion-xml-preservation.md`; preserve stopped journals,
+never replay uncertain sends, and never promote legacy journal observations to
+new semantic persistence proof. This does not widen native XML schema admission.
+
+Use `{"op":"zone-checkbox-binding","binding":"MeasuredZones.Zone2","checked":true}`
+in the existing ordered `--output-operation` history for one of the 34 prepared
+thermostat Boolean bindings. Require the current fresh owner and explicit
+`--temperature-preference celsius`; equality guards, synchronous callbacks,
+shared damper/output references and one sealed family save apply. Read
+`toolkit-cli/docs/thermostat-zone-controls.md` for the exact closed roster,
+profile and Basic/Programmable consequences. JSON diagnostics are observations,
+not resumable owner state. Unknown bindings, non-Booleans and caller callbacks
+refuse before connection. Native GUI admission/dispatch, Application migration,
+Delete, unrecovered temperature/time controls and hardware remain separate work.
