@@ -185,6 +185,10 @@ def test_complete_baseline_preserves_991_explicit_ids_and_seven_modules(runner):
     make = Path(os.environ.get("CBUS_INSTALLED_INTEROP_BASE_MAKE",
         str(Path(__file__).resolve().parents[1] / "Makefile")))
     plans = runner.declared_selections(make.read_text())
+    # Keep the exact inherited declaration digest; new CGL IDs have their own guard.
+    for plan in plans.values():
+        for key in ("required_ids", "quoted_ids"):
+            plan[key] = [n for n in plan[key] if not n.startswith("tests/test_cgl_application_order_backends.py::")]
     ids = sorted(n for p in plans.values() for n in p["required_ids"])
     quoted = sorted(n for p in plans.values() for n in p["quoted_ids"])
     assert len(ids) == 991 and len(quoted) == 985
@@ -678,10 +682,14 @@ def test_actual_child_fallback_and_missing_guard_fail(helper,tmp_path,mode):
 
 def test_actual_positional_executable_and_environment_are_bound(helper,tmp_path):
     f,py,origins,config=guarded_fixture(tmp_path,helper)
-    # The executable is positional while argv[0] is a synthetic display name.
-    # This is a real selected interpreter launch, not an unobserved process.
+    # Keep a synthetic argv[0] inside the venv: a bare display name prevents
+    # Linux CPython from locating pyvenv.cfg even with an explicit executable.
+    # Popen still receives both executable and the empty env positionally.
+    display = py.parent / "fixture-display-name"
+    display.symlink_to(py.name)
+    assert display.resolve() == py.resolve()
     code=("import cbus_toolkit,subprocess,os,json,sys;"
-          "p=subprocess.Popen(['fixture-display-name','-B','-c',os.environ['CHILD_CODE']],"
+          f"p=subprocess.Popen([{str(display)!r},'-B','-c',os.environ['CHILD_CODE']],"
           "-1,sys.executable,None,subprocess.PIPE,subprocess.PIPE,None,True,False,None,{});"
           "out,err=p.communicate();print(json.dumps({'pid':os.getpid(),'child_exit':p.returncode,'stdout':out.decode(),'stderr':err.decode()}))")
     row=run_parent(py,code,cwd=tmp_path,values={"CHILD_CODE":CHILD_IMPORT})

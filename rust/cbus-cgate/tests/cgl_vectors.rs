@@ -4,8 +4,8 @@
 //! Each vector group starts from an empty server and runs in file order.
 //! Setup rows only need to succeed; binding failures keep the native
 //! prefix (Jackson exception detail is not reproduced); exports compare
-//! canonical JSON with generated metadata masked and siblings in address
-//! order.
+//! JSON with generated metadata masked and exact Application order. The
+//! remaining Group/Level order disposition is canonicalized separately.
 
 use cbus_cgate::{AccessLevel, Response, Server};
 use serde_json::{json, Value};
@@ -67,8 +67,15 @@ fn canonical_export(line: &str) -> Value {
         }
     }
     for network in document["networks"].as_array_mut().unwrap() {
-        if let Some(applications) = network.get_mut("applications") {
-            sort(applications, &["groups", "levels"]);
+        if let Some(applications) = network
+            .get_mut("applications")
+            .and_then(Value::as_array_mut)
+        {
+            for application in applications {
+                if let Some(groups) = application.get_mut("groups") {
+                    sort(groups, &["levels"]);
+                }
+            }
         }
     }
     document

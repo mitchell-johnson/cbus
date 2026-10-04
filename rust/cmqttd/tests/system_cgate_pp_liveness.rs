@@ -1563,15 +1563,24 @@ async fn routed_nvm_pci_loss_never_replays_or_accepts_stale_completion() {
     })
     .await
     .unwrap();
+    // Loss can interrupt an active poll reply or the interval before the next
+    // poll. Both precise transport errors leave the same uncertain NVM save.
+    let terminals = failed
+        .lines()
+        .filter(|line| line.starts_with("[5]"))
+        .collect::<Vec<_>>();
+    assert_eq!(terminals.len(), 1, "{failed}");
     assert!(
-        failed
-            .lines()
-            .filter(|line| line.starts_with("[5]"))
-            .eq(std::iter::once(
-                vector["nvm_pci_loss_receipt"].as_str().unwrap()
-            )),
+        [
+            vector["nvm_pci_loss_receipt"].as_str().unwrap(),
+            vector["nvm_pci_active_reply_loss_receipt"]
+                .as_str()
+                .unwrap(),
+        ]
+        .contains(&terminals[0]),
         "{failed}"
     );
+    eprintln!("accepted routed NVM PCI loss receipt: {}", terminals[0]);
     let before = sys.pci.payloads();
     let executes = before
         .iter()

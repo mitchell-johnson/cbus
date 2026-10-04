@@ -11,9 +11,11 @@
 //! the Unit address. At most six networks follow the local one, and the
 //! first shortest path in database Unit order wins.
 //!
-//! Selected differences from native are deliberate and documented: sibling
-//! applications, groups and levels export in address order (native keeps
-//! creation order), `createdBy` names cmqttd, Jackson exception detail is not
+//! Application export follows retained creation order. Repositories without
+//! that history use the explicit unknown-history numeric fallback. Selected
+//! remaining differences from native are deliberate and documented: groups
+//! and levels export in address order (native keeps creation order),
+//! `createdBy` names cmqttd, Jackson exception detail is not
 //! reproduced after the native prefix, and an import that would create a
 //! nameless object is refused before mutation because native accepts it but
 //! can then never save the project.
@@ -334,9 +336,13 @@ pub(crate) fn export(model: &Server, tag: &str, words: &[&str], current: Option<
         };
         let prefix = format!("//{project_name}/{network_address}");
         let mut applications = Vec::new();
-        for (application, (name, group_names)) in
-            network_labels(model, project_name, network_address)
-        {
+        let mut labels = network_labels(model, project_name, network_address);
+        let application_order = project.networks[&network_address]
+            .application_addresses_in_creation_order(labels.keys().copied());
+        for application in application_order {
+            let (name, group_names) = labels
+                .remove(&application)
+                .expect("ordered application belongs to the live label graph");
             if application == 255 || !selected(&application_selection, application) {
                 continue;
             }
@@ -707,8 +713,22 @@ fn apply(model: &mut Server, project_name: &str, root: &Root) -> Result<Outcome,
                 format!("//{project_name}/{network_address}/{application_address}");
             let mut created = model.cgl_runtime.insert(application_path.clone());
             let key = format!("{application_path}/TagName");
-            if let std::collections::hash_map::Entry::Vacant(entry) = model.db_fields.entry(key) {
+            let durable_created = if let std::collections::hash_map::Entry::Vacant(entry) =
+                model.db_fields.entry(key)
+            {
                 entry.insert(application.name.clone().ok_or(Stop::Nameless)?);
+                true
+            } else {
+                false
+            };
+            if durable_created {
+                // Runtime objects can be announced again after LOAD. Only a
+                // first durable label creation belongs in this history.
+                model.record_application_created(
+                    project_name,
+                    network_address,
+                    application_address,
+                );
                 created = true;
             }
             if created {
@@ -1060,8 +1080,9 @@ pub(crate) mod replay {
         output
     }
 
-    /// Export JSON with sibling order canonicalized: cmqttd keeps address
-    /// order where native keeps creation order.
+    /// Export JSON with generated metadata masked. Application order is
+    /// compared exactly; only the remaining Group/Level order disposition
+    /// is canonicalized.
     fn canonical_export(line: &str) -> Value {
         let mut document: Value = serde_json::from_str(&line[4..]).unwrap();
         document["createdBy"] = Value::from("<creator>");
@@ -1080,8 +1101,15 @@ pub(crate) mod replay {
             }
         }
         for network in document["networks"].as_array_mut().unwrap() {
-            if let Some(applications) = network.get_mut("applications") {
-                sort(applications, &["groups", "levels"]);
+            if let Some(applications) = network
+                .get_mut("applications")
+                .and_then(Value::as_array_mut)
+            {
+                for application in applications {
+                    if let Some(groups) = application.get_mut("groups") {
+                        sort(groups, &["levels"]);
+                    }
+                }
             }
         }
         document
@@ -1169,3 +1197,7 @@ pub(crate) mod replay {
         }
     }
 }
+
+#[cfg(test)]
+#[path = "cgl_application_order_tests.rs"]
+mod application_order_tests;

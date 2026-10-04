@@ -2424,6 +2424,12 @@ names. Networks must already exist and be routable. A skipped network produces
 a nonzero exit status and the native import summary. Export refuses to replace
 an existing file.
 
+Both Rust services preserve recorded Application creation order across database
+edits, save/load, copies and cmqttd restart. Older repositories and foreign
+archives have an explicitly unknown historical prefix; Group/Level native
+chronology remains unverified. Read [CGL order and recovery](docs/cgl-application-order.md)
+for the exact boundary and uncertain-import handling.
+
 ## Rust C-Gate model
 
 The sibling `rust/cbus-cgate` crate and `cgate-mock` executable recognize every

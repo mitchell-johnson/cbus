@@ -494,6 +494,11 @@ multi-route scans with the same bounded result envelope; `cni-discover` exposes
 the single-route wire codec and JSON boundary;
 see the [discovery contract](toolkit-cli/docs/cni-discovery.md).
 
+The CLI's `cgate cgl import` and `cgate cgl export` exchange CGL label graphs
+with either Rust service. Applications retain recorded creation order across
+edits, copies and durable reloads. See [CGL exchange and order](toolkit-cli/docs/cgl-application-order.md)
+for commands, old-repository fallback and remaining native-order gaps.
+
 ### Toolkit compatibility and current status
 
 The CLI targets **C-Bus Toolkit 1.18.0.2754 and C-Gate 3.4.0.2001**, with full Toolkit functionality as the goal. Implemented workflows include offline project editing, native project management, supported unit programming and addressing, keypad presets, scenes, CGL exchange, and substantial eDLT configuration. Device and firmware support is documented per workflow.

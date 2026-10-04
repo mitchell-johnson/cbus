@@ -611,6 +611,13 @@ check-cgate-interop: compile
 		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[unsigned-overflow-pc_tsa5-mock]' \
 		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[unsigned-overflow-pc_tsb-mock]' \
 		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[unsigned-overflow-pc_tsb5-mock]' \
+		'tests/test_cgl_application_order_backends.py::test_public_cgl_retained_native_prefix_order_filters_and_routes[mock]' \
+		'tests/test_cgl_application_order_backends.py::test_public_cgl_saved_load_runtime_reannouncement_preserves_order[mock]' \
+		'tests/test_cgl_application_order_backends.py::test_public_cgl_typed_replace_readdress_copy_delete_recreate[mock]' \
+		'tests/test_cgl_application_order_backends.py::test_public_cgl_complete_network_replacement_retains_and_appends[mock]' \
+		'tests/test_cgl_application_order_backends.py::test_public_cgl_project_copy_native_archive_and_graph_isolation[mock]' \
+		'tests/test_cgl_application_order_backends.py::test_public_cgl_lost_import_success_is_not_replayed_or_rolled_back[mock]' \
+		'tests/test_cgl_application_order_backends.py::test_public_cgl_invalid_python_document_has_no_prefix_mutation[mock]' \
 		-q -p no:cacheprovider $(CGATE_INTEROP_PYTEST_EXTRA)
 
 check-cmqtt-interop: compile
@@ -1120,6 +1127,15 @@ check-cmqtt-interop: compile
 		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[unsigned-overflow-pc_tsa5-daemon]' \
 		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[unsigned-overflow-pc_tsb-daemon]' \
 		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[unsigned-overflow-pc_tsb5-daemon]' \
+		'tests/test_cgl_application_order_backends.py::test_public_cgl_retained_native_prefix_order_filters_and_routes[daemon]' \
+		'tests/test_cgl_application_order_backends.py::test_public_cgl_saved_load_runtime_reannouncement_preserves_order[daemon]' \
+		'tests/test_cgl_application_order_backends.py::test_public_cgl_typed_replace_readdress_copy_delete_recreate[daemon]' \
+		'tests/test_cgl_application_order_backends.py::test_public_cgl_complete_network_replacement_retains_and_appends[daemon]' \
+		'tests/test_cgl_application_order_backends.py::test_public_cgl_project_copy_native_archive_and_graph_isolation[daemon]' \
+		'tests/test_cgl_application_order_backends.py::test_public_cgl_lost_import_success_is_not_replayed_or_rolled_back[daemon]' \
+		'tests/test_cgl_application_order_backends.py::test_public_cgl_invalid_python_document_has_no_prefix_mutation[daemon]' \
+		'tests/test_cgl_application_order_backends.py::test_public_cmqttd_cgl_durable_restart_and_explicit_legacy_fallback[recorded-restart]' \
+		'tests/test_cgl_application_order_backends.py::test_public_cmqttd_cgl_durable_restart_and_explicit_legacy_fallback[legacy-missing-field]' \
 		-q -p no:cacheprovider $(CMQTT_INTEROP_PYTEST_EXTRA)
 
 check-session-differential: build-interop

@@ -577,6 +577,7 @@ class RustInteropTests(unittest.TestCase):
     def test_cgl_route_vectors_match_native_capture(self):
         """Every native-derived CGL vector through a fresh mock per group."""
         from research import native_cgl_routes as routes
+        from research import cgl_application_order_vectors as order_vectors
         from cbus_toolkit.cgl import NativeCGL
         vectors_path = Path(__file__).resolve().parents[2] / "rust/testdata/vectors/cgate_cgl_routes.jsonl"
         rows = [json.loads(line) for line in vectors_path.read_text().splitlines()]
@@ -616,7 +617,7 @@ class RustInteropTests(unittest.TestCase):
                         elif "expect_export" in row:
                             expected = row["expect_export"]
                             self.assertEqual((reply[0], reply[-1]), (expected["first"], expected["final"]))
-                            self.assertEqual(routes.canonical_export(reply[1]), expected["document"])
+                            self.assertEqual(order_vectors.canonical_export(reply[1]), expected["document"])
                         else:
                             expected = row["expect_summary"]
                             self.assertEqual((len(reply), reply[-1][:160]), (expected["lines"], expected["last"]))

@@ -8,9 +8,10 @@ interop portion of [issue 121](https://github.com/mitchell-johnson/cbus/issues/1
 Provisioned native and physical release gates remain under
 [issue 22](https://github.com/mitchell-johnson/cbus/issues/22).
 
-The complete default declaration contains 991 explicit selectors: 491 for
-the mock and 500 for the daemon. This includes the preserved 985 quoted
-selectors and six additional unquoted daemon guards. One mock and six daemon
+The complete default declaration contains 1007 explicit selectors: 498 for
+the mock and 509 for the daemon. This includes the preserved 985 quoted
+selectors, 16 Application-order selectors and six additional unquoted daemon
+guards. One mock and six daemon
 whole-module selections expand into additional collected cases. These numbers
 describe the declaration, not a claim that a focused local run executed it.
 
