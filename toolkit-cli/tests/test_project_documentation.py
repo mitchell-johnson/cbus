@@ -291,20 +291,21 @@ def test_bridge_adjacent_network_and_missing_far_side_warning():
 def test_partial_and_unrecovered_documentors_are_marked_and_listed_last():
     lines, summary = page([network(254, "Local", units=(unit(3, "PC_TSB5", name="Stat", firmware="1.2.00"),
                                                         unit(4, "KEYA1", firmware="1.4.00")))])
-    # The thermostat body is recovered for complete consumed state.  This
-    # deliberately incomplete input must preserve a precise loader refusal.
+    # Both identities have recovered bodies for complete consumed state.  These
+    # deliberately incomplete inputs must preserve precise loader refusals.
     assert "InstalledZones (requires 1 explicit values in 0..255): not documented (unrecovered)<br />" in lines
     assert "TThermostatDocumentor.DocumentHTML: not documented (unrecovered)<br />" not in lines
-    assert "TNeoInputDocumentor.DocumentHTML: not documented (unrecovered)<br />" in lines
+    assert "Neo key controls/scenes: Application (requires 1 explicit values in 0..255): not documented (unrecovered)<br />" in lines
+    assert "TNeoInputDocumentor.DocumentHTML: not documented (unrecovered)<br />" not in lines
     tail = section(lines, '<h2><a name="unrecovered">Not documented (unrecovered)</a></h2>', "</ul>")
     assert tail[1:] == [
         "<ul>",
         '<li /><a href="#254">Local</a>: Network calculator (no --catalog supplied)',
         '<li /><a href="#254">Local</a>: Status Report Interval (status-report interface)',
         '<li /><a href="#254_unit_3">Stat - PC_TSB5</a>: InstalledZones (requires 1 explicit values in 0..255)',
-        '<li /><a href="#254_unit_4">U4 - KEYA1</a>: TNeoInputDocumentor.DocumentHTML']
+        '<li /><a href="#254_unit_4">U4 - KEYA1</a>: Neo key controls/scenes: Application (requires 1 explicit values in 0..255)']
     assert lines[lines.index(tail[0]) - 1] == "<hr />"
-    assert summary["unit_status"] == {"recovered": 0, "partial": 1, "unrecovered": 1, "heading_only": 0}
+    assert summary["unit_status"] == {"recovered": 0, "partial": 2, "unrecovered": 0, "heading_only": 0}
 
 
 def test_calculator_lines_with_a_synthetic_catalogue(tmp_path):

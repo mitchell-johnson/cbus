@@ -9,6 +9,8 @@ mod net_save_db;
 mod net_save_db_physical_alias;
 #[path = "tests/repository_capacity.rs"]
 mod repository_capacity;
+#[path = "tests/repository_commit_failure.rs"]
+mod repository_commit_failure;
 
 #[test]
 fn native_command_trace_requires_a_recognized_top_level_family() {

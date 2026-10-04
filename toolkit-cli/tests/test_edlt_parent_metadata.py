@@ -11,7 +11,7 @@ from xml.sax.saxutils import escape, quoteattr
 from xml.dom import minidom
 
 from cbus_toolkit.addressing import _RUNTIME_FIELDS
-from cbus_toolkit.cgate import CGateResponse
+from cbus_toolkit.cgate import CGateClient, CGateRepositoryUncertainError, CGateResponse
 from cbus_toolkit.edlt import EdltError
 from cbus_toolkit.edlt_parent_metadata import (
     NativeEdltParentError, NativeEdltParentTransaction,
@@ -21,6 +21,7 @@ from cbus_toolkit.edlt_parent_transaction import EdltParentTransaction
 from tests.test_edlt import Session
 from tests.test_edlt_parent_form import fixture
 from tests.test_edlt_parent_transaction import activation, lighting, measurement
+from tests.test_cgate_repository_uncertainty import UNCERTAIN, repository_peer
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -514,6 +515,65 @@ class ParentMetadataTests(unittest.TestCase):
         self.assertFalse(evidence['pp_state_uncertain'])
         self.assertEqual(set(self.client.applications), {56, 202})
         self.assertEqual(self.client.values, self.client.saved_values)
+
+    def test_known_repository_uncertainty_during_metadata_cannot_send_cleanup_or_save(self):
+        backend = self.client
+        failed_command = None
+
+        def relay(command, document):
+            nonlocal failed_command
+            self.assertIsNone(document)
+            reply = backend.command(command)
+            if command.startswith('DBADDSAFE //TEST/254/56 Group 12 '):
+                # The owned peer applies the Add, then reports the exact
+                # unconfirmed directory-durability boundary instead of its OID.
+                failed_command = command
+                return ('500-Metadata replacement visible', UNCERTAIN)
+            return reply
+
+        with repository_peer(relay) as peer:
+            address, sent, _, connections, ended = peer
+            with CGateClient(*address, timeout=2) as transport:
+                session = NativeSession(self.spec, backend)
+                programmer = FakeProgrammer(session)
+                manager = NativeEdltParentTransaction(transport, self.editor,
+                                                      programmer=programmer)
+                plan = manager.plan('//TEST/254/p/20', operations=self.operations,
+                                    exclusive_project=True)
+                with self.assertRaises(NativeEdltParentError) as caught:
+                    manager.apply(plan, backup_project='BACKUP')
+                cause = caught.exception.cause
+                self.assertIsInstance(cause, CGateRepositoryUncertainError)
+                self.assertTrue(cause.repository_state_uncertain)
+                self.assertEqual(cause.response, CGateResponse(
+                    ('500-Metadata replacement visible', UNCERTAIN), UNCERTAIN, 500))
+                self.assertFalse(transport.connected)
+                self.assertTrue(ended.wait(1))
+                self.assertEqual(len(connections), 1)
+                self.assertEqual(sent[-1], failed_command)
+                self.assertIsNotNone(failed_command)
+                self.assertEqual(sent.count('PROJECT SAVE TEST'), 1)
+                self.assertEqual(sent.count('PROJECT COPY TEST BACKUP'), 1)
+                self.assertFalse(any(command.startswith(('DBDELETE ', 'PROJECT CLOSE ',
+                                                        'PROJECT LOAD ', 'PP SAVE'))
+                                     for command in sent))
+                self.assertIn(12, backend.applications[56]['groups'])
+                evidence = caught.exception.details['edlt_parent_metadata_evidence']
+                self.assertEqual(evidence['error']['type'], 'CGateRepositoryUncertainError')
+                self.assertIn(UNCERTAIN, evidence['error']['message'])
+                self.assertTrue(evidence['metadata_mutation_attempted'])
+                self.assertTrue(evidence['unidentified_metadata_mutation'])
+                self.assertFalse(evidence['pp_save_attempted'])
+                self.assertFalse(evidence['target_project_save_attempted'])
+                self.assertFalse(evidence['rollback_verified'])
+                self.assertFalse(evidence['rollback_attempted'])
+                self.assertEqual(evidence['rollback_errors'], [])
+                self.assertFalse(evidence['pp_state_uncertain'])
+                self.assertTrue(evidence['repository_state_uncertain'])
+                self.assertTrue(evidence['database_state_uncertain'])
+                self.assertEqual(evidence['database_persistence'], 'uncertain')
+                self.assertEqual(evidence['state'], 'uncertain')
+                self.assertEqual(evidence['automatic_retries'], 0)
 
     def test_exact_stale_guard_stops_before_backup_or_mutation(self):
         manager, _session, _ = self.manager()

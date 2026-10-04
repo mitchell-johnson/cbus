@@ -22,6 +22,9 @@ _STATUS = re.compile(r"^([1-6][0-9]{2})([- ])(.*)$")
 _TAG = re.compile(r"^\[([^]\r\n]+)\] ?(.*)$")
 _EVENT = re.compile(r"^(?:#[esc]#(?: |$)|[0-9]{8}-[0-9]{6}(?:\.[0-9]{3})? [789][0-9]{2} )")
 _OVERFLOW = "###!!!Event buffer overflow. Events have been missed.!!!###"
+_REPOSITORY_UNCERTAIN = (
+    "500 Repository durability uncertain; inspect state before further changes; do not replay"
+)
 
 
 @dataclass(frozen=True)
@@ -42,11 +45,21 @@ class CGateResponse:
 
 
 class CGateError(RuntimeError):
-    """A complete server error reply; the connection remains synchronized."""
+    """A complete server error reply, normally leaving a synchronized stream."""
 
     def __init__(self, response: CGateResponse):
         self.response = response
         super().__init__(f"C-Gate error: {response.final}")
+
+
+class CGateRepositoryUncertainError(CGateError):
+    """A replaced repository with unconfirmed durability; its stream is closed.
+
+    The complete reply remains available for inspection. Further commands,
+    cleanup and recovery require an explicitly established new connection.
+    """
+
+    repository_state_uncertain = True
 
 
 class CGateClient:
@@ -56,6 +69,8 @@ class CGateClient:
     strings are available in events; read_event() also waits for new events.
     An overflow marker is queued and sets events_lost. Application errors
     (4xx/5xx) raise CGateError with the complete response attached.
+    Exact repository-durability uncertainty closes the stream and raises
+    CGateRepositoryUncertainError before any subsequent operation can send.
     """
 
     def __init__(self, host: str, port: int = 20023, timeout: float = 10.0,
@@ -293,6 +308,10 @@ class CGateClient:
                 self._close_preserving(exc)
                 raise
             if 400 <= response.status < 600:
+                if response.status == 500 and response.final == _REPOSITORY_UNCERTAIN:
+                    error = CGateRepositoryUncertainError(response)
+                    self._close_preserving(error)
+                    raise error
                 raise CGateError(response)
             return response
 

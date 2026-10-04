@@ -1868,6 +1868,13 @@ impl Service {
         let mut model = self.model.lock().await;
         let previous = model.dali_saved_sessions.insert(oid.clone(), saved);
         if let Err(error) = Database::from_server(&model).save(&self.state_path) {
+            if repository_io::durability_uncertain(&error) {
+                drop(model);
+                if let Some(session) = self.dali_state.lock().await.sessions.get_mut(&args[0]) {
+                    session.target_unit = Some(args[1].clone());
+                }
+                return repository_uncertain_response(tag, &error);
+            }
             if let Some(previous) = previous {
                 model.dali_saved_sessions.insert(oid, previous);
             } else {

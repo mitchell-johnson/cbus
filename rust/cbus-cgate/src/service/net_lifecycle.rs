@@ -1050,6 +1050,9 @@ impl Service {
         }
         let after = Database::from_server(&model);
         if let Err(error) = after.save(&self.state_path) {
+            if repository_io::durability_uncertain(&error) {
+                return repository_uncertain_response(tag, &error);
+            }
             *model = before;
             tracing::error!("C-Gate NET catalogue commit failed: {error}");
             return err(tag, 500, "500 Database commit failed; change rolled back");

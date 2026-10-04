@@ -15,6 +15,77 @@ use std::{
 
 pub(super) const MAX_BYTES: u64 = 256 * 1024 * 1024;
 
+/// The replacement is visible, but its directory entry was not confirmed durable.
+#[derive(Debug)]
+struct DurabilityUncertain(io::Error);
+
+impl std::fmt::Display for DurabilityUncertain {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            formatter,
+            "repository replaced; directory durability uncertain: {}",
+            self.0
+        )
+    }
+}
+
+impl std::error::Error for DurabilityUncertain {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        Some(&self.0)
+    }
+}
+
+pub(super) fn durability_uncertain(error: &io::Error) -> bool {
+    error
+        .get_ref()
+        .is_some_and(|source| source.is::<DurabilityUncertain>())
+}
+
+#[cfg(test)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) enum FailurePoint {
+    BeforeRename,
+    DirectorySync,
+}
+
+#[cfg(test)]
+static FAILURES: std::sync::Mutex<Vec<(std::path::PathBuf, FailurePoint)>> =
+    std::sync::Mutex::new(Vec::new());
+
+#[cfg(test)]
+pub(super) struct FailureGuard(std::path::PathBuf);
+
+#[cfg(test)]
+impl Drop for FailureGuard {
+    fn drop(&mut self) {
+        FAILURES.lock().unwrap().retain(|(path, _)| path != &self.0);
+    }
+}
+
+/// One-shot, exact-path fault; dropping the guard removes an unused injection.
+#[cfg(test)]
+pub(super) fn inject_failure(path: &Path, point: FailurePoint) -> FailureGuard {
+    let mut failures = FAILURES.lock().unwrap();
+    assert!(!failures.iter().any(|(target, _)| target == path));
+    failures.push((path.to_path_buf(), point));
+    FailureGuard(path.to_path_buf())
+}
+
+#[cfg(test)]
+fn injected_failure(path: &Path, point: FailurePoint) -> io::Result<()> {
+    let mut failures = FAILURES.lock().unwrap();
+    if let Some(index) = failures
+        .iter()
+        .position(|(target, phase)| target == path && *phase == point)
+    {
+        failures.remove(index);
+        return Err(io::Error::other(format!(
+            "injected repository {point:?} failure"
+        )));
+    }
+    Ok(())
+}
+
 fn capacity_error(limit: u64) -> io::Error {
     io::Error::other(format!("C-Gate database exceeds {limit} bytes"))
 }
@@ -124,9 +195,16 @@ fn save_with_limit<T: Serialize>(path: &Path, value: &T, limit: u64) -> io::Resu
         // is an uncertain durability boundary and is not safe to replay.
         #[cfg(unix)]
         let directory = File::open(parent)?;
+        #[cfg(test)]
+        injected_failure(path, FailurePoint::BeforeRename)?;
         std::fs::rename(&temp, path)?;
+        #[cfg(test)]
+        injected_failure(path, FailurePoint::DirectorySync)
+            .map_err(|error| io::Error::other(DurabilityUncertain(error)))?;
         #[cfg(unix)]
-        directory.sync_all()?;
+        directory
+            .sync_all()
+            .map_err(|error| io::Error::other(DurabilityUncertain(error)))?;
         Ok(())
     })();
     if result.is_err() && created {

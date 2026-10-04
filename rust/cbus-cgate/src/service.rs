@@ -18,6 +18,15 @@ mod repository_io;
 mod transform;
 mod unravel_plan;
 
+fn repository_uncertain_response(tag: &str, error: &io::Error) -> Response {
+    tracing::error!("C-Gate repository durability uncertain: {error}");
+    err(
+        tag,
+        500,
+        "500 Repository durability uncertain; inspect state before further changes; do not replay",
+    )
+}
+
 /// Stream an operator-supplied application catalogue with the native
 /// 343/347/344 XML-snippet envelope. The configured unit-specification
 /// directory is the only permitted source; no vendor catalogue is bundled or
@@ -4772,12 +4781,17 @@ impl Service {
         // including read-only GETs, and must never let a database edit invent
         // physical presence.
         preserve_physical_state(&before, &mut model);
+        let mut uncertain_response = None;
         let after_db = Database::from_server(&model);
         if before_db != after_db {
             if let Err(error) = after_db.save(&self.state_path) {
-                *model = before;
-                tracing::error!("C-Gate database commit failed: {error}");
-                return err(tag, 500, "500 Database commit failed; change rolled back");
+                if repository_io::durability_uncertain(&error) {
+                    uncertain_response = Some(repository_uncertain_response(tag, &error));
+                } else {
+                    *model = before;
+                    tracing::error!("C-Gate database commit failed: {error}");
+                    return err(tag, 500, "500 Database commit failed; change rolled back");
+                }
             }
         }
         if verb == "PP" {
@@ -4841,7 +4855,7 @@ impl Service {
         for event in model.drain_events() {
             let _ = self.events.send(self.event_with_startup_precision(event));
         }
-        response
+        uncertain_response.unwrap_or(response)
     }
 
     /// Gate a C-Gate here-document after the connection has bounded and
@@ -5000,6 +5014,13 @@ impl Service {
             let after_db = Database::from_server(&model);
             if before_db != after_db {
                 if let Err(error) = after_db.save(&self.state_path) {
+                    if repository_io::durability_uncertain(&error) {
+                        client.current = model.current.clone();
+                        for event in model.drain_events() {
+                            let _ = self.events.send(self.event_with_startup_precision(event));
+                        }
+                        return repository_uncertain_response(tag, &error);
+                    }
                     *model = before;
                     tracing::error!("C-Gate DBSETXML commit failed: {error}");
                     return err(tag, 500, "500 Database commit failed; change rolled back");
@@ -5026,6 +5047,13 @@ impl Service {
             let after_db = Database::from_server(&model);
             if before_db != after_db {
                 if let Err(error) = after_db.save(&self.state_path) {
+                    if repository_io::durability_uncertain(&error) {
+                        client.current = model.current.clone();
+                        for event in model.drain_events() {
+                            let _ = self.events.send(self.event_with_startup_precision(event));
+                        }
+                        return repository_uncertain_response(tag, &error);
+                    }
                     *model = before;
                     tracing::error!("C-Gate CGL import commit failed: {error}");
                     return err(tag, 500, "500 Database commit failed; change rolled back");
@@ -5069,6 +5097,9 @@ impl Service {
         let after_db = Database::from_server(&model);
         if before_db != after_db {
             if let Err(error) = after_db.save(&self.state_path) {
+                if repository_io::durability_uncertain(&error) {
+                    return repository_uncertain_response(tag, &error);
+                }
                 *model = before;
                 tracing::error!("C-Gate CONFIG commit failed: {error}");
                 return err(tag, 500, "500 Database commit failed; change rolled back");
@@ -5088,6 +5119,9 @@ impl Service {
         let after_db = Database::from_server(&model);
         if before_db != after_db {
             if let Err(error) = after_db.save(&self.state_path) {
+                if repository_io::durability_uncertain(&error) {
+                    return repository_uncertain_response(tag, &error);
+                }
                 *model = before;
                 tracing::error!("C-Gate FILE commit failed: {error}");
                 return err(tag, 500, "500 Database commit failed; change rolled back");
@@ -5244,6 +5278,9 @@ impl Service {
             model.access_admission_enforced = true;
         }
         if let Err(error) = Database::from_server(&model).save(&self.state_path) {
+            if repository_io::durability_uncertain(&error) {
+                return repository_uncertain_response(tag, &error);
+            }
             *model = before;
             tracing::error!("C-Gate ACCESS ADD commit failed: {error}");
             return err(tag, 500, "500 Database commit failed; change rolled back");
@@ -5278,6 +5315,9 @@ impl Service {
             model.access_admission_enforced = true;
         }
         if let Err(error) = Database::from_server(&model).save(&self.state_path) {
+            if repository_io::durability_uncertain(&error) {
+                return repository_uncertain_response(tag, &error);
+            }
             *model = before;
             tracing::error!("C-Gate ACCESS DELETE commit failed: {error}");
             return err(tag, 500, "500 Database commit failed; change rolled back");
@@ -5312,6 +5352,9 @@ impl Service {
         let enforced = model.access_admission_enforced;
         model.access_snapshot_admission.insert(name, enforced);
         if let Err(error) = Database::from_server(&model).save(&self.state_path) {
+            if repository_io::durability_uncertain(&error) {
+                return repository_uncertain_response(tag, &error);
+            }
             *model = before;
             tracing::error!("C-Gate ACCESS SAVE commit failed: {error}");
             return err(tag, 500, "500 Database commit failed; change rolled back");
@@ -5348,6 +5391,9 @@ impl Service {
         model.access_entries = entries;
         model.access_admission_enforced = enforced;
         if let Err(error) = Database::from_server(&model).save(&self.state_path) {
+            if repository_io::durability_uncertain(&error) {
+                return repository_uncertain_response(tag, &error);
+            }
             *model = before;
             tracing::error!("C-Gate ACCESS LOAD commit failed: {error}");
             return err(tag, 500, "500 Database commit failed; change rolled back");
@@ -5426,11 +5472,47 @@ impl Service {
             tracing::error!("C-Gate PROJECT REPAIR restore failed: {error}");
             return err(tag, 500, "500 Project repair validation failed");
         }
-        preserve_physical_state(&before, &mut repaired);
+        // Repair validates the durable projection; it must not reset any
+        // serde-skipped observations on the already connected live networks.
+        // Keep this repair-only: lifecycle commands may intentionally clear them.
+        for (project_name, project) in &mut repaired.projects {
+            for (address, network) in &mut project.networks {
+                if let Some(original) = before
+                    .projects
+                    .get(project_name)
+                    .and_then(|project| project.networks.get(address))
+                {
+                    network.physical = original.physical.clone();
+                    network.levels = original.levels.clone();
+                    network.state = original.state;
+                    network.retries = original.retries;
+                }
+            }
+        }
+        // DBNEW retains one non-durable configured-interface shell. The
+        // durable projection deliberately omits it; retain only this owned
+        // shell without synthesizing any serialized network or foreign shell.
+        if let Some(original) = before
+            .projects
+            .get(&self.project)
+            .and_then(|project| project.networks.get(&self.network))
+            .filter(|network| network.oid.is_empty())
+        {
+            if let Some(project) = repaired.projects.get_mut(&self.project) {
+                project
+                    .networks
+                    .entry(self.network)
+                    .or_insert_with(|| original.clone());
+            }
+        }
         if !repaired.projects.contains_key(words[2]) {
             return err(tag, 500, "500 Project repair lost the target project");
         }
         if let Err(error) = Database::from_server(&repaired).save(&self.state_path) {
+            if repository_io::durability_uncertain(&error) {
+                *model = repaired;
+                return repository_uncertain_response(tag, &error);
+            }
             tracing::error!("C-Gate PROJECT REPAIR commit failed: {error}");
             return err(
                 tag,
@@ -5445,8 +5527,8 @@ impl Service {
     /// Execute the repository transformation family against cmqttd's
     /// controlled FILE namespace. The converter uses a real SQLite container
     /// with an explicitly versioned cmqttd schema; no command path can resolve
-    /// a host filename. A failed conversion leaves both the in-memory and
-    /// durable repositories unchanged.
+    /// a host filename. Conversion and pre-rename commit failures leave both
+    /// repositories unchanged; post-rename uncertainty retains the replacement.
     async fn transform(&self, tag: &str, words: &[&str]) -> Response {
         // The default PROJECT transform is the cmqttd-json repair transaction.
         // Native C-Gate dispatches this operation through its current
@@ -5490,6 +5572,9 @@ impl Service {
         let after_db = Database::from_server(&model);
         if before_db != after_db {
             if let Err(error) = after_db.save(&self.state_path) {
+                if repository_io::durability_uncertain(&error) {
+                    return repository_uncertain_response(tag, &error);
+                }
                 *model = before;
                 tracing::error!("C-Gate TRANSFORM commit failed: {error}");
                 return err(tag, 500, "500 Database commit failed; change rolled back");
@@ -5824,6 +5909,9 @@ impl Service {
             return err(tag, 408, &format!("408 Operation failed: {error}"));
         }
         if let Err(error) = Database::from_server(&model).save(&self.state_path) {
+            if repository_io::durability_uncertain(&error) {
+                return repository_uncertain_response(tag, &error);
+            }
             *model = before;
             tracing::error!("C-Gate LOG EXTRACT commit failed: {error}");
             return err(
@@ -12504,6 +12592,9 @@ impl Service {
             );
         }
         if let Err(error) = Database::from_server(&model).save(&self.state_path) {
+            if repository_io::durability_uncertain(&error) {
+                return repository_uncertain_response(tag, &error);
+            }
             *model = before;
             tracing::error!("PP WRITE_PATCH database commit failed: {error}");
             return err(
@@ -14139,6 +14230,9 @@ impl Service {
                 let before = model.scene_snapshots.insert(key.clone(), snapshot);
                 let database = Database::from_server(&model);
                 if let Err(error) = database.save(&self.state_path) {
+                    if repository_io::durability_uncertain(&error) {
+                        return repository_uncertain_response(tag, &error);
+                    }
                     if let Some(before) = before {
                         model.scene_snapshots.insert(key, before);
                     } else {

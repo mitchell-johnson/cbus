@@ -16,10 +16,13 @@ before atomic rename; the containing directory is synced on Unix. Temporary
 files created by a failed pre-rename attempt are removed. Exceeding the budget
 or failing before rename leaves the old repository image in place, and the
 owning service command restores its prior model and reports the existing
-`500 Database commit failed; change rolled back` response. An I/O error after
-rename, particularly directory sync, remains an uncertain durability boundary;
-these tests do not establish universal disk-fault rollback, and operators must
-inspect state rather than replay an uncertain save.
+`500 Database commit failed; change rolled back` response. If directory sync
+fails after rename, the replacement file is already visible. The service keeps
+the corresponding live model and returns
+`500 Repository durability uncertain; inspect state before further changes; do not replay`.
+The response does not confirm survival through a power failure. Inspect the
+current repository and fresh readback before choosing an explicit recovery;
+never replay the uncertain mutation automatically.
 
 Startup checks the file size before deserializing and then reads through a
 bounded streaming reader. Growth beyond the limit, including trailing
@@ -73,6 +76,6 @@ the batch report; historical fixture failures are retained separately.
 [Issue77](https://github.com/mitchell-johnson/cbus/issues/77) remains the broader
 capacity/scaling work item. The new profile resolves the observed 32 MiB backup
 failure for the retained workload. Original C-Gate workload comparison, larger
-capacity profiles, mutation-memory scaling and post-rename disk-fault acceptance
-remain unfinished. Never infer unlimited storage or broad native compatibility
+capacity profiles, mutation-memory scaling and real filesystem/power-failure
+acceptance remain unfinished. Never infer unlimited storage or broad native compatibility
 from these bounded checks.

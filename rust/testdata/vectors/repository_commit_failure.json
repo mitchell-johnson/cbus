@@ -1,0 +1,9 @@
+{
+  "format": "cbus-owned-repository-commit-failure-v1",
+  "scope": "Owned cmqttd service fault injection; no original or hardware acceptance",
+  "tag": "37",
+  "repair_success": "[37] 200-repaired=1\n[37] 200 OK.\n",
+  "post_rename": "[37] 500 Repository durability uncertain; inspect state before further changes; do not replay\n",
+  "pre_rename": "[37] 500 Database commit failed; change rolled back\n",
+  "pre_rename_repair": "[37] 500 Project repair commit failed; change rolled back\n"
+}

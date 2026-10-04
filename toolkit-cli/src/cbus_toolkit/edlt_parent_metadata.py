@@ -2457,6 +2457,7 @@ class NativeEdltParentTransaction:
             'persistence_verified': False, 'rollback_attempted': False,
             'rollback_verified': False, 'rollback_errors': [],
             'pp_state_uncertain': False, 'database_state_uncertain': False,
+            'repository_state_uncertain': False,
             'partial_failure_possible': False,
             'batch_atomic': False, 'automatic_retries': 0,
             'caller_exclusive_project_required': True,
@@ -2471,6 +2472,7 @@ class NativeEdltParentTransaction:
         return self.last_result
 
     def _fail(self, error):
+        repository_uncertain = bool(getattr(error, 'repository_state_uncertain', False))
         backup_save_uncertain = (
             self._evidence['backup_source_save_attempted']
             and not self._evidence['backup_source_save_confirmed'])
@@ -2494,7 +2496,7 @@ class NativeEdltParentTransaction:
         database_uncertain = (
             backup_save_uncertain or backup_copy_uncertain
             or pp_save_uncertain or project_save_uncertain
-            or rollback_uncertain)
+            or rollback_uncertain or repository_uncertain)
         partial = (self._evidence['backup_created']
                    or self._evidence['pp_save_attempted']
                    or self._evidence['target_project_save_attempted']
@@ -2516,6 +2518,7 @@ class NativeEdltParentTransaction:
             saved=False, database_persistence=persistence,
             pp_state_uncertain=pp_uncertain,
             database_state_uncertain=database_uncertain,
+            repository_state_uncertain=repository_uncertain,
             rollback_attempted=rollback_attempted,
             rollback_verified=rollback_verified,
             rollback_errors=rollback_errors,
@@ -3005,6 +3008,7 @@ class NativeEdltParentTransaction:
             return self._finish()
         except BaseException as error:
             if (not pp_save_attempted
+                    and not getattr(error, 'repository_state_uncertain', False)
                     and not self._evidence.get('target_project_save_attempted')
                     and self._evidence.get('backup_created')
                     and (self._evidence.get('metadata_mutation_attempted')
