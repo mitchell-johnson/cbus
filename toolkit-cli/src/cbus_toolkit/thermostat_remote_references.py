@@ -425,6 +425,7 @@ class RemoteReferencePlan:
     output_projection_json: str = 'null'
     graph_operations: tuple[RemoteCreation | RemoteGroupRename, ...] = ()
     output_operations: tuple[str, ...] | None = None
+    control_temperature_preference: str | None = None
 
     @property
     def output_requested_parameters(self):
@@ -472,6 +473,8 @@ class RemoteReferencePlan:
                       'level_prompts': self.level_prompts, 'output_selections': self.output_selections}
         if self.output_operations is not None:
             value['output_operations'] = self.output_operations
+        if self.control_temperature_preference is not None:
+            value['control_temperature_preference'] = self.control_temperature_preference
         return _json(value)
 
     def as_dict(self):
@@ -500,6 +503,8 @@ class RemoteReferencePlan:
                 'saved': False}
         if self.output_operations is not None:
             result['output_operations'] = [json.loads(row) for row in self.output_operations]
+        if self.control_temperature_preference is not None:
+            result['control_temperature_preference'] = self.control_temperature_preference
         return result
 
 
@@ -519,7 +524,7 @@ def _byte_parameter(spec, name, value):
 
 
 def plan_remote_references(store, unit_type, snapshot, edits, *, project_xml, unit_path, level_prompts=None,
-                           output_selections=None, output_operations=None):
+                           output_selections=None, output_operations=None, temperature_preference=None):
     """Project all remote fields from one candidate and its authoritative graph.
 
     Ordinary edits are consumed for the same candidate as the owning settings
@@ -528,7 +533,7 @@ def plan_remote_references(store, unit_type, snapshot, edits, *, project_xml, un
     try:
         return _plan(store, unit_type, snapshot, edits, project_xml=project_xml, unit_path=unit_path,
                      level_prompts=level_prompts, output_selections=output_selections,
-                     output_operations=output_operations)
+                     output_operations=output_operations, temperature_preference=temperature_preference)
     except ThermostatTemplateError:
         raise
     except (ValueError, KeyError, TypeError, UnitSpecError) as error:
@@ -536,7 +541,11 @@ def plan_remote_references(store, unit_type, snapshot, edits, *, project_xml, un
 
 
 def _plan(store, unit_type, snapshot, edits, *, project_xml, unit_path, level_prompts=None,
-          output_selections=None, output_operations=None):
+          output_selections=None, output_operations=None, temperature_preference=None):
+    # The plant component references this module's graph types. Import the
+    # owning controller only after those types have finished initializing.
+    from .thermostat_quick_zone_controls import (FULL_CONTROL_READ_FIELDS, ThermostatControlModel,
+        normalize_quick_zone_operation, prepare_quick_zone_save)
     if not isinstance(store, UnitSpecStore):
         _fail('Remote reference planning requires a decoded UnitSpecStore')
     family = family_for_unit_type(unit_type)
@@ -546,6 +555,10 @@ def _plan(store, unit_type, snapshot, edits, *, project_xml, unit_path, level_pr
     selections = normalize_output_selections(output_selections)
     operations = normalize_output_operations(output_operations)
     output_active = selections is not None or operations is not None
+    controls_active = operations is not None and any(
+        normalize_quick_zone_operation(json.loads(row)) is not None for row in operations)
+    if controls_active and temperature_preference != 'celsius':
+        _fail('Quick-zone/plant controls require explicit temperature preference celsius')
     damper_active = operations is not None and any(
         normalize_damper_operation(json.loads(row)) is not None for row in operations)
     spec = store.load(FAMILIES[family]['unit_spec'])
@@ -571,7 +584,8 @@ def _plan(store, unit_type, snapshot, edits, *, project_xml, unit_path, level_pr
     schema = {}
     read_fields = tuple(dict.fromkeys(REMOTE_READ_FIELDS[family]
         + (OUTPUT_READ_FIELDS if output_active else ())
-        + (DAMPER_READ_FIELDS if damper_active else ())))
+        + (DAMPER_READ_FIELDS if damper_active else ())
+        + (FULL_CONTROL_READ_FIELDS[family] if controls_active else ())))
     for name in read_fields:
         if name not in snapshot:
             _fail('Full thermostat snapshot lacks remote dependency: ' + name)
@@ -580,6 +594,8 @@ def _plan(store, unit_type, snapshot, edits, *, project_xml, unit_path, level_pr
         schema[name] = {key: p.fields.get(key, default) for key, default in (
             ('Type', 'int'), ('Address', None), ('ArraySize', '1'), ('BitSize', '8'),
             ('BitAddress', '0'), ('ArraySkip', '0'))}
+    if controls_active and 'ControlledZones' in parsed_edits and parsed_edits['ControlledZones'] != values['ControlledZones']:
+        _fail('Full-owner controls refuse a changed scalar ControlledZones overlay')
     values.update(parsed_edits)
     source = values['RemoteSetbackControlSource']
     if source > 2:
@@ -645,18 +661,42 @@ def _plan(store, unit_type, snapshot, edits, *, project_xml, unit_path, level_pr
     # have finished loading. Names may have changed on an earlier reference;
     # refresh immutable references from the one causal inventory before any
     # role or optional-Level receipts are emitted.
-    references = {role: resolver.current(value) for role, value in references.items()}
+    references.update({role: resolver.current(value) for role, value in references.items()})
+    controls = None
+    control_save = None
     if output is not None:
-        if operations is not None:
-            output.operate(operations, project_tag_name=project_tag_name,
-                           validate_address=lambda parameter, address: _byte_parameter(spec, parameter, address))
+        if controls_active:
+            controls = ThermostatControlModel(output, temperature_preference=temperature_preference,
+                                             remote_references=references)
+            output.operations = []
+            output.project_tag_name = project_tag_name
+            for position, encoded in enumerate(operations, 1):
+                row = json.loads(encoded)
+                receipt = controls.process(row, position, project_tag_name=project_tag_name,
+                    validate_address=lambda parameter, address: _byte_parameter(spec, parameter, address))
+                # The ordinary adapter has already appended its one receipt.
+                if normalize_quick_zone_operation(row) is not None or normalize_damper_operation(row) is not None:
+                    output.operations.append(receipt)
+            control_save = controls.issue_save()
+            expected.update(prepare_quick_zone_save(controls, control_save))
+            if family == 'programmable':
+                enabled = bool(expected['RemoteScheduleEnable'])
         else:
-            output.select(selections)
-        output.validate()
-        expected.update(output.expected)
-        if output.damper_controls is not None:
-            expected.update(output.damper_controls.expected)
-    references = {role: resolver.current(value) for role, value in references.items()}
+            if operations is not None:
+                output.operate(operations, project_tag_name=project_tag_name,
+                               validate_address=lambda parameter, address: _byte_parameter(spec, parameter, address))
+            else:
+                output.select(selections)
+            output.validate()
+            expected.update(output.expected)
+            if output.damper_controls is not None:
+                expected.update(output.damper_controls.expected)
+    references.update({role: resolver.current(value) for role, value in references.items()})
+    output_projection = output.as_dict() if output is not None else None
+    if controls is not None:
+        output_projection['profile'] = 'fresh-source-owner-settled-explicit-quick-zone-controls-v1'
+        output_projection['quick_zone_controls'] = controls.as_dict()
+        output_projection['quick_zone_controls']['save_projection'] = control_save.as_dict()
 
     def unique(roles, label):
         selected = [references[role] for role in roles if references[role] is not None and references[role].address != 255]
@@ -695,7 +735,8 @@ def _plan(store, unit_type, snapshot, edits, *, project_xml, unit_path, level_pr
         project_xml, graph, tuple(sorted(expected.items())), tuple(creations), _json(getters), _json(roles),
         _json(validation), _json(schema), prompts, level_creations, _json(prompt_receipts), selections,
         tuple(sorted(output.expected.items())) if output is not None else (),
-        _json(output.as_dict()) if output is not None else 'null', tuple(resolver.operations), operations)
+        _json(output_projection), tuple(resolver.operations), operations,
+        temperature_preference if controls_active else None)
 
 
 def validate_remote_plan(store, plan):
@@ -719,7 +760,7 @@ def validate_remote_plan(store, plan):
         project_xml=plan.project_xml, unit_path=plan.graph.unit_path, level_prompts=dict(plan.level_prompts),
         output_selections=None if plan.output_selections is None else [
             {'parameter': name, 'address': address} for name, address in plan.output_selections],
-        output_operations=operations)
+        output_operations=operations, temperature_preference=plan.control_temperature_preference)
     if rebuilt != plan or _json(rebuilt.as_dict()) != _json(plan.as_dict()):
         _fail('Thermostat remote plan differs from its complete deterministic replay')
     return plan

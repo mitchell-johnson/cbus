@@ -29,6 +29,7 @@ from .thermostat_post_load import (DISABLED_REMOTE_DEFAULTS, TEMPERATURE_SAVE_RU
                                     damper_modulation_save, form_save_disabled_remotes, form_save_fans,
                                     form_save_scalars, form_save_temperatures, virtual_plant_type)
 from .thermostat_output_groups import normalize_output_operations
+from .thermostat_quick_zone_controls import MODEL_SAVED_FIELDS, normalize_quick_zone_operation
 from .thermostat_settings_guard import recovered_dialog_rules
 from .thermostat_templates import (FAMILIES, NativeThermostatTemplates, ThermostatTemplateError,
                                    _native_integer, _path, _unit_record, family_for_unit_type)
@@ -193,8 +194,8 @@ def plan_settings(store: UnitSpecStore, unit_type: str, snapshot: Mapping[str, s
     if 'InstalledZones' in model_owned:
         model_owned.add('ControlledZones')
     deferred = set(_defer_model_owned)
-    if deferred - {'InstalledZones', 'ControlledZones', 'DamperModulationEnable'}:
-        raise ThermostatTemplateError('Malformed deferred damper form-save ownership')
+    if deferred - set(MODEL_SAVED_FIELDS):
+        raise ThermostatTemplateError('Malformed deferred thermostat control form-save ownership')
     rewritten = sorted(name for name in parsed if name not in model_owned | deferred
                        and name in saved and saved[name] != parsed[name])
     if rewritten:
@@ -290,6 +291,11 @@ class NativeThermostatSettings(NativeThermostatTemplates):
         self._start('settings-plan')
         try:
             _temperature_preference(temperature_preference)
+            normalized_operations = normalize_output_operations(output_operations)
+            controls_active = normalized_operations is not None and any(
+                normalize_quick_zone_operation(json.loads(row)) is not None for row in normalized_operations)
+            if controls_active and temperature_preference != 'celsius':
+                raise ThermostatTemplateError('Quick-zone/plant controls require explicit temperature preference celsius')
             path, project, network_address, address = _path(path)
             network = '//' + project + '/' + str(network_address)
             if exclusive_project is not True:
@@ -303,8 +309,10 @@ class NativeThermostatSettings(NativeThermostatTemplates):
             spec = self.store.load(FAMILIES[family]['unit_spec'])
             if not spec.supports_version(identity['FirmwareVersion']):
                 raise ThermostatTemplateError('Thermostat firmware is outside the decoded specification bounds')
-            normalized_operations = normalize_output_operations(output_operations)
-            deferred = set()
+            deferred = set(MODEL_SAVED_FIELDS) if controls_active else set()
+            if controls_active and 'ControlledZones' in edits and _native_integer(
+                    str(edits['ControlledZones']), 'ControlledZones') != _native_integer(values['ControlledZones'], 'ControlledZones'):
+                raise ThermostatTemplateError('Full-owner controls refuse a changed scalar ControlledZones overlay')
             for encoded in normalized_operations or ():
                 operation = json.loads(encoded)
                 if operation['op'] == 'damper-modulation-binding':
@@ -317,20 +325,21 @@ class NativeThermostatSettings(NativeThermostatTemplates):
             remote = plan_remote_references(self.store, identity['UnitType'], values,
                 dict(settings.edits), project_xml=project_xml, unit_path=path,
                 level_prompts=level_prompts, output_selections=output_selections,
-                output_operations=output_operations)
+                output_operations=output_operations, temperature_preference=temperature_preference)
             output_projection = json.loads(remote.output_projection_json)
             damper = output_projection.get('damper_controls') if output_projection is not None else None
-            if damper is not None:
+            if damper is not None and not controls_active:
                 settings = plan_settings(self.store, identity['UnitType'], values, edits,
                     temperature_preference=temperature_preference,
                     _model_overrides=damper['model_overrides'])
             if any(identity.get(name) != value for name, value in remote.graph.unit_identity):
                 raise ThermostatTemplateError('Unit and complete-project XML identities disagree')
-            dependent = {name: (loaded, saved) for name, loaded, saved in settings.dependent}
+            dependent = {name: (loaded, saved) for name, loaded, saved in settings.dependent
+                         if not controls_active or name not in remote.expected}
             candidate = {name: _safe(value) for name, value in values.items()} | dict(settings.edits)
             selected_outputs = set(remote.output_requested_parameters)
             for name, value in remote.expected.items():
-                if name in settings.expected and settings.expected[name] != value:
+                if not controls_active and name in settings.expected and settings.expected[name] != value:
                     raise ThermostatTemplateError('Conflicting form-save ownership: ' + name)
                 if candidate[name] != value and name not in selected_outputs:
                     dependent[name] = (candidate[name], value)

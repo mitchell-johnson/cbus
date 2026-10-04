@@ -72,6 +72,12 @@ binds the executed scopes and supporting artifacts.
 
 ## Remaining integration
 
+This section records the remaining work at the component-only checkpoint
+described above. The later [fresh-owner integration guide](thermostat-quick-zone-controls.md)
+defines the later bounded CLI composition; its
+[release report](feature-batch-2026-10-04-thermostat-quick-zone-controls.md) records accepted source and isolated installed-wheel scopes. The earlier receipt and test scopes remain
+unchanged and do not constitute acceptance of that owner.
+
 Connect these components to one fresh settings owner using the pinned
 source-owned constructor, attribute/reference notification and control-read
 roster, then test that complete composition. That owner must implement quick-zone predicates and controls,

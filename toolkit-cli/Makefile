@@ -546,6 +546,25 @@ check-cgate-interop: compile
 		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_pending_scene_name_and_cache_injection_refuse_without_write[cache-injection-mock]' \
 		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_lost_successful_save_not_replayed[pp-save-mock]' \
 		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_lost_successful_save_not_replayed[project-save-mock]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_history[basic-master-live-display-and-tail-pc_tsb-mock]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_history[basic-retained-disabled-flags-pc_tsb-mock]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_history[basic-slave-live-display-four-pc_tsb-mock]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_history[basic-master-live-display-and-tail-pc_tsb5-mock]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_history[basic-retained-disabled-flags-pc_tsb5-mock]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_history[basic-slave-live-display-four-pc_tsb5-mock]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_history[programmable-include-exclude-live-pc_tsa-mock]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_history[ordered-plant-one-reuse-pc_tsa-mock]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_history[ordered-plant-one-allocate-pc_tsa-mock]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_history[programmable-include-exclude-live-pc_tsa5-mock]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_history[ordered-plant-one-reuse-pc_tsa5-mock]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_history[ordered-plant-one-allocate-pc_tsa5-mock]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_refuses_before_backup[changed-loaded-role-mock]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_refuses_before_backup[pending-source-message-mock]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_refuses_before_backup[consumed-source-message-mock]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_refuses_before_backup[invalid-display-before-master-setup-mock]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_lost_successful_save_never_replays[PP SAVE_TO_SOURCE-mock]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_lost_successful_save_never_replays[PROJECT SAVE-mock]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_opaque_level_stale_refuses[mock]' \
 		-q -p no:cacheprovider $(CGATE_INTEROP_PYTEST_EXTRA)
 
 check-cmqtt-interop: compile
@@ -1016,6 +1035,25 @@ check-cmqtt-interop: compile
 		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_pending_scene_name_and_cache_injection_refuse_without_write[cache-injection-daemon]' \
 		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_lost_successful_save_not_replayed[pp-save-daemon]' \
 		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_lost_successful_save_not_replayed[project-save-daemon]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_history[basic-master-live-display-and-tail-pc_tsb-daemon]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_history[basic-retained-disabled-flags-pc_tsb-daemon]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_history[basic-slave-live-display-four-pc_tsb-daemon]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_history[basic-master-live-display-and-tail-pc_tsb5-daemon]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_history[basic-retained-disabled-flags-pc_tsb5-daemon]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_history[basic-slave-live-display-four-pc_tsb5-daemon]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_history[programmable-include-exclude-live-pc_tsa-daemon]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_history[ordered-plant-one-reuse-pc_tsa-daemon]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_history[ordered-plant-one-allocate-pc_tsa-daemon]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_history[programmable-include-exclude-live-pc_tsa5-daemon]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_history[ordered-plant-one-reuse-pc_tsa5-daemon]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_history[ordered-plant-one-allocate-pc_tsa5-daemon]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_refuses_before_backup[changed-loaded-role-daemon]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_refuses_before_backup[pending-source-message-daemon]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_refuses_before_backup[consumed-source-message-daemon]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_refuses_before_backup[invalid-display-before-master-setup-daemon]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_lost_successful_save_never_replays[PP SAVE_TO_SOURCE-daemon]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_lost_successful_save_never_replays[PROJECT SAVE-daemon]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_opaque_level_stale_refuses[daemon]' \
 		-q -p no:cacheprovider $(CMQTT_INTEROP_PYTEST_EXTRA)
 
 check-session-differential: build-interop

@@ -498,7 +498,14 @@ class NewInteropSelectionTests(unittest.TestCase):
             'tests/test_thermostat_remote_references_backends.py::test_public_remote_stale_snapshot_refused_before_backup[unrelated-graph-{backend}]',
         )
         public_modules = ('tests/test_thermostat_remote_references_backends.py', 'tests/test_thermostat_remote_levels_backends.py', 'tests/test_thermostat_output_groups_backends.py', 'tests/test_thermostat_output_add_backends.py', 'tests/test_thermostat_output_edit_backends.py', 'tests/test_thermostat_output_default_unicode_backends.py', 'tests/test_thermostat_damper_controls_backends.py')
-        all_ids = re.findall(r"'(tests/[^']+::[^']+)'", make)
+        complete_ids = re.findall(r"'(tests/[^']+::[^']+)'", make)
+        self.assertEqual(len(complete_ids), 945)
+        self.assertEqual(len(set(complete_ids)), 945)
+        quick_zone_ids = {row for row in complete_ids
+                          if row.startswith('tests/test_thermostat_quick_zone_controls_backends.py::')}
+        self.assertEqual(len(quick_zone_ids), 38)
+        # Preserve the exact inherited identities and their earlier digests.
+        all_ids = [row for row in complete_ids if row not in quick_zone_ids]
         self.assertEqual(len(all_ids), 907)
         self.assertEqual(len(set(all_ids)), 907)
         new_ids = set()
@@ -536,6 +543,48 @@ class NewInteropSelectionTests(unittest.TestCase):
             for module in pure_modules:
                 self.assertEqual(audit_body.count('--require-module ' + module + '\n'), 1)
             self.assertNotIn('--require-module tests/test_thermostat_settings_native.py\n', audit_body)
+
+    def test_quick_zone_owner_exact_backend_roster_and_body_requirements(self):
+        root = Path(__file__).resolve().parents[2]
+        make = (root / 'toolkit-cli/Makefile').read_text()
+        workflow = (root / '.github/workflows/ci.yml').read_text()
+        module = 'tests/test_thermostat_quick_zone_controls_backends.py'
+        histories = (
+            'basic-master-live-display-and-tail-pc_tsb',
+            'basic-retained-disabled-flags-pc_tsb',
+            'basic-slave-live-display-four-pc_tsb',
+            'basic-master-live-display-and-tail-pc_tsb5',
+            'basic-retained-disabled-flags-pc_tsb5',
+            'basic-slave-live-display-four-pc_tsb5',
+            'programmable-include-exclude-live-pc_tsa',
+            'ordered-plant-one-reuse-pc_tsa',
+            'ordered-plant-one-allocate-pc_tsa',
+            'programmable-include-exclude-live-pc_tsa5',
+            'ordered-plant-one-reuse-pc_tsa5',
+            'ordered-plant-one-allocate-pc_tsa5',
+        )
+        refusals = ('changed-loaded-role', 'pending-source-message',
+                    'consumed-source-message', 'invalid-display-before-master-setup')
+        for backend, target, selection in (('mock', 'check-cgate-interop', 'cgate-mock'),
+                                          ('daemon', 'check-cmqtt-interop', 'cmqttd')):
+            expected = {module + '::test_public_full_owner_history[' + case + '-' + backend + ']'
+                        for case in histories}
+            expected |= {module + '::test_public_full_owner_refuses_before_backup[' + case + '-' + backend + ']'
+                         for case in refusals}
+            expected |= {module + '::test_public_full_owner_lost_successful_save_never_replays[' + case + '-' + backend + ']'
+                         for case in ('PP SAVE_TO_SOURCE', 'PROJECT SAVE')}
+            expected.add(module + '::test_public_full_owner_opaque_level_stale_refuses[' + backend + ']')
+            self.assertEqual(len(expected), 19)
+            body = make.split(target + ': compile\n', 1)[1].split('\n\n', 1)[0]
+            actual = [row for row in re.findall(r"'(tests/[^']+::[^']+)'", body)
+                      if row.startswith(module + '::')]
+            self.assertEqual(len(actual), 19)
+            self.assertEqual(set(actual), expected)
+            audit = workflow.split('--selection ' + selection + '\n', 1)[1].split('\n      - name:', 1)[0]
+            self.assertEqual(audit.count('--require-module ' + module + '\n'), 1)
+        for selection in ('offline', 'installed-wheel'):
+            audit = workflow.split('--selection ' + selection + '\n', 1)[1].split('\n      - name:', 1)[0]
+            self.assertEqual(audit.count('--require-module tests/test_thermostat_quick_zone_controls.py\n'), 1)
 
     def test_combined_cli_exact_backend_rosters_and_body_requirements(self):
         # Independent literal identities from the reviewed feature shapes;

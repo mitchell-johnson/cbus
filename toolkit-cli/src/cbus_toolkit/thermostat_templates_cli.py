@@ -6,6 +6,7 @@ import json
 
 from .thermostat_settings import NativeThermostatSettings
 from .thermostat_output_groups import normalize_output_operations, normalize_output_selections
+from .thermostat_quick_zone_controls import normalize_quick_zone_operation
 from .unitspec import UnitSpecStore
 from .thermostat_templates import (FAMILIES, NativeThermostatTemplates, ThermostatTemplateCatalog,
                                    default_spec_dir, family_for_unit_type)
@@ -76,7 +77,9 @@ def options(commands):
                             help='Select an existing output group after model loading; repeat in control order')
         action.add_argument('--output-operation', dest='output_history', action=_OutputControl, metavar='JSON',
                             help='Ordered select-output-group, accepted/cancelled add-output-group/edit-output-group, '
-                                 'or caller-explicit damper callback JSON record; may be interleaved with --output-group')
+                                 'damper, quick-zone or select/dispatch-plant-type JSON record; '
+                                 'quick-zone/plant controls require --temperature-preference celsius; '
+                                 'may be interleaved with --output-group')
         action.add_argument('--resolve-output-groups', action='store_true',
                             help='Resolve current output groups and automatic names during model loading')
         action.add_argument('--host', required=True)
@@ -149,7 +152,10 @@ def _settings(args, client_factory):
     # resolved by the same native settings owner after its readonly inventory.
     # Normalization is not permission to invent a host binding callback.
     normalize_output_selections(output_selections)
-    normalize_output_operations(output_operations)
+    normalized = normalize_output_operations(output_operations)
+    if any(normalize_quick_zone_operation(json.loads(row)) is not None for row in normalized or ()):
+        if args.temperature_preference != 'celsius':
+            raise ValueError('Quick-zone/plant controls require --temperature-preference celsius')
     scope = ('Thermostat settings, remote references and optional ordered output controls checked against the unit specification, '
              'complete project graph and recovered form-save fields in one transaction; '
              'complete dialog lifecycle remains unreproduced and no physical thermostat is programmed')

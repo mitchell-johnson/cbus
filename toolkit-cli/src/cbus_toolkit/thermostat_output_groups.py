@@ -67,8 +67,15 @@ def normalize_output_operations(operations):
         if not isinstance(row, Mapping):
             _fail('Each output operation must be a record')
         op = row.get('op')
+        # Lazy import keeps the owning model's ordinary-control dependency acyclic.
+        from .thermostat_quick_zone_controls import normalize_quick_zone_operation
+        # Keep the established shared operation-name error contract before
+        # routing any newly introduced family-specific operation.
         damper = normalize_damper_operation(row)
-        if damper is not None:
+        quick = normalize_quick_zone_operation(row)
+        if quick is not None:
+            value = quick
+        elif damper is not None:
             value = damper
         elif op == 'select-output-group':
             if set(row) != {'op', 'parameter', 'address'}:
@@ -300,60 +307,65 @@ class OutputGroupModel:
             if normalize_damper_operation(row) is not None:
                 if self.damper_controls is None:
                     self.damper_controls = DamperControlModel(self)
-                self.operations.append(self.damper_controls.process(row, position))
-                continue
-            parameter = row['parameter']
-            if row['op'] == 'select-output-group':
-                validate_address(parameter, row['address'])
-                receipt = self._select(parameter, row['address'], position)
-                self.history.append(receipt)
-                self.operations.append(dict(receipt, op=row['op']))
-                continue
-            role = self._role(parameter)
-            if row['op'] == 'edit-output-group':
-                receipt = self._edit(row, role, position, project_tag_name)
-                self.edit_dialogs.append(receipt)
-                self.operations.append(receipt)
-                continue
-            groups = {address: group.name for (app, address), group in self.resolver.live.items()
-                      if app == self.application}
-            free = [address for address in range(255) if address not in groups]
-            noun = standard_group_name(self.application)
-            if len(groups) >= 256 or not free:
-                _fail(_message(2271, noun))
-            first = free[0]
-            seed = default_group_name(self.application) + ' ' + str(first)
-            shown = _rewrite(seed, noun, first)
-            previous = self.references[role]
-            receipt = {'position': position, 'op': row['op'], 'parameter': parameter,
-                'outcome': row['outcome'], 'application': self.application, 'kind': 'Group',
-                'first_free_address': first, 'seeded_name': seed, 'shown_name': shown,
-                'existing_group_count': len(groups), 'free_address_count': len(free),
-                'operator_address': 'address' in row, 'operator_name': 'name' in row,
-                'previous_identity': previous.identity if previous else None,
-                'identity': previous.identity if previous else None, 'changed': False,
-                'object_created': False, 'address': None, 'name': None,
-                'address_selected_name': None, 'entered_name': None}
-            if row['outcome'] == 'accept':
-                if type(project_tag_name) is not str:
-                    _fail('Accepted output Add requires an explicit scalar Project.TagName')
-                try:
-                    accepted = accept_group_dialog(parameter, self.application, groups, project_tag_name,
-                        address=row.get('address'), name=row.get('name'))
-                except AddDialogError as error:
-                    raise ThermostatTemplateError(str(error)) from error
-                name = _safe_added_name(accepted.name)
-                validate_address(parameter, accepted.address)
-                selected = self.resolver.create(self.application, accepted.address, name,
-                    'output_add:' + str(position) + ':' + parameter, output_add=True)
-                # A fresh identity cannot equal an existing fan peer. Use the
-                # same selector gate and assignment as explicit selection.
-                assignment = self._select(parameter, selected.address, position)
-                address_name = shown if accepted.address == first else _rewrite(shown, noun, accepted.address)
-                receipt.update(assignment, name=name, object_created=True,
-                    address_selected_name=address_name, entered_name=row.get('name', address_name))
-            self.add_dialogs.append(receipt)
+                receipt = self.damper_controls.process(row, position)
+            else:
+                receipt = self._operate_output_operation(
+                    row, position, project_tag_name, validate_address)
             self.operations.append(receipt)
+
+    def _operate_output_operation(self, row, position, project_tag_name, validate_address):
+        """Internal adapter for this owner's ordinary controls at a global position."""
+        parameter = row['parameter']
+        if row['op'] == 'select-output-group':
+            validate_address(parameter, row['address'])
+            receipt = self._select(parameter, row['address'], position)
+            self.history.append(receipt)
+            return dict(receipt, op=row['op'])
+        role = self._role(parameter)
+        if row['op'] == 'edit-output-group':
+            receipt = self._edit(row, role, position, project_tag_name)
+            self.edit_dialogs.append(receipt)
+            return receipt
+        groups = {address: group.name for (app, address), group in self.resolver.live.items()
+                  if app == self.application}
+        free = [address for address in range(255) if address not in groups]
+        noun = standard_group_name(self.application)
+        if len(groups) >= 256 or not free:
+            _fail(_message(2271, noun))
+        first = free[0]
+        seed = default_group_name(self.application) + ' ' + str(first)
+        shown = _rewrite(seed, noun, first)
+        previous = self.references[role]
+        receipt = {'position': position, 'op': row['op'], 'parameter': parameter,
+            'outcome': row['outcome'], 'application': self.application, 'kind': 'Group',
+            'first_free_address': first, 'seeded_name': seed, 'shown_name': shown,
+            'existing_group_count': len(groups), 'free_address_count': len(free),
+            'operator_address': 'address' in row, 'operator_name': 'name' in row,
+            'previous_identity': previous.identity if previous else None,
+            'identity': previous.identity if previous else None, 'changed': False,
+            'object_created': False, 'address': None, 'name': None,
+            'address_selected_name': None, 'entered_name': None}
+        if row['outcome'] == 'accept':
+            if type(project_tag_name) is not str:
+                _fail('Accepted output Add requires an explicit scalar Project.TagName')
+            try:
+                accepted = accept_group_dialog(parameter, self.application, groups, project_tag_name,
+                    address=row.get('address'), name=row.get('name'))
+            except AddDialogError as error:
+                raise ThermostatTemplateError(str(error)) from error
+            name = _safe_added_name(accepted.name)
+            validate_address(parameter, accepted.address)
+            selected = self.resolver.create(self.application, accepted.address, name,
+                'output_add:' + str(position) + ':' + parameter, output_add=True)
+            # A fresh identity cannot equal an existing fan peer. Use the
+            # same selector gate and assignment as explicit selection.
+            assignment = self._select(parameter, selected.address, position)
+            address_name = shown if accepted.address == first else _rewrite(shown, noun, accepted.address)
+            receipt.update(assignment, name=name, object_created=True,
+                address_selected_name=address_name, entered_name=row.get('name', address_name))
+        self.add_dialogs.append(receipt)
+        return receipt
+
 
     def validate(self):
         for roles, label in ((OUTPUTS[:7], 'cooling'), (OUTPUTS[7:], 'heating'), (DAMPERS, 'damper')):

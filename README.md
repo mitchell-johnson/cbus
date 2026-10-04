@@ -388,8 +388,14 @@ Explicit [damper callbacks](toolkit-cli/docs/thermostat-damper-controls.md) shar
 that settings history, including cache restoration, InstalledZones updates and
 modulation binding/Click with final plant-factor serialization. See the
 [implementation and validation report](toolkit-cli/docs/feature-batch-2026-10-04-thermostat-damper-controls.md)
-for the supported scope and test evidence. Complete
-quick-zone and automatic GUI notifications remain outstanding.
+for the supported scope and test evidence.
+The [fresh quick-zone owner](toolkit-cli/docs/thermostat-quick-zone-controls.md)
+adds explicit checkbox edits and queued plant selection/dispatch to this same
+settings transaction, with the documented Celsius/settled input profile.
+Its [release report](toolkit-cli/docs/feature-batch-2026-10-04-thermostat-quick-zone-controls.md) records
+separate source pure/model and backend epochs, and 199 passing installed-wheel
+tests plus five passing subtest events. Broader initialization, automatic
+Windows dispatch, full GUI and physical thermostat acceptance remain open.
 
 The [Toolkit conversion API and CLI](toolkit-cli/docs/toolkit-conversion-tweakers.md)
 admits 288 of 292 registered source/target pairs. The earlier 123 have historical
