@@ -87,6 +87,10 @@
       "bytes": 17378,
       "sha256": "cc974d23fe43f4b04aa62e8ce3e8432633d81fbd461f6c289139acfac615be9a"
     },
+    "terminal_wheel_bytes_and_effects": {
+      "bytes": 12072,
+      "sha256": "eecdb8d2c920f08d5e053fe59117650ff21023e69ae924efb59573da0279b810"
+    },
     "xml_source_effects": {
       "bytes": 10921,
       "sha256": "353b05c788c541dc36235baca860caaf22e8846b9d21d37781cec5fca9cd46d4"
@@ -285,8 +289,12 @@
       "sha256": "03e99b63bfa97b7bcc5f1c86068232aec0f44bce55b0906256a5575f7e7321bd"
     }
   },
+  "issue135_remaining_acceptance": "Supplemental fresh process-restart persistence/recovery evidence has not run; save/close/load and same-process recovery are verified.",
   "issues": [
     135,
+    136
+  ],
+  "issues_completed": [
     136
   ],
   "limits": [
