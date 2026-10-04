@@ -745,11 +745,37 @@ fn walk_tag_path(
     root: &TagNode,
     mut indices: Vec<usize>,
     suffix: &str,
+    allow_application_coordinates: bool,
 ) -> Result<(Vec<usize>, Option<String>), String> {
     let tokens = suffix
         .split('/')
         .filter(|part| !part.is_empty())
         .collect::<Vec<_>>();
+    // Keep the exact Address/Name winner across all siblings. A canonical
+    // Application coordinate is only a fallback for a typed numeric owner.
+    let child_by_coordinate = |node: &TagNode, token: &str| {
+        node.children
+            .iter()
+            .position(|child| {
+                child.field("Address") == Some(token) || child.field("Name") == Some(token)
+            })
+            .or_else(|| {
+                if !allow_application_coordinates {
+                    return None;
+                }
+                let address = token
+                    .parse::<u8>()
+                    .ok()
+                    .filter(|address| address.to_string() == token)?;
+                node.children.iter().position(|child| {
+                    child.element == "Application"
+                        && child
+                            .field("Address")
+                            .and_then(|value| value.parse::<u8>().ok())
+                            == Some(address)
+                })
+            })
+    };
     let mut offset = 0;
     while offset < tokens.len() {
         let node = root.at(&indices);
@@ -760,10 +786,7 @@ fn walk_tag_path(
         if offset + 1 == tokens.len()
             && !child_type(token)
             && indexed_type(token).is_none()
-            && (node.field(token).is_some()
-                || !node.children.iter().any(|child| {
-                    child.field("Address") == Some(token) || child.field("Name") == Some(token)
-                }))
+            && (node.field(token).is_some() || child_by_coordinate(node, token).is_none())
         {
             return Ok((indices, Some(token.to_string())));
         }
@@ -786,9 +809,7 @@ fn walk_tag_path(
                 child.element == "Unit" && child.field("Address") == Some(*address)
             })
         } else {
-            node.children.iter().position(|child| {
-                child.field("Address") == Some(token) || child.field("Name") == Some(token)
-            })
+            child_by_coordinate(node, token)
         }
         .ok_or_else(|| {
             format!("Bad object or device ID: Index out of range in address part {token}")
@@ -913,6 +934,37 @@ impl Server {
             }
         }
         Ok(())
+    }
+
+    /// Mirror only this already-owned Application scalar into any stored
+    /// numeric overlay. Do not re-admit an untouched Unit/PP/raw Level tree.
+    pub(crate) fn sync_application_tag_field(
+        &mut self,
+        project: &str,
+        network: u8,
+        oid: &str,
+        old_address: u8,
+        field: &str,
+        value: &str,
+    ) {
+        if let Some(project) = self.projects.get_mut(project) {
+            for record in project
+                .tag_networks
+                .values_mut()
+                .filter(|record| record.database_network == Some(network))
+            {
+                for application in record.root.children.iter_mut().filter(|node| {
+                    node.element == "Application"
+                        && node.field("OID") == Some(oid)
+                        && node
+                            .field("Address")
+                            .and_then(|address| address.parse::<u8>().ok())
+                            == Some(old_address)
+                }) {
+                    application.set(field, value.to_string());
+                }
+            }
+        }
     }
 
     pub(crate) fn current_tag_record(
@@ -1089,6 +1141,15 @@ impl Server {
         path: &str,
         project: Option<&str>,
     ) -> Result<Option<Selection>, String> {
+        self.tag_selection_in_with_application_coordinates(path, project, false)
+    }
+
+    fn tag_selection_in_with_application_coordinates(
+        &self,
+        path: &str,
+        project: Option<&str>,
+        allow_application_coordinates: bool,
+    ) -> Result<Option<Selection>, String> {
         let Some(project) = project else {
             return Ok(None);
         };
@@ -1120,7 +1181,12 @@ impl Server {
                 let network = self.current_tag_record(project, key)?;
                 let mut indices = Vec::new();
                 if network.root.find_oid(oid, &mut indices) {
-                    let (indices, field) = walk_tag_path(&network.root, indices, suffix)?;
+                    let (indices, field) = walk_tag_path(
+                        &network.root,
+                        indices,
+                        suffix,
+                        allow_application_coordinates && network.database_network.is_some(),
+                    )?;
                     return Ok(Some(Selection {
                         project: project.to_string(),
                         key: key.clone(),
@@ -1149,7 +1215,12 @@ impl Server {
             .map(|(key, _)| key);
         let Some(key) = key else { return Ok(None) };
         let network = self.current_tag_record(project, key)?;
-        let selected = walk_tag_path(&network.root, Vec::new(), suffix);
+        let selected = walk_tag_path(
+            &network.root,
+            Vec::new(),
+            suffix,
+            allow_application_coordinates && network.database_network.is_some(),
+        );
         match selected {
             Ok((indices, field)) => Ok(Some(Selection {
                 project: project.to_string(),
@@ -2676,7 +2747,11 @@ impl Server {
             } else {
                 self.current.as_deref()
             };
-        let selected = match self.tag_selection_in(path, selection_project) {
+        let selected = match self.tag_selection_in_with_application_coordinates(
+            path,
+            selection_project,
+            matches!(verb.as_str(), "DBGET" | "DBGETXML" | "DBSETSAFE"),
+        ) {
             Ok(Some(selected)) => selected,
             Ok(None) => {
                 // Known tag targets require explicit project selection.
@@ -2979,11 +3054,15 @@ impl Server {
                         "Application" | "Group" | "Level" | "NetVar"
                     ))
                 || (matches!(node.element.as_str(), "Application" | "Group")
-                    && selected.field.as_deref() == Some("TagName")))
+                    && selected.field.as_deref() == Some("TagName"))
+                || (node.element == "Application"
+                    && selected.field.as_deref() == Some("Address")
+                    && verb == "DBSETSAFE"))
                 && matches!(verb.as_str(), "DBSET" | "DBSETSAFE" | "DBDELETE")
             {
                 // The existing database owner also mirrors Application/Group
-                // TagName edits. Replacing the whole Network for that scalar
+                // TagName and SAFE Application Address edits. Replacing the
+                // whole Network for that scalar
                 // would re-admit untouched imported Units under strict
                 // DBSETXML rules that reject legacy PP decorations.
                 let mut path = format!("//{}/{address}", selected.project);
@@ -2994,7 +3073,16 @@ impl Server {
                         path.push_str("/p");
                     }
                     path.push('/');
-                    path.push_str(current.field("Address").unwrap_or_default());
+                    let coordinate = current.field("Address").unwrap_or_default();
+                    if verb == "DBSETSAFE" && current.element == "Application" {
+                        // An Application retains the admitted Address lexeme
+                        // in XML, but its typed owner uses a decimal path.
+                        let canonical =
+                            coordinate.parse::<u8>().ok().map(|value| value.to_string());
+                        path.push_str(canonical.as_deref().unwrap_or(coordinate));
+                    } else {
+                        path.push_str(coordinate);
+                    }
                 }
                 if let Some(field) = &selected.field {
                     path.push('/');
