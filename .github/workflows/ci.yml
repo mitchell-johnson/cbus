@@ -308,6 +308,7 @@ jobs:
           --require-module tests/test_cgate_din_save_interop.py
           --require-module tests/test_conversion_xml_preservation_backends.py
           --require-module tests/test_thermostat_zone_controls_backends.py
+          --require-module tests/test_conversion_xml_restart_backends.py
           --summary "${GITHUB_STEP_SUMMARY}"
 
       - name: Retain executed Toolkit tests and skips
