@@ -19,6 +19,11 @@ The Rust workspace also provides protocol tools, a PCI simulator, and a C-Gate c
 
 Raw `cgate exec` and `cgate run` can forward the command surface exposed by the selected server. That reach does not create a typed Toolkit workflow, reproduce Toolkit GUI state, prove native-server semantics, or verify a physical effect.
 
+Thermostat settings combine supported quick-zone, plant, output and damper
+histories through one database transaction. Its [temperature model](toolkit-cli/docs/thermostat-temperature-model.md)
+keeps all 15 raw, live and saved fields distinct; broader initialization,
+original GUI scheduling and physical thermostat acceptance remain open.
+
 The Toolkit CLI also renders saved multisensor, thermostat, wireless input,
 gateway and remote-control report tables from explicit supported snapshots.
 Architectural dimmer reports include 128 sparse scenes, DMX mappings and

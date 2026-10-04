@@ -524,7 +524,8 @@ def _byte_parameter(spec, name, value):
 
 
 def plan_remote_references(store, unit_type, snapshot, edits, *, project_xml, unit_path, level_prompts=None,
-                           output_selections=None, output_operations=None, temperature_preference=None):
+                           output_selections=None, output_operations=None, temperature_preference=None,
+                           _control_save_consumer=None):
     """Project all remote fields from one candidate and its authoritative graph.
 
     Ordinary edits are consumed for the same candidate as the owning settings
@@ -533,7 +534,8 @@ def plan_remote_references(store, unit_type, snapshot, edits, *, project_xml, un
     try:
         return _plan(store, unit_type, snapshot, edits, project_xml=project_xml, unit_path=unit_path,
                      level_prompts=level_prompts, output_selections=output_selections,
-                     output_operations=output_operations, temperature_preference=temperature_preference)
+                     output_operations=output_operations, temperature_preference=temperature_preference,
+                     _control_save_consumer=_control_save_consumer)
     except ThermostatTemplateError:
         raise
     except (ValueError, KeyError, TypeError, UnitSpecError) as error:
@@ -541,7 +543,8 @@ def plan_remote_references(store, unit_type, snapshot, edits, *, project_xml, un
 
 
 def _plan(store, unit_type, snapshot, edits, *, project_xml, unit_path, level_prompts=None,
-          output_selections=None, output_operations=None, temperature_preference=None):
+          output_selections=None, output_operations=None, temperature_preference=None,
+          _control_save_consumer=None):
     # The plant component references this module's graph types. Import the
     # owning controller only after those types have finished initializing.
     from .thermostat_quick_zone_controls import (FULL_CONTROL_READ_FIELDS, ThermostatControlModel,
@@ -679,6 +682,8 @@ def _plan(store, unit_type, snapshot, edits, *, project_xml, unit_path, level_pr
                     output.operations.append(receipt)
             control_save = controls.issue_save()
             expected.update(prepare_quick_zone_save(controls, control_save))
+            if _control_save_consumer is not None:
+                _control_save_consumer(controls, control_save)
             if family == 'programmable':
                 enabled = bool(expected['RemoteScheduleEnable'])
         else:

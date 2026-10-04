@@ -1809,6 +1809,8 @@ packing, capacity, CRCs, native raw bytes and CLI save/reload are tested.
 
 ## Thermostat temperature conversions
 
+The [15-field temperature owner](docs/thermostat-temperature-model.md) keeps raw PP bytes, loaded/live model integers and final saved bytes distinct in the bounded quick-zone settings transaction. See its [focused acceptance report](docs/feature-batch-2026-10-04-thermostat-temperature-owner.md) and `make check-thermostat-temperature-owner` for validation.
+
 The bounded [fresh quick-zone settings owner](docs/thermostat-quick-zone-controls.md)
 adds explicit checkbox Include/Exclude/refresh, source-offered plant selection
 and same-owner message delivery to ordered output/damper histories. It requires

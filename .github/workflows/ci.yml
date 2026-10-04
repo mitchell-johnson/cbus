@@ -152,6 +152,8 @@ jobs:
           --require-module tests/test_thermostat_plant_types.py
           --require-module tests/test_thermostat_posted_changes.py
           --require-module tests/test_thermostat_quick_zone_controls.py
+          --require-module tests/test_thermostat_temperature_model.py
+          --require-module tests/test_thermostat_temperature_owner.py
           --require-module tests/test_cli_thermostat_damper_controls.py
           --summary "${GITHUB_STEP_SUMMARY}"
 
@@ -217,6 +219,7 @@ jobs:
           --require-module tests/test_thermostat_output_default_unicode_backends.py
           --require-module tests/test_thermostat_damper_controls_backends.py
           --require-module tests/test_thermostat_quick_zone_controls_backends.py
+          --require-module tests/test_thermostat_temperature_owner_backends.py
           --require-module tests/test_cgate_din_save_interop.py
           --summary "${GITHUB_STEP_SUMMARY}"
 
@@ -287,6 +290,7 @@ jobs:
           --require-module tests/test_thermostat_output_default_unicode_backends.py
           --require-module tests/test_thermostat_damper_controls_backends.py
           --require-module tests/test_thermostat_quick_zone_controls_backends.py
+          --require-module tests/test_thermostat_temperature_owner_backends.py
           --require-module tests/test_cgate_din_save_interop.py
           --summary "${GITHUB_STEP_SUMMARY}"
 
@@ -393,6 +397,8 @@ jobs:
           --require-module tests/test_thermostat_plant_types.py
           --require-module tests/test_thermostat_posted_changes.py
           --require-module tests/test_thermostat_quick_zone_controls.py
+          --require-module tests/test_thermostat_temperature_model.py
+          --require-module tests/test_thermostat_temperature_owner.py
           --require-module tests/test_cli_thermostat_damper_controls.py
           --summary "${GITHUB_STEP_SUMMARY}"
 

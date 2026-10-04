@@ -499,8 +499,13 @@ class NewInteropSelectionTests(unittest.TestCase):
         )
         public_modules = ('tests/test_thermostat_remote_references_backends.py', 'tests/test_thermostat_remote_levels_backends.py', 'tests/test_thermostat_output_groups_backends.py', 'tests/test_thermostat_output_add_backends.py', 'tests/test_thermostat_output_edit_backends.py', 'tests/test_thermostat_output_default_unicode_backends.py', 'tests/test_thermostat_damper_controls_backends.py')
         complete_ids = re.findall(r"'(tests/[^']+::[^']+)'", make)
+        # New owner-temperature registrations do not alter inherited identities.
+        complete_ids = [row for row in complete_ids
+                        if not row.startswith('tests/test_thermostat_temperature_owner_backends.py::')]
         self.assertEqual(len(complete_ids), 945)
         self.assertEqual(len(set(complete_ids)), 945)
+        inherited_945 = '\n'.join(sorted(complete_ids)) + '\n'
+        self.assertEqual(hashlib.sha256(inherited_945.encode()).hexdigest(), '86fe25ab6de68f773b8130bd198631dc0a4a8dc939597aaf590c9b5ab1eea850')
         quick_zone_ids = {row for row in complete_ids
                           if row.startswith('tests/test_thermostat_quick_zone_controls_backends.py::')}
         self.assertEqual(len(quick_zone_ids), 38)
@@ -543,6 +548,73 @@ class NewInteropSelectionTests(unittest.TestCase):
             for module in pure_modules:
                 self.assertEqual(audit_body.count('--require-module ' + module + '\n'), 1)
             self.assertNotIn('--require-module tests/test_thermostat_settings_native.py\n', audit_body)
+
+    def test_temperature_owner_exact_backend_roster_and_body_requirements(self):
+        # Literal declared acceptance profiles; never generated from Make or production.
+        root = Path(__file__).resolve().parents[2]
+        make = (root / 'toolkit-cli/Makefile').read_text()
+        workflow = (root / '.github/workflows/ci.yml').read_text()
+        module = 'tests/test_thermostat_temperature_owner_backends.py'
+        templates = (
+            'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_chained_saves[pc_tsa-{backend}]',
+            'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_chained_saves[pc_tsa5-{backend}]',
+            'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_chained_saves[pc_tsb-{backend}]',
+            'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_chained_saves[pc_tsb5-{backend}]',
+            'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-pp-save-pc_tsa-{backend}]',
+            'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-pp-save-pc_tsa5-{backend}]',
+            'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-pp-save-pc_tsb-{backend}]',
+            'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-pp-save-pc_tsb5-{backend}]',
+            'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-project-save-pc_tsa-{backend}]',
+            'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-project-save-pc_tsa5-{backend}]',
+            'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-project-save-pc_tsb-{backend}]',
+            'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-project-save-pc_tsb5-{backend}]',
+            'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[raw-set-rewritten-pc_tsa-{backend}]',
+            'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[raw-set-rewritten-pc_tsa5-{backend}]',
+            'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[raw-set-rewritten-pc_tsb-{backend}]',
+            'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[raw-set-rewritten-pc_tsb5-{backend}]',
+            'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[unsigned-overflow-pc_tsa-{backend}]',
+            'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[unsigned-overflow-pc_tsa5-{backend}]',
+            'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[unsigned-overflow-pc_tsb-{backend}]',
+            'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[unsigned-overflow-pc_tsb5-{backend}]',
+        )
+        complete = re.findall(r"'(tests/[^']+::[^']+)'", make)
+        self.assertEqual(len(complete), 985)
+        self.assertEqual(len(set(complete)), 985)
+        for backend, target, selection in (('mock', 'check-cgate-interop', 'cgate-mock'),
+                                          ('daemon', 'check-cmqtt-interop', 'cmqttd')):
+            expected = {row.format(backend=backend) for row in templates}
+            self.assertEqual(len(expected), 20)
+            body = make.split(target + ': compile\n', 1)[1].split('\n\n', 1)[0]
+            actual = [row for row in re.findall(r"'(tests/[^']+::[^']+)'", body)
+                      if row.startswith(module + '::')]
+            self.assertEqual(len(actual), len(set(actual)))
+            self.assertEqual(set(actual), expected)
+            audit = workflow.split('--selection ' + selection + '\n', 1)[1].split('\n      - name:', 1)[0]
+            self.assertEqual(audit.count('--require-module ' + module + '\n'), 1)
+        for selection in ('offline', 'installed-wheel'):
+            audit = workflow.split('--selection ' + selection + '\n', 1)[1].split('\n      - name:', 1)[0]
+            for module in ('tests/test_thermostat_temperature_model.py',
+                           'tests/test_thermostat_temperature_owner.py'):
+                self.assertEqual(audit.count('--require-module ' + module + '\n'), 1)
+
+        focused = make.split('check-thermostat-temperature-owner:\n', 1)[1].split('\n\n', 1)[0]
+        self.assertNotIn('cargo ', focused)
+        self.assertIn('test -x "$${CBUS_CGATE_MOCK_BIN}"', focused)
+        self.assertIn('test -x "$${CBUS_CMQTTD_BIN}"', focused)
+        focused_modules = re.findall(r'tests/[a-z0-9_]+\.py', focused)
+        self.assertEqual(focused_modules, [
+            'tests/test_thermostat_temperature_model.py',
+            'tests/test_thermostat_temperature_owner.py',
+            'tests/test_thermostat_temperature_owner_backends.py',
+            'tests/test_thermostat_temperature.py',
+            'tests/test_thermostat_settings_temperature_vectors.py',
+            'tests/test_thermostat_quick_zone_controls.py',
+            'tests/test_thermostat_settings.py',
+            'tests/test_thermostat_settings_guard.py',
+            'tests/test_thermostat_remote_references.py',
+            'tests/test_thermostat_quick_zone_controls_backends.py',
+            'tests/test_ci_test_results.py',
+        ])
 
     def test_quick_zone_owner_exact_backend_roster_and_body_requirements(self):
         root = Path(__file__).resolve().parents[2]

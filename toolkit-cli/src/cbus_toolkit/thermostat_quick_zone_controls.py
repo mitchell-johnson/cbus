@@ -19,6 +19,7 @@ from .thermostat_plant_types import PlantTypeModel, PlantGroupCapacityError
 from .thermostat_posted_changes import PlantChangeQueue
 from .thermostat_post_load import OUTPUTS, DAMPERS, RELAYS, pp_name, virtual_plant_type, INSTALLATION_NAMES
 from .thermostat_templates import ThermostatTemplateError
+from . import thermostat_temperature_model as temperature_model
 from .thermostat_zone_defaults import ZoneDefaultsModel
 
 _TYPE_FIELDS = {"heating": "HeatingPlantType", "cooling": "CoolingPlantType",
@@ -165,10 +166,21 @@ class ThermostatControlModel:
         _integer(source["VentPlantType"], 2, "VentPlantType")
         _integer(source["ZoneTemperatureDisplay"], 4, "ZoneTemperatureDisplay")
         _integer(source["InternalPlantType"], 11, "InternalPlantType")
+        # Capture/validate raw temperature bytes before changing the shared
+        # model. This is one AfterLoad conversion, not a control callback.
+        try:
+            loaded_temperatures = temperature_model.decode_temperature_fields(
+                source, temperature_preference=temperature_preference)
+        except temperature_model.TemperatureModelError as error:
+            raise ThermostatTemplateError(str(error)) from error
         self.output = owner
         self.source = dict(source)
         self._source_record = tuple(sorted(self.source.items()))
         self.values = owner.values
+        self.temperature_preference = temperature_preference
+        self._temperature_preference_record = temperature_preference
+        self._loaded_temperatures = tuple(sorted(loaded_temperatures.items()))
+        self.values.update(loaded_temperatures)
         self.values["InternalPlantType"] = virtual_plant_type(source)
         for name in _BOOL_FIELDS:
             self.values[name] = int(source[name] != 0)
@@ -248,7 +260,8 @@ class ThermostatControlModel:
                 or self.plant.values is not self.values or self.plant.references is not self.output.references
                 or self.damper._owner is not self.output or self.queue._owner is not self
                 or self._loaded_master != self.output.master
-                or tuple(sorted(self.source.items())) != self._source_record):
+                or tuple(sorted(self.source.items())) != self._source_record
+                or self.temperature_preference != self._temperature_preference_record):
             _fail("Quick-zone model no longer has its original shared source owner")
         if (len(self._installations) != len(self._installation_records)
                 or any(item is not old or item.owner is not self or item.code != code or item.name != name
@@ -772,7 +785,7 @@ class ThermostatControlModel:
 
     def _signature(self):
         self._verify_owner()
-        payload = {"source": self._source_record, "values": self.values, "references": {role: None if group is None else group.identity
+        payload = {"source": self._source_record, "temperature_preference": self.temperature_preference, "values": self.values, "references": {role: None if group is None else group.identity
                     for role, group in self.output.references.items()},
                    "groups": [(app, address, group.identity, group.name)
                               for (app, address), group in sorted(self.output.resolver.live.items())],
@@ -796,7 +809,12 @@ class ThermostatControlModel:
         serialization = dict(self.values)
         serialization["ControlledZones"] = int(self._loaded_master)
         expected = dict(self.values)
-        expected.update(form_save(serialization, self.output.family, temperature_preference="celsius"))
+        expected.update(form_save(serialization, self.output.family, temperature_preference=None))
+        try:
+            expected.update(temperature_model.encode_temperature_fields(
+                self.values, temperature_preference=self.temperature_preference))
+        except temperature_model.TemperatureModelError as error:
+            raise ThermostatTemplateError(str(error)) from error
         expected.update(self.output.expected)
         # Common BeforeSave reads the actual current installation twice when
         # nonnil; its Code field is saved, and nil saves literal zero.
@@ -826,7 +844,21 @@ class ThermostatControlModel:
         return self._issued_save
 
     def as_dict(self):
+        encoded = None
+        if self._issued_save is not None:
+            prepared = prepare_quick_zone_save(self, self._issued_save)
+            encoded = {name: prepared[name] for name in temperature_model.TEMPERATURE_FIELDS}
+        temperatures = {
+            "preference": self.temperature_preference,
+            "device_units_used_as_preference": False,
+            "raw": {name: self.source[name] for name in temperature_model.TEMPERATURE_FIELDS},
+            "loaded": dict(self._loaded_temperatures),
+            "live": {name: self.values[name] for name in temperature_model.TEMPERATURE_FIELDS},
+            "encoded": encoded,
+            "load_conversions_are_not_control_notifications": True,
+        }
         return {"profile": "fresh-source-owner-settled-explicit-quick-zone-controls-v1",
+                "temperature_model": temperatures,
                 "state": self._diagnostic_values(), "operations": deepcopy(self._operations),
                 "source_calls": deepcopy(self._trace), "alerts": deepcopy(self._alerts),
                 "posted_changes": self.queue.as_dict(), "model_overrides": self.model_overrides,
