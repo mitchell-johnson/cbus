@@ -224,6 +224,7 @@ jobs:
           --require-module tests/test_application_copy_safe_backends.py
           --require-module tests/test_application_safe_set_backends.py
           --require-module tests/test_ordinary_level_value_backends.py
+          --require-module tests/test_ordinary_level_value_followon_backends.py
           --require-module tests/test_cgate_din_save_interop.py
           --summary "${GITHUB_STEP_SUMMARY}"
 
@@ -299,6 +300,7 @@ jobs:
           --require-module tests/test_application_copy_safe_backends.py
           --require-module tests/test_application_safe_set_backends.py
           --require-module tests/test_ordinary_level_value_backends.py
+          --require-module tests/test_ordinary_level_value_followon_backends.py
           --require-module tests/test_cgate_din_save_interop.py
           --summary "${GITHUB_STEP_SUMMARY}"
 

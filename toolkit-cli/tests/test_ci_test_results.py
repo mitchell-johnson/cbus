@@ -505,7 +505,8 @@ class NewInteropSelectionTests(unittest.TestCase):
                                                'tests/test_cgl_application_order_backends.py::',
                                                'tests/test_application_copy_safe_backends.py::',
                                                'tests/test_application_safe_set_backends.py::',
-                                               'tests/test_ordinary_level_value_backends.py::'))]
+                                               'tests/test_ordinary_level_value_backends.py::',
+                                               'tests/test_ordinary_level_value_followon_backends.py::'))]
         self.assertEqual(len(complete_ids), 945)
         self.assertEqual(len(set(complete_ids)), 945)
         inherited_945 = '\n'.join(sorted(complete_ids)) + '\n'
@@ -660,6 +661,42 @@ class NewInteropSelectionTests(unittest.TestCase):
         self.assertEqual(hashlib.sha256(('\n'.join(sorted(total)) + '\n').encode()).hexdigest(),
                          'd2fd44cc1299cbe3422fac58d406551640e8ff0271e4ca87036f575eb99d6cdb')
 
+    def test_ordinary_level_value_followon_literal_roster_and_required_bodies(self):
+        root = Path(__file__).resolve().parents[2]
+        make = (root / 'toolkit-cli/Makefile').read_text()
+        workflow = (root / '.github/workflows/ci.yml').read_text()
+        module = 'tests/test_ordinary_level_value_followon_backends.py'
+        expected = {
+            'mock': {
+                module + '::test_public_numeric_level_lost_success_is_not_replayed[mock-value]',
+                module + '::test_public_numeric_level_lost_success_is_not_replayed[mock-save]',
+            },
+            'daemon': {
+                module + '::test_public_numeric_level_lost_success_is_not_replayed[daemon-value]',
+                module + '::test_public_numeric_level_lost_success_is_not_replayed[daemon-save]',
+                module + '::test_public_numeric_group_and_netvar_levels_survive_cmqttd_restart',
+            },
+        }
+        total = []
+        for backend, target, selection in (('mock', 'check-cgate-interop', 'cgate-mock'),
+                                          ('daemon', 'check-cmqtt-interop', 'cmqttd')):
+            body = make.split(target + ': compile\n', 1)[1].split('\n\n', 1)[0]
+            actual = [n for n in re.findall(r"'(tests/[^']+::[^']+)'", body)
+                      if n.startswith(module + '::')]
+            self.assertEqual(len(actual), len(set(actual)))
+            self.assertEqual(set(actual), expected[backend])
+            audit = workflow.split('--selection ' + selection + '\n', 1)[1].split('\n      - name:', 1)[0]
+            self.assertEqual(audit.count('--require-module ' + module + '\n'), 1)
+            total.extend(actual)
+        self.assertEqual(len(total), 5)
+        self.assertEqual(len(set(total)), 5)
+        self.assertEqual(hashlib.sha256(('\n'.join(sorted(total)) + '\n').encode()).hexdigest(), 'b14d154114f2583ead0aa02d1f8941dd2e2ea164525597d4cc2d20e17559451d')
+        inherited = [n for n in re.findall(r"'(tests/[^']+::[^']+)'", make)
+                     if not n.startswith(module + '::')]
+        self.assertEqual(len(inherited), 1056)
+        self.assertEqual(len(inherited), len(set(inherited)))
+        self.assertEqual(hashlib.sha256(('\n'.join(sorted(inherited)) + '\n').encode()).hexdigest(), '3a5b0584311acab115319254599a580f254062391c7b42108fcb93b15ea81a05')
+
     def test_temperature_owner_exact_backend_roster_and_body_requirements(self):
         # Literal declared acceptance profiles; never generated from Make or production.
         root = Path(__file__).resolve().parents[2]
@@ -692,7 +729,8 @@ class NewInteropSelectionTests(unittest.TestCase):
                     if not row.startswith(('tests/test_cgl_application_order_backends.py::',
                                            'tests/test_application_copy_safe_backends.py::',
                                            'tests/test_application_safe_set_backends.py::',
-                                           'tests/test_ordinary_level_value_backends.py::'))]
+                                           'tests/test_ordinary_level_value_backends.py::',
+                                           'tests/test_ordinary_level_value_followon_backends.py::'))]
         self.assertEqual(len(complete), 985)
         self.assertEqual(len(set(complete)), 985)
         for backend, target, selection in (('mock', 'check-cgate-interop', 'cgate-mock'),

@@ -20,10 +20,10 @@ check-cmqtt-interop: compile
 \tpython -m pytest 'tests/test_matrix_fixture.py::test_daemon' tests/test_cmqtt_programming_methods_interop.py -q
 
 """
-COUNTS = {"mock": 525, "daemon": 537}
+COUNTS = {"mock": 527, "daemon": 540}
 DIGESTS = {
-    "mock": "1cfd1d6fee228a811111be8c3779c79b3030484bc7d590eb2b518ab714d71043",
-    "daemon": "dc48b1d5efbcd9ffe9cda1df82c15920d45cf403eeaa908320973969a3e716e6",
+    "mock": "e4c60b4a4973aac669d1a694ea061700116272b9a92377e42c022709f355d0f4",
+    "daemon": "cc4efb04c597afdf21f120e674e99818197ed3fb6ed47af2fad7dc3b8f0135a4",
 }
 
 
@@ -128,7 +128,7 @@ def test_current_backend_rosters_have_literal_full_digests_and_core_modules(gate
         assert chosen[backend] == configured[backend]
     assert len(configured["mock"]["whole_modules"]) == 1
     assert len(configured["daemon"]["whole_modules"]) == 6
-    assert sum(len(plan["required_ids"]) for plan in configured.values()) == 1062
+    assert sum(len(plan["required_ids"]) for plan in configured.values()) == 1067
     assert sum(len(plan["required_ids"]) - len(plan["quoted_ids"]) for plan in configured.values()) == 6
 
 

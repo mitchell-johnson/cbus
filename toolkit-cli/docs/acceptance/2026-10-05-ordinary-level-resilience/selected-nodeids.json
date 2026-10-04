@@ -1,0 +1,7 @@
+[
+  "tests/test_ordinary_level_value_followon_backends.py::test_public_numeric_level_lost_success_is_not_replayed[mock-value]",
+  "tests/test_ordinary_level_value_followon_backends.py::test_public_numeric_level_lost_success_is_not_replayed[mock-save]",
+  "tests/test_ordinary_level_value_followon_backends.py::test_public_numeric_level_lost_success_is_not_replayed[daemon-value]",
+  "tests/test_ordinary_level_value_followon_backends.py::test_public_numeric_level_lost_success_is_not_replayed[daemon-save]",
+  "tests/test_ordinary_level_value_followon_backends.py::test_public_numeric_group_and_netvar_levels_survive_cmqttd_restart"
+]
