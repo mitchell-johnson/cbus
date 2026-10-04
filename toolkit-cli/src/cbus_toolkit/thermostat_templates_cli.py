@@ -5,6 +5,7 @@ import argparse
 import json
 
 from .thermostat_settings import NativeThermostatSettings
+from .thermostat_output_groups import normalize_output_operations, normalize_output_selections
 from .unitspec import UnitSpecStore
 from .thermostat_templates import (FAMILIES, NativeThermostatTemplates, ThermostatTemplateCatalog,
                                    default_spec_dir, family_for_unit_type)
@@ -74,8 +75,8 @@ def options(commands):
                             metavar='PARAMETER=ADDRESS',
                             help='Select an existing output group after model loading; repeat in control order')
         action.add_argument('--output-operation', dest='output_history', action=_OutputControl, metavar='JSON',
-                            help='Ordered select-output-group or accepted/cancelled add-output-group/edit-output-group JSON record; '
-                                 'may be interleaved with --output-group')
+                            help='Ordered select-output-group, accepted/cancelled add-output-group/edit-output-group, '
+                                 'or caller-explicit damper callback JSON record; may be interleaved with --output-group')
         action.add_argument('--resolve-output-groups', action='store_true',
                             help='Resolve current output groups and automatic names during model loading')
         action.add_argument('--host', required=True)
@@ -144,6 +145,11 @@ def _settings(args, client_factory):
         raise ValueError('Use --spec-dir or CBUS_UNITSPEC_DIR for decoded vendor specifications')
     edits = _edits(args.edits)
     output_selections, output_operations = _output_controls(args.output_history, args.resolve_output_groups)
+    # Validate only record schema here; current model/reference choices are
+    # resolved by the same native settings owner after its readonly inventory.
+    # Normalization is not permission to invent a host binding callback.
+    normalize_output_selections(output_selections)
+    normalize_output_operations(output_operations)
     scope = ('Thermostat settings, remote references and optional ordered output controls checked against the unit specification, '
              'complete project graph and recovered form-save fields in one transaction; '
              'complete dialog lifecycle remains unreproduced and no physical thermostat is programmed')

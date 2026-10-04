@@ -148,6 +148,8 @@ jobs:
           --require-module tests/test_thermostat_output_edit_opaque_values.py
           --require-module tests/test_thermostat_output_default_unicode.py
           --require-module tests/test_thermostat_output_default_ascii_static.py
+          --require-module tests/test_thermostat_damper_controls.py
+          --require-module tests/test_cli_thermostat_damper_controls.py
           --summary "${GITHUB_STEP_SUMMARY}"
 
       - name: Python client against cgate-mock
@@ -210,6 +212,7 @@ jobs:
           --require-module tests/test_thermostat_output_add_backends.py
           --require-module tests/test_thermostat_output_edit_backends.py
           --require-module tests/test_thermostat_output_default_unicode_backends.py
+          --require-module tests/test_thermostat_damper_controls_backends.py
           --require-module tests/test_cgate_din_save_interop.py
           --summary "${GITHUB_STEP_SUMMARY}"
 
@@ -278,6 +281,7 @@ jobs:
           --require-module tests/test_thermostat_output_add_backends.py
           --require-module tests/test_thermostat_output_edit_backends.py
           --require-module tests/test_thermostat_output_default_unicode_backends.py
+          --require-module tests/test_thermostat_damper_controls_backends.py
           --require-module tests/test_cgate_din_save_interop.py
           --summary "${GITHUB_STEP_SUMMARY}"
 
@@ -380,6 +384,8 @@ jobs:
           --require-module tests/test_thermostat_output_edit_opaque_values.py
           --require-module tests/test_thermostat_output_default_unicode.py
           --require-module tests/test_thermostat_output_default_ascii_static.py
+          --require-module tests/test_thermostat_damper_controls.py
+          --require-module tests/test_cli_thermostat_damper_controls.py
           --summary "${GITHUB_STEP_SUMMARY}"
 
       - name: Retain installed-wheel tests and provisioning skips

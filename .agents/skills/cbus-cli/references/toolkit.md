@@ -1064,3 +1064,18 @@ load/save normalization. KEYE remapping and whole-parent form histories remain
 outside this lane. Consult `toolkit-cli/docs/neo-indicator-editor.md` for exact
 control eligibility, catalogue labels, hidden-field normalization and source
 versus runtime acceptance boundaries.
+
+## Explicit thermostat damper histories
+
+Use `thermostat settings preview|apply --output-operation JSON` for the seven
+records in `toolkit-cli/docs/thermostat-damper-controls.md`. FormShow precedes
+after-show/group-change/modulation callbacks. InstalledZones assignment and
+zone update are separate records; do not invent automatic notification delivery.
+Cache identities belong to this fresh owner, not an imported receipt. Binding
+changes the model; warning Click observes checked state. Inspect final factor
+serialization, ControlledZones, graph creations and whole PP preservation.
+No-op writes nothing; graph-only mutation has no PP save. Use one settings
+transaction and never replay an uncertain save. Native GUI, subscriber
+multiplicity, full quick-zone/queued dispatch and hardware acceptance stay open.
+The batch report separates failed 22-module predecessors from the corrected
+78-case source/installed-wheel follow-ups; do not combine their test counts.
