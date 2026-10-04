@@ -1,0 +1,54 @@
+{
+  "schema": "cbus-ordinary-level-value-safe-owned-v1",
+  "scope": {
+    "original_execution": false,
+    "physical_acceptance": false,
+    "basis": "Current issued-LevelOID byte initializer and coherent typed/pending owner model; not a target-native raw/null/lexical policy capture"
+  },
+  "application_xml": "<Application><OID>aaaaaaaa-aaaa-4aaa-8aaa-000000000080</OID><TagName>Application eighty</TagName><Address>80</Address><Group><OID>aaaaaaaa-aaaa-4aaa-8aaa-000000000008</OID><TagName>Group eight</TagName><Address>8</Address><Level Value=\"77\"><OID>aaaaaaaa-aaaa-4aaa-8aaa-000000000004</OID><TagName>Selected byte</TagName><Address>4</Address><TagsDLT/></Level><Level Value=\"88\"><OID>aaaaaaaa-aaaa-4aaa-8aaa-000000000005</OID><TagName>Unrelated byte</TagName><Address>5</Address><TagsDLT/></Level></Group><NetVar><OID>aaaaaaaa-aaaa-4aaa-8aaa-000000000009</OID><TagName>Variable nine</TagName><Address>9</Address><Level Value=\"66\"><OID>aaaaaaaa-aaaa-4aaa-8aaa-000000000006</OID><TagName>Nested byte</TagName><Address>6</Address><TagsDLT/></Level></NetVar></Application>",
+  "level_oid": "aaaaaaaa-aaaa-4aaa-8aaa-000000000004",
+  "group_oid": "aaaaaaaa-aaaa-4aaa-8aaa-000000000008",
+  "valid_byte_cases": [
+    [
+      "99",
+      "99"
+    ],
+    [
+      "077",
+      "77"
+    ],
+    [
+      "+77",
+      "77"
+    ],
+    [
+      "-0",
+      "0"
+    ],
+    [
+      "255",
+      "255"
+    ]
+  ],
+  "invalid_byte_cases": [
+    "oops",
+    "null",
+    "-1",
+    "256",
+    "1.5",
+    "0x4d",
+    "1 2",
+    "9223372036854775808"
+  ],
+  "expected_success": "200 OK",
+  "expected_invalid_byte": "400 Invalid level value",
+  "numeric_getter_profile": "342 echo of admitted exact canonical numeric or selected-relative route; candidate local consistency profile",
+  "nested_level_oid": "aaaaaaaa-aaaa-4aaa-8aaa-000000000006",
+  "netvar_oid": "aaaaaaaa-aaaa-4aaa-8aaa-000000000009",
+  "oid_cache_disposition": {
+    "global_oid_field": "Non-authoritative across retained PROJECT COPY OIDs; a conflicting byte is ignored only when a different loaded coherent typed/pending owner explains it",
+    "canonical_field": "Project-scoped; disagreement still refuses",
+    "legacy_relative_field": "Preserved without migration or owner inference; admitted numeric getter reads the selected typed owner",
+    "unexplained_cache": "Exact 408 mirror-disagreement refusal before mutation"
+  }
+}

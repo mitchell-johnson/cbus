@@ -144,41 +144,26 @@ reply conventions are preserved; this change does not broaden them.
 
 ## Level Value writes are a separate boundary
 
-The Application Address/TagName routes above do not establish numeric Level
-Value mutation. [Issue 131](https://github.com/mitchell-johnson/cbus/issues/131)
-tracks an actual gap in an ordinary typed numeric Network without an associated
-tag-Network owner: `DBSETSAFE //PROJECT/254/80/8/4/Value 99` can return `200`
-while the fresh authoritative Level XML still contains `Value="77"`. The same
-numeric route can acknowledge `oops` as a generic scalar alias without creating
-an opaque typed Value. A successful status alone is insufficient readback, and
-this profile is not supported as a verified numeric Level write in this guide.
+The Application copy/Address/TagName evidence above remains its own checkpoint.
+The [ordinary numeric Level Value guide](ordinary-level-value.md) describes a
+separate issue 131 consistency fix: its isolated candidate binds one complete
+selected-project typed owner, applies the existing issued-OID byte initializer
+and keeps numeric/OID/XML readbacks coherent. It passed 13 library cases,
+12 source CLI cases, separate installed mock 6/daemon 6 phases and four required
+Rust gates. The adopted branch passed its own exact source 12 and fresh installed
+mock 6/daemon 6 cases with the current runner; issue 131 remains open pending
+merge. Full 1,062-ID and native acceptance remain separate. The earlier
+Application acceptance report remains unchanged.
 
-For an admitted byte edit, use the fresh, unique issued Level OID and check both
-its scalar reply and complete XML. Replace `LEVEL_OID` below with the UUID from
-the actual `301 OID=…` creation receipt or authoritative XML, then verify that
-it still selects the intended Level in the selected project. The CLI's ordinary
-add result contains `lines`, `final` and `status`; it does not expose a separate
-`oid` key.
-
-```sh
-cbus-toolkit cgate --host HOST --port PORT database get '!LEVEL_OID/OID' --project SAFEAPP
-cbus-toolkit cgate --host HOST --port PORT database set '!LEVEL_OID/Value' 77 --project SAFEAPP
-cbus-toolkit cgate --host HOST --port PORT database get '!LEVEL_OID/Value' --project SAFEAPP
-cbus-toolkit cgate --host HOST --port PORT database get-xml //SAFEAPP/254/70/1/7 --project SAFEAPP
-```
-
-The issued-OID byte setter and the associated raw-Value owner are distinct.
-Opaque text is admitted only through the existing associated owner with its
-identity and mirror checks; it must not be inferred from the ordinary numeric
-alias route or a generic issued OID. The owning opaque-copy-refusal fixture
-explicitly uses the existing public `DBADD !issuedNetworkOID Languages` route
-to establish that associated Network owner, then sets the actual Level OID,
-requires scalar `342` readbacks and compares the complete graph. That fixture
-proves its declared owner only after actual execution; creating a Languages
-collection is a database mutation and is not a general raw-write workaround.
-Preserving an existing opaque Value during an Application move likewise does
-not broaden Value setter admission. Issue 131 remains open and separate from
-Application copy/set issues 124 and 125.
+Use a build containing that fix before relying on an ordinary numeric SAFE
+Value route. Earlier builds can acknowledge a numeric scalar alias while
+authoritative Level XML retains the old byte. Select the project on the edit's
+connection and compare complete XML with fresh numeric and actual issued-OID
+readbacks. The ordinary add response exposes `lines`, `final` and `status`, not
+an invented JSON `oid` property. Raw `DBSET`, existing shared Unit/OID routes and
+the associated tag-Network's opaque Value owner retain their previous dispatch;
+neither this fix nor a status-only readback establishes arbitrary raw, NULL,
+lexical/error or native mutation parity. SAVE is an explicit separate operation.
 
 ## NULL Levels and copied LOAD metadata
 
@@ -300,6 +285,7 @@ equality or repeated full-matrix execution is claimed. The 481 Rust inputs are
 unchanged by that composition, but Toolkit checks and capture freshness remain
 separate follow-up work.
 
-Issue 131 has a separate, unadopted 13-case library proof. That private candidate
-does not alter this tested source, has no public or installed acceptance in this feature epoch,
-and does not remove the ordinary numeric Level Value limitation above.
+At that original Application checkpoint, issue 131 had a separate unadopted
+13-case library proof and no public or installed acceptance in that feature
+epoch. The later adopted consistency fix and its focused proofs are described
+above; they do not rewrite this historical Application acceptance.

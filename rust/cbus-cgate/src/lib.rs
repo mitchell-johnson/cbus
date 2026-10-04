@@ -37,6 +37,7 @@ mod file;
 pub mod manual;
 mod native_archive;
 mod object_access;
+mod ordinary_level_value;
 mod port;
 #[cfg(test)]
 mod pp_namespace_tests;
@@ -5055,6 +5056,11 @@ impl Server {
         let path = words[1];
         if path.is_empty() || path.contains('#') {
             return err(tag, status::BAD_REQUEST, "400 Invalid DBGET path");
+        }
+        if !xml {
+            if let Some(response) = self.try_ordinary_level_value_command(tag, words) {
+                return response;
+            }
         }
         // `!OID/...` identity paths address objects outside the
         // project/network tree. `!oid/OID` resolves issued OIDs with the
@@ -11366,6 +11372,12 @@ impl Server {
                             pending.fields.insert("Value".to_string(), value.clone());
                         }
                     }
+                    // If a numeric SAFE write already published this exact
+                    // readback mirror, later issued-OID writes keep it live.
+                    let numeric_value = format!("{level_path}/Value");
+                    if self.db_fields.contains_key(&numeric_value) {
+                        self.db_fields.insert(numeric_value, value.clone());
+                    }
                     self.db_fields.insert(words[1].to_string(), value);
                     return ok(tag, vec![], "200 OK");
                 }
@@ -11391,6 +11403,11 @@ impl Server {
                     "409 Unsupported duplicate Application field mutation",
                 );
             }
+        }
+        // Exact ordinary numeric Levels must not fall through to an opaque
+        // Value alias. Existing OID/Unit and associated tag owners stay first.
+        if let Some(response) = self.try_ordinary_level_value_command(tag, words) {
+            return response;
         }
         // Existing Unit/shared-OID routing above retains its selection and
         // envelope; only its resolved Application reaches this SAFE owner.

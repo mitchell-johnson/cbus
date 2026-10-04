@@ -1933,27 +1933,46 @@ not block the target, and the current target's exact path remains excluded.
 Raw constructor and Network-OID retained-state evidence are distinct. Exact
 native name/no-op/case/whitespace/error behavior remains unproved.
 
-Do not infer numeric Level Value support from the Application scalar owner.
-[Issue 131](https://github.com/mitchell-johnson/cbus/issues/131) records an ordinary
-unassociated typed Network where numeric `DBSETSAFE .../Value` acknowledges
-`200` without changing authoritative Level XML. For byte edits, use a fresh
-unique issued Level OID, then check both the `342` scalar and full XML readback.
+At the original Application feature checkpoint, the Application scalar owner
+did not supply ordinary numeric Level Value support.
+[Issue 131](https://github.com/mitchell-johnson/cbus/issues/131) recorded an ordinary
+unassociated typed Network where numeric `DBSETSAFE .../Value` acknowledged
+`200` without changing authoritative Level XML. The byte-edit workaround at that
+checkpoint was a fresh unique issued Level OID, followed by both the `342`
+scalar and full XML readback. That OID-only guidance is historical; the
+now-adopted numeric byte owner below defines current admission.
 The public creation result has `lines`, `final` and `status` with `301 OID=UUID`,
 not a top-level `oid` field. Raw Values require the existing admitted associated
 owner and matching typed/pending identity; a generic numeric alias or opaque
 field row is not that proof. The explicit public Languages association fixture
 and its Value-only whole-graph/342 checks must be qualified to actual execution.
-Current source 59 and separate installed mock 28/daemon 31 selections passed with
-no failures or skips; native issues 124/125 stay open. The configured full
-interop roster and ordinary numeric Level Value gap are separate scopes. Never relabel the issue 131 false-success captures as fixture errors.
+That checkpoint's source 59 and separate installed mock 28/daemon 31 selections
+passed with no failures or skips; native issues 124/125 stay open. Its configured
+full interop roster and then-open ordinary numeric Level Value gap were separate
+scopes. Never relabel the issue 131 false-success captures as fixture errors.
 
 The separate full source offline repeat passed with 1,714 provisioning skips.
 The pre-matrix full source interop gate passed all 1,050 required IDs (519 mock,
 531 daemon) plus seven whole core modules, with exactly two optional UnitSpec
 skips. Later matrix/serial/metadata composition requires its separate checks.
-These source results do not establish native or hardware acceptance. The isolated 13-case issue
-131 candidate remains unadopted in this tested source and has no public/installed
-acceptance in this feature epoch. It does not close the numeric Value gap.
+These source results do not establish native or hardware acceptance. Issue 131
+was unadopted and had no public/installed acceptance at that Application feature
+checkpoint; its later consistency proof is separate.
+
+For the now-adopted ordinary numeric byte Value fix, read
+`toolkit-cli/docs/ordinary-level-value.md`. Its adopted branch separately passed
+exact source 12 and fresh installed mock 6/daemon 6 cases with the current
+runner; issue 131 remains open pending merge. Earlier isolated 13 library/source
+12/installed mock 6/daemon 6 and four Rust gates remain distinct epochs. Neither
+focused proof executes the full 1,062-ID declaration plus seven whole modules. Canonical numeric DBGET/DBSETSAFE Value validates
+one complete selected-project typed owner and coherent parent/pending/mirrors
+before staging the existing issued-OID byte initializer. Numeric/OID/whole-XML
+readbacks must agree. A conflicting global OID cache is tolerated only if a
+present coherent loaded unassociated owner with that OID explains its exact
+byte; this is not historical-writer provenance. Stale/competing ownership
+refuses without repair. Unsafe DBSET, Unit/shared-OID and associated raw owners
+retain their existing dispatch. Native raw/NULL/lexical/error policy remains
+open; never relabel the retained numeric false-success capture as a fixture error.
 
 ### PP administration and PROGRAMMER queues
 
