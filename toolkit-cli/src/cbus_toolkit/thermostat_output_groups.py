@@ -69,8 +69,10 @@ def normalize_output_operations(operations):
         op = row.get('op')
         # Lazy import keeps the owning model's ordinary-control dependency acyclic.
         from .thermostat_quick_zone_controls import normalize_quick_zone_operation
-        quick = normalize_quick_zone_operation(row)
+        # Keep the established shared operation-name error contract before
+        # routing any newly introduced family-specific operation.
         damper = normalize_damper_operation(row)
+        quick = normalize_quick_zone_operation(row)
         if quick is not None:
             value = quick
         elif damper is not None:
