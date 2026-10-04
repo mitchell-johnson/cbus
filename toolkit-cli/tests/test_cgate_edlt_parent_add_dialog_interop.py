@@ -144,18 +144,14 @@ def journey(backend, variable, tmp_path, case):
         node=ET.SubElement(parameters,'Param')
         for name,value in parameter.fields.items():ET.SubElement(node,name).text=value
     path=specs/'KEYGL5.xml';path.write_bytes(ET.tostring(root))
-    launcher=work/'owned-parent-add-backend'
     flag='--unitspec' if backend=='cgate-mock' else '--cgate-unitspec'
-    launcher.write_text('#!'+sys.executable+'\nimport os,sys\nos.execv('+repr(str(binary))+
-        ', ['+repr(str(binary))+', *sys.argv[1:], '+repr(flag)+', '+repr(str(specs))+'])\n')
-    launcher.chmod(0o700)
     evidence={'format':'cbus-parent-add-owned-v1','backend':backend,
         'binary_sha256':hashlib.sha256(binary.read_bytes()).hexdigest(),
         'specification_sha256':hashlib.sha256(path.read_bytes()).hexdigest(),
         'original_execution':False,'physical_acceptance':False,'calls':[],'processes':[]}
     relay=None
     try:
-        with no_contact_trap() as trap,owned_backend(backend,launcher,work) as (endpoint,record):
+        with no_contact_trap() as trap,owned_backend(backend, binary, work, extra_args=(flag, specs)) as (endpoint,record):
             evidence['processes'].append(record)
             with CGateClient(*endpoint,timeout=15) as owner,RecordedGate(endpoint) as relay:
                 evidence['fixture_sha256']=provision(owner,work,trap,spec,disabled=case.get('disabled',False),

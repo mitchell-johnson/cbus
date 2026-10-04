@@ -139,19 +139,14 @@ def journey(backend, variable, tmp_path, changes):
     specs = tmp_path / 'synthetic-specs'
     specs.mkdir()
     spec = write_spec(specs)
-    launcher = work / 'owned-sensor-spec-backend'
     flag = '--unitspec' if backend == 'cgate-mock' else '--cgate-unitspec'
-    launcher.write_text('#!' + sys.executable + '\nimport os,sys\nos.execv('
-                        + repr(str(binary)) + ', [' + repr(str(binary))
-                        + ', *sys.argv[1:], ' + repr(flag) + ', ' + repr(str(specs)) + '])\n')
-    launcher.chmod(0o700)
     evidence = {'format': 'cbus-senll-controls-owned-v1', 'backend': backend,
                 'original_execution': False, 'physical_acceptance': False,
                 'binary_sha256': hashlib.sha256(binary.read_bytes()).hexdigest(),
                 'calls': [], 'processes': [], 'wires': []}
     relay = None
     try:
-        with no_contact_trap() as trap, owned_backend(backend, launcher, work) as (endpoint, process):
+        with no_contact_trap() as trap, owned_backend(backend, binary, work, extra_args=(flag, specs)) as (endpoint, process):
             evidence['processes'].append(process)
             with CGateClient(*endpoint, timeout=15) as owner, RecordedGate(endpoint) as relay:
                 seed(owner, work, trap, spec, changes)
