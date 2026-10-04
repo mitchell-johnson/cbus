@@ -8,10 +8,9 @@ interop portion of [issue 121](https://github.com/mitchell-johnson/cbus/issues/1
 Provisioned native and physical release gates remain under
 [issue 22](https://github.com/mitchell-johnson/cbus/issues/22).
 
-The complete default declaration contains 1007 explicit selectors: 498 for
-the mock and 509 for the daemon. This includes the preserved 985 quoted
-selectors, 16 Application-order selectors and six additional unquoted daemon
-guards. One mock and six daemon
+The complete default declaration contains 1067 explicit selectors: 527 for
+the mock and 540 for the daemon. It preserves the inherited selectors and
+adds the maintained Application copy/set and ordinary Level cases. One mock and six daemon
 whole-module selections expand into additional collected cases. These numbers
 describe the declaration, not a claim that a focused local run executed it.
 
@@ -32,7 +31,11 @@ make check-wheel-interop WHEEL_PY=python3.13 \
 The runner creates its own build and install environments and installs all six
 extras: `test,research,serial,usb,firmware,network`. It does not require pip in
 the calling environment. It clears inherited C-Bus provisioning and
-endpoint settings, then supplies the two selected binaries to the tests.
+endpoint settings, then supplies the two selected binaries and its exact
+freshly built wheel to the tests. Network acceptance helpers receive that wheel
+through `CBUS_TOOLKIT_ACCEPTANCE_WHEEL`; no caller-provided wheel is inherited.
+The [focused handoff repair](acceptance/2026-10-05-installed-wheel-network-binding/report.md)
+records execution of both complete network modules, separately from full CI.
 Tests own their synthetic projects, loopback services and PCI/broker peers.
 This does not use the house network or start an original Toolkit/native server.
 

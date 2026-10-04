@@ -1,0 +1,206 @@
+{
+  "binaries": {
+    "daemon": {
+      "bytes": 55361368,
+      "name": "cmqttd",
+      "sha256": "9837c9a7eacda88d4562a54836c22f4a948faafe1fd6d1c4685d1e122cf7b756"
+    },
+    "mock": {
+      "bytes": 18892104,
+      "name": "cgate-mock",
+      "sha256": "323c88858096ae2f1ffdcd02b1b16ea3ba7360bb8355d5f6d551ae49c7d78ed8"
+    }
+  },
+  "binaries_quiet": true,
+  "copied_reference_quiet": true,
+  "format": "cbus-installed-wheel-network-binding-acceptance-v1",
+  "input_count": 4204,
+  "issue": 128,
+  "limits": [
+    "Full configured installed matrix not rerun locally. Issue128 remains open pending full required CI and merge.",
+    "Temporary helper graphs and receipts are checked by passing test assertions, then cleaned; outer JUnit/trace/package/origin/launch records are retained.",
+    "The earlier import-path collection error was corrected by including the tests directory, without source changes.",
+    "Rust and product package unchanged; no Cargo, native VM/oracle or real house activity."
+  ],
+  "package": {
+    "files": 395,
+    "record": {
+      "entries": 406,
+      "record": {
+        "bytes": 38563,
+        "sha256": "bfba09f07e186b88df52857b9b1c575afe5bec162406f5c91cb3fb05843e9eba"
+      }
+    },
+    "wheel": {
+      "bytes": 3014393,
+      "sha256": "3d88a6c07dff746977a36252fff36713da399c6dc09a8d23ecf95297a558d369"
+    }
+  },
+  "prior_red_ci": {
+    "artifact_id": 11316413153,
+    "artifact_sha256": "ee17dbd4df7f364d4c580b1dd74ae5f48b947b212a8082eeb9e277c9237fe7c1",
+    "failed_parents": 2,
+    "result": "failed",
+    "run_id": 37225242142
+  },
+  "raw_source_before": {
+    "bytes": 748661,
+    "sha256": "03733e6dd899d5726375b5e2da3cadf0dfe404d066049811ab6d148e6cd884ad"
+  },
+  "raw_summary": {
+    "bytes": 657284,
+    "sha256": "65afd5a92d5639842be576b96e09376056e558c5eb2c7f2819a463cd4376957b"
+  },
+  "runner_regressions": {
+    "earlier_collection_error_retained": true,
+    "errors": 0,
+    "failures": 0,
+    "junit": {
+      "bytes": 20374,
+      "sha256": "03c7b609484f8d7db292f623b4376e0e673c8727876f1166f995430db0c366f7"
+    },
+    "parents": 138,
+    "skips": 0
+  },
+  "scope": "focused owned service repair; no full matrix/native/hardware acceptance",
+  "source_quiet": true,
+  "tested_checkout": "fae29ec67c8a3a07dc92920af27e21c93933c4fc",
+  "tested_overlay": {
+    "toolkit-cli/research/installed_rust_interop.py": {
+      "bytes": 51245,
+      "sha256": "d1a802480806fe47a21f037f851b1fd6b2c2e120720cb1106d88dbcef5bdf47e"
+    }
+  },
+  "wheel_validation": {
+    "commands": [
+      {
+        "exit": 0,
+        "group_cleanup": "already-empty",
+        "log": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "name": "create-builder",
+        "seconds": 1.310691249993397,
+        "timed_out": false
+      },
+      {
+        "exit": 0,
+        "group_cleanup": "already-empty",
+        "log": {
+          "bytes": 1164,
+          "sha256": "43f76ccb4d6e5fb357bd49ebc78d10d022a3e446f814d472fa0e85116a5b2ee4"
+        },
+        "name": "build-wheel",
+        "seconds": 1.736869125001249,
+        "timed_out": false
+      },
+      {
+        "exit": 0,
+        "group_cleanup": "already-empty",
+        "log": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "name": "create-installed",
+        "seconds": 1.1793310000066413,
+        "timed_out": false
+      },
+      {
+        "exit": 0,
+        "group_cleanup": "already-empty",
+        "log": {
+          "bytes": 4345,
+          "sha256": "c09290691fc584640e3984ce4a243154b3a06a7aaa6f69deae10c31221aff639"
+        },
+        "name": "install-wheel",
+        "seconds": 1.7924658749980154,
+        "timed_out": false
+      },
+      {
+        "exit": 0,
+        "group_cleanup": "already-empty",
+        "log": {
+          "bytes": 1517,
+          "sha256": "6a37426e3b9d6542c72ae01db3f2b1d52075f137f8a5e4d4f9b39a70d02421ad"
+        },
+        "name": "daemon-collect",
+        "seconds": 0.73657379100041,
+        "timed_out": false
+      },
+      {
+        "exit": 0,
+        "group_cleanup": "already-empty",
+        "log": {
+          "bytes": 82,
+          "sha256": "af726469418aa00c17d09a217ebdc98242e5ec74b65b072083ebe842222b10ad"
+        },
+        "name": "daemon-pytest",
+        "seconds": 345.31903883299674,
+        "timed_out": false
+      },
+      {
+        "exit": 0,
+        "group_cleanup": "already-empty",
+        "log": {
+          "bytes": 8643,
+          "sha256": "e53f5290aad06d1641b35ef39d45f77f63969386f6777d71f0fccb7513d91b6e"
+        },
+        "name": "installed-console-help",
+        "seconds": 1.4270906249876134,
+        "timed_out": false
+      }
+    ],
+    "junit": {
+      "bytes": 4376,
+      "sha256": "e374c2f270d6e037b2d9b5dda1296c8616aef62fa0c43d83d946711ef43f21d3"
+    },
+    "maintained_audit": {
+      "bytes": 19087,
+      "sha256": "2334be9ac96ec3c062400fad7a1e61d8217090d0ce19424b0d73a35b578801e1"
+    },
+    "origin_audit": {
+      "origin_records": 54401,
+      "owned_rust_children": 3,
+      "owned_rust_reaped": 3,
+      "product_import_events": 53783,
+      "pytest_pid": 14924,
+      "python_processes": 309,
+      "scope": "guarded Python launches and observed product module loads",
+      "violations": 0
+    },
+    "passed": true,
+    "scope": "focused-explicit-subset",
+    "selection": {
+      "optional_skipped_ids": [],
+      "parent_counts": {
+        "passed": 10
+      },
+      "parent_total": 10,
+      "required_ids": [
+        "tests/test_cmqtt_network_new_cli.py::NetworkNewPublicWireTests::test_create_and_load_refusals_unknown_response_and_lost_reply_never_replay_or_claim_success",
+        "tests/test_cmqtt_network_new_cli.py::NetworkNewPublicWireTests::test_definition_mutation_refuses_non200_and_retains_exact_project_scoped_sequence",
+        "tests/test_cmqtt_network_new_cli.py::NetworkNewPublicWireTests::test_every_typed_definition_operation_has_one_exact_explicit_project_wire_sequence",
+        "tests/test_cmqtt_network_new_cli.py::NetworkNewPublicWireTests::test_malformed_typed_arguments_refuse_before_connecting_to_the_selected_endpoint",
+        "tests/test_cmqtt_network_new_cli.py::NetworkNewPublicWireTests::test_network_new_sends_exact_use_create_load_once_without_implicit_save_or_open",
+        "tests/test_cmqtt_network_new_cli.py::OwnedNetworkCatalogueCLITests::test_public_cli_network_new_and_definition_saved_closed_lifecycle_without_pci_io",
+        "tests/test_cmqtt_network_save_db_cli.py::MaterializedNetworkReceiptTests::test_initial_projection_preserves_complete_baseline_metadata",
+        "tests/test_cmqtt_network_save_db_cli.py::MaterializedNetworkReceiptTests::test_receipt_requires_complete_independent_address_and_ordered_property_identity",
+        "tests/test_cmqtt_network_save_db_cli.py::MaterializedNetworkReceiptTests::test_repeated_save_requires_stable_network_interface_and_rebuilt_property_oids",
+        "tests/test_cmqtt_network_save_db_cli.py::OwnedNetworkSaveDBCLITests::test_public_cli_materializes_complete_rows_and_preserves_explicit_persistence_boundaries"
+      ],
+      "required_passed": 10,
+      "unitemized_subtests": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 49,
+        "reported": 49,
+        "skipped": 0
+      }
+    },
+    "trace": {
+      "bytes": 15245,
+      "sha256": "a4d66ba21bca248ff9c50a35b03015e73acc80628000dbc621e686b33aef90b5"
+    }
+  }
+}
