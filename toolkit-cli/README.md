@@ -1809,6 +1809,16 @@ packing, capacity, CRCs, native raw bytes and CLI save/reload are tested.
 
 ## Thermostat temperature conversions
 
+The bounded [fresh quick-zone settings owner](docs/thermostat-quick-zone-controls.md)
+adds explicit checkbox Include/Exclude/refresh, source-offered plant selection
+and same-owner message delivery to ordered output/damper histories. It requires
+the documented Celsius/settled profile and preserves the loaded role through
+the separate Basic and Programmable save rules. The [release report](docs/feature-batch-2026-10-04-thermostat-quick-zone-controls.md) records separate source epochs of
+157 pure-model tests plus five passing subtest events and 42 backend tests,
+and a single fresh installed-wheel epoch of 199 tests plus five passing subtest
+events, all with no skips or failures. Native control timing, application
+migration and complete issue 42 remain open.
+
 Thermostat settings now include disabled remote save defaults. Saved-project documentation also admits bounded Neo/DLT/NeoClassic, sensor and specialized-output bodies. Their [batch provenance](docs/feature-batch-2026-09-30-dlt-thermostat-documentors.md) separates retained component evidence, native database persistence and unresolved complete GUI/hardware acceptance.
 
 Fourteen original integer temperature conversions are available offline, with an

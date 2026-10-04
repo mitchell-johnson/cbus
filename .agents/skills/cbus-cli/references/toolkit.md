@@ -706,7 +706,7 @@ currently selected identity: pass `op: "edit-output-group"`, `parameter`,
 Address/OID are immutable, shared renames remain causal, existing Level Values
 stay opaque and uncertain writes are never replayed. Read
 `toolkit-cli/docs/thermostat-output-add.md` and
-`toolkit-cli/docs/thermostat-output-edit.md`. Missing actual ASCII output/damper defaults also admit unrelated Unicode group inventory; comparison folds ASCII letters only and duplicate generated-name matches still refuse. Read `toolkit-cli/docs/thermostat-default-names.md` and its current focused acceptance report. Do not infer application migration, arbitrary Unicode defaults or original/hardware acceptance. Omit --set for a bounded load/save of the current snapshot. Keep
+`toolkit-cli/docs/thermostat-output-edit.md`. Missing actual ASCII output/damper defaults also admit unrelated Unicode group inventory; comparison folds ASCII letters only and duplicate generated-name matches still refuse. Read `toolkit-cli/docs/thermostat-default-names.md` and its current focused acceptance report. Do not infer application migration, arbitrary Unicode defaults or original/hardware acceptance. The fresh quick-zone owner composes `quick-zone-view`, `quick-zone-refresh`, `quick-zone-click`, `select-plant-type` and explicit `dispatch-plant-type-change` records in the same `--output-operation` history. Require explicit `--temperature-preference celsius` and the guide's settled source profile; schema and preference refuse before connection, while changed ControlledZones refusal compares the authoritative readonly snapshot. The owner retains the loaded master role, Basic save tail, final Programmable schedule state and live reference identities. Pending owner-issued messages refuse save; diagnostic JSON is not a continuation. Read `toolkit-cli/docs/thermostat-quick-zone-controls.md`. The bounded source/installed-wheel/backend acceptance is recorded in `toolkit-cli/docs/feature-batch-2026-10-04-thermostat-quick-zone-controls.md`; native/Windows control timing and complete issue 42 remain open. Omit --set for a bounded load/save of the current snapshot. Keep
 all project networks closed, own project editing exclusively and review uncertain
 creation/save outcomes without automatic replay. Original GUI callbacks remain open.
 Template 9 group allocation requires the documented initially empty application
@@ -1076,6 +1076,8 @@ changes the model; warning Click observes checked state. Inspect final factor
 serialization, ControlledZones, graph creations and whole PP preservation.
 No-op writes nothing; graph-only mutation has no PP save. Use one settings
 transaction and never replay an uncertain save. Native GUI, subscriber
-multiplicity, full quick-zone/queued dispatch and hardware acceptance stay open.
+multiplicity outside the separate fixed fresh-owner profile and hardware acceptance stay open.
+The new `toolkit-cli/docs/thermostat-quick-zone-controls.md` describes that
+bounded explicit owner integration; its accepted source/wheel scope is recorded in `toolkit-cli/docs/feature-batch-2026-10-04-thermostat-quick-zone-controls.md`.
 The batch report separates failed 22-module predecessors from the corrected
 78-case source/installed-wheel follow-ups; do not combine their test counts.
