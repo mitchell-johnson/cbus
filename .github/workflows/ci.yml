@@ -413,6 +413,42 @@ jobs:
             ${{ runner.temp }}/toolkit-wheel-trace.json
             ${{ runner.temp }}/toolkit-wheel-results.json
 
+  toolkit-wheel-rust-interop:
+    name: Toolkit installed wheel and Rust interoperability
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: rust
+
+      - name: Build both owned Rust interoperability servers
+        working-directory: toolkit-cli
+        run: make build-interop
+
+      - name: Require complete installed-wheel Rust interoperability selections
+        working-directory: toolkit-cli
+        run: >-
+          make check-wheel-interop WHEEL_PY=python
+          WHEEL_INTEROP_OUTPUT="${RUNNER_TEMP}/toolkit-wheel-rust-interop"
+
+      - name: Retain installed-wheel Rust execution and import evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: toolkit-wheel-rust-interop-${{ github.run_id }}-${{ github.run_attempt }}
+          if-no-files-found: error
+          include-hidden-files: true
+          path: ${{ runner.temp }}/toolkit-wheel-rust-interop
+
   toolkit-native-release:
     name: Provisioned native release gate
     if: ${{ github.event_name == 'workflow_dispatch' && inputs.release_gate == 'native' }}

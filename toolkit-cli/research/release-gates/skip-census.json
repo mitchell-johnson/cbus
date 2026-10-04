@@ -50,8 +50,8 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 774,
-    "modules_without_skip_sites": 447,
+    "test_modules": 775,
+    "modules_without_skip_sites": 448,
     "modules_with_skip_sites": 327,
     "modules_by_category": {
       "cgate_test_host": 133,
