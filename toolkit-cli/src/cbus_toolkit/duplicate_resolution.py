@@ -24,9 +24,17 @@ native_cgate_unravel_cases.json``); tests replay every captured case:
   network only.
 * Native sends a selected-serial broadcast when the source address held more
   than one serial when scanned, otherwise the legacy protected address STORE.
+* A two-link occupied-address chain is predicted: when the single occupant
+  of a database target itself has an occupied single database target, the
+  deeper occupant is cleared first (to free) and each link moves to its own
+  database address in deepest-first order, preserving physical identity.
+  When the occupant's own database target is vacant or absent, the occupant
+  is displaced to the lowest free address, matching the observed native
+  single-link captures. Longer cycles are refused.
 
 ``refusal`` names topologies outside that observed subset (for example an
-occupied database target with several occupants); they are not predicted.
+occupied database target with several occupants, or a cyclic displacement
+chain); they are not predicted.
 """
 from __future__ import annotations
 
@@ -116,6 +124,7 @@ def plan_unravel(physical: Mapping[int, Iterable[str]], database: Mapping[int, s
     occupants = {address: list(serials) for address, serials in network.items()}
     moves: list[UnravelMove] = []
     kept: list[tuple[int, str]] = []
+    moved: set[str] = set()
 
     def free_address() -> int | None:
         for candidates in ((lambda a: a not in occupants and a not in database),
@@ -132,10 +141,65 @@ def plan_unravel(physical: Mapping[int, Iterable[str]], database: Mapping[int, s
             del occupants[source]
         occupants.setdefault(destination, []).append(serial)
         location[serial] = destination
+        moved.add(serial)
         moves.append(UnravelMove(serial, source, destination, reason, method))
 
     def plan(refusal: str) -> UnravelPlan:
         return UnravelPlan(tuple(moves), tuple(kept), dict(location), refusal)
+
+    def db_single(serial: str, exclude: int) -> int | None:
+        if not match_database:
+            return None
+        targets = db_addresses.get(serial, [])
+        if len(targets) == 1 and targets[0] not in (0, 1, 255, exclude):
+            return targets[0]
+        return None
+
+    def ensure_vacant(destination: int, serial_stack: tuple[str, ...],
+                      addr_stack: tuple[int, ...]) -> str | None:
+        """Clear a single-occupant database target, pushing chain moves.
+
+        Returns a refusal string or ``None``. ``"several"`` is a sentinel for
+        a multi-occupant target that the caller formats with serial context.
+        When the occupant's own database target is itself occupied, it is
+        cleared recursively first so each link lands on its own database
+        address (deepest first). When it is vacant or absent the occupant
+        goes to free, matching observed native single-link behavior.
+        """
+        if destination in addr_stack:
+            return f"Database displacement chain is cyclic at address {destination}"
+        blocking = occupants.get(destination, [])
+        if not blocking:
+            return None
+        if len(blocking) > 1:
+            return "several"
+        occupant = blocking[0]
+        if occupant in serial_stack:
+            return f"Database displacement chain is cyclic at serial {occupant}"
+        if occupant in moved:
+            return f"Database address {destination} cannot be cleared unambiguously"
+        own = db_single(occupant, location[occupant])
+        if own is not None:
+            if own == local_unit:
+                return f"Database address {own} for {occupant} is the local PCI"
+            if own in addr_stack:
+                return f"Database displacement chain is cyclic at address {own}"
+            occupying = occupants.get(own, [])
+            if occupying:
+                if len(occupying) > 1:
+                    return f"Database address {own} for {occupant} holds several units"
+                refusal = ensure_vacant(own, serial_stack + (occupant,), addr_stack + (destination,))
+                if refusal is not None:
+                    if refusal == "several":
+                        return f"Database address {own} for {occupant} holds several units"
+                    return refusal
+                move(occupant, own, "displacement", LEGACY_ADDRESS)
+                return None
+        spare = free_address()
+        if spare is None:
+            return "No free address to displace the database target occupant"
+        move(occupant, spare, "displacement", LEGACY_ADDRESS)
+        return None
 
     for address in chosen:
         serials = list(occupants.get(address, ()))
@@ -159,14 +223,11 @@ def plan_unravel(physical: Mapping[int, Iterable[str]], database: Mapping[int, s
                 destination = target[0]
                 if destination == local_unit:
                     return plan(f"Database address {destination} for {serial} is the local PCI")
-                blocking = occupants.get(destination, [])
-                if len(blocking) > 1:
-                    return plan(f"Database address {destination} for {serial} holds several units")
-                if blocking:
-                    spare = free_address()
-                    if spare is None:
-                        return plan("No free address to displace the database target occupant")
-                    move(blocking[0], spare, "displacement", LEGACY_ADDRESS)
+                refusal = ensure_vacant(destination, (serial,), (address,))
+                if refusal is not None:
+                    if refusal == "several":
+                        return plan(f"Database address {destination} for {serial} holds several units")
+                    return plan(refusal)
                 move(serial, destination, "database_match", method)
                 continue
             destination = free_address()

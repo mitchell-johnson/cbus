@@ -136,6 +136,37 @@ class PlanValidationTests(unittest.TestCase):
         keeper = plan_unravel({20: ["5.999", "5.1000"]}, {}, selection=[20])
         self.assertEqual(keeper.kept, ((20, "5.999"),))
 
+    def test_two_link_occupied_chain_resolves_deepest_first(self):
+        plan = plan_unravel({20: ["1.1", "1.10"], 6: ["1.2"], 7: ["1.3"]},
+                            {20: "1.1", 6: "1.10", 7: "1.2"},
+                            selection=[20], match_database=True)
+        self.assertIsNone(plan.refusal)
+        self.assertEqual([(m.serial, m.source, m.destination, m.reason) for m in plan.moves],
+                         [("1.3", 7, 2, "displacement"),
+                          ("1.2", 6, 7, "displacement"),
+                          ("1.10", 20, 6, "database_match")])
+        self.assertEqual(plan.final, {"1.1": 20, "1.10": 6, "1.2": 7, "1.3": 2})
+        self.assertEqual(plan.kept, ((20, "1.1"),))
+
+    def test_three_link_occupied_chain_resolves_deepest_first(self):
+        plan = plan_unravel({20: ["1.1", "1.10"], 6: ["1.2"], 7: ["1.3"], 8: ["1.4"]},
+                            {20: "1.1", 6: "1.10", 7: "1.2", 8: "1.3"},
+                            selection=[20], match_database=True)
+        self.assertIsNone(plan.refusal)
+        self.assertEqual([(m.serial, m.source, m.destination, m.reason) for m in plan.moves],
+                         [("1.4", 8, 2, "displacement"),
+                          ("1.3", 7, 8, "displacement"),
+                          ("1.2", 6, 7, "displacement"),
+                          ("1.10", 20, 6, "database_match")])
+        self.assertEqual(plan.final, {"1.1": 20, "1.10": 6, "1.2": 7, "1.3": 8, "1.4": 2})
+        self.assertEqual(plan.kept, ((20, "1.1"),))
+
+    def test_cyclic_occupied_chain_is_refused(self):
+        plan = plan_unravel({20: ["1.1", "1.10"], 6: ["1.2"], 7: ["1.3"]},
+                            {20: "1.3", 6: "1.10", 7: "1.2"},
+                            selection=[20], match_database=True)
+        self.assertRegex(plan.refusal, "cyclic")
+
 
 class BusFixtureTests(unittest.TestCase):
     def test_moves_record_occupancy_and_silent_nodes(self):
