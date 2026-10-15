@@ -133,6 +133,23 @@ class ThermostatSettingsTests(unittest.TestCase):
         with self.assertRaises(ThermostatTemplateError):
             plan_settings(self.store, 'KEY4', snapshot(), {'ControlledZones': 1})
 
+    def test_nonevap_afterload_flag_refused_exact_for_programmable_alias(self):
+        # AFTERLOAD_FLAGS pins both program flags, but only EvapProgramEnabled
+        # had an edit-refusal case; NonEvapProgramEnabled=2 must refuse with
+        # the exact original-load reason while 0/1 survive one save.
+        before = snapshot()
+        original = dict(before)
+        with self.assertRaisesRegex(ThermostatTemplateError,
+                                    'NonEvapProgramEnabled must be 0 or 1'):
+            plan_settings(self.store, 'PC_TSA', before, {'NonEvapProgramEnabled': 2})
+        self.assertEqual(before, original)
+        for value in (0, 1):
+            with self.subTest(value=value):
+                plan = plan_settings(self.store, 'PC_TSA', before, {'NonEvapProgramEnabled': value})
+                self.assertEqual(dict(plan.before), before)
+                self.assertEqual(plan.expected.get('NonEvapProgramEnabled'), value)
+        self.assertEqual(before, original)
+
     def test_values_the_original_form_save_would_rewrite_are_refused(self):
         with self.assertRaisesRegex(ThermostatTemplateError, 'HeatingPlantFanOnDelay=12'):
             plan_settings(self.store, 'PC_TSA', snapshot(), {'HeatingPlantFanOnDelay': 13})

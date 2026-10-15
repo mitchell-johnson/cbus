@@ -13,7 +13,8 @@ import xml.etree.ElementTree as ET
 
 from cbus_toolkit.macros import (ClassicKeys, EXCLUDED_PRESETS, GUARDED_PARAMETERS, HELP_TABLE_EVENTS, KeyPlan,
                                  MacroApplyError, MacroError, MICRO_FUNCTION_LABELS, MICRO_FUNCTIONS, PRESETS,
-                                 STAGES, SUPPORTED_UNITS, TRIGGER_PRESETS, _READ_FIELDS, _numbers)
+                                 STAGES, SUPPORTED_UNITS, TRIGGER_PRESETS, _READ_FIELDS, _numbers,
+                                 custom_stages, matching_preset, preset_dict)
 from cbus_toolkit.memory import MemoryImage
 from cbus_toolkit.unitspec import ParameterSpec, UnitSpec, UnitSpecStore
 
@@ -608,6 +609,35 @@ class NativeMacroTests(unittest.TestCase):
             for filename in ("BCNC4A.xml", "KEYV1SP.xml"):
                 with self.subTest(spec=filename), self.assertRaises(MacroError):
                     ClassicKeys(store.load(filename))
+
+
+class CustomPresetTests(unittest.TestCase):
+    """Pure-offline edge cover for the custom micro-function helpers.
+
+    custom_stages/matching_preset/preset_dict had zero test references;
+    KeyPlan.as_dict and plan_micro_functions consume them, but no test
+    pinned alias handling, rejection edges, or the custom round-trip.
+    """
+
+    def test_custom_stages_accepts_aliases_names_and_codes(self):
+        self.assertEqual(custom_stages({"jp": "toggle", "SR": 7, "lp": "down", "LR": 15}),
+                         {"JPCommand": 11, "SRCommand": 7, "LPCommand": 4, "LRCommand": 15})
+
+    def test_custom_stages_rejects_edges(self):
+        bad = [{}, {"XX": "idle"}, {"jp": "nope"}, {"jp": 16}, {"jp": True},
+               {"jp": "idle", "JPCommand": "idle"}, "jp", ["jp"]]
+        for stages in bad:
+            with self.subTest(stages=stages):
+                with self.assertRaises(MacroError):
+                    custom_stages(stages)
+
+    def test_matching_preset_and_preset_dict_roundtrip(self):
+        self.assertEqual(matching_preset(VECTORS["toggle"]), "toggle")
+        self.assertIsNone(matching_preset((11, 7, 0, 8)))
+        custom = preset_dict("custom", VECTORS["toggle"])
+        self.assertEqual(custom["matched_preset"], "toggle")
+        self.assertEqual(custom["codes"], dict(zip(STAGES, VECTORS["toggle"])))
+        self.assertEqual(preset_dict("toggle", VECTORS["toggle"]), PRESETS["toggle"].as_dict())
 
 
 if __name__ == "__main__":
