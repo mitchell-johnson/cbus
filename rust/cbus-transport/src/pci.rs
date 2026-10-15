@@ -132,7 +132,9 @@ pub enum GocProgramming {
 }
 
 impl GocProgramming {
-    fn store_limit(self) -> usize {
+    /// Native STORE chunk size for this GOC dialect, shared with the
+    /// C-Gate PP SAVE per-range report so planned STORE counts stay exact.
+    pub fn store_limit(self) -> usize {
         match self {
             Self::Goc | Self::GocByt => 10,
             Self::Goc2 => 11,
