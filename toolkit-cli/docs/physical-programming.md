@@ -146,7 +146,11 @@ sent, and to `confirmed` after cmqttd's 200 reply. That reply covers each
 range's tagged STORE acknowledgements and its exact per-range readback. After
 a failed SAVE, the client reads cmqttd's reply
 `after N confirmed write(s)`. The first N planned ranges become `confirmed`,
-the next becomes `uncertain`, and the rest become `not-attempted`. A lost
+the next becomes `uncertain`, and the rest become `not-attempted`. When the
+failed reply also carries per-range continuation rows and the PCI generation
+is unchanged, each planned range instead follows its row outcome: `confirmed`
+stays `confirmed`, `uncertain` and `not-attempted` stay `uncertain`, and
+`skipped-unchanged` becomes `skipped`. A lost
 C-Gate connection or any other reply leaves every planned range `uncertain`.
 `nvm_commit` follows the same rules. A failed Save-to-NVM, such as a lost
 EXECUTE or a lost POLL after a running EXECUTE, is recorded as `uncertain`.
@@ -282,7 +286,7 @@ transcript of LOAD, one SAVE_TO_SOURCE and the fresh LOAD:
   page-crossing `paged`/`ncc` ranges, fragmented NCC and eDLT replies, and
   the GIU halt/resume bracket. They also check that the DALI settle is at
   least one second.
-- `direct`, `ncc`, `giu` and `gocbyt` through six bridges.
+- `direct`, `paged`, `ncc`, `edlt`, `giu`, `sgiu`, `gocbyt` and `goc2` through six bridges.
 - Every admitted method/protection pair from the matrix, on the local
   network and through one bridge. These include lock UNLOCK counts, factory
   and special skips, and factory-bit writes.

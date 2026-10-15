@@ -352,6 +352,32 @@ class ProgrammingTest(unittest.TestCase):
         self.assertEqual(database_address("254/p/20"), "/db/254/p/20")
 
 
+class PositiveIntegerHelperTests(unittest.TestCase):
+    def test_positive_integer_zero_policy_and_exact_type_rejection(self):
+        # Pure-offline guard for programming.py:567 _positive_integer, which gates
+        # native PP DEBUG mem / GET_RAW_DATA / SET_RAW_DATA address/count fields.
+        from cbus_toolkit.programming import _positive_integer
+        self.assertIsNone(_positive_integer(1, "Byte count"))
+        self.assertIsNone(_positive_integer(2**31, "Byte count"))
+        self.assertIsNone(_positive_integer(0, "Start address", allow_zero=True))
+        self.assertIsNone(_positive_integer(1, "Start address", allow_zero=True))
+        with self.assertRaisesRegex(ProgrammingError, "Byte count must be a positive integer"):
+            _positive_integer(0, "Byte count")
+        with self.assertRaisesRegex(ProgrammingError, "Start address must be a nonnegative integer"):
+            _positive_integer(-1, "Start address", allow_zero=True)
+        with self.assertRaisesRegex(ProgrammingError, "Byte count must be a positive integer"):
+            _positive_integer(-1, "Byte count")
+        # Exact-int check: bool aliases (False == 0, True == 1) must not pass,
+        # even when the numeric value would otherwise be in range.
+        for value in (True, False, 1.0, 0.0, "1", "0", None, b"\x01", (1,), [1]):
+            with self.subTest(value=value):
+                with self.assertRaises(ProgrammingError):
+                    _positive_integer(value, "Byte count")
+            with self.subTest(value=value, allow_zero=True):
+                with self.assertRaisesRegex(ProgrammingError, "Start address must be a nonnegative integer"):
+                    _positive_integer(value, "Start address", allow_zero=True)
+
+
 @unittest.skipUnless(os.environ.get("CBUS_CGATE_TEST_HOST"), "Set CBUS_CGATE_TEST_HOST for disposable native C-Gate acceptance")
 class NativeProgrammingTest(unittest.TestCase):
     def setUp(self):

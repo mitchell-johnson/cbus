@@ -80,10 +80,22 @@ LOCAL_PCI = 16
 ROUTES = {
     "local": (),
     "one-bridge": (253,),
+    "two-bridges": (253, 252),
     "six-bridges": (253, 252, 251, 250, 249, 248),
 }
-# One representative per method family crosses the longest admitted route.
-SIX_BRIDGE_METHODS = ("direct", "ncc", "giu", "gocbyt")
+# One representative per method family crosses the longest admitted route,
+# plus goc2: its low-address-byte STORE/selector ACK (native ``bo`` with
+# CBusGOC2Dimmer.h(), pinned in native_cgate_pp_method_transcripts.json)
+# and 11-byte groups differ from the gocbyt representative, plus paged: its
+# page-crossing exact-extent reads and per-range page select differ from the
+# ncc representative (which also carries the NVM commit), plus edlt: its
+# 128-byte recall block with 16-byte fragments (native ``bj`` repeats
+# parameter 1) differs from the giu representative, keeping the documented
+# whole-field grouping difference (native merges adjacent fields, cmqttd
+# stores each range separately), plus sgiu: its lack of the GIU ``bm``
+# halt/resume bracket (and no halt during LOAD, as documented) differs from
+# the giu representative.
+SIX_BRIDGE_METHODS = ("direct", "paged", "ncc", "edlt", "giu", "sgiu", "gocbyt", "goc2")
 
 STORE_LIMIT = {"direct": 12, "paged": 12, "ncc": 12, "edlt": 12, "giu": 12,
                "sgiu": 12, "dali": 12, "goc": 10, "gocbyt": 10, "goc2": 11}
@@ -917,6 +929,15 @@ ROUTE_CASES = [
       for method in METHODS),
     *(pytest.param(method, "six-bridges", MULTI[method][1], id=f"{method}-six-bridges-multi")
       for method in SIX_BRIDGE_METHODS),
+    # Narrow P4.01 slice: intermediate two-bridge routing for one GOC-family
+    # method; scripted peer only, no hardware.
+    pytest.param("gocbyt", "two-bridges", MULTI["gocbyt"][1],
+                 id="gocbyt-two-bridges-multi"),
+    # P4.01 single: GOC over the longest admitted route. Wire behavior
+    # matches the gocbyt family representative, pinning the goc
+    # address/CAL-selector path instead; scripted peer only, no hardware.
+    pytest.param("goc", "six-bridges", MULTI["goc"][1],
+                 id="goc-six-bridges-multi"),
 ]
 
 
@@ -1005,10 +1026,15 @@ DISCONNECT_CASES = [
     pytest.param("direct", "one-bridge", 2, id="direct"),
     pytest.param("paged", "one-bridge", MULTI["paged"][1], id="paged-multi"),
     pytest.param("ncc", "local", MULTI["ncc"][1], id="ncc-local-multi"),
+    pytest.param("ncc", "one-bridge", MULTI["ncc"][1], id="ncc-one-bridge-multi"),
     pytest.param("giu", "one-bridge", MULTI["giu"][1], id="giu-multi"),
+    pytest.param("dali", "one-bridge", MULTI["dali"][1], id="dali-one-bridge-multi"),
     pytest.param("edlt", "local", MULTI["edlt"][1], id="edlt-local-multi"),
     pytest.param("gocbyt", "six-bridges", MULTI["gocbyt"][1], id="gocbyt-six-bridges-multi"),
     pytest.param("goc2", "one-bridge", MULTI["goc2"][1], id="goc2-multi"),
+    pytest.param("gocbyt", "one-bridge", MULTI["gocbyt"][1], id="gocbyt-one-bridge-multi"),
+    pytest.param("gocbyt", "two-bridges", MULTI["gocbyt"][1], id="gocbyt-two-bridges-multi"),
+    pytest.param("goc", "six-bridges", MULTI["goc"][1], id="goc-six-bridges-multi"),
 ]
 
 
@@ -1253,14 +1279,18 @@ def assert_read_only_recovery(run):
 def journal_cases():
     return [
         # (id, method, drop_on, first_size, expected store states, classifications)
+        # Row-emitting cmqttd names every pending range; the journal maps an
+        # explicit not-attempted row to uncertain (P4.03), so first-range
+        # interruptions journal uncertain+uncertain rather than the pre-row
+        # count path's uncertain+not-attempted.
         pytest.param("direct", ("pre-send", 0), 2,
-                     ["uncertain", "not-attempted"], ["unchanged", "unchanged"],
+                     ["uncertain", "uncertain"], ["unchanged", "unchanged"],
                      "observed_unchanged", id="pre-send"),
         pytest.param("direct", ("post-send", 0), MULTI["direct"][1],
-                     ["uncertain", "not-attempted"], ["mixed", "unchanged"],
+                     ["uncertain", "uncertain"], ["mixed", "unchanged"],
                      "observed_mixed", id="post-send-before-ack"),
         pytest.param("direct", ("post-ack", 0), 2,
-                     ["uncertain", "not-attempted"], ["expected", "unchanged"],
+                     ["uncertain", "uncertain"], ["expected", "unchanged"],
                      "observed_partial", id="post-ack-before-readback"),
         pytest.param("direct", ("between", 0), 2,
                      ["confirmed", "uncertain"], ["expected", "unchanged"],

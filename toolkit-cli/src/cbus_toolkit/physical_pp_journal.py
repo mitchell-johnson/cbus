@@ -43,8 +43,9 @@ PHASES = (
 )
 # Per-range store state.  ``possible`` means the SAVE command was sent and the
 # range may have been written; ``confirmed`` means cmqttd reported the range's
-# tagged STORE acknowledgements and its exact per-range readback.
-STORE_STATES = ("not-planned", "planned", "possible", "confirmed", "uncertain", "not-attempted")
+# tagged STORE acknowledgements and its exact per-range readback; ``skipped``
+# means cmqttd reported the range skipped-unchanged, so no write was needed.
+STORE_STATES = ("not-planned", "planned", "possible", "confirmed", "uncertain", "not-attempted", "skipped")
 NVM_STATES = ("not-required", "planned", "possible", "confirmed", "uncertain", "not-reached")
 _DOCUMENT_KEYS = frozenset({
     "format", "operation", "attempt_id", "plan", "send_may_have_occurred",

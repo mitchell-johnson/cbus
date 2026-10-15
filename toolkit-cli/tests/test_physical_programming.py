@@ -327,6 +327,48 @@ class PhysicalProgrammingTests(unittest.TestCase):
         self.assertFalse(any(command.startswith("PP SET ") for command in service.commands))
         self.assertFalse(any("PP SAVE" in command for command in service.commands))
 
+    def test_explicitly_unsupported_method_refuses_before_io(self):
+        # P4.01/P4.02 slice: cmqttd advertises explicitly unsupported
+        # methods separately from its routed method list (goc has no
+        # admitted spec protection pair in pp-protection-matrix.json), and
+        # the client must refuse such a method before any PP I/O. A
+        # malformed declaration must also refuse rather than guess.
+        for operation in ("inspect", "apply"):
+            with self.subTest(operation=operation):
+                service = PhysicalService()
+                service.capabilities["physical_pp_routed_unsupported_methods"] = ["goc"]
+                with self.assertRaisesRegex(
+                    PhysicalProgrammingError, "explicitly unsupported"
+                ) as caught:
+                    if operation == "inspect":
+                        PhysicalProgramming(service, operation_id="unsupported").inspect(
+                            "//TEST/253/p/4", method="goc"
+                        )
+                    else:
+                        PhysicalProgramming(service, operation_id="unsupported").apply(
+                            "//TEST/253/p/4", [("Value_goc", "0x02")], method="goc",
+                            journal=self.journal(),
+                        )
+                self.assertEqual(service.commands, ["CMQTT CAPABILITIES"])
+                self.assertFalse(caught.exception.evidence["save_attempted"])
+
+        # Control: an unrelated admitted method still passes preflight.
+        service = PhysicalService()
+        service.capabilities["physical_pp_routed_unsupported_methods"] = ["goc"]
+        inspection = PhysicalProgramming(service, operation_id="admitted").inspect(
+            "//TEST/253/p/4", method="direct"
+        )
+        self.assertTrue(inspection["complete"])
+
+        # Control: a malformed declaration refuses rather than guessing.
+        service = PhysicalService()
+        service.capabilities["physical_pp_routed_unsupported_methods"] = "goc"
+        with self.assertRaisesRegex(PhysicalProgrammingError, "unsupported-method declaration"):
+            PhysicalProgramming(service, operation_id="malformed").inspect(
+                "//TEST/253/p/4", method="goc"
+            )
+        self.assertEqual(service.commands, ["CMQTT CAPABILITIES"])
+
     def test_input_validation_performs_no_cgate_command(self):
         for edits, message in (
             ([('Value_direct', '1'), ('Value_direct', '2')], "more than once"),
@@ -526,6 +568,450 @@ class PhysicalProgrammingTests(unittest.TestCase):
         self.assertEqual(document["nvm_commit"], "uncertain")
         self.assertFalse(document["save_reply"]["server_reply"])
 
+    def test_save_reply_evidence_parses_per_range_rows_without_changing_finals(self):
+        service = PhysicalService()
+        service.schema_method = "direct"
+        final = "[9] 502 Physical PP save failed after 1 confirmed write(s): PCI response stream lost"
+        rows = (
+            "502-range 0 direct 32+1 stores=1/1 readback=1 confirmed",
+            "502-range 1 direct 33+1 stores=0/1 readback=0 uncertain",
+            "502-range 2 direct 34+1 stores=0/1 readback=0 skipped-unchanged",
+        )
+        service.fail_save = CGateError(CGateResponse(rows + (final,), final, 502))
+        journal = self.journal()
+        with self.assertRaises(CGateError) as caught:
+            PhysicalProgramming(service, operation_id="rangerows").apply(
+                "//TEST/253/p/4",
+                [("Value_direct", "0x09"), ("Value_paged", "0x09"),
+                 ("Value_ncc", "0x09")],
+                method="direct", journal=journal)
+        evidence = caught.exception.physical_programming_evidence
+        # The final keeps its existing form and count handling.
+        self.assertIn("after 1 confirmed write(s)", str(caught.exception))
+        self.assertEqual(evidence["save_reply"]["confirmed_writes_reported"], 1)
+        self.assertFalse(evidence["save_reply"]["nvm_commit_failed"])
+        self.assertEqual(evidence["save_reply"]["ranges"], [
+            {"index": 0, "start": 32, "len": 1, "acked": 1,
+             "planned": 1, "readback": 1, "outcome": "confirmed"},
+            {"index": 1, "start": 33, "len": 1, "acked": 0,
+             "planned": 1, "readback": 0, "outcome": "uncertain"},
+            {"index": 2, "start": 34, "len": 1, "acked": 0,
+             "planned": 1, "readback": 0, "outcome": "skipped-unchanged"},
+        ])
+        # The existing PCI-generation binding travels with the parsed rows.
+        self.assertEqual(evidence["save_reply"]["recorded_pci_generation"], 7)
+        self.assertEqual(evidence["save_reply"]["fresh_pci_generation"], 7)
+        self.assertFalse(evidence["save_reply"]["generation_changed"])
+        self.assertTrue(evidence["save_outcome_uncertain"])
+        self.assertFalse(evidence["saved"])
+        # Journal classification follows the parsed row outcomes, not the
+        # confirmed-write count: confirmed stays confirmed, uncertain stays
+        # uncertain, and skipped-unchanged needs no write (skipped).
+        document = json.loads(journal.read_text())
+        self.assertEqual(document["phase"], "save-uncertain")
+        self.assertEqual([row["store_state"] for row in document["ranges"]],
+                         ["confirmed", "uncertain", "skipped"])
+        self.assertEqual(document["save_reply"]["ranges"],
+                         evidence["save_reply"]["ranges"])
+        self.assertEqual(document["save_reply"]["confirmed_writes_reported"], 1)
+
+    def test_save_failure_journal_store_state_follows_range_rows(self):
+        # Row-driven slice: four planned ranges with a faked SAVE reply
+        # carrying two confirmed rows, one uncertain row and one
+        # skipped-unchanged row.
+        service = PhysicalService()
+        service.schema_method = "direct"
+        final = "[9] 502 Physical PP save failed after 2 confirmed write(s): PCI response stream lost"
+        rows = (
+            "502-range 0 direct 32+1 stores=1/1 readback=1 confirmed",
+            "502-range 1 direct 33+1 stores=1/1 readback=1 confirmed",
+            "502-range 2 direct 34+1 stores=0/1 readback=0 uncertain",
+            "502-range 3 direct 35+1 stores=0/0 readback=0 skipped-unchanged",
+        )
+        service.fail_save = CGateError(CGateResponse(rows + (final,), final, 502))
+        journal = self.journal()
+        with self.assertRaises(CGateError):
+            PhysicalProgramming(service, operation_id="rowdriven").apply(
+                "//TEST/253/p/4",
+                [("Value_direct", "0x09"), ("Value_paged", "0x09"),
+                 ("Value_ncc", "0x09"), ("Value_edlt", "0x09")],
+                method="direct", journal=journal)
+        document = json.loads(journal.read_text())
+        self.assertEqual(document["phase"], "save-uncertain")
+        self.assertEqual([row["store_state"] for row in document["ranges"]],
+                         ["confirmed", "confirmed", "uncertain", "skipped"])
+        self.assertEqual(document["save_reply"]["confirmed_writes_reported"], 2)
+        self.assertEqual(len(document["save_reply"]["ranges"]), 4)
+        self.assertFalse(document["save_reply"]["generation_changed"])
+        self.assertEqual(document["nvm_commit"], "not-required")
+
+        # Control: absent rows keep the exact count-derived behavior.
+        service = PhysicalService()
+        service.schema_method = "direct"
+        bare = "[9] 502 Physical PP save failed after 2 confirmed write(s): PCI response stream lost"
+        service.fail_save = CGateError(CGateResponse((bare,), bare, 502))
+        (self.journals / "control").mkdir()
+        journal = self.journals / "control" / "attempt.json"
+        with self.assertRaises(CGateError):
+            PhysicalProgramming(service, operation_id="rowcontrol").apply(
+                "//TEST/253/p/4",
+                [("Value_direct", "0x09"), ("Value_paged", "0x09"),
+                 ("Value_ncc", "0x09"), ("Value_edlt", "0x09")],
+                method="direct", journal=journal)
+        document = json.loads(journal.read_text())
+        self.assertEqual(document["phase"], "save-uncertain")
+        self.assertEqual([row["store_state"] for row in document["ranges"]],
+                         ["confirmed", "confirmed", "uncertain", "not-attempted"])
+        self.assertEqual(document["save_reply"]["ranges"], [])
+        self.assertEqual(document["save_reply"]["confirmed_writes_reported"], 2)
+
+    def test_successful_save_captures_range_rows(self):
+        # Success-path slice: a faked 200 OK reply carrying 2 confirmed
+        # per-range rows parses into save_reply.ranges; existing success
+        # assertions stay unchanged.
+        service = PhysicalService()
+        service.schema_method = "direct"
+        rows = (
+            "200-range 0 direct 32+1 stores=1/1 readback=1 confirmed",
+            "200-range 1 direct 33+1 stores=1/1 readback=1 confirmed",
+        )
+        original_save = service._save
+
+        def succeeding_save(session, destination):
+            original_save(session, destination)
+            return response(*(rows + ("200 OK",)))
+
+        service._save = succeeding_save
+        journal = self.journal()
+        result = PhysicalProgramming(service, operation_id="successrows").apply(
+            "//TEST/253/p/4",
+            [("Value_direct", "0x09"), ("Value_paged", "0x09")],
+            method="direct", journal=journal)
+        self.assertTrue(result["complete"])
+        self.assertTrue(result["saved"])
+        self.assertFalse(result["save_outcome_uncertain"])
+        self.assertTrue(result["staged_readback_verified"])
+        self.assertTrue(result["fresh_physical_readback_verified"])
+        self.assertEqual(result["save_attempts"], 1)
+        self.assertEqual(result["automatic_write_retries"], 0)
+        expected = [
+            {"index": 0, "start": 32, "len": 1, "acked": 1,
+             "planned": 1, "readback": 1, "outcome": "confirmed"},
+            {"index": 1, "start": 33, "len": 1, "acked": 1,
+             "planned": 1, "readback": 1, "outcome": "confirmed"},
+        ]
+        self.assertEqual(result["save_reply"]["ranges"], expected)
+        self.assertTrue(result["save_reply"]["confirmed"])
+        document = json.loads(journal.read_text())
+        self.assertEqual(document["phase"], "complete")
+        self.assertEqual(document["save_reply"]["ranges"], expected)
+        self.assertTrue(document["save_reply"]["confirmed"])
+        self.assertEqual([row["store_state"] for row in document["ranges"]],
+                         ["confirmed", "confirmed"])
+
+        # Control: absent rows yield [] with success behavior unchanged.
+        control = PhysicalService()
+        control.schema_method = "direct"
+        (self.journals / "success-control").mkdir()
+        control_journal = self.journals / "success-control" / "attempt.json"
+        control_result = PhysicalProgramming(control, operation_id="successbare").apply(
+            "//TEST/253/p/4",
+            [("Value_direct", "0x09"), ("Value_paged", "0x09")],
+            method="direct", journal=control_journal)
+        self.assertTrue(control_result["complete"])
+        self.assertTrue(control_result["saved"])
+        self.assertEqual(control_result["save_reply"]["ranges"], [])
+        control_document = json.loads(control_journal.read_text())
+        self.assertEqual(control_document["phase"], "complete")
+        self.assertEqual(control_document["save_reply"]["ranges"], [])
+        self.assertEqual([row["store_state"] for row in control_document["ranges"]],
+                         ["confirmed", "confirmed"])
+
+    def test_successful_save_store_state_follows_range_rows(self):
+        # Success-path row-driven slice: a faked 200 OK reply carrying one
+        # confirmed, one uncertain and one skipped-unchanged row journals
+        # store_state by address via _SAVE_ROW_STORE_STATE.
+        service = PhysicalService()
+        service.schema_method = "direct"
+        rows = (
+            "200-range 0 direct 32+1 stores=1/1 readback=1 confirmed",
+            "200-range 1 direct 33+1 stores=0/1 readback=0 uncertain",
+            "200-range 2 direct 34+1 stores=0/0 readback=0 skipped-unchanged",
+        )
+        original_save = service._save
+
+        def succeeding_save(session, destination):
+            original_save(session, destination)
+            return response(*(rows + ("200 OK",)))
+
+        service._save = succeeding_save
+        journal = self.journal()
+        result = PhysicalProgramming(service, operation_id="successmixed").apply(
+            "//TEST/253/p/4",
+            [("Value_direct", "0x09"), ("Value_paged", "0x09"),
+             ("Value_ncc", "0x09")],
+            method="direct", journal=journal)
+        self.assertTrue(result["complete"])
+        self.assertTrue(result["saved"])
+        self.assertEqual([row["outcome"] for row in result["save_reply"]["ranges"]],
+                         ["confirmed", "uncertain", "skipped-unchanged"])
+        document = json.loads(journal.read_text())
+        self.assertEqual(document["phase"], "complete")
+        self.assertEqual([row["store_state"] for row in document["ranges"]],
+                         ["confirmed", "uncertain", "skipped"])
+        self.assertTrue(document["save_reply"]["confirmed"])
+
+        # Control: absent rows keep the all-confirmed behavior unchanged.
+        control = PhysicalService()
+        control.schema_method = "direct"
+        (self.journals / "success-mixed-control").mkdir()
+        control_journal = self.journals / "success-mixed-control" / "attempt.json"
+        control_result = PhysicalProgramming(control, operation_id="successmixbare").apply(
+            "//TEST/253/p/4",
+            [("Value_direct", "0x09"), ("Value_paged", "0x09"),
+             ("Value_ncc", "0x09")],
+            method="direct", journal=control_journal)
+        self.assertTrue(control_result["complete"])
+        self.assertTrue(control_result["saved"])
+        self.assertEqual(control_result["save_reply"]["ranges"], [])
+        control_document = json.loads(control_journal.read_text())
+        self.assertEqual(control_document["phase"], "complete")
+        self.assertEqual([row["store_state"] for row in control_document["ranges"]],
+                         ["confirmed", "confirmed", "confirmed"])
+
+    def test_successful_save_short_row_list_leaves_trailing_uncertain(self):
+        # Success-path short-list slice: a faked 200 OK reply carrying 2
+        # rows (confirmed, uncertain) over 4 planned ranges journals
+        # store_state by address; ranges without a row stay uncertain
+        # for read-only recovery (mark_confirmed short-list branch).
+        service = PhysicalService()
+        service.schema_method = "direct"
+        rows = (
+            "200-range 0 direct 32+1 stores=1/1 readback=1 confirmed",
+            "200-range 1 direct 33+1 stores=0/1 readback=0 uncertain",
+        )
+        original_save = service._save
+
+        def succeeding_save(session, destination):
+            original_save(session, destination)
+            return response(*(rows + ("200 OK",)))
+
+        service._save = succeeding_save
+        journal = self.journal()
+        result = PhysicalProgramming(service, operation_id="successshort").apply(
+            "//TEST/253/p/4",
+            [("Value_direct", "0x09"), ("Value_paged", "0x09"),
+             ("Value_ncc", "0x09"), ("Value_edlt", "0x09")],
+            method="direct", journal=journal)
+        self.assertTrue(result["complete"])
+        self.assertTrue(result["saved"])
+        self.assertEqual([row["outcome"] for row in result["save_reply"]["ranges"]],
+                         ["confirmed", "uncertain"])
+        document = json.loads(journal.read_text())
+        self.assertEqual(document["phase"], "complete")
+        self.assertEqual([row["store_state"] for row in document["ranges"]],
+                         ["confirmed", "uncertain", "uncertain", "uncertain"])
+        self.assertTrue(document["save_reply"]["confirmed"])
+
+    def test_successful_save_not_attempted_row_stays_uncertain(self):
+        # Success-path not-attempted slice: a faked 200 OK reply carrying
+        # a middle not-attempted row journals store_state by address via
+        # _SAVE_ROW_STORE_STATE (not-attempted -> uncertain).
+        service = PhysicalService()
+        service.schema_method = "direct"
+        rows = (
+            "200-range 0 direct 32+1 stores=1/1 readback=1 confirmed",
+            "200-range 1 direct 33+1 stores=0/1 readback=0 not-attempted",
+            "200-range 2 direct 34+1 stores=1/1 readback=1 confirmed",
+        )
+        original_save = service._save
+
+        def succeeding_save(session, destination):
+            original_save(session, destination)
+            return response(*(rows + ("200 OK",)))
+
+        service._save = succeeding_save
+        journal = self.journal()
+        result = PhysicalProgramming(service, operation_id="successnotatt").apply(
+            "//TEST/253/p/4",
+            [("Value_direct", "0x09"), ("Value_paged", "0x09"),
+             ("Value_ncc", "0x09")],
+            method="direct", journal=journal)
+        self.assertTrue(result["complete"])
+        self.assertTrue(result["saved"])
+        self.assertEqual([row["outcome"] for row in result["save_reply"]["ranges"]],
+                         ["confirmed", "not-attempted", "confirmed"])
+        document = json.loads(journal.read_text())
+        self.assertEqual(document["phase"], "complete")
+        self.assertEqual([row["store_state"] for row in document["ranges"]],
+                         ["confirmed", "uncertain", "confirmed"])
+        self.assertTrue(document["save_reply"]["confirmed"])
+
+    def test_save_failure_interleaved_unchanged_row_matches_by_address(self):
+        # Failure-path slice: the first edited range is staged unchanged, so
+        # a real server names it skipped-unchanged ahead of the changed
+        # range's uncertain row.  Address matching keeps the changed range
+        # uncertain instead of positionally misreading the leading skipped
+        # row as its own outcome.
+        service = PhysicalService()
+        service.schema_method = "direct"
+        final = "[9] 502 Physical PP save failed after 0 confirmed write(s): PCI response stream lost"
+        rows = (
+            "502-range 0 direct 32+1 stores=0/0 readback=0 skipped-unchanged",
+            "502-range 1 direct 33+1 stores=0/1 readback=0 uncertain",
+        )
+        service.fail_save = CGateError(CGateResponse(rows + (final,), final, 502))
+        journal = self.journal()
+        with self.assertRaises(CGateError):
+            PhysicalProgramming(service, operation_id="interleavefail").apply(
+                "//TEST/253/p/4",
+                [("Value_direct", "0x01"), ("Value_paged", "0x09")],
+                method="direct", journal=journal)
+        document = json.loads(journal.read_text())
+        self.assertEqual(document["phase"], "save-uncertain")
+        self.assertEqual([row["store_state"] for row in document["ranges"]],
+                         ["not-planned", "uncertain"])
+        self.assertEqual(
+            [row["outcome"] for row in document["save_reply"]["ranges"]],
+            ["skipped-unchanged", "uncertain"])
+
+    def test_successful_save_interleaved_unchanged_row_matches_by_address(self):
+        # Success-path slice: the leading skipped-unchanged row belongs to
+        # the staged-but-unchanged range; the changed range still consumes
+        # its own confirmed row by address.
+        service = PhysicalService()
+        service.schema_method = "direct"
+        rows = (
+            "200-range 0 direct 32+1 stores=0/0 readback=0 skipped-unchanged",
+            "200-range 1 direct 33+1 stores=1/1 readback=1 confirmed",
+        )
+        original_save = service._save
+
+        def succeeding_save(session, destination):
+            original_save(session, destination)
+            return response(*(rows + ("200 OK",)))
+
+        service._save = succeeding_save
+        journal = self.journal()
+        result = PhysicalProgramming(service, operation_id="interleavesuccess").apply(
+            "//TEST/253/p/4",
+            [("Value_direct", "0x01"), ("Value_paged", "0x09")],
+            method="direct", journal=journal)
+        self.assertTrue(result["complete"])
+        self.assertTrue(result["saved"])
+        document = json.loads(journal.read_text())
+        self.assertEqual(document["phase"], "complete")
+        self.assertEqual([row["store_state"] for row in document["ranges"]],
+                         ["not-planned", "confirmed"])
+
+    def test_stale_confirmed_count_from_old_generation_is_retired(self):
+        # Five direct ranges; cmqttd reports 2 confirmed writes, but the PCI
+        # generation moved during the SAVE, so no old confirmation is trusted.
+        service = PhysicalService()
+        service.schema_method = "direct"
+        final = "[9] 502 Physical PP save failed after 2 confirmed write(s): PCI response stream lost"
+
+        def failing_save(session, destination):
+            service.capabilities["pci_generation"] = 8
+            raise CGateError(CGateResponse((final,), final, 502))
+
+        service._save = failing_save
+        journal = self.journal()
+        with self.assertRaises(CGateError) as caught:
+            PhysicalProgramming(service, operation_id="stalegen").apply(
+                "//TEST/253/p/4",
+                [("Value_direct", "0x09"), ("Value_paged", "0x09"),
+                 ("Value_ncc", "0x09"), ("Value_edlt", "0x09"),
+                 ("Value_giu", "0x09")],
+                method="direct", journal=journal)
+        document = json.loads(journal.read_text())
+        self.assertEqual(document["phase"], "save-uncertain")
+        self.assertEqual(len(document["ranges"]), 5)
+        # A stale count must not confirm the first two ranges: an interrupt
+        # after 2 of 5 leaves every range uncertain for read-only recovery,
+        # never partially confirmed on a retired generation.
+        self.assertEqual(
+            [row["store_state"] for row in document["ranges"]],
+            ["uncertain"] * 5)
+        self.assertNotIn("confirmed", [row["store_state"] for row in document["ranges"]])
+        self.assertEqual(document["save_reply"]["confirmed_writes_reported"], 2)
+        self.assertTrue(document["save_reply"]["generation_changed"])
+        self.assertEqual(document["save_reply"]["recorded_pci_generation"], 7)
+        self.assertEqual(document["save_reply"]["fresh_pci_generation"], 8)
+        evidence = caught.exception.physical_programming_evidence
+        self.assertTrue(evidence["save_reply"]["generation_changed"])
+        self.assertTrue(evidence["save_outcome_uncertain"])
+        self.assertFalse(evidence["saved"])
+        # Recovery stays read-only: it sends no SET/SAVE while classifying.
+        recovery = PhysicalService()
+        recovery.schema_method = "direct"
+        report = PhysicalProgramming(recovery).recover(journal)
+        self.assertFalse(any(
+            command.startswith(("PP SET", "PP SAVE")) for command in recovery.commands))
+        # The failed SAVE never reached the fake unit, so recovery observes
+        # every range unchanged on a stable generation.
+        self.assertEqual(report["outcome"], "observed_unchanged")
+        self.assertTrue(report["conclusive"])
+
+    def test_stale_generation_retires_parsed_range_rows(self):
+        # P4.03 slice: parsed SAVE range rows are bound to the PCI
+        # generation that produced them.  A reconnect during the SAVE
+        # retires the rows exactly like the confirmed-write count, so no
+        # stale row confirmation survives.  Four planned ranges carry two
+        # confirmed rows that must not confirm when the generation moves.
+        service = PhysicalService()
+        service.schema_method = "direct"
+        final = "[9] 502 Physical PP save failed after 2 confirmed write(s): PCI response stream lost"
+        rows = (
+            "502-range 0 direct 32+1 stores=1/1 readback=1 confirmed",
+            "502-range 1 direct 33+1 stores=1/1 readback=1 confirmed",
+            "502-range 2 direct 34+1 stores=0/1 readback=0 uncertain",
+            "502-range 3 direct 35+1 stores=0/1 readback=0 not-attempted",
+        )
+
+        def failing_save(session, destination):
+            service.capabilities["pci_generation"] = 8
+            raise CGateError(CGateResponse(rows + (final,), final, 502))
+
+        service._save = failing_save
+        journal = self.journal()
+        with self.assertRaises(CGateError) as caught:
+            PhysicalProgramming(service, operation_id="stalerows").apply(
+                "//TEST/253/p/4",
+                [("Value_direct", "0x09"), ("Value_paged", "0x09"),
+                 ("Value_ncc", "0x09"), ("Value_edlt", "0x09")],
+                method="direct", journal=journal)
+        document = json.loads(journal.read_text())
+        self.assertEqual(document["phase"], "save-uncertain")
+        # The stale rows must not confirm the first two ranges: a move to
+        # generation 8 leaves every range uncertain for read-only recovery.
+        self.assertEqual(
+            [row["store_state"] for row in document["ranges"]],
+            ["uncertain"] * 4)
+        self.assertNotIn("confirmed", [row["store_state"] for row in document["ranges"]])
+        # The rows are retained as unverified evidence alongside the count.
+        self.assertEqual(len(document["save_reply"]["ranges"]), 4)
+        self.assertEqual(document["save_reply"]["confirmed_writes_reported"], 2)
+        self.assertTrue(document["save_reply"]["generation_changed"])
+        self.assertEqual(document["save_reply"]["recorded_pci_generation"], 7)
+        self.assertEqual(document["save_reply"]["fresh_pci_generation"], 8)
+        # This all-direct schema declares no NCC field, so no NVM phase exists.
+        self.assertEqual(document["nvm_commit"], "not-required")
+        evidence = caught.exception.physical_programming_evidence
+        self.assertTrue(evidence["save_reply"]["generation_changed"])
+        self.assertTrue(evidence["save_outcome_uncertain"])
+        self.assertFalse(evidence["saved"])
+        # Recovery stays read-only: it sends no SET/SAVE while classifying.
+        recovery = PhysicalService()
+        recovery.schema_method = "direct"
+        report = PhysicalProgramming(recovery).recover(journal)
+        self.assertFalse(any(
+            command.startswith(("PP SET", "PP SAVE")) for command in recovery.commands))
+        # The failed SAVE never reached the fake unit, so recovery observes
+        # every range unchanged on a stable generation.
+        self.assertEqual(report["outcome"], "observed_unchanged")
+        self.assertTrue(report["conclusive"])
+
     def test_layout_disagreement_refuses_before_journal_or_save(self):
         service = PhysicalService()
         service.debug_change_missing = True
@@ -635,6 +1121,87 @@ class PhysicalProgrammingTests(unittest.TestCase):
         self.assertEqual(report["outcome"], "observed_expected")
         self.assertTrue(report["nvm_commit_uncertain"])
 
+    def test_pci_generation_change_before_save_sends_nothing(self):
+        service = PhysicalService()
+        original = service.command
+
+        def bumping(command):
+            if command.startswith("PP SET "):
+                service.capabilities["pci_generation"] = 8
+            return original(command)
+
+        service.command = bumping
+        journal = self.journal()
+        with self.assertRaisesRegex(
+            PhysicalProgrammingError, "generation changed"
+        ) as caught:
+            PhysicalProgramming(service, operation_id="genchange").apply(
+                "//TEST/253/p/4", [("Value_direct", "0x02")], method="direct",
+                journal=journal,
+            )
+        evidence = caught.exception.evidence
+        self.assertEqual(evidence["phase"], "pci-generation-changed")
+        self.assertFalse(evidence["save_attempted"])
+        self.assertFalse(any("PP SAVE" in command for command in service.commands))
+        # No SAVE was sent, but the journal conservatively records the
+        # attempt as uncertain so recovery stays required.
+        document = json.loads(journal.read_text())
+        self.assertEqual(document["phase"], "save-uncertain")
+        self.assertEqual(
+            [row["store_state"] for row in document["ranges"]], ["uncertain"])
+        self.assertTrue(document["save_reply"]["generation_changed"])
+
+    def test_pci_generation_change_after_save_retires_its_confirmation(self):
+        service = PhysicalService()
+        original_save = service._save
+
+        def bumping_save(session, destination):
+            result = original_save(session, destination)
+            service.capabilities["pci_generation"] = 9
+            return result
+
+        service._save = bumping_save
+        journal = self.journal()
+        with self.assertRaisesRegex(
+            PhysicalProgrammingError, "generation changed"
+        ) as caught:
+            PhysicalProgramming(service, operation_id="genstale").apply(
+                "//TEST/253/p/4", [("Value_direct", "0x02")], method="direct",
+                journal=journal,
+            )
+        evidence = caught.exception.evidence
+        self.assertEqual(evidence["phase"], "pci-generation-changed")
+        self.assertEqual(evidence["journal"]["phase"], "readback-unavailable")
+        document = json.loads(journal.read_text())
+        self.assertEqual(document["phase"], "readback-unavailable")
+        self.assertEqual(
+            [row["store_state"] for row in document["ranges"]], ["uncertain"])
+        self.assertEqual(document["nvm_commit"], "uncertain")
+
+    def test_pci_generation_change_during_recovery_is_inconclusive(self):
+        service = PhysicalService()
+        service.fail_save = RuntimeError("lost")
+        journal = self.journal()
+        with self.assertRaises(RuntimeError):
+            PhysicalProgramming(service).apply(
+                "//TEST/253/p/4", [("Value_direct", "0x02")], method="direct",
+                journal=journal)
+        recovery = PhysicalService()
+        original = recovery.command
+
+        def bumping(command):
+            if command.startswith("PP LOAD "):
+                recovery.capabilities["pci_generation"] = 99
+            return original(command)
+
+        recovery.command = bumping
+        report = PhysicalProgramming(recovery).recover(journal)
+        self.assertEqual(report["outcome"], "uncertain")
+        self.assertFalse(report["conclusive"])
+        self.assertFalse(report["pci_generation_stable_during_recovery"])
+        self.assertFalse(report["resolved"])
+        self.assertFalse(json.loads(journal.read_text())["resolved"])
+
     def test_tampered_journal_is_rejected(self):
         service = PhysicalService()
         journal = self.journal()
@@ -659,6 +1226,252 @@ class PhysicalProgrammingTests(unittest.TestCase):
         self.assertTrue(document["passed"])
         self.assertEqual(tuple(document["methods"]), SUPPORTED_METHODS)
         self.assertTrue(any("No live bridge" in item for item in document["evidence_boundaries"]))
+
+    def test_save_to_nvm_failure_marks_nvm_commit_uncertain(self):
+        # Save-to-NVM failure slice: a faked SAVE reply naming the NVM
+        # commit failure pins nvm_commit_failed and keeps nvm_commit
+        # uncertain even though the confirmed-write count stops short of
+        # the planned ranges (which alone would mean not-reached).
+        # Default schema keeps an NCC parameter, so the single direct edit
+        # still plans the NVM commit phase.
+        service = PhysicalService()
+        final = ("[9] 502 Physical PP save failed: "
+                 "Save-to-NVM failed after 0 confirmed write(s)")
+        service.fail_save = CGateError(CGateResponse((final,), final, 502))
+        journal = self.journal()
+        with self.assertRaises(CGateError) as caught:
+            PhysicalProgramming(service, operation_id="nvmfailed").apply(
+                "//TEST/253/p/4", [("Value_direct", "0x02")], method="direct",
+                journal=journal)
+        evidence = caught.exception.physical_programming_evidence
+        self.assertTrue(evidence["save_reply"]["server_reply"])
+        self.assertTrue(evidence["save_reply"]["nvm_commit_failed"])
+        self.assertEqual(evidence["save_reply"]["confirmed_writes_reported"], 0)
+        self.assertTrue(evidence["save_outcome_uncertain"])
+        document = json.loads(journal.read_text())
+        self.assertEqual(document["phase"], "save-uncertain")
+        self.assertEqual([row["store_state"] for row in document["ranges"]],
+                         ["uncertain"])
+        self.assertEqual(document["nvm_commit"], "uncertain")
+        self.assertTrue(document["save_reply"]["nvm_commit_failed"])
+
+        # Control: the same short count without the NVM marker leaves the
+        # commit phase as not-reached instead of uncertain.
+        control = PhysicalService()
+        bare = ("[9] 502 Physical PP save failed "
+                "after 0 confirmed write(s): PCI response stream lost")
+        control.fail_save = CGateError(CGateResponse((bare,), bare, 502))
+        (self.journals / "nvm-control").mkdir()
+        control_journal = self.journals / "nvm-control" / "attempt.json"
+        with self.assertRaises(CGateError) as control_caught:
+            PhysicalProgramming(control, operation_id="nvmcontrol").apply(
+                "//TEST/253/p/4", [("Value_direct", "0x02")], method="direct",
+                journal=control_journal)
+        control_evidence = control_caught.exception.physical_programming_evidence
+        self.assertFalse(control_evidence["save_reply"]["nvm_commit_failed"])
+        control_document = json.loads(control_journal.read_text())
+        self.assertEqual(control_document["phase"], "save-uncertain")
+        self.assertEqual(
+            [row["store_state"] for row in control_document["ranges"]],
+            ["uncertain"])
+        self.assertEqual(control_document["nvm_commit"], "not-reached")
+
+    def test_save_range_rows_skips_malformed_and_unknown_outcomes(self):
+        # Deferred P4 slice: _save_range_rows silently skips non-string
+        # lines, regex non-matches, unknown outcomes and ValueError int
+        # parses per docstring. Pin the skip contract pure-offline: garbage
+        # yields [], mixed valid/garbage yields partial rows, and the
+        # confirmed-write count handling is unchanged.
+        from cbus_toolkit.physical_programming import _save_range_rows
+
+        # Non-(tuple, list) containers yield [] without raising.
+        self.assertEqual(_save_range_rows(None), [])
+        self.assertEqual(
+            _save_range_rows("range 0 direct 32+1 stores=1/1 readback=1 confirmed"),
+            [],
+        )
+        self.assertEqual(_save_range_rows({"lines": []}), [])
+
+        # All-garbage yields []: non-strings, regex non-matches and the
+        # unknown outcome "bogus" are each skipped.
+        garbage = [
+            None,
+            123,
+            b"502-range 0 direct 32+1 stores=1/1 readback=1 confirmed",
+            "",
+            "hello",
+            "200 OK",
+            "502-range not-a-row",
+            "502-range 0 direct 32+1 stores=1/1 readback=2 confirmed",
+            "502-range 0 direct 32+1 stores=1/1 readback=1 bogus",
+            "[9] 502-range 0 direct 32+1 stores=1/1 readback=1 bogus",
+            "502-range 0 direct 32+1 stores=1/1 readback=1 BOGUS",
+        ]
+        self.assertEqual(_save_range_rows(garbage), [])
+        self.assertEqual(_save_range_rows(tuple(garbage)), [])
+
+        # ValueError branch is defensive: the row regex only admits \d+
+        # (and [01] readback), so huge ints still parse instead of skipping.
+        huge = _save_range_rows(
+            ["502-range 99999999999999999999 direct 32+1 stores=1/1 readback=1 confirmed"]
+        )
+        self.assertEqual(len(huge), 1)
+        self.assertEqual(huge[0]["index"], 99999999999999999999)
+
+        # Partial: one valid row survives surrounding garbage + bogus rows.
+        valid = "502-range 0 direct 32+1 stores=1/1 readback=1 confirmed"
+        mixed = [
+            "garbage",
+            None,
+            valid,
+            "502-range 1 direct 33+1 stores=0/1 readback=0 bogus",
+            42,
+        ]
+        self.assertEqual(
+            _save_range_rows(mixed),
+            [
+                {"index": 0, "start": 32, "len": 1, "acked": 1,
+                 "planned": 1, "readback": 1, "outcome": "confirmed"}
+            ],
+        )
+        # A tagged status prefix is stripped before the row match.
+        self.assertEqual(
+            _save_range_rows(["[9] " + valid]),
+            [
+                {"index": 0, "start": 32, "len": 1, "acked": 1,
+                 "planned": 1, "readback": 1, "outcome": "confirmed"}
+            ],
+        )
+
+        # Count handling is unchanged when every row is skipped: the final
+        # "after 1 confirmed write(s)" still parses and the journal falls
+        # back to the count-derived states.
+        service = PhysicalService()
+        service.schema_method = "direct"
+        final = ("[9] 502 Physical PP save failed "
+                 "after 1 confirmed write(s): PCI response stream lost")
+        garbage_lines = tuple(garbage[:6])
+        service.fail_save = CGateError(
+            CGateResponse(garbage_lines + (final,), final, 502)
+        )
+        journal = self.journal()
+        with self.assertRaises(CGateError) as caught:
+            PhysicalProgramming(service, operation_id="garbagerows").apply(
+                "//TEST/253/p/4",
+                [("Value_direct", "0x09"), ("Value_paged", "0x09")],
+                method="direct", journal=journal)
+        evidence = caught.exception.physical_programming_evidence
+        self.assertEqual(evidence["save_reply"]["ranges"], [])
+        self.assertEqual(evidence["save_reply"]["confirmed_writes_reported"], 1)
+        document = json.loads(journal.read_text())
+        self.assertEqual(document["phase"], "save-uncertain")
+        self.assertEqual(
+            [row["store_state"] for row in document["ranges"]],
+            ["confirmed", "uncertain"])
+
+        # Partial rows keep the count parsing while driving the journal
+        # by address: the bogus row is skipped, the valid row confirms
+        # its own range, and the missing range stays uncertain.
+        partial = PhysicalService()
+        partial.schema_method = "direct"
+        partial_lines = (
+            "noise",
+            "502-range 0 direct 32+1 stores=1/1 readback=1 confirmed",
+            "502-range 1 direct 33+1 stores=0/1 readback=0 bogus",
+        )
+        partial.fail_save = CGateError(
+            CGateResponse(partial_lines + (final,), final, 502)
+        )
+        (self.journals / "garbage-partial").mkdir()
+        partial_journal = self.journals / "garbage-partial" / "attempt.json"
+        with self.assertRaises(CGateError) as partial_caught:
+            PhysicalProgramming(partial, operation_id="garbagepartial").apply(
+                "//TEST/253/p/4",
+                [("Value_direct", "0x09"), ("Value_paged", "0x09")],
+                method="direct", journal=partial_journal)
+        partial_evidence = partial_caught.exception.physical_programming_evidence
+        self.assertEqual(
+            partial_evidence["save_reply"]["ranges"],
+            [
+                {"index": 0, "start": 32, "len": 1, "acked": 1,
+                 "planned": 1, "readback": 1, "outcome": "confirmed"}
+            ],
+        )
+        self.assertEqual(
+            partial_evidence["save_reply"]["confirmed_writes_reported"], 1)
+        partial_document = json.loads(partial_journal.read_text())
+        self.assertEqual(partial_document["phase"], "save-uncertain")
+        self.assertEqual(
+            [row["store_state"] for row in partial_document["ranges"]],
+            ["confirmed", "uncertain"])
+
+    def test_debug_rows_rejects_repeated_omitted_and_inconsistent_shapes(self):
+        # Pure-offline _debug_rows error-shape slice: repeated, omitted
+        # and inconsistent-width replies each raise without any PP I/O.
+        from cbus_toolkit.physical_programming import _debug_rows
+
+        def debug_reply(*lines):
+            return response(*lines, status=199)
+
+        with self.subTest(shape="repeated"):
+            reply = debug_reply(
+                "199-    unit>01|",
+                "199-    unit>02|",
+                "199- current>01|",
+                "199-  change>00|",
+            )
+            with self.assertRaisesRegex(
+                PhysicalProgrammingError, "repeated a memory row"
+            ):
+                _debug_rows(reply)
+        for missing in ("unit", "current", "change"):
+            with self.subTest(shape=f"omitted-{missing}"):
+                lines = {
+                    "unit": "199-    unit>01|",
+                    "current": "199- current>01|",
+                    "change": "199-  change>00|",
+                }
+                del lines[missing]
+                with self.assertRaisesRegex(
+                    PhysicalProgrammingError, f"omitted its {missing!r}"
+                ):
+                    _debug_rows(debug_reply(*lines.values()))
+        with self.subTest(shape="inconsistent-width-mismatch"):
+            with self.assertRaisesRegex(
+                PhysicalProgrammingError, "inconsistent memory rows"
+            ):
+                _debug_rows(debug_reply(
+                    "199-    unit>01|",
+                    "199- current>01|02|",
+                    "199-  change>00|00|",
+                ))
+        with self.subTest(shape="inconsistent-width-empty"):
+            with self.assertRaisesRegex(
+                PhysicalProgrammingError, "inconsistent memory rows"
+            ):
+                _debug_rows(debug_reply(
+                    "199-    unit>",
+                    "199- current>",
+                    "199-  change>",
+                ))
+        with self.subTest(shape="inconsistent-width-too-wide"):
+            wide = "|".join(["01"] * 17) + "|"
+            with self.assertRaisesRegex(
+                PhysicalProgrammingError, "inconsistent memory rows"
+            ):
+                _debug_rows(debug_reply(
+                    f"199-    unit>{wide}",
+                    f"199- current>{wide}",
+                    f"199-  change>{wide}",
+                ))
+        # Control: the well-formed shape still parses unchanged.
+        parsed = _debug_rows(debug_reply(
+            "199-    unit>01|",
+            "199- current>02|",
+            "199-  change>ff|",
+        ))
+        self.assertEqual(
+            parsed, {"unit": ["01"], "current": ["02"], "change": ["ff"]})
 
 
 if __name__ == "__main__":
