@@ -1,0 +1,96 @@
+{
+  "format": "cbus-associated-numeric-selectors-v1",
+  "provenance": "Owned associated numeric Level selector family for issues #73 and #74. No original/vendor/VM/hardware execution; retained original byte-valued fixtures supply ten Group 344, four NetVar 500 and eight OID 344 cases.",
+  "original_contract": {
+    "qualified_group_level_xml": {
+      "count": 10,
+      "wire": "344",
+      "fixtures": [
+        "native_cgate_dbsetxml_nested_levels.json cases 808,812,824,828",
+        "native_cgate_dbsetxml_nested_levels_roundtrip.json cases 945,947",
+        "native_cgate_dbsetxml_level_dlt.json cases 1009,1011,1014,1020"
+      ]
+    },
+    "qualified_netvar_level_xml": {
+      "count": 4,
+      "wire": "500 Internal error.",
+      "fixtures": [
+        "native_cgate_dbsetxml_nested_levels.json cases 839,843,855,859"
+      ]
+    },
+    "level_oid_xml": {
+      "count": 8,
+      "wire": "344",
+      "fixtures": [
+        "native_cgate_dbsetxml_nested_levels.json cases 809,813,825,829,840,844,856,860"
+      ]
+    },
+    "bare_numeric_level_xml": "unmeasured; absence in 106-fixture roster is not native rejection"
+  },
+  "copy_destinations": [
+    {
+      "command": "DBCOPYSAFE !<source-Level-OID> //LAB/11/56/1 12 NumericCopy",
+      "status": 301,
+      "final_prefix": "301 OID=",
+      "note": "Canonical numeric Group parent routes through exact selected associated owner with fresh OID and retained Value/XML."
+    },
+    {
+      "command": "DBCOPY !<source-Level-OID> //LAB/11/56/1",
+      "status": 301,
+      "final_prefix": "301 OID=",
+      "note": "Unsafe canonical numeric Group parent uses the same owner without a second command."
+    },
+    {
+      "command": "DBCOPYSAFE //LAB/Renamed/56/1/9 //LAB/11/56/1 12 NumericLexicalCopy",
+      "status": 301,
+      "final_prefix": "301 OID=",
+      "note": "Lexical source with numeric destination preserves lexical precedence for the source and numeric routing for the parent."
+    },
+    {
+      "command": "DBCOPYSAFE !<source-Level-OID> //LAB/11/56/9 15 Ghost",
+      "status": 401,
+      "final": "401 Bad object or device ID: Associated Level destination not found",
+      "note": "Missing numeric descendants refuse atomically without mutation."
+    }
+  ],
+  "load_preservation": {
+    "admitted": [
+      "absent collection materializes one <TagsDLT/> and clears its marker on first LOAD",
+      "strict-empty <TagsDLT/> deduplicates and clears its marker on first LOAD"
+    ],
+    "unsupported_preserved_atomically": [
+      "<?unknown value?><TagsDLT/>",
+      "<!--retained--><TagsDLT/>",
+      "<x:TagsDLT/> with urn:unknown",
+      "BOM U+FEFF + <TagsDLT/>",
+      "<TagsDLT marker=\"unsupported\"/>",
+      "<TagsDLT><TagDLT/></TagsDLT>"
+    ],
+    "note": "Unsupported plain-Level payloads keep exact children and deferred markers across repeated LOADs; nested legacy policy is unchanged."
+  },
+  "value_getter_precedence": {
+    "command": "DBGET //ASSOC/11/56/1/9/Value with independent lexical Network 11 present",
+    "status": 401,
+    "final_contains": "Index out of range",
+    "note": "Independent missing-descendant errors win over the associated numeric owner for both GET and SETSAFE."
+  },
+  "level_xml": [
+    {
+      "selector": "DBGETXML //ASSOC/11/56/1/9 (plain/completed Group, qualified and bare)",
+      "status": 200,
+      "wire": "343/347/344",
+      "contains": "<Level"
+    },
+    {
+      "selector": "DBGETXML //ASSOC/11/56/4/42 (plain/completed NetVar, qualified and bare)",
+      "status": 500,
+      "final": "500 Internal error."
+    },
+    {
+      "selector": "DBGETXML !<Level-OID> (all four owners)",
+      "status": 200,
+      "wire": "343/347/344",
+      "contains": "<Level"
+    }
+  ]
+}

@@ -1391,6 +1391,7 @@ fn parse_db_xml_object(node: roxmltree::Node<'_, '_>) -> Result<ParsedDbXmlObjec
     }
 
     let mut scalars = HashMap::new();
+    let mut description: Option<String> = None;
     let mut children = Vec::new();
     let mut units = Vec::new();
     let mut interface = None;
@@ -1426,6 +1427,28 @@ fn parse_db_xml_object(node: roxmltree::Node<'_, '_>) -> Result<ParsedDbXmlObjec
             if scalars.insert(name.to_string(), scalar).is_some() {
                 return Err(format!(
                     "DBSETXML {} contains duplicate {name}",
+                    kind.element()
+                ));
+            }
+            continue;
+        }
+        // Owned-model Application/Group Description admission (issue #75):
+        // text-only, bounded like TagValue, no control characters. Empty is
+        // normalized to absent, matching the scalar store where a blank
+        // Description reads back as 401 rather than an empty value. NetVar,
+        // Level and Network Description remain unsupported: native placement
+        // and acceptance are unproven for those kinds.
+        if name == "Description" && matches!(kind, DbXmlKind::Application | DbXmlKind::Group) {
+            let scalar = parse_db_xml_scalar(child, kind.element())?;
+            if scalar.len() > 1024 || scalar.chars().any(char::is_control) {
+                return Err(format!(
+                    "DBSETXML {} has an invalid Description",
+                    kind.element()
+                ));
+            }
+            if !scalar.is_empty() && description.replace(scalar).is_some() {
+                return Err(format!(
+                    "DBSETXML {} contains duplicate Description",
                     kind.element()
                 ));
             }
@@ -1522,6 +1545,7 @@ fn parse_db_xml_object(node: roxmltree::Node<'_, '_>) -> Result<ParsedDbXmlObjec
         oid,
         tag,
         address,
+        description,
         value,
         interface,
         units,
@@ -2022,6 +2046,79 @@ struct DeploymentEntry {
     phase: DeploymentPhase,
 }
 
+/// Durable Application chronology, separate from XML/OID selection order.
+///
+/// Older repositories did not record this information. Their unrecorded live
+/// Applications remain an explicitly unknown historical prefix; new creations
+/// can still be appended without pretending to recover that prefix's order.
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub struct ApplicationCreationOrder {
+    /// Live creations recorded by this owner, in causal order.
+    #[serde(default)]
+    pub addresses: Vec<u8>,
+    /// Whether unrecorded existing labels have unknown historical chronology.
+    #[serde(default = "unknown_application_history")]
+    pub historical_prefix_unknown: bool,
+}
+
+fn unknown_application_history() -> bool {
+    true
+}
+
+impl Default for ApplicationCreationOrder {
+    fn default() -> Self {
+        Self {
+            addresses: Vec::new(),
+            historical_prefix_unknown: true,
+        }
+    }
+}
+
+impl ApplicationCreationOrder {
+    /// A newly created owner has no unknown historical Applications.
+    pub fn known() -> Self {
+        Self {
+            addresses: Vec::new(),
+            historical_prefix_unknown: false,
+        }
+    }
+
+    fn record(&mut self, address: u8) {
+        if !self.addresses.contains(&address) {
+            self.addresses.push(address);
+        }
+    }
+
+    fn forget(&mut self, address: u8) {
+        self.addresses.retain(|candidate| *candidate != address);
+    }
+
+    fn readdress(&mut self, source: u8, destination: u8) {
+        for address in &mut self.addresses {
+            if *address == source {
+                *address = destination;
+            }
+        }
+    }
+
+    #[allow(dead_code)]
+    fn ordered(&self, live: impl IntoIterator<Item = u8>) -> Vec<u8> {
+        let mut remaining = live.into_iter().collect::<std::collections::BTreeSet<_>>();
+        let recorded = self
+            .addresses
+            .iter()
+            .copied()
+            .filter(|address| remaining.remove(address))
+            .collect::<Vec<_>>();
+        let unrecorded = remaining.into_iter();
+        if self.historical_prefix_unknown {
+            unrecorded.chain(recorded).collect()
+        } else {
+            recorded.into_iter().chain(unrecorded).collect()
+        }
+    }
+}
+
 /// One project network.
 #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub struct Network {
@@ -2060,6 +2157,10 @@ pub struct Network {
     /// Older modeled repositories fall back to address order.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub unit_xml_order: Vec<u8>,
+    /// Durable Application creation order. Missing legacy metadata remains
+    /// unknown; deterministic export fallback is not native history recovery.
+    #[serde(default)]
+    pub application_creation_order: ApplicationCreationOrder,
     /// One-based position in the project's native Network list (creation
     /// order); zero when unknown, as in older repositories. Native OID lookup
     /// walks Networks in this order, so a later Network's object wins.
@@ -2093,6 +2194,19 @@ fn default_network_retries() -> u8 {
 
 fn is_zero(value: &u64) -> bool {
     *value == 0
+}
+
+impl Network {
+    /// Return live Applications in recorded order, with a deterministic
+    /// fallback for an explicitly unknown legacy prefix. This does not alter
+    /// Application XML positions or the native duplicate-OID selection index.
+    #[allow(dead_code)]
+    pub(crate) fn application_addresses_in_creation_order(
+        &self,
+        live: impl IntoIterator<Item = u8>,
+    ) -> Vec<u8> {
+        self.application_creation_order.ordered(live)
+    }
 }
 
 /// Next one-based native Network list position in `project`.
@@ -2311,6 +2425,10 @@ struct ParsedDbXmlObject {
     oid: String,
     tag: String,
     address: u8,
+    /// Owned-model Application/Group Description (issue #75). `None` means
+    /// absent (including an explicitly empty element, which normalizes to
+    /// absent like the scalar store's blank Description readback of 401).
+    description: Option<String>,
     value: Option<u8>,
     interface: Option<ParsedDbXmlInterface>,
     units: Vec<ParsedDbXmlUnit>,
@@ -3179,11 +3297,13 @@ impl Server {
     }
 
     fn materialize_loaded_nested_level_tags(&mut self, project: &str) {
-        let mut oids = self
+        let nested = self
             .nested_level_oids(project)
             .into_iter()
             .collect::<HashSet<_>>();
+        let mut oids = nested.clone();
         let mut associated_empty = HashSet::new();
+        let mut plain_candidates = HashSet::new();
         // SAFE associated copies are plain typed Levels, not pending mirrors.
         // Their copied deferred marker must retain LOAD timing without changing
         // the existing typed NULL getter or creating another owner record.
@@ -3205,6 +3325,7 @@ impl Server {
                     .is_some_and(|extras| extras.saved_level_tags_pending)
             {
                 oids.insert(level.oid.clone());
+                plain_candidates.insert(level.oid.clone());
                 if self
                     .db_xml_extras
                     .get(&Self::unit_document_key(project, &level.oid))
@@ -3220,6 +3341,17 @@ impl Server {
                 .get_mut(&Self::unit_document_key(project, &oid))
             {
                 if extras.saved_level_tags_pending {
+                    // Gate only the new plain-Level sweep with the strict
+                    // retained-XML classifier. Unsupported PI/comment/
+                    // namespaced/BOM/attributed/nonempty payloads keep their
+                    // exact extras and deferred marker atomically; the older
+                    // nested policy stays on its existing timing.
+                    if plain_candidates.contains(&oid)
+                        && !nested.contains(&oid)
+                        && !associated_empty.contains(&oid)
+                    {
+                        continue;
+                    }
                     extras.saved_level_tags_pending = false;
                     // Only the proved associated empty subset receives
                     // semantic deduplication. Preserve source whitespace and
@@ -4278,6 +4410,7 @@ impl Server {
                 retries: default_network_retries(),
                 units: HashMap::new(),
                 unit_xml_order: Vec::new(),
+                application_creation_order: ApplicationCreationOrder::known(),
                 created_seq,
                 physical: HashMap::new(),
                 levels: HashMap::new(),
@@ -5397,7 +5530,7 @@ impl Server {
         doc
     }
 
-    fn db_xml_response(tag: &str, document: String) -> Response {
+    pub(crate) fn db_xml_response(tag: &str, document: String) -> Response {
         Response {
             tag: tag.to_string(),
             lines: vec![format!("347-{document}")],
@@ -5512,6 +5645,24 @@ impl Server {
                     .unwrap_or("")
             ),
         ));
+        // Owned-model Description export (issue #75): the canonical
+        // `{path}/Description` scalar readback wins over the creation-time
+        // field so later DBSETSAFE edits are reflected in DBGETXML. Element
+        // order (after Address) is an owned-model choice; native field order
+        // is unproven.
+        if let Some(path) = object.path.as_deref() {
+            if let Some(description) = self
+                .db_fields
+                .get(&format!("{path}/Description"))
+                .or_else(|| object.fields.get("Description"))
+                .filter(|text| !text.is_empty())
+            {
+                output.push_str(&format!(
+                    "<Description>{}</Description>",
+                    xml_escape(description)
+                ));
+            }
+        }
         if let Some(path) = object.path.as_deref() {
             let children = match object.element.as_str() {
                 "Application" => self.db_xml_children(project, path, &["Group", "NetVar"]),
@@ -5967,7 +6118,7 @@ impl Server {
     /// Native level document for `DBGETXML !oid`: the single evidenced
     /// row as the document root (`Level`; `NetVar` wrapping the row for
     /// NetVar records, whose kind probe must not read `Level`).
-    fn level_xml(&self, tag: &str, project: &str, level: &DbLevel) -> Response {
+    pub(crate) fn level_xml(&self, tag: &str, project: &str, level: &DbLevel) -> Response {
         let row = self.level_xml_document(project, level);
         let doc = if level.netvar {
             format!("<NetVar>{row}</NetVar>")
@@ -8639,6 +8790,62 @@ impl Server {
     /// Remap `db_fields`/`objects` keys from one unit path to another,
     /// using an exact-or-`/` boundary (shared by renames and moves).
     fn remap_prefix(&mut self, from: &str, to: &str) {
+        if let (
+            Some((project, network, source)),
+            Some((destination_project, destination_network, destination)),
+        ) = (
+            Self::application_path_parts(from),
+            Self::application_path_parts(to),
+        ) {
+            if project == destination_project && network == destination_network {
+                if let Some(owner) = self
+                    .projects
+                    .get_mut(project)
+                    .and_then(|project| project.networks.get_mut(&network))
+                {
+                    owner
+                        .application_creation_order
+                        .readdress(source, destination);
+                }
+            }
+        }
+        let application_aliases = Self::application_path_parts(from)
+            .zip(Self::application_path_parts(to))
+            .filter(
+                |((project, network, _), (destination_project, destination_network, _))| {
+                    project == destination_project && network == destination_network
+                },
+            )
+            .map(|((project, network, source), (_, _, destination))| {
+                (
+                    format!("//{project}/{network}-APPLICATION-{source}"),
+                    format!("//{project}/{network}-APPLICATION-{destination}"),
+                    format!("{from}-GROUP-"),
+                    format!("{to}-GROUP-"),
+                )
+            });
+        // Group moves carry their own hyphen alias
+        // (`//P/N/A-GROUP-G`); slash remapping alone leaves it stale.
+        let group_alias = Self::group_path_parts(from)
+            .zip(Self::group_path_parts(to))
+            .filter(
+                |(
+                    (project, network, application, _),
+                    (destination_project, destination_network, destination_application, _),
+                )| {
+                    project == destination_project
+                        && network == destination_network
+                        && application == destination_application
+                },
+            )
+            .map(
+                |((project, network, application, source), (_, _, _, destination))| {
+                    (
+                        format!("//{project}/{network}/{application}-GROUP-{source}"),
+                        format!("//{project}/{network}/{application}-GROUP-{destination}"),
+                    )
+                },
+            );
         let slash = format!("{from}/");
         self.db_fields = std::mem::take(&mut self.db_fields)
             .into_iter()
@@ -8655,12 +8862,37 @@ impl Server {
         self.objects = std::mem::take(&mut self.objects)
             .into_iter()
             .map(|k| {
+                if let Some((old_root, new_root, old_group, new_group)) = &application_aliases {
+                    if &k == old_root {
+                        return new_root.clone();
+                    }
+                    if let Some(rest) = k.strip_prefix(old_group) {
+                        return format!("{new_group}{rest}");
+                    }
+                }
+                if let Some((old_group, new_group)) = &group_alias {
+                    if &k == old_group {
+                        return new_group.clone();
+                    }
+                }
                 if k == from {
                     to.to_string()
                 } else if let Some(rest) = k.strip_prefix(&slash) {
                     format!("{to}/{rest}")
                 } else {
                     k
+                }
+            })
+            .collect();
+        self.cgl_runtime = std::mem::take(&mut self.cgl_runtime)
+            .into_iter()
+            .map(|key| {
+                if key == from {
+                    to.to_string()
+                } else if let Some(rest) = key.strip_prefix(&slash) {
+                    format!("{to}/{rest}")
+                } else {
+                    key
                 }
             })
             .collect();
@@ -9560,6 +9792,9 @@ impl Server {
     }
 
     fn remove_db_xml_subtree(&mut self, target: &DbXmlTarget, old_oids: &HashSet<String>) {
+        if target.kind == DbXmlKind::Application {
+            self.forget_application_path(&target.path);
+        }
         let slash = format!("{}/", target.path);
         let dash = format!("{}-", target.path);
         let removed_units = if target.kind == DbXmlKind::Network {
@@ -9630,6 +9865,15 @@ impl Server {
             ("Address".to_string(), object.address.to_string()),
             ("TagName".to_string(), object.tag.clone()),
         ]);
+        // Persist an admitted Application/Group Description alongside TagName
+        // so scalar DBGET, DBGETXML export and PROJECT SAVE all observe it.
+        if let Some(description) = object
+            .description
+            .as_deref()
+            .filter(|text| !text.is_empty())
+        {
+            fields.insert("Description".to_string(), description.to_string());
+        }
         if let Some(value) = object.value {
             fields.insert("Value".to_string(), value.to_string());
         }
@@ -9648,6 +9892,14 @@ impl Server {
         self.objects.insert(path.clone());
         self.db_fields
             .insert(format!("{path}/TagName"), object.tag.clone());
+        if let Some(description) = object
+            .description
+            .as_deref()
+            .filter(|text| !text.is_empty())
+        {
+            self.db_fields
+                .insert(format!("{path}/Description"), description.to_string());
+        }
         self.store_db_xml_extras(project, &object.oid, &object.extras);
 
         match object.kind {
@@ -9690,6 +9942,7 @@ impl Server {
                 }
             }
             DbXmlKind::Application => {
+                self.record_application_path(&path);
                 self.objects
                     .insert(format!("{parent}-APPLICATION-{}", object.address));
                 for child in &object.children {
@@ -9777,6 +10030,10 @@ impl Server {
             retries,
             units,
             unit_xml_order: object.units.iter().map(|unit| unit.address).collect(),
+            application_creation_order: previous
+                .map_or_else(ApplicationCreationOrder::known, |network| {
+                    network.application_creation_order.clone()
+                }),
             // Native replaces the Network at its existing list position.
             created_seq,
             physical,
@@ -9929,14 +10186,22 @@ impl Server {
             // field alone acknowledges data that disappears from export.
             let parent = words[1].trim_end_matches('/');
             let path = format!("{parent}/{addr}");
-            let oid = self
+            let existing = self
                 .db_pending
                 .values()
                 .find(|record| {
                     record.project == proj_name && record.path.as_deref() == Some(path.as_str())
                 })
-                .map(|record| record.oid.clone())
-                .unwrap_or_else(|| self.issue_oid());
+                .map(|record| {
+                    (
+                        record.oid.clone(),
+                        record.fields.get("Description").cloned(),
+                    )
+                });
+            let (oid, description) = match existing {
+                Some((oid, description)) => (oid, description),
+                None => (self.issue_oid(), None),
+            };
             let object = ParsedDbXmlObject {
                 kind: if element == "APPLICATION" {
                     DbXmlKind::Application
@@ -9946,6 +10211,7 @@ impl Server {
                 oid,
                 tag: name,
                 address: addr,
+                description,
                 value: None,
                 interface: None,
                 units: Vec::new(),
@@ -9967,15 +10233,597 @@ impl Server {
         ok(tag, vec![], "200 OK")
     }
 
+    /// Remint every `<OID>uuid</OID>` embedded in copied XML extras so a
+    /// subtree copy shares no label identity with its source. Namespaces,
+    /// attributes and markup shape travel verbatim; only the identities are
+    /// fresh (via the staged OID allocator, hence disjoint from all issued
+    /// outer OIDs). Equal source identities stay equal through `inner`.
+    fn remap_copy_extras(
+        staged: &mut Self,
+        extras: &DbXmlExtras,
+        inner: &mut HashMap<String, String>,
+    ) -> DbXmlExtras {
+        let mut remapped = extras.clone();
+        for child in &mut remapped.children {
+            let mut cursor = 0;
+            while let Some(start) = child[cursor..].find("<OID>") {
+                let open = cursor + start + "<OID>".len();
+                let Some(close) = child[open..].find("</OID>") else {
+                    break;
+                };
+                let close = open + close;
+                let candidate = child[open..close].to_string();
+                if valid_uuid(&candidate) {
+                    let fresh = inner.get(&candidate).cloned().unwrap_or_else(|| {
+                        let fresh = staged.issue_oid();
+                        inner.insert(candidate.clone(), fresh.clone());
+                        fresh
+                    });
+                    child.replace_range(open..close, &fresh);
+                    cursor = open + fresh.len() + "</OID>".len();
+                } else {
+                    cursor = close + "</OID>".len();
+                }
+            }
+        }
+        remapped
+    }
+
+    /// Copy an ordinary typed subtree (`source` = `//PROJECT/NET/APP`[/`GROUP`[/`LEVEL`]]
+    /// or a `//PROJECT/NET/APP` NetVar path) under `dest_parent` with a new
+    /// address and tag.
+    ///
+    /// `root_element` names the admitted root (`Application`, `Group`,
+    /// `NetVar` or `Level`); the caller owns parent-kind validation.
+    /// Every descendant keeps its address, tag, value and sibling order
+    /// under fresh identities; the source tree is unchanged. Scalar mirrors,
+    /// XML extras (including embedded TagDLT/Languages label OIDs, which are
+    /// reminted so the copy shares no identity with its source) and legacy
+    /// typed levels without a pending mirror travel with their owners.
+    /// Returns the new root OID.
+    fn copy_application_subtree(
+        &mut self,
+        project: &str,
+        source: &str,
+        dest_parent: &str,
+        dest_address: u8,
+        dest_tag: &str,
+        root_element: &str,
+    ) -> Result<String, (u16, String)> {
+        let mut staged = self.clone();
+        let mut subtree: Vec<DbPendingObject> = staged
+            .db_pending
+            .values()
+            .filter(|object| {
+                object.project == project
+                    && (object.path.as_deref() == Some(source)
+                        || object
+                            .path
+                            .as_deref()
+                            .is_some_and(|path| path.starts_with(&format!("{source}/"))))
+            })
+            .cloned()
+            .collect();
+        subtree.sort_by_key(|object| object.path.as_deref().map(str::len).unwrap_or(0));
+        let subtree_oids: HashSet<String> =
+            subtree.iter().map(|object| object.oid.clone()).collect();
+        let root_oid = if let Some(root) = subtree
+            .iter()
+            .find(|object| object.path.as_deref() == Some(source))
+        {
+            if root.element != root_element {
+                return Err((
+                    status::BAD_REQUEST,
+                    format!("Copy source is not an {root_element}"),
+                ));
+            }
+            root.oid.clone()
+        } else if matches!(root_element, "Level" | "NetVar") {
+            let (parent_of_source, root_address) = source.rsplit_once('/').ok_or((
+                status::BAD_REQUEST,
+                format!("Copy source is not an {root_element}"),
+            ))?;
+            let root_address: u8 = root_address.parse().map_err(|_| {
+                (
+                    status::BAD_REQUEST,
+                    format!("Copy source is not an {root_element}"),
+                )
+            })?;
+            let want_netvar = root_element == "NetVar";
+            staged
+                .db_levels
+                .values()
+                .find(|level| {
+                    level.parent == parent_of_source
+                        && level.address == root_address
+                        && level.netvar == want_netvar
+                        && level.parent.starts_with(&format!("//{project}/"))
+                        && !staged
+                            .db_pending
+                            .values()
+                            .any(|object| object.project == project && object.oid == level.oid)
+                })
+                .map(|level| level.oid.clone())
+                .ok_or((status::ABSENT, format!("{root_element} not found")))?
+        } else {
+            return Err((status::ABSENT, format!("{root_element} not found")));
+        };
+        let dest_path = format!("{dest_parent}/{dest_address}");
+        let mut oid_map: HashMap<String, String> = HashMap::new();
+        for object in &subtree {
+            oid_map.insert(object.oid.clone(), staged.issue_oid());
+        }
+        let legacy: Vec<(String, String, u8, bool)> = staged
+            .db_levels
+            .values()
+            .filter(|level| {
+                (level.parent == source
+                    || level.parent.starts_with(&format!("{source}/"))
+                    || level.oid == root_oid)
+                    && level.parent.starts_with(&format!("//{project}/"))
+                    && !subtree_oids.contains(&level.oid)
+                    && !staged
+                        .db_pending
+                        .values()
+                        .any(|object| object.project == project && object.oid == level.oid)
+            })
+            .map(|level| {
+                (
+                    level.oid.clone(),
+                    level.parent.clone(),
+                    level.address,
+                    level.netvar,
+                )
+            })
+            .collect();
+        for (old, _, _, _) in &legacy {
+            oid_map.insert(old.clone(), staged.issue_oid());
+        }
+        let owned_oids: HashSet<&str> = subtree_oids
+            .iter()
+            .map(String::as_str)
+            .chain(std::iter::once(root_oid.as_str()))
+            .collect();
+        if staged.db_pending.values().any(|object| {
+            object.project == project
+                && object.path.is_none()
+                && object
+                    .parent
+                    .strip_prefix('!')
+                    .is_some_and(|parent| owned_oids.contains(parent))
+        }) {
+            return Err((
+                408,
+                "Operation failed: copy source has incomplete descendants".to_string(),
+            ));
+        }
+        let remap_path = |path: &str| {
+            if path == source {
+                dest_path.clone()
+            } else if let Some(rest) = path.strip_prefix(&format!("{source}/")) {
+                format!("{dest_path}/{rest}")
+            } else {
+                path.to_string()
+            }
+        };
+        // Legacy NetVar roots have no pending mirror but require one for
+        // `!oid` DBGETXML resolution. Materialize it here so the copied
+        // NetVar is addressable both numerically and by OID.
+        if root_element == "NetVar" && !subtree.iter().any(|object| object.oid == root_oid) {
+            let new_oid = oid_map[&root_oid].clone();
+            let skeleton = ParsedDbXmlObject {
+                kind: DbXmlKind::NetVar,
+                oid: new_oid,
+                tag: dest_tag.to_string(),
+                address: dest_address,
+                description: None,
+                value: None,
+                interface: None,
+                units: Vec::new(),
+                children: Vec::new(),
+                extras: DbXmlExtras::default(),
+            };
+            staged.insert_db_xml_object(project, dest_parent, &skeleton, None)?;
+        }
+        for object in &subtree {
+            let Some(old_path) = object.path.clone() else {
+                continue;
+            };
+            let new_oid = oid_map[&object.oid].clone();
+            let new_path = remap_path(&old_path);
+            let new_parent = new_path
+                .rsplit_once('/')
+                .map(|(parent, _)| parent.to_string())
+                .unwrap_or_else(|| dest_parent.to_string());
+            let new_address = new_path
+                .rsplit_once('/')
+                .and_then(|(_, address)| address.parse::<u8>().ok())
+                .unwrap_or(dest_address);
+            let kind = match object.element.as_str() {
+                "Application" => DbXmlKind::Application,
+                "Group" => DbXmlKind::Group,
+                "NetVar" => DbXmlKind::NetVar,
+                "Level" => DbXmlKind::Level,
+                _ => continue,
+            };
+            let tag = if object.oid == root_oid {
+                dest_tag.to_string()
+            } else {
+                object.fields.get("TagName").cloned().unwrap_or_default()
+            };
+            let skeleton = ParsedDbXmlObject {
+                kind,
+                oid: new_oid.clone(),
+                tag,
+                address: new_address,
+                // Subtree copies preserve an admitted source Description
+                // under the fresh descendant identity.
+                description: object.fields.get("Description").cloned(),
+                value: None,
+                interface: None,
+                units: Vec::new(),
+                children: Vec::new(),
+                extras: DbXmlExtras::default(),
+            };
+            staged.insert_db_xml_object(project, &new_parent, &skeleton, None)?;
+            if object.element == "Level" {
+                let mut pending = object.clone();
+                pending.oid = new_oid;
+                pending.parent = new_parent;
+                pending.path = Some(new_path);
+                if object.oid == root_oid {
+                    pending
+                        .fields
+                        .insert("TagName".to_string(), dest_tag.to_string());
+                    pending
+                        .fields
+                        .insert("Address".to_string(), dest_address.to_string());
+                }
+                staged.insert_db_pending_object(pending);
+            }
+        }
+        let mut inner_map: HashMap<String, String> = HashMap::new();
+        for object in &subtree {
+            let new_oid = oid_map[&object.oid].clone();
+            if object.element != "Level" {
+                if let Some(key) = staged.pending_object_key(project, &new_oid) {
+                    if let Some(pending) = staged.db_pending.get_mut(&key) {
+                        for (name, value) in &object.fields {
+                            if name != "Address" && name != "TagName" {
+                                pending.fields.insert(name.clone(), value.clone());
+                            }
+                        }
+                    }
+                }
+            }
+            let old_extras_key = Self::unit_document_key(project, &object.oid);
+            if let Some(extras) = staged.db_xml_extras.get(&old_extras_key).cloned() {
+                let remapped = Self::remap_copy_extras(&mut staged, &extras, &mut inner_map);
+                let new_extras_key = Self::unit_document_key(project, &new_oid);
+                staged.db_xml_extras.insert(new_extras_key, remapped);
+            }
+        }
+        for (old_oid, _, _, _) in &legacy {
+            let new_oid = oid_map[old_oid].clone();
+            let old_extras_key = Self::unit_document_key(project, old_oid);
+            if let Some(extras) = staged.db_xml_extras.get(&old_extras_key).cloned() {
+                let remapped = Self::remap_copy_extras(&mut staged, &extras, &mut inner_map);
+                let new_extras_key = Self::unit_document_key(project, &new_oid);
+                staged.db_xml_extras.insert(new_extras_key, remapped);
+            }
+        }
+        let mut typed: Vec<(String, DbLevel)> = Vec::new();
+        for object in &subtree {
+            if !matches!(object.element.as_str(), "Level" | "NetVar") {
+                continue;
+            }
+            let Some(old_key) = staged
+                .db_levels
+                .iter()
+                .find_map(|(key, level)| (level.oid == object.oid).then(|| key.clone()))
+            else {
+                continue;
+            };
+            let mut record = staged.db_levels[&old_key].clone();
+            let new_oid = oid_map[&object.oid].clone();
+            record.oid = new_oid.clone();
+            if object.oid == root_oid {
+                record.parent = dest_parent.to_string();
+                record.address = dest_address;
+                record.tag = dest_tag.to_string();
+            } else {
+                record.parent = remap_path(&record.parent);
+            }
+            staged.objects.insert(format!("!{new_oid}"));
+            typed.push((format!("{project}\u{1f}{new_oid}"), record));
+        }
+        for (old_oid, old_parent, old_address, netvar) in &legacy {
+            let Some(old_key) = staged
+                .db_levels
+                .iter()
+                .find_map(|(key, level)| (level.oid == *old_oid).then(|| key.clone()))
+            else {
+                continue;
+            };
+            let mut record = staged.db_levels[&old_key].clone();
+            let new_oid = oid_map[old_oid].clone();
+            record.oid = new_oid.clone();
+            if *old_oid == root_oid {
+                record.parent = dest_parent.to_string();
+                record.address = dest_address;
+                record.tag = dest_tag.to_string();
+            } else {
+                record.parent = remap_path(old_parent);
+                record.address = *old_address;
+            }
+            record.netvar = *netvar;
+            staged.objects.insert(format!("!{new_oid}"));
+            typed.push((format!("{project}\u{1f}{new_oid}"), record));
+        }
+        for (key, record) in typed {
+            staged.db_levels.insert(key, record);
+        }
+        let mirrors: Vec<(String, String)> = staged
+            .db_fields
+            .iter()
+            .map(|(k, v)| (k.clone(), v.clone()))
+            .collect();
+        for (key, value) in &mirrors {
+            let mut mapped: Option<String> = None;
+            if key == source || key.starts_with(&format!("{source}/")) {
+                mapped = Some(remap_path(key));
+            } else if let Some(rest) = key.strip_prefix('!') {
+                if let Some((oid, _)) = rest.split_once('/') {
+                    if let Some(new_oid) = oid_map.get(oid) {
+                        mapped = Some(key.replacen(oid, new_oid, 1));
+                    }
+                }
+            }
+            if let Some(mapped) = mapped {
+                if mapped == format!("{dest_path}/TagName")
+                    || mapped == format!("{dest_path}/Address")
+                {
+                    continue;
+                }
+                staged.db_fields.insert(mapped, value.clone());
+            }
+        }
+        *self = staged;
+        Ok(oid_map[&root_oid].clone())
+    }
+
+    /// Resolve a `DBCOPYSAFE` source word to its canonical numeric path and
+    /// admitted root element.
+    fn typed_copy_source(
+        &self,
+        project: &str,
+        raw: &str,
+    ) -> Result<Option<(String, String)>, (u16, String)> {
+        if let Some(rest) = raw.strip_prefix('!') {
+            if rest.contains('/') {
+                return Ok(None);
+            }
+            if let Some(object) = self.pending_object(project, rest) {
+                match object.element.as_str() {
+                    "Application" | "Group" => {
+                        let Some(path) = object.path.clone() else {
+                            return Err((
+                                408,
+                                "Operation failed: copy source has no Address".to_string(),
+                            ));
+                        };
+                        if !path.starts_with(&format!("//{project}/")) {
+                            return Err((status::ABSENT, "Object not found".to_string()));
+                        }
+                        return Ok(Some((path, object.element.clone())));
+                    }
+                    _ => return Ok(None),
+                }
+            }
+            let foreign_typed = self
+                .db_pending
+                .values()
+                .any(|object| object.project != project && object.oid == rest)
+                || self.db_levels.values().any(|level| {
+                    level.oid == rest
+                        && self
+                            .network_of(&level.parent)
+                            .is_some_and(|(owner, _)| owner != project)
+                });
+            if foreign_typed {
+                return Err((status::ABSENT, "Object not found".to_string()));
+            }
+            return Ok(None);
+        }
+        if Self::split_unit(raw).is_some() {
+            return Ok(None);
+        }
+        let trimmed = raw.trim_end_matches('/');
+        let canonical = if trimmed.starts_with("//") {
+            trimmed.to_string()
+        } else {
+            format!("//{trimmed}")
+        };
+        let parts: Vec<&str> = canonical.trim_start_matches('/').split('/').collect();
+        if parts.len() < 3 || parts[0] != project {
+            if parts.len() >= 3
+                && parts.first().copied() != Some(project)
+                && self.projects.contains_key(parts[0])
+                && parts[1].parse::<u8>().is_ok()
+                && parts[2].parse::<u8>().is_ok()
+            {
+                return Err((
+                    status::ABSENT,
+                    format!("Bad object or device ID: Element {raw} not found."),
+                ));
+            }
+            return Ok(None);
+        }
+        let Ok(net) = parts[1].parse::<u8>() else {
+            return Ok(None);
+        };
+        if !self
+            .projects
+            .get(project)
+            .is_some_and(|record| record.networks.contains_key(&net))
+        {
+            return Ok(None);
+        }
+        if parts[2].parse::<u8>().is_err() {
+            return Ok(None);
+        }
+        let missing = || {
+            (
+                status::ABSENT,
+                format!("Bad object or device ID: Element {raw} not found."),
+            )
+        };
+        match parts.len() {
+            3 => {
+                if self.db_pending.values().any(|object| {
+                    object.project == project
+                        && object.element == "Application"
+                        && object.path.as_deref() == Some(canonical.as_str())
+                }) {
+                    Ok(Some((canonical, "Application".to_string())))
+                } else {
+                    Err(missing())
+                }
+            }
+            4 => {
+                if parts[3].parse::<u8>().is_err() {
+                    return Ok(None);
+                }
+                if let Some(element) = self.db_pending.values().find_map(|object| {
+                    (object.project == project
+                        && matches!(object.element.as_str(), "Group" | "NetVar")
+                        && object.path.as_deref() == Some(canonical.as_str()))
+                    .then(|| object.element.clone())
+                }) {
+                    Ok(Some((canonical, element)))
+                } else if self.db_levels.values().any(|level| {
+                    level.netvar
+                        && level.parent == format!("//{project}/{net}/{}", parts[2])
+                        && level.address.to_string() == parts[3]
+                }) {
+                    Ok(Some((canonical, "NetVar".to_string())))
+                } else {
+                    Err(missing())
+                }
+            }
+            5 => {
+                if parts[3].parse::<u8>().is_err() || parts[4].parse::<u8>().is_err() {
+                    return Ok(None);
+                }
+                let group_path = format!("//{project}/{net}/{}/{}", parts[2], parts[3]);
+                let address: u8 = parts[4].parse().map_err(|_| missing())?;
+                if self.db_pending.values().any(|object| {
+                    object.project == project
+                        && object.element == "Level"
+                        && object.path.as_deref() == Some(canonical.as_str())
+                }) || self
+                    .db_levels
+                    .values()
+                    .any(|level| level.parent == group_path && level.address == address)
+                {
+                    Ok(Some((canonical, "Level".to_string())))
+                } else {
+                    Err(missing())
+                }
+            }
+            _ => Ok(None),
+        }
+    }
+
+    /// Resolve a `DBCOPYSAFE` parent word to its canonical numeric path,
+    /// checking it exists and accepts `element` children.
+    fn typed_copy_parent(
+        &self,
+        project: &str,
+        raw: &str,
+        element: &str,
+    ) -> Result<String, (u16, String)> {
+        if raw.starts_with('!') {
+            return Err((
+                status::ABSENT,
+                "Bad object or device ID: OID copy parents are unsupported".to_string(),
+            ));
+        }
+        let parent = raw.trim_end_matches('/').to_string();
+        let parts: Vec<&str> = parent.trim_start_matches('/').split('/').collect();
+        if parts.first().copied() != Some(project) {
+            return Err((status::ABSENT, "Object not found".to_string()));
+        }
+        let bad_parent = || {
+            (
+                status::ABSENT,
+                format!("Bad object or device ID: {element} parent not found."),
+            )
+        };
+        match element {
+            "Application" => {
+                if parts.len() != 2 || parts[1].parse::<u8>().is_err() {
+                    return Err(bad_parent());
+                }
+                Ok(parent)
+            }
+            "Group" | "NetVar" => {
+                if parts.len() != 3 || parts[2].parse::<u8>().is_err() {
+                    return Err(bad_parent());
+                }
+                let is_application = self.db_pending.values().any(|object| {
+                    object.project == project
+                        && object.element == "Application"
+                        && object.path.as_deref() == Some(parent.as_str())
+                });
+                if is_application {
+                    Ok(parent)
+                } else {
+                    Err(bad_parent())
+                }
+            }
+            "Level" => {
+                if parts.len() != 4 || parts[3].parse::<u8>().is_err() {
+                    return Err(bad_parent());
+                }
+                let is_group = self.db_pending.values().any(|object| {
+                    object.project == project
+                        && object.element == "Group"
+                        && object.path.as_deref() == Some(parent.as_str())
+                });
+                let app_path = format!("//{}/{}/{}", parts[0], parts[1], parts[2]);
+                let is_netvar = self.db_pending.values().any(|object| {
+                    object.project == project
+                        && object.element == "NetVar"
+                        && object.path.as_deref() == Some(parent.as_str())
+                }) || self.db_levels.values().any(|level| {
+                    level.netvar
+                        && level.parent == app_path
+                        && level.address.to_string() == parts[3]
+                });
+                if is_group || is_netvar {
+                    Ok(parent)
+                } else {
+                    Err(bad_parent())
+                }
+            }
+            _ => Err(bad_parent()),
+        }
+    }
+
     /// Native `DBCOPYSAFE source parent address name`.
     ///
     /// Known unit records duplicate with their fields; known levels
     /// duplicate as fresh records (new OID, caller-supplied parent,
     /// address and tag, value NULL) with the native 301 OID flow so the
-    /// caller's level initializer runs; other objects are accepted
-    /// opaquely.
+    /// caller's level initializer runs. Ordinary typed Application, Group,
+    /// NetVar and Level sources addressed numerically (or Applications and
+    /// Groups by admitted `!oid`) duplicate as complete subtrees with
+    /// fresh identities throughout, the caller-supplied address and tag at
+    /// the root, retained descendant values and a 301 OID receipt; other
+    /// objects are accepted opaquely.
     fn dbcopy(&mut self, tag: &str, words: &[&str]) -> Response {
-        if words.len() != 5 {
+        if words.len() < 5 {
             return err(
                 tag,
                 status::BAD_REQUEST,
@@ -10007,7 +10855,10 @@ impl Server {
         if !(0..=255).contains(&addr) {
             return err(tag, status::BAD_REQUEST, "400 Invalid database address");
         }
-        if words[4].is_empty() || words[4].contains('#') {
+        // Tag names routinely contain spaces; trailing words form the name,
+        // matching DBADDSAFE and the named copy path.
+        let name = words[4..].join(" ");
+        if name.is_empty() || name.contains('#') {
             return err(tag, status::BAD_REQUEST, "400 Invalid tag name");
         }
         let Some((proj_name, net)) = self.network_of(words[2]) else {
@@ -10036,8 +10887,7 @@ impl Server {
                     return err(tag, status::CONFLICT_EXISTS, "409 Unit already exists");
                 }
                 unit.address = address;
-                unit.fields
-                    .insert("TagName".to_string(), words[4].to_string());
+                unit.fields.insert("TagName".to_string(), name.clone());
                 unit.oid = self.issue_oid();
                 let copied_oid = unit.oid.clone();
                 self.projects
@@ -10094,8 +10944,9 @@ impl Server {
                 let copy = ParsedDbXmlObject {
                     kind: DbXmlKind::Application,
                     oid: oid.clone(),
-                    tag: words[4].to_string(),
+                    tag: name.clone(),
                     address: addr as u8,
+                    description: None,
                     value: None,
                     interface: None,
                     units: Vec::new(),
@@ -10113,6 +10964,61 @@ impl Server {
                     final_text: format!("301 OID={oid}"),
                     status: 301,
                 };
+            }
+        }
+        // Ordinary typed subtree copy (`DBCOPYSAFE //P/N/A... parent address
+        // name` with numeric or admitted `!oid` selectors): duplicate the
+        // complete Application/Group/NetVar/Level subtree with fresh
+        // identities instead of an opaque success. Anything else keeps the
+        // legacy behavior below.
+        if Self::split_unit(words[1]).is_none() {
+            let source = self.typed_copy_source(&proj_name, words[1]);
+            match source {
+                Ok(None) => {}
+                Ok(Some((source_path, element))) => {
+                    let parent = self.typed_copy_parent(&proj_name, words[2], element.as_str());
+                    match parent {
+                        Err((code, message)) => {
+                            return err(tag, code, &format!("{code} {message}"));
+                        }
+                        Ok(parent_path) => {
+                            let dest_path = format!("{parent_path}/{addr}");
+                            if self.database_address_exists(&dest_path) {
+                                return err(
+                                    tag,
+                                    status::CONFLICT_EXISTS,
+                                    &format!("409 {element} already exists"),
+                                );
+                            }
+                            match self.copy_application_subtree(
+                                &proj_name,
+                                &source_path,
+                                &parent_path,
+                                addr as u8,
+                                &name,
+                                element.as_str(),
+                            ) {
+                                Ok(copied_oid) => {
+                                    if matches!(element.as_str(), "Level" | "NetVar") {
+                                        self.push_event("#e# db level added".to_string());
+                                    }
+                                    return Response {
+                                        tag: tag.to_string(),
+                                        lines: Vec::new(),
+                                        final_text: format!("301 OID={copied_oid}"),
+                                        status: 301,
+                                    };
+                                }
+                                Err((code, message)) => {
+                                    return err(tag, code, &format!("{code} {message}"));
+                                }
+                            }
+                        }
+                    }
+                }
+                Err((code, message)) => {
+                    return err(tag, code, &format!("{code} {message}"));
+                }
             }
         }
         // Duplicate a known unit record when the source names one (a
@@ -10136,10 +11042,8 @@ impl Server {
                     return err(tag, status::CONFLICT_EXISTS, "409 Unit already exists");
                 }
                 unit.address = addr;
-                unit.fields
-                    .insert("UnitName".to_string(), words[4].to_string());
-                unit.fields
-                    .insert("TagName".to_string(), words[4].to_string());
+                unit.fields.insert("UnitName".to_string(), name.clone());
+                unit.fields.insert("TagName".to_string(), name.clone());
                 // A copy is a new database object with its own identity
                 // (no internal OID references exist to remap).
                 unit.oid = fresh_oid();
@@ -10180,7 +11084,7 @@ impl Server {
                             oid: oid.clone(),
                             parent: words[2].to_string(),
                             address: addr as u8,
-                            tag: words[4].to_string(),
+                            tag: name.clone(),
                             value: None,
                             raw_value: None,
                             netvar: source.netvar,
@@ -10602,6 +11506,9 @@ impl Server {
                         }
                     }
                     if let Some(path) = root.path {
+                        if root.element == "Application" {
+                            self.forget_application_path(&path);
+                        }
                         let path_prefix = format!("{path}/");
                         let level_oids = self
                             .db_levels
@@ -10839,6 +11746,7 @@ impl Server {
                 }
             }
             if existed {
+                self.forget_application_path(&target);
                 return ok(tag, vec![], "200 OK");
             }
         }
@@ -11057,9 +11965,206 @@ impl Server {
                 }
             }
         }
+        // Typed Application TagName/Description selectors must not fall
+        // through to the opaque store below: a missing or unselected object
+        // is 401/440, matching raw DBSET, so a later Address remap cannot
+        // resurrect a phantom from an earlier opaque acknowledgement.
+        // Group shapes stay on the legacy opaque path both layers share;
+        // only the unambiguous Application shape is tightened here.
+        if let Some((object_address, field)) = words[1].rsplit_once('/') {
+            if matches!(field, "TagName" | "Description") {
+                if let Some(rest) = object_address.strip_prefix('!') {
+                    // Any OID-addressed TagName/Description that missed the
+                    // typed stores above (including nested `!oid/...` shapes
+                    // raw DBSET refuses) must not be opaquely acknowledged.
+                    // Known Level/Network/Unit identities keep their existing
+                    // layer behavior below; unknown or unselected identities
+                    // are refused here.
+                    if !rest.is_empty() {
+                        if self.current.is_none() {
+                            return err(
+                                tag,
+                                440,
+                                "440 There is no tag database to perform this operation on",
+                            );
+                        }
+                        let leaf_oid = rest.rsplit('/').next().unwrap_or("");
+                        let oid_known = !leaf_oid.is_empty()
+                            && (self.oid_in_current_project(leaf_oid)
+                                || self.oid_in_current_project(rest));
+                        if !oid_known {
+                            return err(
+                                tag,
+                                status::ABSENT,
+                                &format!(
+                                    "401 Bad object or device ID: Element {} not found.",
+                                    words[1]
+                                ),
+                            );
+                        }
+                    }
+                } else if let Some(object_path) = object_address.strip_prefix("//") {
+                    let segments: Vec<&str> = object_path.split('/').collect();
+                    if segments.len() == 3
+                        && segments[1].parse::<u8>().is_ok()
+                        && segments[2].parse::<u8>().is_ok()
+                    {
+                        // Typed lookup above missed: the Application is absent,
+                        // foreign, or no project is selected. Never acknowledge
+                        // opaquely; mirror the unsafe selection errors.
+                        if self.current.is_none() {
+                            return err(
+                                tag,
+                                440,
+                                "440 There is no tag database to perform this operation on",
+                            );
+                        }
+                        return err(
+                            tag,
+                            status::ABSENT,
+                            &format!(
+                                "401 Bad object or device ID: Element {} not found.",
+                                words[1]
+                            ),
+                        );
+                    }
+                }
+            }
+        }
+        // Typed readdress (`DBSETSAFE .../Address byte` and
+        // `DBSETSAFE !oid/Address byte`): perform the canonical remap through
+        // the shared unsafe path instead of an opaque field store that would
+        // acknowledge without moving the object. This covers Application,
+        // Group and Level/NetVar addresses with the same byte grammar,
+        // conflict refusal and no-replay behavior as raw DBSET.
+        if words[1]
+            .rsplit_once('/')
+            .is_some_and(|(_, field)| field.eq_ignore_ascii_case("Address"))
+        {
+            let mut response = self.dbset_unsafe(tag, words);
+            if response.status == status::OK {
+                response.final_text = "200 OK".to_string();
+            }
+            return response;
+        }
         self.mirror_unit_field(words[1], &value);
-        self.db_fields.insert(words[1].to_string(), value);
+        self.db_fields.insert(words[1].to_string(), value.clone());
+        self.record_new_application_label(words[1]);
         ok(tag, vec![], "200 OK")
+    }
+
+    /// Record one newly materialized durable Application, never a runtime
+    /// announcement of a label already present after LOAD.
+    pub(crate) fn record_application_created(
+        &mut self,
+        project: &str,
+        network: u8,
+        application: u8,
+    ) {
+        if let Some(owner) = self
+            .projects
+            .get_mut(project)
+            .and_then(|project| project.networks.get_mut(&network))
+        {
+            owner.application_creation_order.record(application);
+        }
+    }
+
+    fn application_path_parts(path: &str) -> Option<(&str, u8, u8)> {
+        let parts = path.strip_prefix("//")?.split('/').collect::<Vec<_>>();
+        let [project, network, application] = parts.as_slice() else {
+            return None;
+        };
+        Some((project, network.parse().ok()?, application.parse().ok()?))
+    }
+
+    fn group_path_parts(path: &str) -> Option<(&str, u8, u8, u8)> {
+        let parts = path.strip_prefix("//")?.split('/').collect::<Vec<_>>();
+        let [project, network, application, group] = parts.as_slice() else {
+            return None;
+        };
+        Some((
+            project,
+            network.parse().ok()?,
+            application.parse().ok()?,
+            group.parse().ok()?,
+        ))
+    }
+
+    /// True when an incomplete (path-less) pending sibling reserves
+    /// `destination` under `parent_path` for the moving element shape.
+    ///
+    /// Complete occupants are refused via `database_address_exists`; this
+    /// covers the legacy `DBADD`-then-`DBSET !oid/Address` reservation that
+    /// has an Address but no TagName yet. Parents created via `!oid` are
+    /// resolved to their numeric path so OID-parented Groups/Levels count.
+    fn incomplete_sibling_reserves(
+        &self,
+        project: &str,
+        parent_path: &str,
+        parts_len: usize,
+        destination: u8,
+    ) -> bool {
+        self.db_pending.values().any(|object| {
+            if object.project != project || object.path.is_some() {
+                return false;
+            }
+            let wanted = matches!(
+                (parts_len, object.element.as_str()),
+                (4, "Application") | (5, "Group" | "NetVar") | (6, "Level")
+            );
+            if !wanted {
+                return false;
+            }
+            let effective_parent = if let Some(parent_oid) = object.parent.strip_prefix('!') {
+                let leaf = parent_oid.split('/').next().unwrap_or("");
+                self.pending_object(project, leaf)
+                    .and_then(|parent| parent.path.clone())
+                    .unwrap_or_default()
+            } else {
+                object.parent.clone()
+            };
+            if effective_parent != parent_path {
+                return false;
+            }
+            object.fields.iter().any(|(name, value)| {
+                (name.eq_ignore_ascii_case("Address") || name.eq_ignore_ascii_case("NetworkNumber"))
+                    && value.parse::<u8>().ok() == Some(destination)
+            })
+        })
+    }
+
+    fn record_application_path(&mut self, path: &str) {
+        if let Some((project, network, application)) = Self::application_path_parts(path) {
+            self.record_application_created(project, network, application);
+        }
+    }
+
+    /// Compatibility stub for concurrent Application-order tracking.
+    ///
+    /// Issue #131 must not depend on the separate Application copy/readdress
+    /// ordering work (#124/#125). These no-op hooks keep the current
+    /// in-progress tree compiling while that work lands; they never affect
+    /// Level Value ownership, mirrors, or XML readback.
+    pub(crate) fn forget_application_path(&mut self, path: &str) {
+        if let Some((project, network, application)) = Self::application_path_parts(path) {
+            if let Some(owner) = self
+                .projects
+                .get_mut(project)
+                .and_then(|project| project.networks.get_mut(&network))
+            {
+                owner.application_creation_order.forget(application);
+            }
+        }
+    }
+
+    /// See [`Self::forget_application_path`].
+    pub(crate) fn record_new_application_label(&mut self, field: &str) {
+        if !self.db_fields.contains_key(field) {
+            if let Some(path) = field.strip_suffix("/TagName") {
+                self.record_application_path(path);
+            }
+        }
     }
 
     /// Native unsafe `DBSET path [value]` over objects represented by the
@@ -11531,6 +12636,22 @@ impl Server {
                         "408 Operation failed: database Address is already in use",
                     );
                 }
+                // An incomplete legacy sibling (`DBADD` + `DBSET !oid/Address`)
+                // reserves its byte without a canonical path yet. Refuse
+                // atomically before any mutation, like an occupied address.
+                let parent_path = format!("//{parent}");
+                if self.incomplete_sibling_reserves(
+                    &current,
+                    &parent_path,
+                    parts.len(),
+                    destination,
+                ) {
+                    return err(
+                        tag,
+                        408,
+                        "408 Operation failed: database Address is already in use",
+                    );
+                }
                 match parts.len() {
                     4 => {
                         self.objects
@@ -11572,7 +12693,18 @@ impl Server {
                 self.remap_prefix(&canonical_object, &destination_object);
             }
             if let Some(oid) = &materialized_pending_oid {
-                self.sync_pending_database_field(&current, oid, field, &value);
+                // The Address selector is case-insensitive but the pending
+                // record key is canonical `Address`. A lowercase `address`
+                // write must not leave a stale `Address` alongside a new
+                // `address` entry that XML readback ignores.
+                if let Some(key) = self.pending_object_key(&current, oid) {
+                    if let Some(object) = self.db_pending.get_mut(&key) {
+                        object.fields.retain(|name, _| {
+                            name == "Address" || !name.eq_ignore_ascii_case("Address")
+                        });
+                        object.fields.insert("Address".to_string(), value.clone());
+                    }
+                }
             }
             return ok(tag, vec![], "200 OK.");
         }
@@ -12451,7 +13583,7 @@ impl Server {
     }
 
     /// Split a unit path `//PROJECT/NET/p/ADDR[/...]` into parts.
-    fn split_unit(path: &str) -> Option<(String, u8, u8)> {
+    pub(crate) fn split_unit(path: &str) -> Option<(String, u8, u8)> {
         let t = path.trim_start_matches('/');
         let parts: Vec<&str> = t.split('/').collect();
         if parts.len() < 4 || !parts[2].eq_ignore_ascii_case("p") {
@@ -12927,6 +14059,7 @@ mod tests {
                 .map(|unit| (*unit, Unit::blank(*unit, "BRIDGE2N")))
                 .collect(),
             unit_xml_order: bridge_units.to_vec(),
+            application_creation_order: Default::default(),
             created_seq: 0,
             physical: HashMap::new(),
             levels: HashMap::new(),

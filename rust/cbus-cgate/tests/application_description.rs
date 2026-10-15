@@ -10,7 +10,12 @@ fn vector() -> serde_json::Value {
     .unwrap();
     assert_eq!(value["format"], "cbus-application-description-scalar-v1");
     assert_eq!(value["scope"]["original_execution"], false);
-    assert_eq!(value["scope"]["xml_description_admission"], false);
+    // Scalar acknowledgement is unchanged by the XML round-trip work; the
+    // live XML contract moved to cgate_application_description_xml_roundtrip.
+    assert_eq!(
+        value["scope"]["native_xml_acceptance_issue"], 75,
+        "{value:?}"
+    );
     value
 }
 
@@ -90,9 +95,20 @@ fn application_and_group_description_scalar_survives_saved_project_reload() {
             format!("342 !{oid}/TagName={}", case["tag_name"].as_str().unwrap())
         );
     }
-    // The scalar change must preserve the whole bounded XML graph, including
-    // its existing omission of Description. No new XML field is admitted.
-    assert_eq!(xml(&mut server), initial);
+    // The scalar change is now reflected in the bounded XML export (issue
+    // #75): both admitted Descriptions appear after Address, and the
+    // described graph is what save/reload preserves.
+    let described = xml(&mut server);
+    assert_ne!(described, initial);
+    let joined = described.join("\n");
+    assert!(
+        joined.contains("<Description>Revised Application description</Description>"),
+        "{joined}"
+    );
+    assert!(
+        joined.contains("<Description>Revised Group description</Description>"),
+        "{joined}"
+    );
     for command in [
         "PROJECT SAVE DESC",
         "PROJECT CLOSE DESC",
@@ -114,7 +130,7 @@ fn application_and_group_description_scalar_survives_saved_project_reload() {
         read(&mut server, &issued[2]),
         value["empty_oid_reply"].as_str().unwrap()
     );
-    assert_eq!(xml(&mut server), initial);
+    assert_eq!(xml(&mut server), described);
 }
 
 #[test]
@@ -163,19 +179,29 @@ fn application_description_refusals_preserve_value_and_project_identity() {
 }
 
 #[test]
-fn scalar_description_does_not_admit_application_xml_description() {
+fn application_xml_description_is_exported_and_reimports_stably() {
+    // Issue #75: supersedes the former refusal pin. The scalar vector's
+    // `xml_description_admission` scope moved to the xml-roundtrip vector;
+    // this asserts the live contract from the service side of the boundary.
     let value = vector();
     let (mut server, issued) = seed(&value);
     let initial = xml(&mut server);
     let body = format!(
-        "<Application><OID>{}</OID><TagName>Fresh Application</TagName><Address>48</Address><Description>Unproved XML</Description></Application>",
+        "<Application><OID>{}</OID><TagName>Fresh Application</TagName><Address>48</Address><Description>Proved XML</Description></Application>",
         issued[0]
     );
-    let rejected = server.handle_document("[xml] DBSETXML //DESC/254/48", &body);
-    assert_eq!(rejected.status, 400, "{rejected:?}");
-    assert_eq!(xml(&mut server), initial);
+    let admitted = server.handle_document("[xml] DBSETXML //DESC/254/48", &body);
+    assert_eq!(admitted.status, 301, "{admitted:?}");
     assert_eq!(
         read(&mut server, &issued[0]),
-        value["empty_oid_reply"].as_str().unwrap()
+        format!("[read] 342 !{}/Description=Proved XML\n", issued[0])
+    );
+    let described = xml(&mut server);
+    assert_ne!(described, initial);
+    assert!(
+        described
+            .join("\n")
+            .contains("<Description>Proved XML</Description>"),
+        "{described:?}"
     );
 }

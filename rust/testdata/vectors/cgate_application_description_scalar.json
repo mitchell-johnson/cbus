@@ -1,11 +1,44 @@
 {
+  "cases": [
+    {
+      "canonical_reply": "[read] 342 !{oid}/Description=Revised Application description\n",
+      "canonical_setter_value": "Revised Application description",
+      "oid_reply": "[read] 342 !{oid}/Description=New description & \u03a9\n",
+      "oid_setter_value": "New description & \u03a9",
+      "path": "//DESC/254/48",
+      "tag_name": "Fresh Application"
+    },
+    {
+      "canonical_reply": "[read] 342 !{oid}/Description=Revised Group description\n",
+      "canonical_setter_value": "Revised Group description",
+      "oid_reply": "[read] 342 !{oid}/Description=Group description & \u03a9\n",
+      "oid_setter_value": "Group description & \u03a9",
+      "path": "//DESC/254/48/42",
+      "tag_name": "Fresh Group"
+    }
+  ],
+  "empty_oid_reply": "[read] 401 Bad object or device ID: Object is null\n",
   "format": "cbus-application-description-scalar-v1",
+  "refusals": [
+    {
+      "command": "DBSETSAFE !{oid}/Description",
+      "reply": "[refuse] 400 DBSETSAFE requires a path and value\n"
+    },
+    {
+      "command": "DBSETSAFE !{oid}/Description forbidden#value",
+      "reply": "[refuse] 400 Invalid field value\n"
+    },
+    {
+      "command": "DBSETSAFE {path}/Description forbidden#value",
+      "reply": "[refuse] 400 Invalid field value\n"
+    }
+  ],
   "scope": {
+    "native_xml_acceptance_issue": 75,
     "original_execution": false,
     "physical_hardware_contact": false,
     "purpose": "Issued-OID Description scalar acknowledgement/readback and saved-image regression on the owned Rust model",
-    "xml_description_admission": false,
-    "native_xml_acceptance_issue": 75
+    "xml_description_admission": "Application/Group admitted since the xml-roundtrip change; see cgate_application_description_xml_roundtrip.jsonl (issue #75, native unproven)"
   },
   "seed_commands": [
     "PROJECT NEW DESC",
@@ -13,29 +46,5 @@
     "DBADDSAFE //DESC/254 Application 48 Fresh Application",
     "DBADDSAFE //DESC/254/48 Group 42 Fresh Group",
     "DBADDSAFE //DESC/254 Application 49 Empty Application"
-  ],
-  "cases": [
-    {
-      "path": "//DESC/254/48",
-      "tag_name": "Fresh Application",
-      "oid_setter_value": "New description & Ω",
-      "oid_reply": "[read] 342 !{oid}/Description=New description & Ω\n",
-      "canonical_setter_value": "Revised Application description",
-      "canonical_reply": "[read] 342 !{oid}/Description=Revised Application description\n"
-    },
-    {
-      "path": "//DESC/254/48/42",
-      "tag_name": "Fresh Group",
-      "oid_setter_value": "Group description & Ω",
-      "oid_reply": "[read] 342 !{oid}/Description=Group description & Ω\n",
-      "canonical_setter_value": "Revised Group description",
-      "canonical_reply": "[read] 342 !{oid}/Description=Revised Group description\n"
-    }
-  ],
-  "empty_oid_reply": "[read] 401 Bad object or device ID: Object is null\n",
-  "refusals": [
-    {"command": "DBSETSAFE !{oid}/Description", "reply": "[refuse] 400 DBSETSAFE requires a path and value\n"},
-    {"command": "DBSETSAFE !{oid}/Description forbidden#value", "reply": "[refuse] 400 Invalid field value\n"},
-    {"command": "DBSETSAFE {path}/Description forbidden#value", "reply": "[refuse] 400 Invalid field value\n"}
   ]
 }
