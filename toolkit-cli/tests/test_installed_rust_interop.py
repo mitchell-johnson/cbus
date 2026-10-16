@@ -686,6 +686,57 @@ def test_actual_child_fallback_and_missing_guard_fail(helper,tmp_path,mode):
         helper.audit_origins(records,launches,row["pid"],py,f["package"],helper.package_files(f["package"]),expected_config_sha256=config)
 
 
+def test_actual_unknown_shebang_wrapper_has_no_launch_record_and_refuses(helper,tmp_path):
+    """An undeclared shebang wrapper keeps no guard-visible parentage.
+
+    This is the historical owned-din-spec-backend shape: the wrapper basename
+    is neither python* nor cbus-toolkit and its path is not a selected owned
+    binary, so the guard records no launch for it. Its interpreter is still
+    the selected venv python, so it emits startup/terminal receipts. The
+    audit must refuse the foreign PID rather than admit the wrapper.
+    """
+    f,py,origins,config=guarded_fixture(tmp_path,helper)
+    wrapper=tmp_path/"owned-din-spec-backend"
+    wrapper.write_text("#!"+str(py)+"\nimport cbus_toolkit,os,json;print(json.dumps({'pid':os.getpid()}))\n")
+    wrapper.chmod(0o700)
+    row=run_parent(py,PARENT,cwd=tmp_path,values={"CHILD_ARGV":json.dumps([str(wrapper)]),
+        "CHILD_ENV":json.dumps({**os.environ,"PYTHONNOUSERSITE":"1","PYTHONDONTWRITEBYTECODE":"1","PYTHONPATH":""})})
+    assert row["child_exit"]==0,row["stderr"]
+    records,launches=actual_rows(origins)
+    assert launches==[]
+    child_pid=json.loads(row["stdout"])["pid"]
+    assert child_pid!=row["pid"]
+    assert any(r["pid"]==child_pid and r["kind"]=="startup" for r in records)
+    assert any(r["pid"]==child_pid and r["kind"]=="terminal" for r in records)
+    with pytest.raises(helper.GateError):
+        helper.audit_origins(records,launches,row["pid"],py,f["package"],helper.package_files(f["package"]),expected_config_sha256=config)
+
+
+@pytest.mark.skipif(not hasattr(os,"posix_spawn") or not hasattr(os,"waitpid"),
+                    reason="POSIX spawn is required for the unobserved-launch probe")
+def test_actual_unobserved_spawn_bypasses_popen_record_and_refuses(helper,tmp_path):
+    """os.posix_spawn bypasses the guard's ObservedPopen hook.
+
+    The child is still the selected interpreter importing the installed
+    product, so it emits guard receipts. With no launch record the audit
+    must refuse the foreign PID rather than infer a handoff.
+    """
+    f,py,origins,config=guarded_fixture(tmp_path,helper)
+    code=("import cbus_toolkit,os,sys,json;"
+          "pid=os.posix_spawn(sys.executable,[sys.executable,'-B','-c','import cbus_toolkit'],os.environ);"
+          "_,status=os.waitpid(pid,0);"
+          "print(json.dumps({'pid':os.getpid(),'child_pid':pid,'status':status}))")
+    row=run_parent(py,code,cwd=tmp_path)
+    assert row["status"]==0
+    records,launches=actual_rows(origins)
+    assert launches==[]
+    assert row["child_pid"]!=row["pid"]
+    assert any(r["pid"]==row["child_pid"] and r["kind"]=="startup" for r in records)
+    assert any(r["pid"]==row["child_pid"] and r["kind"]=="terminal" for r in records)
+    with pytest.raises(helper.GateError):
+        helper.audit_origins(records,launches,row["pid"],py,f["package"],helper.package_files(f["package"]),expected_config_sha256=config)
+
+
 def test_actual_positional_executable_and_environment_are_bound(helper,tmp_path):
     f,py,origins,config=guarded_fixture(tmp_path,helper)
     # Keep a synthetic argv[0] inside the venv: a bare display name prevents
