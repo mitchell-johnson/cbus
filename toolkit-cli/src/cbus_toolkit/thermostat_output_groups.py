@@ -167,9 +167,11 @@ class OutputGroupModel:
             # before renaming an already resolved source-address object.
             return self.resolver.rename(existing, tag, role)
         inventory = [group for (app, _), group in self.resolver.live.items() if app == self.application]
-        if any(not group.name.isascii() for group in inventory):
-            _fail('Missing output default lookup requires an ASCII group-name inventory')
-        matches = [group for group in inventory if group.name.lower() == tag.lower()]
+        # FindExistingGroup compares ASCII-only LowerCase results; the shared
+        # ASCII UpperCase helper gives the same equality classes. Other UTF-16
+        # characters remain unchanged. A unique match does not consume the
+        # manager's separate, Windows-locale-dependent sort order.
+        matches = [group for group in inventory if _upper(group.name) == _upper(tag)]
         if len(matches) > 1:
             _fail('Generated output group name is ambiguous without original manager order: ' + tag)
         self.resolver.getters.append({'getter': 'FindExistingGroup', 'role': role,
