@@ -27,4 +27,8 @@ cbus-toolkit = "cbus_toolkit.cli:main"
 where = ["src"]
 
 [tool.setuptools.package-data]
-cbus_toolkit = ["*.json"]
+cbus_toolkit = [
+    "*.json",
+    "offline_workflows/README.md",
+    "offline_workflows/examples/*.json",
+]
