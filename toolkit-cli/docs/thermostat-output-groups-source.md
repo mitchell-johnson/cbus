@@ -5,6 +5,12 @@ selections and one owning settings save. It covers fourteen plant outputs, four
 dampers and five internal relay assignments. It does not apply a template, run a
 new-group allocator, simulate application changes, or execute the original GUI.
 
+[Typed output Add](thermostat-output-add.md) is a separate admitted post-load
+operation that can now interleave with these selections. Its direct dialog
+wrapper, numeric allocation and name rules are pinned in
+[the Add source annex](thermostat-output-add-source.md). The ordinary getter
+rules below are unchanged and run before that explicit history.
+
 The source is Toolkit `1.18.0.2754`. The EXE SHA-256 is
 `9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab`; the MAP SHA-256 is
 `f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb`.
@@ -140,7 +146,9 @@ Cooling, heating and damper `SetupFlashComponents` bind the group references to
 `TcdThermostatPlant.SetupFlashComponents` (`0x1127424`). The DFM controls use
 `FlashController.UpdateMode=umChange`. Explicit selections only choose actual
 objects present after the whole load. Selecting absent address 255 does not
-create it. Accepted typed Add dialogs are a separate workflow.
+create it. [Accepted typed Add dialogs](thermostat-output-add-source.md) are a
+separate operation on the same loaded graph; subsequent selections can use
+their newly created identities.
 
 | Selectors | Original enabled/visible rule |
 | --- | --- |

@@ -1,14 +1,19 @@
-"""Ordinary thermostat output loading and ordered existing-group selections.
+"""Ordinary thermostat loading and ordered Select, Add and Edit outcomes.
 
 This is a bounded projection of the recovered agent and group dialogs, not
 Load Template or the quick-zone lifecycle. The caller supplies one shared
 resolver, so earlier setback groups and later schedule groups retain causal
-identity. Every selection names an object present after that complete load.
+identity. Each selection names an object present after that complete load or
+an earlier accepted Add; direct cancellation creates no object.
 """
 from __future__ import annotations
 
 from collections.abc import Mapping
+import json
 
+from .edlt_add_dialog import (AddDialogError, accept_group_dialog, default_group_name,
+    standard_group_name, _message, _rewrite, _trim, _upper)
+from .native import _tail
 from .thermostat_post_load import (OUTPUTS, DAMPERS, RELAYS, INSTALLATION_NAMES,
     DAMPER_NAMES, _default_name, pp_name, virtual_plant_type)
 from .thermostat_templates import ThermostatTemplateError
@@ -50,6 +55,71 @@ def normalize_output_selections(selections):
     return tuple(result)
 
 
+def normalize_output_operations(operations):
+    """Bind an immutable ordered history without inventing editable-text events."""
+    if operations is None:
+        return None
+    if type(operations) not in (list, tuple) or len(operations) > 256:
+        _fail('Output operations must be an ordered list of at most 256 records')
+    result = []
+    for row in operations:
+        if not isinstance(row, Mapping):
+            _fail('Each output operation must be a record')
+        op = row.get('op')
+        if op == 'select-output-group':
+            if set(row) != {'op', 'parameter', 'address'}:
+                _fail('Output select operation requires exactly op, parameter and address')
+            parameter, address = normalize_output_selections([
+                {'parameter': row['parameter'], 'address': row['address']}])[0]
+            value = {'op': op, 'parameter': parameter, 'address': address}
+        elif op in ('add-output-group', 'edit-output-group'):
+            action = 'Add' if op == 'add-output-group' else 'Edit'
+            optional = {'address', 'name'} if action == 'Add' else {'name'}
+            if not {'op', 'parameter', 'outcome'} <= set(row) or set(row) - {
+                    'op', 'parameter', 'outcome'} - optional:
+                _fail('Output ' + action + ' requires op, parameter, outcome and optional '
+                      + ('address/name' if action == 'Add' else 'name'))
+            parameter, outcome = row['parameter'], row['outcome']
+            if type(parameter) is not str or parameter not in OUTPUT_FIELDS:
+                _fail('Unknown thermostat output ' + action + ' parameter: ' + str(parameter))
+            if type(outcome) is not str or outcome not in ('accept', 'cancel'):
+                _fail('Output ' + action + ' outcome must be accept or cancel')
+            if outcome == 'cancel' and set(row) != {'op', 'parameter', 'outcome'}:
+                _fail('Direct-cancel output ' + action + ' admits no address or name edits')
+            value = {'op': op, 'parameter': parameter, 'outcome': outcome}
+            if 'address' in row:
+                if type(row['address']) is not int or not 0 <= row['address'] <= 254:
+                    _fail('Output Add address must be an integer in 0..254')
+                value['address'] = row['address']
+            if 'name' in row:
+                name = row['name']
+                if type(name) is not str:
+                    _fail('Output ' + action + ' name must be text')
+                try:
+                    units = len(name.encode('utf-16-le')) // 2
+                except UnicodeEncodeError as error:
+                    raise ThermostatTemplateError('Output ' + action + ' name contains unpaired UTF-16 surrogates') from error
+                if units > 32:
+                    _fail('Output ' + action + ' name exceeds 32 UTF-16 code units before trimming')
+                value['name'] = name
+        else:
+            _fail('Unknown thermostat output operation: ' + str(op))
+        result.append(json.dumps(value, sort_keys=True, ensure_ascii=True, separators=(',', ':')))
+    return tuple(result)
+
+
+def _safe_added_name(name, action='Add'):
+    """Native command/XML admission after the source dialog has trimmed text."""
+    try:
+        _tail(name)
+    except ValueError as error:
+        raise ThermostatTemplateError('Output ' + action + ' native name domain: ' + str(error)) from error
+    if any(not (0x20 <= ord(c) <= 0xd7ff or 0xe000 <= ord(c) <= 0xfffd
+                or 0x10000 <= ord(c) <= 0x10ffff) for c in name):
+        _fail('Output ' + action + ' name cannot be represented by the native command/XML domain')
+    return name
+
+
 class OutputGroupModel:
     """One retained ordinary model, with explicit post-load control history."""
 
@@ -76,6 +146,10 @@ class OutputGroupModel:
         self.references = {}
         self.loaded = {}
         self.history = []
+        self.operations = None
+        self.add_dialogs = []
+        self.edit_dialogs = []
+        self.project_tag_name = None
         resolver.application(self.application, 'output_application', False,
             creation_name={56: 'Lighting', 95: 'DALI', 203: 'Enable Control'}.get(
                 self.application, str(self.application)))
@@ -93,9 +167,11 @@ class OutputGroupModel:
             # before renaming an already resolved source-address object.
             return self.resolver.rename(existing, tag, role)
         inventory = [group for (app, _), group in self.resolver.live.items() if app == self.application]
-        if any(not group.name.isascii() for group in inventory):
-            _fail('Missing output default lookup requires an ASCII group-name inventory')
-        matches = [group for group in inventory if group.name.lower() == tag.lower()]
+        # FindExistingGroup compares ASCII-only LowerCase results; the shared
+        # ASCII UpperCase helper gives the same equality classes. Other UTF-16
+        # characters remain unchanged. A unique match does not consume the
+        # manager's separate, Windows-locale-dependent sort order.
+        matches = [group for group in inventory if _upper(group.name) == _upper(tag)]
         if len(matches) > 1:
             _fail('Generated output group name is ambiguous without original manager order: ' + tag)
         self.resolver.getters.append({'getter': 'FindExistingGroup', 'role': role,
@@ -145,25 +221,129 @@ class OutputGroupModel:
                     and bool(self.values['InternalPlantZones'] & 30))
         return self.unit_type in ('PC_TSA5', 'PC_TSB5') and self.master
 
+    def _role(self, parameter):
+        role = {pp_name(role): role for role in OUTPUTS + DAMPERS + RELAYS}[parameter]
+        if not self.eligible(role):
+            _fail('Output selector is hidden or disabled in the loaded model: ' + parameter)
+        return role
+
+    def _select(self, parameter, address, position):
+        role = self._role(parameter)
+        selected = self.resolver.live.get((self.application, address))
+        if selected is None:
+            _fail('Output selection requires an existing group after ordinary load: ' + str(address))
+        if address != 255 and role.startswith(('CoolFan', 'HeatFan')):
+            peers = [name for name in OUTPUTS if name.startswith(role[:7]) and name != role]
+            if any(self.references[name] is not None and self.references[name].identity == selected.identity
+                   for name in peers):
+                _fail('Fan selector excludes a group currently used by another speed: ' + parameter)
+        previous = self.references[role]
+        self.references[role] = selected
+        return {'position': position, 'parameter': parameter, 'address': address,
+            'previous_identity': previous.identity if previous else None, 'identity': selected.identity,
+            'changed': previous is None or previous.identity != selected.identity}
+
     def select(self, selections):
-        by_parameter = {pp_name(role): role for role in OUTPUTS + DAMPERS + RELAYS}
         for index, (parameter, address) in enumerate(selections, 1):
-            role = by_parameter[parameter]
-            if not self.eligible(role):
-                _fail('Output selector is hidden or disabled in the loaded model: ' + parameter)
-            selected = self.resolver.live.get((self.application, address))
-            if selected is None:
-                _fail('Output selection requires an existing group after ordinary load: ' + str(address))
-            if address != 255 and role.startswith(('CoolFan', 'HeatFan')):
-                peers = [name for name in OUTPUTS if name.startswith(role[:7]) and name != role]
-                if any(self.references[name] is not None and self.references[name].identity == selected.identity
-                       for name in peers):
-                    _fail('Fan selector excludes a group currently used by another speed: ' + parameter)
+            self.history.append(self._select(parameter, address, index))
+
+    def _edit(self, row, role, position, project_tag_name):
+        # Edit opens against the currently bound object, not an independently
+        # addressed group. Its address is displayed as a label and never edited.
+        selected = self.resolver.current(self.references[role])
+        if selected is None or selected.address == 255:
+            _fail('Output Edit requires a selected non-unused group: ' + row['parameter'])
+        receipt = {'position': position, 'op': row['op'], 'parameter': row['parameter'],
+            'outcome': row['outcome'], 'application': self.application, 'kind': 'Group',
+            'address': selected.address, 'identity': selected.identity,
+            'previous_identity': selected.identity, 'previous_name': selected.name,
+            'shown_name': selected.name, 'operator_name': 'name' in row,
+            'entered_name': None, 'name': selected.name, 'changed': False, 'object_created': False}
+        if row['outcome'] == 'accept':
+            if type(project_tag_name) is not str:
+                _fail('Accepted output Edit requires an explicit scalar Project.TagName')
+            # SetValues uses WM_SETTEXT to preload the complete TagName;
+            # EM_LIMITTEXT constrains explicit entry, not that programmatic
+            # text. Omission can therefore retain more than32 UTF-16 units.
+            entered = row.get('name', selected.name)
+            name = _trim(entered)
+            noun = standard_group_name(self.application)
+            if not name:
+                _fail(_message(2202, noun).replace('Add dialog', 'Edit dialog'))
+            if name == project_tag_name:
+                _fail(_message(2204, noun).replace('Add dialog', 'Edit dialog'))
+            if any(group.identity != selected.identity and _upper(group.name) == _upper(name)
+                   for (app, _), group in self.resolver.live.items() if app == self.application):
+                _fail(_message(2203, noun, entered).replace('Add dialog', 'Edit dialog'))
+            name = _safe_added_name(name, 'Edit')
+            self.resolver.rename(selected, name,
+                'output_edit:' + str(position) + ':' + row['parameter'], output_edit=True)
+            receipt.update(entered_name=entered, name=name, changed=name != selected.name)
+        return receipt
+
+    def operate(self, operations, *, project_tag_name=None, validate_address):
+        """Direct Delphi Add/Edit outcomes, interleaved with object choices.
+
+        The prepared controllers are active and their optional BeforeChange/
+        CanChange callbacks are unassigned. Source immediate group storage is
+        projected onto the owner's graph ledger after complete preflight.
+        """
+        self.operations = []
+        self.project_tag_name = project_tag_name
+        for position, encoded in enumerate(operations, 1):
+            row = json.loads(encoded)
+            parameter = row['parameter']
+            if row['op'] == 'select-output-group':
+                validate_address(parameter, row['address'])
+                receipt = self._select(parameter, row['address'], position)
+                self.history.append(receipt)
+                self.operations.append(dict(receipt, op=row['op']))
+                continue
+            role = self._role(parameter)
+            if row['op'] == 'edit-output-group':
+                receipt = self._edit(row, role, position, project_tag_name)
+                self.edit_dialogs.append(receipt)
+                self.operations.append(receipt)
+                continue
+            groups = {address: group.name for (app, address), group in self.resolver.live.items()
+                      if app == self.application}
+            free = [address for address in range(255) if address not in groups]
+            noun = standard_group_name(self.application)
+            if len(groups) >= 256 or not free:
+                _fail(_message(2271, noun))
+            first = free[0]
+            seed = default_group_name(self.application) + ' ' + str(first)
+            shown = _rewrite(seed, noun, first)
             previous = self.references[role]
-            self.references[role] = selected
-            self.history.append({'position': index, 'parameter': parameter, 'address': address,
-                'previous_identity': previous.identity if previous else None, 'identity': selected.identity,
-                'changed': previous is None or previous.identity != selected.identity})
+            receipt = {'position': position, 'op': row['op'], 'parameter': parameter,
+                'outcome': row['outcome'], 'application': self.application, 'kind': 'Group',
+                'first_free_address': first, 'seeded_name': seed, 'shown_name': shown,
+                'existing_group_count': len(groups), 'free_address_count': len(free),
+                'operator_address': 'address' in row, 'operator_name': 'name' in row,
+                'previous_identity': previous.identity if previous else None,
+                'identity': previous.identity if previous else None, 'changed': False,
+                'object_created': False, 'address': None, 'name': None,
+                'address_selected_name': None, 'entered_name': None}
+            if row['outcome'] == 'accept':
+                if type(project_tag_name) is not str:
+                    _fail('Accepted output Add requires an explicit scalar Project.TagName')
+                try:
+                    accepted = accept_group_dialog(parameter, self.application, groups, project_tag_name,
+                        address=row.get('address'), name=row.get('name'))
+                except AddDialogError as error:
+                    raise ThermostatTemplateError(str(error)) from error
+                name = _safe_added_name(accepted.name)
+                validate_address(parameter, accepted.address)
+                selected = self.resolver.create(self.application, accepted.address, name,
+                    'output_add:' + str(position) + ':' + parameter, output_add=True)
+                # A fresh identity cannot equal an existing fan peer. Use the
+                # same selector gate and assignment as explicit selection.
+                assignment = self._select(parameter, selected.address, position)
+                address_name = shown if accepted.address == first else _rewrite(shown, noun, accepted.address)
+                receipt.update(assignment, name=name, object_created=True,
+                    address_selected_name=address_name, entered_name=row.get('name', address_name))
+            self.add_dialogs.append(receipt)
+            self.operations.append(receipt)
 
     def validate(self):
         for roles, label in ((OUTPUTS[:7], 'cooling'), (OUTPUTS[7:], 'heating'), (DAMPERS, 'damper')):
@@ -182,7 +362,7 @@ class OutputGroupModel:
             return {pp_name(role): None if group is None else {
                 'address': group.address, 'identity': group.identity,
                 'name': self.resolver.current(group).name} for role, group in rows.items()}
-        return {'profile': 'ordinary-agent-load-then-ordered-existing-group-selections',
+        result = {'profile': 'ordinary-agent-load-then-ordered-existing-group-selections',
             'application': self.application, 'zone_group_identity': self.zone_identity,
             'prefix': self.prefix, 'virtual_plant_type': self.plant,
             'installation_code': self.installation, 'installation_name': self.installation_name,
@@ -194,3 +374,12 @@ class OutputGroupModel:
                 'relay_uniqueness_required': False},
             'selection_creates_groups': False, 'complete_form_lifecycle_reproduced': False,
             'zone_history_or_template_callbacks_reproduced': False}
+        if self.operations is not None:
+            result.update(profile='ordinary-agent-load-then-ordered-output-control-outcomes',
+                operations=self.operations, add_dialogs=self.add_dialogs,
+                project_tag_name=self.project_tag_name, original_add_storage_callbacks_reproduced=False)
+            if self.edit_dialogs:
+                result.update(edit_dialogs=self.edit_dialogs,
+                              original_edit_storage_callbacks_reproduced=False,
+                              original_manager_sort_timers_reproduced=False)
+        return result
