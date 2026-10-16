@@ -12,7 +12,10 @@ from unittest.mock import patch
 
 from cbus_toolkit import cli
 from cbus_toolkit.thermostat_temperature import METHODS, convert_temperature
-from cbus_toolkit.toolkit_preferences_effects import cgate_site, temperature_units
+from cbus_toolkit.toolkit_preferences_effects import (
+    _ascii_upper, application_candidates, application_creation_preferences,
+    cgate_site, cgate_site_writeback, read_values, temperature_units,
+)
 from cbus_toolkit.toolkit_preferences_initial_state import constructor_state
 from cbus_toolkit.toolkit_preferences_store import PREFERENCE_DEFINITIONS
 
@@ -116,6 +119,103 @@ class DefaultSiteTests(unittest.TestCase):
             bad.write_text('[]', encoding='utf-8')
             code, _ = _main(['cgate', '--host', '127.0.0.1', '--preferences', str(bad), 'exec', 'NOOP'])
             self.assertEqual(code, 1)
+
+
+class SiteWritebackTests(unittest.TestCase):
+    def test_pinned_loopback_literals_preview_local(self):
+        for opened in ('localhost', '127.0.0.1'):
+            self.assertEqual(cgate_site_writeback(opened), 'LOCAL')
+
+    def test_other_opened_names_echo_unchanged(self):
+        # Case, whitespace and internationalized variants are unestablished, so
+        # they are echoed, never folded or resolved to the loopback site.
+        for opened in ('Plant room', 'LOCAL', 'local', '', 'LOCALHOST', 'Localhost',
+                       '::1', '127.0.0.1 ', ' ｌocal', 'Māori'):
+            self.assertEqual(cgate_site_writeback(opened), opened)
+
+    def test_rejects_non_strings(self):
+        for opened in (None, 0, True, b'localhost', ['localhost']):
+            with self.assertRaises(ValueError):
+                cgate_site_writeback(opened)
+
+    def test_resolved_local_site_reports_unperformed_preview(self):
+        for site in ('', 'LOCAL', 'local', 'LoCaL'):
+            resolved = cgate_site({'Default Site': site})
+            self.assertEqual(resolved['host'], '127.0.0.1')
+            self.assertEqual(resolved['writeback_preview'], 'LOCAL')
+            self.assertFalse(resolved['writeback_performed'])
+
+
+class ApplicationAllowlistTests(unittest.TestCase):
+    def test_reader_maps_stored_switches(self):
+        self.assertEqual(application_creation_preferences(
+            {'AllowLegacyApplicationCreation': False, 'AllowUserDefinedApplicationCreation': False}),
+            {'allow_legacy': False, 'allow_user_defined': False})
+        self.assertEqual(application_creation_preferences(
+            {'AllowLegacyApplicationCreation': True, 'AllowUserDefinedApplicationCreation': False}),
+            {'allow_legacy': True, 'allow_user_defined': False})
+        self.assertEqual(application_creation_preferences(
+            {'AllowLegacyApplicationCreation': False, 'AllowUserDefinedApplicationCreation': True}),
+            {'allow_legacy': False, 'allow_user_defined': True})
+
+    def test_reader_rejects_missing_or_untyped_switches(self):
+        for values in ({}, {'AllowLegacyApplicationCreation': False},
+                       {'AllowLegacyApplicationCreation': 0, 'AllowUserDefinedApplicationCreation': False},
+                       {'AllowLegacyApplicationCreation': False, 'AllowUserDefinedApplicationCreation': 'True'},
+                       {'AllowLegacyApplicationCreation': True, 'AllowUserDefinedApplicationCreation': 1}):
+            with self.assertRaises(ValueError):
+                application_creation_preferences(values)
+
+    def test_candidates_follow_stored_switches(self):
+        disabled = {'AllowLegacyApplicationCreation': False, 'AllowUserDefinedApplicationCreation': False}
+        normal = list(range(48, 96)) + list(range(112, 115)) + [136]
+        self.assertEqual(list(application_candidates(disabled, {})), normal)
+        for values in ({'AllowLegacyApplicationCreation': True, 'AllowUserDefinedApplicationCreation': False},
+                       {'AllowLegacyApplicationCreation': False, 'AllowUserDefinedApplicationCreation': True},
+                       {'AllowLegacyApplicationCreation': True, 'AllowUserDefinedApplicationCreation': True}):
+            self.assertEqual(list(application_candidates(values, {})), list(range(48, 128)) + [136])
+        occupied = {56: 'Lighting', 95: 'DALI'}
+        remaining = application_candidates(disabled, occupied)
+        self.assertNotIn(56, remaining)
+        self.assertNotIn(95, remaining)
+        self.assertIn(57, remaining)
+
+    def test_constructor_defaults_select_normal_set(self):
+        state = constructor_state()
+        self.assertEqual(list(application_candidates(state['values'], {})),
+                         list(range(48, 96)) + list(range(112, 115)) + [136])
+
+
+class CultureApplicabilityTests(unittest.TestCase):
+    def test_local_fold_is_ascii_only(self):
+        self.assertEqual(_ascii_upper('local'), 'LOCAL')
+        self.assertEqual(_ascii_upper('i'), 'I')
+        # Turkish dotted/dotless capitals, sharp-s and macrons are never
+        # folded, while any ASCII tail still folds: fullwidth and accented
+        # names can never equal LOCAL, so they take the named-site path.
+        for text in ('İ', 'ı', 'ß', 'ĀŌŪ'):
+            self.assertEqual(_ascii_upper(text), text)
+        self.assertEqual(_ascii_upper('ｌocal'), 'ｌOCAL')
+        self.assertEqual(_ascii_upper('Māori'), 'MāORI')
+        for site in ('ｌocal', 'İOCAL', 'Māori'):
+            with self.assertRaises(ValueError):
+                cgate_site({'Default Site': site})
+
+
+class RepeatedReadTests(unittest.TestCase):
+    def test_read_values_has_no_lazy_cache(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = _state(directory)
+            first = read_values(path)
+            second = read_values(path)
+            self.assertEqual(first, second)
+            self.assertIsNot(first, second)
+            first['TemperatureUnit'] = 999
+            self.assertNotEqual(read_values(path)['TemperatureUnit'], 999)
+            state = constructor_state()
+            state['values']['TemperatureUnit'] = 1
+            path.write_text(json.dumps(state), encoding='utf-8')
+            self.assertEqual(read_values(path)['TemperatureUnit'], 1)
 
 
 @unittest.skipUnless(MOCK_BIN, 'cgate-mock binary is not built')
