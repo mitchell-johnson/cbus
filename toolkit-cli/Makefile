@@ -260,6 +260,12 @@ check-cgate-interop: compile
 		'tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[basic-alias-accept-group-zero-skip-unused-mock]' \
 		'tests/test_thermostat_remote_levels_backends.py::test_public_lost_successful_level_set_never_deletes_or_replays[setback-value-mock]' \
 		'tests/test_thermostat_remote_levels_backends.py::test_public_lost_successful_level_set_never_deletes_or_replays[schedule-tag-mock]' \
+		'tests/test_thermostat_output_edit_backends.py::test_public_output_edit_histories_preserve_identity_and_graph[shared-object-repeated-quoted-edits-mock]' \
+		'tests/test_thermostat_output_edit_backends.py::test_public_output_edit_histories_preserve_identity_and_graph[nbsp-temporary-name-swap-mock]' \
+		'tests/test_thermostat_output_edit_backends.py::test_public_output_edit_histories_preserve_identity_and_graph[add-edit-issued-identity-and-reselect-original-mock]' \
+		'tests/test_thermostat_output_edit_backends.py::test_public_output_edit_histories_preserve_identity_and_graph[cancel-and-omitted-long-name-noop-mock]' \
+		'tests/test_thermostat_output_edit_backends.py::test_public_output_edit_duplicate_refused_before_backup[mock]' \
+		'tests/test_thermostat_output_edit_backends.py::test_public_output_edit_lost_successful_set_never_replays[mock]' \
 		'tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[cancel-provisional-name-collision-noop-mock]' \
 		'tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[fan-adds-use-evolving-numeric-inventory-mock]' \
 		'tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[basic-interleaved-add-retained-after-reselection-mock]' \
@@ -598,6 +604,12 @@ check-cmqtt-interop: compile
 		'tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[basic-alias-accept-group-zero-skip-unused-daemon]' \
 		'tests/test_thermostat_remote_levels_backends.py::test_public_lost_successful_level_set_never_deletes_or_replays[setback-value-daemon]' \
 		'tests/test_thermostat_remote_levels_backends.py::test_public_lost_successful_level_set_never_deletes_or_replays[schedule-tag-daemon]' \
+		'tests/test_thermostat_output_edit_backends.py::test_public_output_edit_histories_preserve_identity_and_graph[shared-object-repeated-quoted-edits-daemon]' \
+		'tests/test_thermostat_output_edit_backends.py::test_public_output_edit_histories_preserve_identity_and_graph[nbsp-temporary-name-swap-daemon]' \
+		'tests/test_thermostat_output_edit_backends.py::test_public_output_edit_histories_preserve_identity_and_graph[add-edit-issued-identity-and-reselect-original-daemon]' \
+		'tests/test_thermostat_output_edit_backends.py::test_public_output_edit_histories_preserve_identity_and_graph[cancel-and-omitted-long-name-noop-daemon]' \
+		'tests/test_thermostat_output_edit_backends.py::test_public_output_edit_duplicate_refused_before_backup[daemon]' \
+		'tests/test_thermostat_output_edit_backends.py::test_public_output_edit_lost_successful_set_never_replays[daemon]' \
 		'tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[cancel-provisional-name-collision-noop-daemon]' \
 		'tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[fan-adds-use-evolving-numeric-inventory-daemon]' \
 		'tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[basic-interleaved-add-retained-after-reselection-daemon]' \

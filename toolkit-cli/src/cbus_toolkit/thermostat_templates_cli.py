@@ -74,7 +74,7 @@ def options(commands):
                             metavar='PARAMETER=ADDRESS',
                             help='Select an existing output group after model loading; repeat in control order')
         action.add_argument('--output-operation', dest='output_history', action=_OutputControl, metavar='JSON',
-                            help='Ordered select-output-group or accepted/cancelled add-output-group JSON record; '
+                            help='Ordered select-output-group or accepted/cancelled add-output-group/edit-output-group JSON record; '
                                  'may be interleaved with --output-group')
         action.add_argument('--resolve-output-groups', action='store_true',
                             help='Resolve current output groups and automatic names during model loading')

@@ -1,0 +1,1006 @@
+{
+  "annotation_policy": "Only release/status documentation and this receipt are annotated after terminal source/wheel execution; packaged metadata, runtime, tests and CI selection remain unchanged.",
+  "binary_inputs": {
+    "cgate-mock": "69c4afde8d76dedd817f166d35bebc2cb17faba8a6acdd44ef72bdb887b05aa2",
+    "cmqttd": "a7214c68c1232b71223e4f05582ed08aaa657ef1c886a3d1e29b09bea9e568c1"
+  },
+  "candidate_base_commit": "66773292fe2aa9fd940f6c30f8879e9a6b69eb96",
+  "development_receipt": {
+    "retained_privately": true,
+    "sha256": "2d4e63e63c32d349ea5cb2bd294f7ffad232fb020ca77f0183683dfef2cc5597"
+  },
+  "execution_tree": "Uncommitted candidate bound by exact file hashes and unchanged execution manifests; base commit alone does not identify executed code.",
+  "feature_inputs": {
+    ".agents/skills/cbus-cli/references/toolkit.md": "80e396fe18134f2e332d67a05802faf7fbfbe91ed881c94e8aaf58cc75be3546",
+    "toolkit-cli/Makefile": "ac8ff6f9592288f1054e12d8d48cc45eb5cb9af67f0be9d6a35127b8a8bbe2e6",
+    "toolkit-cli/docs/thermostat-output-edit-source.md": "b7b22c83ad3717947127648365215398b2c9a94381ac8176a28dd697371d0392",
+    "toolkit-cli/docs/thermostat-output-edit.md": "bff2f19d9f4e89a4e17c61a90a6aedae3b9e5ad75018daad27ed324fc207b422",
+    "toolkit-cli/docs/thermostat-settings.md": "a41beae3ce24a0f8646dbb05603511c32bee8b272292e35ca3018e8953c4fbc1",
+    "toolkit-cli/research/fixtures/cgate-dbsetxml-unit-differential-cmqttd.json": "f92b1f176a721c2a005e76bde4aa298e0ad6b73a82eb7f08652811cbd88b75bb",
+    "toolkit-cli/research/fixtures/cgate-dbsetxml-unit-differential-mock.json": "b9baaf3e47068b54909a1808b73f798e24457a49f3bec53f1b358da3d46a4093",
+    "toolkit-cli/research/fixtures/cgate-session-differential-cmqttd.json": "b7e73c5f0e4289a9f30f40ec43d632248c260c74e0379243f23f72a4a79ed155",
+    "toolkit-cli/research/fixtures/cgate-session-differential-fixed.json": "64a4f84d3ac2f1fdf4a5dd615b6ec24db0bffbd1798024a262ca322828778371",
+    "toolkit-cli/research/fixtures/cgate-session-physical-applicability.json": "d9b03a8d6ed5e07c708084b45de2f4dc30a7bdf21cedb59fde84304818cc192c",
+    "toolkit-cli/research/fixtures/cgate-tagged-session-differential-cgate-mock.json": "3c1d0ca5758467f4558c61ff533c90cc3f987c550069e4b629416ff24a1b3f05",
+    "toolkit-cli/research/fixtures/cgate-tagged-session-differential-cmqttd.json": "4aecedad6bd23cbe51bbd97c04e4035347fd86efe2d7ed835f42f3b51f133908",
+    "toolkit-cli/research/fixtures/thermostat-output-edit-source-review.json": "2c5d0e129e68c2b6cc46003dc0c2af70afc05f98767ff358ac2222166e2ce69c",
+    "toolkit-cli/research/release-gates/skip-census.json": "9d60f1ff225eb7647f03f38af5d88e4b50bdaa3ebd4ea193b344a2581aa48118",
+    "toolkit-cli/research/thermostat_output_edit_static.py": "bbf1093554116263ee0b0d05be761951703c5a856df66ec5c1b4caaf9240804a",
+    "toolkit-cli/src/cbus_toolkit/capabilities.json": "19f89e19b1eb73d60a6fcc28c2a8b3f6b9d83417c6fc5663db5e774399536400",
+    "toolkit-cli/src/cbus_toolkit/parity-evidence.json": "1eba836a9ea3c812764e6b36b29179ab30b736b445e4b1efcde280cfa4413cdc",
+    "toolkit-cli/src/cbus_toolkit/parity-obligations.json": "6c38aa0168a0f9d4f153eb39640bc9920792a425b44c2219cc6fde172390b631",
+    "toolkit-cli/src/cbus_toolkit/thermostat_output_groups.py": "719476bcda2fa51955ea5e82204de39183c1fdb2bdf0c1cb172f19cde06e310b",
+    "toolkit-cli/src/cbus_toolkit/thermostat_remote_references.py": "de4fa8e91e914c6c221cd9f0d4cb726335fdfa4ae4eea9377343df0dc60a75ce",
+    "toolkit-cli/src/cbus_toolkit/thermostat_settings.py": "6575c657f0d6f657e3545ea107c7131d00450f2b11ad8c6f7b20a47424fca040",
+    "toolkit-cli/src/cbus_toolkit/thermostat_templates_cli.py": "d378402b601d56c818551f81b10e2278d4cb504bcfc0d9b353c76fb4c05dbc86",
+    "toolkit-cli/tests/test_thermostat_output_edit.py": "91767df10d606179cb1584f081cae88e48346bfd71333fd96488f0fd98ffcb2a",
+    "toolkit-cli/tests/test_thermostat_output_edit_backends.py": "f9fd7ba72ba20409b5b7c5ed6a5cbb0173f64f38ded83f304e97d51427837f16",
+    "toolkit-cli/tests/test_thermostat_output_edit_native.py": "6a2cd874415a32791db1d60867600a9fb69bbbdb90f479240a3595e75c447419"
+  },
+  "format": "cbus-thermostat-output-edit-owned-release-v1",
+  "fresh_modeled_receipts": {
+    "toolkit-cli/research/fixtures/cgate-dbsetxml-unit-differential-cmqttd.json": "f92b1f176a721c2a005e76bde4aa298e0ad6b73a82eb7f08652811cbd88b75bb",
+    "toolkit-cli/research/fixtures/cgate-dbsetxml-unit-differential-mock.json": "b9baaf3e47068b54909a1808b73f798e24457a49f3bec53f1b358da3d46a4093",
+    "toolkit-cli/research/fixtures/cgate-session-differential-cmqttd.json": "b7e73c5f0e4289a9f30f40ec43d632248c260c74e0379243f23f72a4a79ed155",
+    "toolkit-cli/research/fixtures/cgate-session-differential-fixed.json": "64a4f84d3ac2f1fdf4a5dd615b6ec24db0bffbd1798024a262ca322828778371",
+    "toolkit-cli/research/fixtures/cgate-tagged-session-differential-cgate-mock.json": "3c1d0ca5758467f4558c61ff533c90cc3f987c550069e4b629416ff24a1b3f05",
+    "toolkit-cli/research/fixtures/cgate-tagged-session-differential-cmqttd.json": "4aecedad6bd23cbe51bbd97c04e4035347fd86efe2d7ed835f42f3b51f133908"
+  },
+  "packaging": {
+    "actual_pytest_import_guard": {
+      "retained_privately": true,
+      "sha256": "892e16719d23b04b8faafe8f1c6278e596c75555c0733321f7ecf398a5db846e"
+    },
+    "console": {
+      "child_pythonpath_present": false,
+      "complete": true,
+      "console_sha256": "b988b57c3d433782e366af671fd75a23e749869bb68afbc191b435c516010402",
+      "created_groups": 1,
+      "evidence_sha256": "362f1a1917c2fc1d131f0692347afa789b27eaed64728984c1be2348cc0fb4e8",
+      "independent_reopen": true,
+      "installed_import_sha256": "6575c657f0d6f657e3545ea107c7131d00450f2b11ad8c6f7b20a47424fca040",
+      "pp_save_count": 0,
+      "renames": 1,
+      "target_save_count": 1
+    },
+    "exact_package_inventories_equal": true,
+    "files": 380,
+    "source_wheel_installed_equal": true,
+    "terminal_receipt": {
+      "retained_privately": true,
+      "sha256": "91e2e89696fcd23db0cbf25ad32b1c21d06b0b6f9859889ebf4c3ebc1a7faab1"
+    },
+    "wheel_sha256": "8cf354e6dcd4f5fa968c44304cfca5ed422423cb16170e0e8efbda98607e302f"
+  },
+  "post_execution_annotation_hashes": {
+    "toolkit-cli/docs/feature-batch-2026-10-04-thermostat-output-edit.md": "70aaedf1cd18085281021ec637585cf382a1b1445e20215242d4dc958e719773",
+    "toolkit-cli/docs/implementation-status.md": "4f62113fbe84b847670e07dfcdbf17ec78591fa50059568c0e1c472a5e93a039"
+  },
+  "reviews": {
+    "independent-core-review.json": {
+      "retained_privately": true,
+      "sha256": "63d23fad3146374902595f412561788ffbe624400636198bc6b4e1bcb21398f9"
+    },
+    "independent-native-review.json": {
+      "retained_privately": true,
+      "sha256": "ef0a658122463c7bd6a5a0a5a90d17791894ae9432020d5457407105cb9e48b8"
+    },
+    "independent-outcome-review.json": {
+      "retained_privately": true,
+      "sha256": "dd46f87fac49d2a7807a0dd192b7622b421cb07a3661ee8cab23f6f8741beaa8"
+    }
+  },
+  "rust_reuse": {
+    "all_470_source_inputs_equal": true,
+    "prior_source_manifest_sha256": "6b7bead55e859afaf7d5a8803d9f6de70d5c71c5e9db9e4cb73cf46bcb990a1f",
+    "provenance": "Unmodified PR97 debug binaries; prior required formatting, workspace Clippy and release builds plus focused database tests are retained in PR97, not counted as fresh Edit execution.",
+    "receipt": {
+      "retained_privately": true,
+      "sha256": "4018e91eb1b27fa60e48f0d3d8d48af557b3fc73df99af9addf0e60e3bf9d302"
+    },
+    "rust_changed": false,
+    "rust_checks_rerun": false
+  },
+  "scope": {
+    "controls": "Typed accepted/direct-cancel name-only Edit interleaved with Select and Add after ordinary graph loading; 23 plant/damper/relay fields.",
+    "counts_are_overlapping_not_additive": true,
+    "coverage": {
+      "retained_privately": true,
+      "sha256": "89444b7610cdb1bb9720be22778deb90f1daa5d3327353655225478d24a38a36"
+    },
+    "coverage_require_complete_exit": 1,
+    "full_suite_pass_claimed": false,
+    "graph": "Same identity/address, fresh OID and preceding name, quoted DBSET TagName, ordered rename ledger, zero PP writes for Edit itself, one owning target save when changed, no replay after uncertainty.",
+    "issues": [
+      42,
+      72
+    ],
+    "names": "Explicit entry limited to 32 UTF-16 units before source Trim; omitted entry retains full preloaded text. Exact Project.TagName and evolving ASCII-uppercase duplicate rules exclude only the edited identity.",
+    "native_server_executed": false,
+    "original_instructions_executed": false,
+    "physical_acceptance": false,
+    "preservation_evidence": "Pure tests include opaque Group/TagName attributes. Owned backends reject those custom attributes at import; backend evidence covers admitted metadata, Level values and DLT data.",
+    "publication_head_ci_claimed": false,
+    "same_name_acceptance": "The owned transaction skips redundant unchanged saves; it does not replay original Edit StorageSave/ProjectSave callbacks.",
+    "unit_types": [
+      "PC_TSA",
+      "PC_TSA5",
+      "PC_TSB",
+      "PC_TSB5"
+    ]
+  },
+  "source_quiet": {
+    "before_manifest": {
+      "retained_privately": true,
+      "sha256": "af972d08119c238023afcb5e2c035134cb07f52a714e1c1fa6cc8a3ba6e37c86"
+    },
+    "equal": true,
+    "input_count": 4036,
+    "terminal_manifest": {
+      "retained_privately": true,
+      "sha256": "af972d08119c238023afcb5e2c035134cb07f52a714e1c1fa6cc8a3ba6e37c86"
+    }
+  },
+  "static_review": {
+    "checks": 337,
+    "method_spans": 138,
+    "parent_rerun_equal_committed_fixture": true,
+    "receipt": {
+      "retained_privately": true,
+      "sha256": "2c5d0e129e68c2b6cc46003dc0c2af70afc05f98767ff358ac2222166e2ce69c"
+    },
+    "resources": 5
+  },
+  "validation": {
+    "source": {
+      "audit": {
+        "retained_privately": true,
+        "sha256": "7594b66437b78da289fe72663cdd08eb43b278d11001f65657d803e1a5e1faa6"
+      },
+      "audit_exit": 0,
+      "backend_cases": {
+        "existing_add": [
+          {
+            "id": "tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[cancel-provisional-name-collision-noop-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[cancel-provisional-name-collision-noop-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[fan-adds-use-evolving-numeric-inventory-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[fan-adds-use-evolving-numeric-inventory-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[basic-interleaved-add-retained-after-reselection-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[basic-interleaved-add-retained-after-reselection-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[basic-alias-shared-enable-and-accepted-levels-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[basic-alias-shared-enable-and-accepted-levels-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[slave-damper-add-retains-group-and-normalizes-plant-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[slave-damper-add-retains-group-and-normalizes-plant-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_add_backends.py::test_public_output_add_history_refused_before_backup[later-add-sees-earlier-name-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_add_backends.py::test_public_output_add_history_refused_before_backup[later-add-sees-earlier-name-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_add_backends.py::test_public_output_add_history_refused_before_backup[accepted-add-then-final-reference-collision-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_add_backends.py::test_public_output_add_history_refused_before_backup[accepted-add-then-final-reference-collision-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_add_backends.py::test_public_output_add_lost_successful_creation_never_replays[mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_add_backends.py::test_public_output_add_lost_successful_creation_never_replays[daemon]",
+            "outcome": "passed"
+          }
+        ],
+        "existing_levels": [
+          {
+            "id": "tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[accept-both-new-groups-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[accept-both-new-groups-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[accept-setback-decline-schedule-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[accept-setback-decline-schedule-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[decline-setback-accept-schedule-graph-only-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[decline-setback-accept-schedule-graph-only-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[decline-both-missing-levels-noop-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[decline-both-missing-levels-noop-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[basic-accept-complete-addresses-noop-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[basic-accept-complete-addresses-noop-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[basic-alias-accept-group-zero-skip-unused-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[basic-alias-accept-group-zero-skip-unused-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_levels_backends.py::test_public_lost_successful_level_set_never_deletes_or_replays[setback-value-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_levels_backends.py::test_public_lost_successful_level_set_never_deletes_or_replays[setback-value-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_levels_backends.py::test_public_lost_successful_level_set_never_deletes_or_replays[schedule-tag-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_levels_backends.py::test_public_lost_successful_level_set_never_deletes_or_replays[schedule-tag-daemon]",
+            "outcome": "passed"
+          }
+        ],
+        "existing_output": [
+          {
+            "id": "tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[programmable-temporary-unused-fan-swap-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[programmable-temporary-unused-fan-swap-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[programmable-alias-shared-load-order-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[programmable-alias-shared-load-order-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[basic-generated-peer-and-unused-damper-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[basic-generated-peer-and-unused-damper-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[basic-alias-create-prefix-and-reassign-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[basic-alias-create-prefix-and-reassign-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[resolve-only-rename-without-pp-change-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[resolve-only-rename-without-pp-change-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_groups_backends.py::test_public_output_group_refusal_before_backup[direct-excluded-fan-swap-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_groups_backends.py::test_public_output_group_refusal_before_backup[direct-excluded-fan-swap-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_groups_backends.py::test_public_output_group_refusal_before_backup[ambiguous-generated-peer-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_groups_backends.py::test_public_output_group_refusal_before_backup[ambiguous-generated-peer-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_groups_backends.py::test_public_output_group_lost_successful_rename_never_replays[mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_groups_backends.py::test_public_output_group_lost_successful_rename_never_replays[daemon]",
+            "outcome": "passed"
+          }
+        ],
+        "existing_references": [
+          {
+            "id": "tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[programmable-joined-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[programmable-joined-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[programmable-alias-cross-application-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[programmable-alias-cross-application-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[basic-lighting-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[basic-lighting-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[basic-alias-one-unused-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[basic-alias-one-unused-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[graph-only-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[graph-only-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[already-present-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[already-present-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[disable-still-creates-enable-application-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[disable-still-creates-enable-application-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_references_backends.py::test_public_remote_reference_collision_refused_before_mutation[mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_references_backends.py::test_public_remote_reference_collision_refused_before_mutation[daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_references_backends.py::test_public_remote_stale_snapshot_refused_before_backup[unrelated-graph-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_references_backends.py::test_public_remote_stale_snapshot_refused_before_backup[unrelated-graph-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_references_backends.py::test_public_remote_stale_snapshot_refused_before_backup[pp-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_references_backends.py::test_public_remote_stale_snapshot_refused_before_backup[pp-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_references_backends.py::test_public_remote_lost_successful_save_never_replays[PP SAVE_TO_SOURCE-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_references_backends.py::test_public_remote_lost_successful_save_never_replays[PP SAVE_TO_SOURCE-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_references_backends.py::test_public_remote_lost_successful_save_never_replays[PROJECT SAVE-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_references_backends.py::test_public_remote_lost_successful_save_never_replays[PROJECT SAVE-daemon]",
+            "outcome": "passed"
+          }
+        ],
+        "new_edit": [
+          {
+            "id": "tests/test_thermostat_output_edit_backends.py::test_public_output_edit_histories_preserve_identity_and_graph[shared-object-repeated-quoted-edits-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_edit_backends.py::test_public_output_edit_histories_preserve_identity_and_graph[shared-object-repeated-quoted-edits-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_edit_backends.py::test_public_output_edit_histories_preserve_identity_and_graph[nbsp-temporary-name-swap-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_edit_backends.py::test_public_output_edit_histories_preserve_identity_and_graph[nbsp-temporary-name-swap-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_edit_backends.py::test_public_output_edit_histories_preserve_identity_and_graph[add-edit-issued-identity-and-reselect-original-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_edit_backends.py::test_public_output_edit_histories_preserve_identity_and_graph[add-edit-issued-identity-and-reselect-original-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_edit_backends.py::test_public_output_edit_histories_preserve_identity_and_graph[cancel-and-omitted-long-name-noop-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_edit_backends.py::test_public_output_edit_histories_preserve_identity_and_graph[cancel-and-omitted-long-name-noop-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_edit_backends.py::test_public_output_edit_duplicate_refused_before_backup[mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_edit_backends.py::test_public_output_edit_duplicate_refused_before_backup[daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_edit_backends.py::test_public_output_edit_lost_successful_set_never_replays[mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_edit_backends.py::test_public_output_edit_lost_successful_set_never_replays[daemon]",
+            "outcome": "passed"
+          }
+        ]
+      },
+      "executed_selection_modules": [
+        "tests/test_parity_register.py",
+        "tests/test_skip_census.py",
+        "tests/test_thermostat_output_add.py",
+        "tests/test_thermostat_output_add_backends.py",
+        "tests/test_thermostat_output_add_native.py",
+        "tests/test_thermostat_output_edit.py",
+        "tests/test_thermostat_output_edit_backends.py",
+        "tests/test_thermostat_output_edit_native.py",
+        "tests/test_thermostat_output_groups.py",
+        "tests/test_thermostat_output_groups_backends.py",
+        "tests/test_thermostat_post_load.py",
+        "tests/test_thermostat_remote_levels.py",
+        "tests/test_thermostat_remote_levels_backends.py",
+        "tests/test_thermostat_remote_references.py",
+        "tests/test_thermostat_remote_references_backends.py",
+        "tests/test_thermostat_settings.py",
+        "tests/test_thermostat_settings_dialog_rules.py",
+        "tests/test_thermostat_settings_guard.py",
+        "tests/test_thermostat_settings_native.py",
+        "tests/test_thermostat_settings_temperature_vectors.py",
+        "tests/test_thermostat_templates.py"
+      ],
+      "junit_sha256": "9a9381fe985a391b7f51189f2e939dc3ec65b830a8bd66617e2d842044ec5ff1",
+      "log": {
+        "retained_privately": true,
+        "sha256": "ec10d3e00b968921bf46246297f4fd236f2e1e129e24634ab40bf87474b01452"
+      },
+      "parent_passed": 259,
+      "passed": true,
+      "pytest_exit": 0,
+      "required_provisioned_modules": [
+        "tests/test_thermostat_output_edit.py",
+        "tests/test_thermostat_output_edit_native.py",
+        "tests/test_thermostat_output_edit_backends.py",
+        "tests/test_thermostat_output_add.py",
+        "tests/test_thermostat_output_add_native.py",
+        "tests/test_thermostat_output_add_backends.py",
+        "tests/test_thermostat_output_groups.py",
+        "tests/test_thermostat_output_groups_backends.py",
+        "tests/test_thermostat_remote_levels.py",
+        "tests/test_thermostat_remote_levels_backends.py",
+        "tests/test_thermostat_remote_references.py",
+        "tests/test_thermostat_remote_references_backends.py",
+        "tests/test_thermostat_settings.py",
+        "tests/test_thermostat_settings_guard.py",
+        "tests/test_thermostat_settings_dialog_rules.py",
+        "tests/test_thermostat_settings_temperature_vectors.py",
+        "tests/test_thermostat_post_load.py",
+        "tests/test_thermostat_templates.py",
+        "tests/test_parity_register.py",
+        "tests/test_skip_census.py"
+      ],
+      "separate_subtests_passed": 1510,
+      "skipped": 12,
+      "skipped_ids": [
+        "tests/test_thermostat_output_edit.py::OutputEditTests::test_optional_static_source",
+        "tests/test_thermostat_output_add.py::OutputAddTests::test_optional_static_source",
+        "tests/test_thermostat_output_groups.py::OutputGroupTests::test_optional_static_source",
+        "tests/test_thermostat_remote_levels.py::RemoteLevelTests::test_optional_static_source",
+        "tests/test_thermostat_remote_references.py::RemoteReferenceTests::test_optional_static_source",
+        "tests/test_thermostat_settings_native.py::NativeThermostatSettingsTests::test_disabled_remote_defaults_through_cli_for_all_four_aliases",
+        "tests/test_thermostat_settings_native.py::NativeThermostatSettingsTests::test_family_settings_roundtrip_and_preserve_unrelated_values",
+        "tests/test_thermostat_settings_native.py::NativeThermostatSettingsTests::test_hidden_stored_parameter_change_after_reload_fails_verification",
+        "tests/test_thermostat_settings_native.py::NativeThermostatSettingsTests::test_invalid_family_and_form_save_refusals_do_not_write",
+        "tests/test_thermostat_settings_native.py::NativeThermostatSettingsTests::test_invalid_remote_source_is_refused_without_writes",
+        "tests/test_thermostat_settings_native.py::NativeThermostatSettingsTests::test_temperature_preferences_and_controlled_mask_save_through_public_cli",
+        "tests/test_thermostat_settings_native.py::NativeThermostatSettingsTests::test_untouched_fields_normalize_once_per_save_for_all_four_unit_types"
+      ],
+      "trace_sha256": "9d679ae76d72daa9ea5e4a17dd3ca55694cf578c5f431a15bbfffbf46a7d851a"
+    },
+    "wheel": {
+      "audit": {
+        "retained_privately": true,
+        "sha256": "b11b24288c128e8cc3c5d95df0fd50d7d61a46f5e51e4b7df21818e3c81ff795"
+      },
+      "audit_exit": 0,
+      "backend_cases": {
+        "existing_add": [
+          {
+            "id": "tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[cancel-provisional-name-collision-noop-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[cancel-provisional-name-collision-noop-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[fan-adds-use-evolving-numeric-inventory-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[fan-adds-use-evolving-numeric-inventory-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[basic-interleaved-add-retained-after-reselection-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[basic-interleaved-add-retained-after-reselection-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[basic-alias-shared-enable-and-accepted-levels-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[basic-alias-shared-enable-and-accepted-levels-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[slave-damper-add-retains-group-and-normalizes-plant-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_add_backends.py::test_public_output_add_histories_and_one_save[slave-damper-add-retains-group-and-normalizes-plant-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_add_backends.py::test_public_output_add_history_refused_before_backup[later-add-sees-earlier-name-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_add_backends.py::test_public_output_add_history_refused_before_backup[later-add-sees-earlier-name-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_add_backends.py::test_public_output_add_history_refused_before_backup[accepted-add-then-final-reference-collision-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_add_backends.py::test_public_output_add_history_refused_before_backup[accepted-add-then-final-reference-collision-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_add_backends.py::test_public_output_add_lost_successful_creation_never_replays[mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_add_backends.py::test_public_output_add_lost_successful_creation_never_replays[daemon]",
+            "outcome": "passed"
+          }
+        ],
+        "existing_levels": [
+          {
+            "id": "tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[accept-both-new-groups-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[accept-both-new-groups-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[accept-setback-decline-schedule-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[accept-setback-decline-schedule-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[decline-setback-accept-schedule-graph-only-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[decline-setback-accept-schedule-graph-only-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[decline-both-missing-levels-noop-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[decline-both-missing-levels-noop-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[basic-accept-complete-addresses-noop-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[basic-accept-complete-addresses-noop-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[basic-alias-accept-group-zero-skip-unused-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_levels_backends.py::test_public_accepted_remote_level_choices[basic-alias-accept-group-zero-skip-unused-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_levels_backends.py::test_public_lost_successful_level_set_never_deletes_or_replays[setback-value-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_levels_backends.py::test_public_lost_successful_level_set_never_deletes_or_replays[setback-value-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_levels_backends.py::test_public_lost_successful_level_set_never_deletes_or_replays[schedule-tag-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_levels_backends.py::test_public_lost_successful_level_set_never_deletes_or_replays[schedule-tag-daemon]",
+            "outcome": "passed"
+          }
+        ],
+        "existing_output": [
+          {
+            "id": "tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[programmable-temporary-unused-fan-swap-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[programmable-temporary-unused-fan-swap-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[programmable-alias-shared-load-order-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[programmable-alias-shared-load-order-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[basic-generated-peer-and-unused-damper-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[basic-generated-peer-and-unused-damper-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[basic-alias-create-prefix-and-reassign-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[basic-alias-create-prefix-and-reassign-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[resolve-only-rename-without-pp-change-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[resolve-only-rename-without-pp-change-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_groups_backends.py::test_public_output_group_refusal_before_backup[direct-excluded-fan-swap-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_groups_backends.py::test_public_output_group_refusal_before_backup[direct-excluded-fan-swap-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_groups_backends.py::test_public_output_group_refusal_before_backup[ambiguous-generated-peer-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_groups_backends.py::test_public_output_group_refusal_before_backup[ambiguous-generated-peer-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_groups_backends.py::test_public_output_group_lost_successful_rename_never_replays[mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_groups_backends.py::test_public_output_group_lost_successful_rename_never_replays[daemon]",
+            "outcome": "passed"
+          }
+        ],
+        "existing_references": [
+          {
+            "id": "tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[programmable-joined-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[programmable-joined-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[programmable-alias-cross-application-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[programmable-alias-cross-application-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[basic-lighting-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[basic-lighting-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[basic-alias-one-unused-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[basic-alias-one-unused-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[graph-only-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[graph-only-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[already-present-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[already-present-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[disable-still-creates-enable-application-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_references_backends.py::test_public_remote_settings_combined_save[disable-still-creates-enable-application-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_references_backends.py::test_public_remote_reference_collision_refused_before_mutation[mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_references_backends.py::test_public_remote_reference_collision_refused_before_mutation[daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_references_backends.py::test_public_remote_stale_snapshot_refused_before_backup[unrelated-graph-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_references_backends.py::test_public_remote_stale_snapshot_refused_before_backup[unrelated-graph-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_references_backends.py::test_public_remote_stale_snapshot_refused_before_backup[pp-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_references_backends.py::test_public_remote_stale_snapshot_refused_before_backup[pp-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_references_backends.py::test_public_remote_lost_successful_save_never_replays[PP SAVE_TO_SOURCE-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_references_backends.py::test_public_remote_lost_successful_save_never_replays[PP SAVE_TO_SOURCE-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_references_backends.py::test_public_remote_lost_successful_save_never_replays[PROJECT SAVE-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_remote_references_backends.py::test_public_remote_lost_successful_save_never_replays[PROJECT SAVE-daemon]",
+            "outcome": "passed"
+          }
+        ],
+        "new_edit": [
+          {
+            "id": "tests/test_thermostat_output_edit_backends.py::test_public_output_edit_histories_preserve_identity_and_graph[shared-object-repeated-quoted-edits-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_edit_backends.py::test_public_output_edit_histories_preserve_identity_and_graph[shared-object-repeated-quoted-edits-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_edit_backends.py::test_public_output_edit_histories_preserve_identity_and_graph[nbsp-temporary-name-swap-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_edit_backends.py::test_public_output_edit_histories_preserve_identity_and_graph[nbsp-temporary-name-swap-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_edit_backends.py::test_public_output_edit_histories_preserve_identity_and_graph[add-edit-issued-identity-and-reselect-original-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_edit_backends.py::test_public_output_edit_histories_preserve_identity_and_graph[add-edit-issued-identity-and-reselect-original-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_edit_backends.py::test_public_output_edit_histories_preserve_identity_and_graph[cancel-and-omitted-long-name-noop-mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_edit_backends.py::test_public_output_edit_histories_preserve_identity_and_graph[cancel-and-omitted-long-name-noop-daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_edit_backends.py::test_public_output_edit_duplicate_refused_before_backup[mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_edit_backends.py::test_public_output_edit_duplicate_refused_before_backup[daemon]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_edit_backends.py::test_public_output_edit_lost_successful_set_never_replays[mock]",
+            "outcome": "passed"
+          },
+          {
+            "id": "tests/test_thermostat_output_edit_backends.py::test_public_output_edit_lost_successful_set_never_replays[daemon]",
+            "outcome": "passed"
+          }
+        ]
+      },
+      "executed_selection_modules": [
+        "tests/test_parity_register.py",
+        "tests/test_skip_census.py",
+        "tests/test_thermostat_output_add.py",
+        "tests/test_thermostat_output_add_backends.py",
+        "tests/test_thermostat_output_add_native.py",
+        "tests/test_thermostat_output_edit.py",
+        "tests/test_thermostat_output_edit_backends.py",
+        "tests/test_thermostat_output_edit_native.py",
+        "tests/test_thermostat_output_groups.py",
+        "tests/test_thermostat_output_groups_backends.py",
+        "tests/test_thermostat_post_load.py",
+        "tests/test_thermostat_remote_levels.py",
+        "tests/test_thermostat_remote_levels_backends.py",
+        "tests/test_thermostat_remote_references.py",
+        "tests/test_thermostat_remote_references_backends.py",
+        "tests/test_thermostat_settings.py",
+        "tests/test_thermostat_settings_dialog_rules.py",
+        "tests/test_thermostat_settings_guard.py",
+        "tests/test_thermostat_settings_native.py",
+        "tests/test_thermostat_settings_temperature_vectors.py",
+        "tests/test_thermostat_templates.py"
+      ],
+      "junit_sha256": "b86e9f2a66348d9acfa2c4074c052aec959832d101e37fd1956f5c73ae7dd818",
+      "log": {
+        "retained_privately": true,
+        "sha256": "8f6d5255ac10212c2931a422a19676848ed42ba6531757ca514d5f1cff14e017"
+      },
+      "parent_passed": 259,
+      "passed": true,
+      "pytest_exit": 0,
+      "required_provisioned_modules": [
+        "tests/test_thermostat_output_edit.py",
+        "tests/test_thermostat_output_edit_native.py",
+        "tests/test_thermostat_output_edit_backends.py",
+        "tests/test_thermostat_output_add.py",
+        "tests/test_thermostat_output_add_native.py",
+        "tests/test_thermostat_output_add_backends.py",
+        "tests/test_thermostat_output_groups.py",
+        "tests/test_thermostat_output_groups_backends.py",
+        "tests/test_thermostat_remote_levels.py",
+        "tests/test_thermostat_remote_levels_backends.py",
+        "tests/test_thermostat_remote_references.py",
+        "tests/test_thermostat_remote_references_backends.py",
+        "tests/test_thermostat_settings.py",
+        "tests/test_thermostat_settings_guard.py",
+        "tests/test_thermostat_settings_dialog_rules.py",
+        "tests/test_thermostat_settings_temperature_vectors.py",
+        "tests/test_thermostat_post_load.py",
+        "tests/test_thermostat_templates.py",
+        "tests/test_parity_register.py",
+        "tests/test_skip_census.py"
+      ],
+      "separate_subtests_passed": 1510,
+      "skipped": 12,
+      "skipped_ids": [
+        "tests/test_thermostat_output_edit.py::OutputEditTests::test_optional_static_source",
+        "tests/test_thermostat_output_add.py::OutputAddTests::test_optional_static_source",
+        "tests/test_thermostat_output_groups.py::OutputGroupTests::test_optional_static_source",
+        "tests/test_thermostat_remote_levels.py::RemoteLevelTests::test_optional_static_source",
+        "tests/test_thermostat_remote_references.py::RemoteReferenceTests::test_optional_static_source",
+        "tests/test_thermostat_settings_native.py::NativeThermostatSettingsTests::test_disabled_remote_defaults_through_cli_for_all_four_aliases",
+        "tests/test_thermostat_settings_native.py::NativeThermostatSettingsTests::test_family_settings_roundtrip_and_preserve_unrelated_values",
+        "tests/test_thermostat_settings_native.py::NativeThermostatSettingsTests::test_hidden_stored_parameter_change_after_reload_fails_verification",
+        "tests/test_thermostat_settings_native.py::NativeThermostatSettingsTests::test_invalid_family_and_form_save_refusals_do_not_write",
+        "tests/test_thermostat_settings_native.py::NativeThermostatSettingsTests::test_invalid_remote_source_is_refused_without_writes",
+        "tests/test_thermostat_settings_native.py::NativeThermostatSettingsTests::test_temperature_preferences_and_controlled_mask_save_through_public_cli",
+        "tests/test_thermostat_settings_native.py::NativeThermostatSettingsTests::test_untouched_fields_normalize_once_per_save_for_all_four_unit_types"
+      ],
+      "trace_sha256": "9d679ae76d72daa9ea5e4a17dd3ca55694cf578c5f431a15bbfffbf46a7d851a"
+    }
+  }
+}

@@ -58,7 +58,7 @@ def admitted(family):
 
 
 def _quoted_group_tag(value):
-    """Original TagStringToCgateString encoding for an accepted output Add.
+    """Original TagStringToCgateString encoding for accepted output Add/Edit.
 
     The dialog has already trimmed and validated its UTF-16 name. Preserve
     its remaining code points, including NBSP; only line-protocol controls
@@ -412,6 +412,7 @@ class NativeThermostatSettings(NativeThermostatTemplates):
                   for app in plan.remote.graph.applications for group in app.groups}
         for row in plan.remote.graph_operations:
             if type(row) is RemoteGroupRename:
+                encoded_name = _quoted_group_tag(row.name) if row.output_edit else None
                 oid = groups.get(row.key)
                 expected_oid = created.get(row.key, row.identity)
                 if oid is None or oid != expected_oid:
@@ -427,7 +428,8 @@ class NativeThermostatSettings(NativeThermostatTemplates):
                 self.last_evidence['graph_operations'].append(evidence)
                 self.last_evidence.update(state='renaming_references', graph_mutation_attempted=True,
                                           graph_mutation_outcome_uncertain=True)
-                response = self.database.set('!' + oid + '/TagName', row.name)
+                response = (self.client.command('DBSET !' + oid + '/TagName ' + encoded_name)
+                            if row.output_edit else self.database.set('!' + oid + '/TagName', row.name))
                 if response.code != 200 or len(response.lines) != 1:
                     raise ThermostatTemplateError('Group rename did not complete')
                 evidence['confirmed'] = True

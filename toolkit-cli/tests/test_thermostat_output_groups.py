@@ -166,13 +166,12 @@ class OutputGroupTests(unittest.TestCase):
                          DamperZone1Output=43, ZoneGroup=137)
         apps = {56: {255: '<Unused>', 40: '[CG137] old output', 41: 'User heating Ω',
                      43: '[CG137] retained damper', 50: '[cg137] g (fan)'}, 172: {137: 'Zone'}, 203: {}}
-        # Non-ASCII tag inventory is intentionally outside a missing default's
-        # process-locale comparison profile, but existing-address access is safe.
-        with self.assertRaisesRegex(ThermostatTemplateError, 'ASCII'):
-            self.plan(raw=raw, apps=apps)
-        apps[56][41] = 'User heating'
+        # Name equality changes ASCII letters only. Unrelated Unicode names
+        # do not make this unique generated-name lookup depend on sort order.
         p = self.plan(raw=raw, apps=apps)
         self.assertEqual(p.output_expected['CoolFanLowOutput'], 50)
+        self.assertEqual(p.as_dict()['output_projection']['resolved_references']['HeatStage1Output']['name'],
+                         'User heating Ω')
         self.assertEqual([(r.address, r.previous_name, r.name) for r in p.renames],
                          [(40, '[CG137] old output', '[CG137] Y (heat/cool)')])
         self.assertEqual(p.output_expected['DamperZone1Output'], 43)
