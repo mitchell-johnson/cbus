@@ -12,12 +12,12 @@
   },
   "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
   "binary": {
-    "sha256": "9837c9a7eacda88d4562a54836c22f4a948faafe1fd6d1c4685d1e122cf7b756",
-    "name": "cmqttd"
+    "path": "/private/var/folders/8t/bnm3x3vs64vcv_mfr2ry767m0000gn/T/opencode/main-test/rust/target/debug/cmqttd",
+    "sha256": "8fa2ed98488e17d876ce1b5732a9c97e9fa24fc683ae9bef863397ec4d23561c"
   },
-  "source_revision": "55bd4a85885294aa4678b261d13fd0c33d27591c",
+  "source_revision": "228ede253026d8f846525d512170d480a205c7c1",
   "source_fingerprint": {
-    ".github/workflows/ci.yml": "34a99b51005ef6a680c91c0d2ce30017b3f815345f16e6a65951a4756bdb4dce",
+    ".github/workflows/ci.yml": "1af80cae0dba93ddf30f79907349dd57df3d71f2cbbb9e4438f645441cee5230",
     "docs/cmqttd-cgate.md": "12a6251657c7151b7bb882aa5ba53b1b29dc2f2daf436eff1923684c32e96c99",
     "rust/Cargo.lock": "c137cde220381baa85eb156702e7bad75c3793410d9ce2e67cef6bf7f289aea0",
     "rust/Cargo.toml": "94a27eaadadeb233c09fb3fb65980d26cbfdb13df8f69c4573e5244f904c8e99",
@@ -44,7 +44,7 @@
     "rust/cbus-cgate/src/dlt_profiles.rs": "80f501361559e3a4fe05b9362886085262b33099065c2311e26f04ce2df7456a",
     "rust/cbus-cgate/src/etherlite.rs": "434bfa85e3455e97a2ac5990489a23b79dd6bdae3fb41a89adc423c2ffed0381",
     "rust/cbus-cgate/src/file.rs": "fa7bf61d164bac03db899af81fa7685a9e95c1e05ffb9ae93ade0514f9095d7a",
-    "rust/cbus-cgate/src/lib.rs": "b6b0ccdf9bd13158bf4a183e93e7246cdf4e6b00df703560ac0e572310bc02b8",
+    "rust/cbus-cgate/src/lib.rs": "7d7817fcef1a502a34ec8b5e344f0a92f78805c5f55de7ce6df776db63929d5e",
     "rust/cbus-cgate/src/main.rs": "d779d68863b8b4533d47e1cf7b42387fc9c88666bf41297c0b3e358f0854a799",
     "rust/cbus-cgate/src/manual.rs": "11d52212e2f4eebc90a0c5d517d6f75d2db52fcfe2b7f637eda635be7c910c59",
     "rust/cbus-cgate/src/mock_delivery.rs": "bff9e04be12189de046207f3fde661b33521736587985757b6c47a3bc78d738e",
@@ -229,7 +229,7 @@
     "rust/testdata/vectors/cgate_unprobed_authorization.jsonl": "d61ab85647a793344e02f5c73f6ae0a5ceb395514260857679af9f3a59664438",
     "rust/testdata/vectors/ordinary_level_value_safe_owned.json": "649c34882af9979f14749a933994d127a2cd3a1231df9fce4fe9b9255d4f0fd4",
     "rust/testdata/vectors/selected_serial_plan.jsonl": "7d707b8e72436f528190025c93c3f018a31527b45152f85aa84b9e16b41120c1",
-    "toolkit-cli/Makefile": "a7c4e84ca94ee7983a5b4c4e30b6cddea9af06c5b89112841bd238ff04576995",
+    "toolkit-cli/Makefile": "8c968846d30ded75b011738f570b3e46f2f47200a15fcb8497a800f1424905ba",
     "toolkit-cli/research/cgate_dbsetxml_unit_differential.py": "b75e484e851c36dc7ae838a62115ebade1c8aea94c19be7af29fbdf49624c555",
     "toolkit-cli/research/cgate_session_differential.py": "29fc1d9a5994c13522067c0b47d94fdadeb3b5f2b0e3ce0704f54102b4f986d4",
     "toolkit-cli/research/fixtures/dali-ext-proxy-original-vectors.json": "828bc12ec7bf628a48ffa412b8154211a4a1207a202fee0d8dd9809bae1c8715",
@@ -639,34 +639,5 @@
   "wire_equal": 12,
   "combined_network_passed": 2,
   "result": "passed",
-  "command": "\"${CBUS_EVIDENCE_PYTHON}\" research/cgate_dbsetxml_unit_differential.py --mock-bin \"${CBUS_CGATE_MOCK_BIN}\" --cmqttd-bin \"${CBUS_CMQTTD_BIN}\" --output-dir \"${CBUS_DIFFERENTIAL_OUTPUT_DIR}\"",
-  "publication_sanitization": {
-    "format": "cbus-evidence-sanitized-derivative-v1",
-    "raw_file_sha256": "451dc37f8ad28b0aa219355d54db31446553b117077205ca2b25072c4660eac2",
-    "raw_retained_privately": true,
-    "field_mapping": [
-      {
-        "json_pointer": "/binary/path",
-        "action": "omit",
-        "roles": [
-          "local_rust_binary_coordinate"
-        ],
-        "artifact_name_pointer": "/binary/name"
-      },
-      {
-        "json_pointer": "/command",
-        "action": "role_template",
-        "roles": [
-          "cgate_mock_binary",
-          "cmqttd_binary",
-          "python_interpreter",
-          "report_output_directory"
-        ]
-      }
-    ],
-    "command_form": "role-based reproduction template; exact invocation retained privately",
-    "working_directory_role": "toolkit-cli; installed/source context remains in recorded scope",
-    "technical_payload_preserved": true,
-    "new_execution_claimed_by_sanitization": false
-  }
+  "command": "/private/var/folders/8t/bnm3x3vs64vcv_mfr2ry767m0000gn/T/opencode/main-test/toolkit-cli/.venv/bin/python research/cgate_dbsetxml_unit_differential.py --mock-bin /private/var/folders/8t/bnm3x3vs64vcv_mfr2ry767m0000gn/T/opencode/main-test/rust/target/debug/cgate-mock --cmqttd-bin /private/var/folders/8t/bnm3x3vs64vcv_mfr2ry767m0000gn/T/opencode/main-test/rust/target/debug/cmqttd --output-dir research/fixtures"
 }
