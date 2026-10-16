@@ -1,0 +1,204 @@
+{
+  "domains": {
+    "live": "exact signed32 integer for all15 fields; property/control admission remains separate",
+    "preference": "explicit celsius or fahrenheit; independent of deviceTemperatureUnits",
+    "raw": "exact integer0..255 for all15 consumed fields"
+  },
+  "execution_evidence_in_this_fixture": false,
+  "fields": {
+    "EvapComfortStartTemp": {
+      "load_method": "CGateTempToWholeDegreesTemp",
+      "profile": "whole_unsigned",
+      "save_encoding": "integer_without_byte_cast",
+      "save_method": "WholeDegreesTempToCGateTemp",
+      "signed_input": false,
+      "upper_127_cap_after_save_conversion": false
+    },
+    "EvapComfortStepSize": {
+      "load_method": "CGateTempToHalfDegreesTempOffset",
+      "profile": "half_offset_unsigned",
+      "save_encoding": "integer_without_byte_cast",
+      "save_method": "HalfDegreesTempOffsetToCGateTemp",
+      "signed_input": false,
+      "upper_127_cap_after_save_conversion": false
+    },
+    "EvapStartProportionalTemperature": {
+      "load_method": "CGateTempToTempOffset",
+      "profile": "offset_signed",
+      "save_encoding": "low_unsigned_byte",
+      "save_method": "TempOffsetToCGateTemp",
+      "signed_input": true,
+      "upper_127_cap_after_save_conversion": false
+    },
+    "EvapStopProportionalTemperature": {
+      "load_method": "CGateTempToTempOffset",
+      "profile": "offset_signed",
+      "save_encoding": "low_unsigned_byte",
+      "save_method": "TempOffsetToCGateTemp",
+      "signed_input": true,
+      "upper_127_cap_after_save_conversion": false
+    },
+    "GuardLowerTemperature": {
+      "load_method": "CGateTempToUnitTemp",
+      "profile": "guard_signed",
+      "save_encoding": "low_unsigned_byte",
+      "save_method": "UnitTempToCGateTemp",
+      "signed_input": true,
+      "upper_127_cap_after_save_conversion": false
+    },
+    "GuardMaximumLowerTemperature": {
+      "load_method": "CGateTempToUnitTemp",
+      "profile": "guard_signed",
+      "save_encoding": "low_unsigned_byte",
+      "save_method": "UnitTempToCGateTemp",
+      "signed_input": true,
+      "upper_127_cap_after_save_conversion": false
+    },
+    "GuardMaximumUpperTemperature": {
+      "load_method": "CGateTempToUnitTemp",
+      "profile": "guard_upper_signed",
+      "save_encoding": "low_unsigned_byte",
+      "save_method": "UnitTempToCGateTemp",
+      "signed_input": true,
+      "upper_127_cap_after_save_conversion": true
+    },
+    "GuardMinimumLowerTemperature": {
+      "load_method": "CGateTempToUnitTemp",
+      "profile": "guard_signed",
+      "save_encoding": "low_unsigned_byte",
+      "save_method": "UnitTempToCGateTemp",
+      "signed_input": true,
+      "upper_127_cap_after_save_conversion": false
+    },
+    "GuardMinimumUpperTemperature": {
+      "load_method": "CGateTempToUnitTemp",
+      "profile": "guard_signed",
+      "save_encoding": "low_unsigned_byte",
+      "save_method": "UnitTempToCGateTemp",
+      "signed_input": true,
+      "upper_127_cap_after_save_conversion": false
+    },
+    "GuardUpperTemperature": {
+      "load_method": "CGateTempToUnitTemp",
+      "profile": "guard_upper_signed",
+      "save_encoding": "low_unsigned_byte",
+      "save_method": "UnitTempToCGateTemp",
+      "signed_input": true,
+      "upper_127_cap_after_save_conversion": true
+    },
+    "MaximumSetTemperature": {
+      "load_method": "SimpleCGateTempToUnitTemp",
+      "profile": "simple_signed",
+      "save_encoding": "low_unsigned_byte",
+      "save_method": "SimpleUnitTempToCGateTemp",
+      "signed_input": true,
+      "upper_127_cap_after_save_conversion": false
+    },
+    "MinimumSetTemperature": {
+      "load_method": "SimpleCGateTempToUnitTemp",
+      "profile": "simple_signed",
+      "save_encoding": "low_unsigned_byte",
+      "save_method": "SimpleUnitTempToCGateTemp",
+      "signed_input": true,
+      "upper_127_cap_after_save_conversion": false
+    },
+    "SetbackLevel": {
+      "load_method": "CGateTempToTempOffsetWithShift",
+      "profile": "shifted_offset_signed",
+      "save_encoding": "low_unsigned_byte",
+      "save_method": "TempOffsetWithShiftToCGateTemp",
+      "signed_input": true,
+      "upper_127_cap_after_save_conversion": false
+    },
+    "TemperatureOffset": {
+      "load_method": "CGate16thDegreeToQuarterDegreeTempOffset",
+      "profile": "special_quarter_signed",
+      "save_encoding": "low_unsigned_byte",
+      "save_method": "QuarterDegreesTempOffsetToCGateTemp",
+      "signed_input": true,
+      "upper_127_cap_after_save_conversion": false
+    },
+    "TemperatureSendDifferential": {
+      "load_method": "CGate16thDegreeToQuarterDegreeTempOffset",
+      "profile": "special_quarter_unsigned",
+      "save_encoding": "integer_without_byte_cast",
+      "save_method": "QuarterDegreesTempOffsetToCGateTemp",
+      "signed_input": false,
+      "upper_127_cap_after_save_conversion": false
+    }
+  },
+  "format": "cbus-temperature-model-source-association-proposal-v1",
+  "history": {
+    "prior_next_readiness_rebound": false,
+    "prior_temporary_handler_catalogue_recovered": false
+  },
+  "integration_boundary": {
+    "native_preliminary_projection": "raw parsing only for full histories; issued current owner required for temperature deferral",
+    "profile_expanded": false,
+    "raw_load": "ThermostatControlModel.__init__ before initialized controls",
+    "raw_setting_survival": "requested raw temperature bytes must equal final owner-encoded bytes",
+    "terminal_save": "ThermostatControlModel.issue_save from live fields, one encoding"
+  },
+  "new_original_decoding_or_execution": false,
+  "product_or_backend_acceptance": false,
+  "retained_profile_rows": 4608,
+  "retained_static_checks_true": 87,
+  "scope": "15-field codecs and settled source-owner composition; no broader initialization or timing admission",
+  "slider_or_timing_initialization_proved": false,
+  "source_descriptors": {
+    "toolkit-cli/research/experiments/2026-09-30/thermostat-settings-temperature-static.json": {
+      "bytes": 29982,
+      "sha256": "73b0cd96f23872695f1cd4b291b4d4c3f7360925d90185595d0520a382b831c4"
+    },
+    "toolkit-cli/research/fixtures/thermostat-settings-temperature-roundtrip-vectors.json": {
+      "bytes": 101832,
+      "sha256": "e9314238899efbdb8c6b071bf5541adf54dfba80ddfc2980b9d6a598a5062528"
+    },
+    "toolkit-cli/research/fixtures/thermostat-temperature-vectors.json": {
+      "bytes": 630722,
+      "sha256": "188050a51a4324b0039dba68383a66d528baabcfe88210b3634ba1f372fd31d0"
+    },
+    "toolkit-cli/src/cbus_toolkit/thermostat_temperature_model.py": {
+      "bytes": 3606,
+      "sha256": "c7818b336ec182e13de96ce64401aa9f66891c028bb729b15d248b0b6cbd7f63"
+    }
+  },
+  "unsigned_save_outside_byte": [
+    {
+      "fahrenheit": false,
+      "profile": "whole_unsigned",
+      "raw": 254,
+      "saved": 256
+    },
+    {
+      "fahrenheit": false,
+      "profile": "whole_unsigned",
+      "raw": 255,
+      "saved": 256
+    },
+    {
+      "fahrenheit": true,
+      "profile": "whole_unsigned",
+      "raw": 255,
+      "saved": 256
+    },
+    {
+      "fahrenheit": false,
+      "profile": "half_offset_unsigned",
+      "raw": 254,
+      "saved": 256
+    },
+    {
+      "fahrenheit": false,
+      "profile": "half_offset_unsigned",
+      "raw": 255,
+      "saved": 256
+    },
+    {
+      "fahrenheit": true,
+      "profile": "half_offset_unsigned",
+      "raw": 255,
+      "saved": 256
+    }
+  ]
+}

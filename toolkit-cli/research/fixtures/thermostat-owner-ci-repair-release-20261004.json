@@ -1,0 +1,136 @@
+{
+  "format": "cbus-thermostat-owner-ci-repair-release-v1",
+  "issue": 118,
+  "pull_request": 117,
+  "prior_head": "f867bd72f24df9dca74ad82af6d3dcc6d12113ac",
+  "prior_ci_run": 37173737354,
+  "prior_ci_conclusion": "failure",
+  "prior_32_failed_ids": [
+    "tests/test_cgate_dbsetxml_unit_differential.py::test_committed_original_vs_rust_mapper_receipt[mock]",
+    "tests/test_cgate_dbsetxml_unit_differential.py::test_committed_original_vs_rust_mapper_receipt[cmqttd]",
+    "tests/test_cgate_dbsetxml_unit_differential.py::test_mapper_receipt_rejects_mutated_original_and_rust_wire",
+    "tests/test_cgate_tagged_session_differential.py::test_committed_receipt_binds_full_wire_oracle_and_current_source[cgate-mock]",
+    "tests/test_cgate_tagged_session_differential.py::test_committed_receipt_binds_full_wire_oracle_and_current_source[cmqttd]",
+    "tests/test_cgate_tagged_session_differential.py::test_receipt_rejects_raw_tag_tamper_and_stale_transitive_rust_source",
+    "tests/test_ci_test_results.py::NewInteropSelectionTests::test_thermostat_stack_exact_backend_roster_body_gates_and_inherited_selection",
+    "tests/test_cli_thermostat_damper_controls.py::test_nonstring_output_operation_refuses_before_client_construction[list-preview]",
+    "tests/test_cli_thermostat_damper_controls.py::test_nonstring_output_operation_refuses_before_client_construction[list-apply]",
+    "tests/test_cli_thermostat_damper_controls.py::test_nonstring_output_operation_refuses_before_client_construction[object-preview]",
+    "tests/test_cli_thermostat_damper_controls.py::test_nonstring_output_operation_refuses_before_client_construction[object-apply]",
+    "tests/test_cli_thermostat_damper_controls.py::test_nonstring_output_operation_refuses_before_client_construction[null-preview]",
+    "tests/test_cli_thermostat_damper_controls.py::test_nonstring_output_operation_refuses_before_client_construction[null-apply]",
+    "tests/test_cli_thermostat_damper_controls.py::test_nonstring_output_operation_refuses_before_client_construction[true-preview]",
+    "tests/test_cli_thermostat_damper_controls.py::test_nonstring_output_operation_refuses_before_client_construction[true-apply]",
+    "tests/test_cli_thermostat_damper_controls.py::test_nonstring_output_operation_refuses_before_client_construction[false-preview]",
+    "tests/test_cli_thermostat_damper_controls.py::test_nonstring_output_operation_refuses_before_client_construction[false-apply]",
+    "tests/test_cli_thermostat_damper_controls.py::test_nonstring_output_operation_refuses_before_client_construction[integer-preview]",
+    "tests/test_cli_thermostat_damper_controls.py::test_nonstring_output_operation_refuses_before_client_construction[integer-apply]",
+    "tests/test_cli_thermostat_damper_controls.py::test_nonstring_output_operation_refuses_before_client_construction[fraction-preview]",
+    "tests/test_cli_thermostat_damper_controls.py::test_nonstring_output_operation_refuses_before_client_construction[fraction-apply]",
+    "tests/test_parity_register.py::ParityRegisterTests::test_packaged_invalidation_rules_match_their_reports_and_checkout",
+    "tests/test_parity_register.py::ParityRegisterTests::test_tagged_wire_acceptance_rejects_missing_stale_and_tampered_receipts",
+    "tests/test_sanitize_evidence_receipts.py::test_all_six_receipts_preserve_every_noncoordinate_field[tagged-cgate-tagged-session-differential-cgate-mock.json]",
+    "tests/test_sanitize_evidence_receipts.py::test_all_six_receipts_preserve_every_noncoordinate_field[tagged-cgate-tagged-session-differential-cmqttd.json]",
+    "tests/test_sanitize_evidence_receipts.py::test_all_six_receipts_preserve_every_noncoordinate_field[unit-cgate-dbsetxml-unit-differential-mock.json]",
+    "tests/test_sanitize_evidence_receipts.py::test_all_six_receipts_preserve_every_noncoordinate_field[unit-cgate-dbsetxml-unit-differential-cmqttd.json]",
+    "tests/test_sanitize_evidence_receipts.py::test_future_published_fixtures_support_synthetic_metadata_tests[tagged-cgate-tagged-session-differential-cgate-mock.json]",
+    "tests/test_sanitize_evidence_receipts.py::test_future_published_fixtures_support_synthetic_metadata_tests[tagged-cgate-tagged-session-differential-cmqttd.json]",
+    "tests/test_sanitize_evidence_receipts.py::test_future_published_fixtures_support_synthetic_metadata_tests[unit-cgate-dbsetxml-unit-differential-mock.json]",
+    "tests/test_sanitize_evidence_receipts.py::test_future_published_fixtures_support_synthetic_metadata_tests[unit-cgate-dbsetxml-unit-differential-cmqttd.json]",
+    "tests/test_sanitize_evidence_receipts.py::test_actual_offline_generator_accepts_derivatives_and_binds_their_bytes"
+  ],
+  "all_prior_failures_passed_in_fresh_installed_wheel": true,
+  "source_epochs": [
+    {
+      "parent_passed": 253,
+      "parent_failed": 1,
+      "skipped": 0,
+      "subtest_passed": 559,
+      "failure": "Filesystem permission refused disposable snapshot beside protected checkout; no product assertion failed."
+    },
+    {
+      "parent_passed": 1,
+      "parent_failed": 0,
+      "skipped": 0,
+      "subtest_passed": 0,
+      "selection": "Only previously blocked generator case after filesystem access."
+    }
+  ],
+  "unified_source_epoch_claimed": false,
+  "installed_wheel": {
+    "parent_passed": 254,
+    "parent_failed": 0,
+    "skipped": 0,
+    "subtest_passed": 559,
+    "wheel_sha256": "22e6eba22dce21f96bf40595e0cd0fc8b1e6929a497726decc6ab39f6331cd77",
+    "wheel_bytes": 3010579,
+    "package_files_exact": 394,
+    "source_ZIP_installed_exact": true,
+    "origin_qualification": "Separate interpreter observation of five module origins and static equality; no continuous pytest or CLI-child import tracing."
+  },
+  "fresh_differential_execution": {
+    "original_software_executed": false,
+    "network": "Owned IPv4 loopback simulator/test services only; no house endpoint.",
+    "binaries": "Existing debug binaries reused; Rust source closure is unchanged. No new Rust build or full suite claimed.",
+    "tagged_per_product": 11,
+    "unit_per_product": 12,
+    "combined_network_per_product": 2,
+    "products": [
+      "cgate-mock",
+      "cmqttd"
+    ],
+    "raw_archives_retained_outside_Git": true,
+    "publication_records": [
+      {
+        "public_file": "toolkit-cli/research/fixtures/cgate-tagged-session-differential-cgate-mock.json",
+        "prior_sha256": "c7c6cfd9d36ae928273b2c60df32ad2593cca81a7e0dcde791460b4f1221f2b0",
+        "current_sha256": "02a3870ab20be769ef27c38bc4105d5af9ed1c37574bb53af551d70156d5dd91",
+        "raw_sha256": "81b0e3de2483a19105ae7b60fd95cacf5d60f913ffe37cfa39b820e085e3ab47"
+      },
+      {
+        "public_file": "toolkit-cli/research/fixtures/cgate-tagged-session-differential-cmqttd.json",
+        "prior_sha256": "7c8f3798ec4caefd48d478c6e05d9ea60d4febe7ca7bff7f92aac95b5881aac9",
+        "current_sha256": "510f54f1c4d7f04d8384da6f3177fb3ec4d9e06e805f908db0568fe0fe9f98ff",
+        "raw_sha256": "8b3636b7c9c1ea9673f932dd7e27a3a0d1700e88f006f90268f3e3dcc49556e2"
+      },
+      {
+        "public_file": "toolkit-cli/research/fixtures/cgate-dbsetxml-unit-differential-mock.json",
+        "prior_sha256": "2019973f438725ce3510085d1ce77fe8a3beb5e98e6c0e1825b3441a2bc363e3",
+        "current_sha256": "2e47fbd10487312caf606280d00b6d44dc372b91bdfa1b1535b25f2db8f0e58a",
+        "raw_sha256": "ff3cac2677e1c1ea69824ca1897e26bc6a2d0ac40bac15f16ad54c75c26ea338"
+      },
+      {
+        "public_file": "toolkit-cli/research/fixtures/cgate-dbsetxml-unit-differential-cmqttd.json",
+        "prior_sha256": "543def55fa0746a2ed4d0bf09118a5195453dfc3f991dfa57177f2802b5e2cee",
+        "current_sha256": "7e321991d01c0b9dd243b16c2449ea29b3b0989f09bb7b056635818fd80a7b4d",
+        "raw_sha256": "a5e022cf7a2327f933b3b355ef7636421fd2a1a197ae3225ccf1b542504706ee"
+      }
+    ]
+  },
+  "validation_artifact_sha256": {
+    "root-validation.json": "e947c822cccdbaa4b1b69b61f8806f19f1d10392133a94dbeed3d8356ee517de",
+    "focused-source.xml": "ccee8371b6882161ebcc8ad977df27cc9c037f3285a9639d99ddc85eab9fe21e",
+    "focused-source-trace.json": "da466369b55a99dc67da83c1d0c8f1ef253ebe343d67469dcace9651f5284c61",
+    "source-generator-final.xml": "762aa6369d5978a58eb5f236c9fc2f79483ae9bfdb68e544a86d9e676f2fab5c",
+    "source-generator-final-trace.json": "29092679fecd3aa4495e7824b0d8c30e4d9816a20ec120da3e782d50daa52314",
+    "focused-wheel.xml": "400f077620c9f919c07391c7da8b02a75ad5127f5609db7e938a7dc5b3296e93",
+    "focused-wheel-trace.json": "d942a54bd2aa756f696a7c72b64c72c9576970a9b4c13a994d1c09fe9d759851"
+  },
+  "changed_implementation_and_receipt_sha256": {
+    "toolkit-cli/research/fixtures/cgate-dbsetxml-unit-differential-cmqttd.json": "7e321991d01c0b9dd243b16c2449ea29b3b0989f09bb7b056635818fd80a7b4d",
+    "toolkit-cli/research/fixtures/cgate-dbsetxml-unit-differential-mock.json": "2e47fbd10487312caf606280d00b6d44dc372b91bdfa1b1535b25f2db8f0e58a",
+    "toolkit-cli/research/fixtures/cgate-tagged-session-differential-cgate-mock.json": "02a3870ab20be769ef27c38bc4105d5af9ed1c37574bb53af551d70156d5dd91",
+    "toolkit-cli/research/fixtures/cgate-tagged-session-differential-cmqttd.json": "510f54f1c4d7f04d8384da6f3177fb3ec4d9e06e805f908db0568fe0fe9f98ff",
+    "toolkit-cli/src/cbus_toolkit/parity-evidence.json": "8b908aa92c7430dd554d1b358eeb24fb112cc8abc447968a530dff2d7b580e37",
+    "toolkit-cli/src/cbus_toolkit/parity-obligations.json": "f72adedaebc8e9b8d62e5f0df7dd30cd37e38b95f648d6aee895e640ce97833d",
+    "toolkit-cli/src/cbus_toolkit/thermostat_output_groups.py": "706a091268bfb5c8e3529426fdfa5becbaf5f854df82ccaecbb5c0aa56329b00",
+    "toolkit-cli/tests/test_ci_test_results.py": "ad73991cc7aa960afea14554240a55c300ef44ae2fbd7c73c992af0392d0f0b2"
+  },
+  "full_local_suite_run": false,
+  "native_GUI_hardware_acceptance_claimed": false,
+  "category_ledger": {
+    "complete": 18,
+    "total": 42
+  },
+  "functional_denominator_complete": false
+}

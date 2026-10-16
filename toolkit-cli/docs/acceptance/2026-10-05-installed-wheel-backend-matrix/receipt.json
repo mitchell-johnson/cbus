@@ -1,0 +1,165 @@
+{
+  "actual_separate_epochs": {
+    "fresh_debug_pair": {
+      "all_exit0": true,
+      "commands": 2,
+      "inputs_quiet": true,
+      "repository_input_count": 4178,
+      "rust_input_count": 475,
+      "summary": {
+        "bytes": 2494,
+        "sha256": "fa351cc41cbbf7331da5d6c5447ac35bb7df61cc3946b18a62f347c5a493b3d5"
+      }
+    },
+    "matrix_helpers": {
+      "audit_exit": 0,
+      "failures": 0,
+      "input_count": 7,
+      "inputs_quiet": true,
+      "parents_passed": 138,
+      "pre_refresh_epoch": true,
+      "skips": 0,
+      "subtests": 0
+    },
+    "post_refresh_metadata": {
+      "actual_parents_passed": 17,
+      "audit_exit": 0,
+      "failures": 0,
+      "inputs_quiet": true,
+      "repository_input_count": 4178,
+      "selectors": 15,
+      "skips": 0,
+      "summary": {
+        "bytes": 7892,
+        "sha256": "f7c961ed5a00ba280b7080de3b62ef547f92e9eaba78527007aa28c3d9777de3"
+      },
+      "test_exit": 0,
+      "unitemized_subtests_passed": 6
+    },
+    "serial_handoff": {
+      "audit_exit": 0,
+      "inputs_quiet": true,
+      "parents_passed": 4,
+      "repository_input_count": 4178,
+      "test_exit": 0,
+      "unitemized_subtests_passed": 7,
+      "wrapper_counter_failure_retained": true
+    },
+    "six_receipt_refresh": {
+      "actual_changed_outputs": 10,
+      "actual_commands": 18,
+      "all_exit0": true,
+      "allowed_outputs": 11,
+      "closure_and_pair_quiet": true,
+      "inputs_changes_only_allowlist": true,
+      "protected_native_pre_fix_files": 8,
+      "summary": {
+        "bytes": 17001,
+        "sha256": "921558b6dd0f1c8b1fa8d3f9ac56ec1282c88e3054dbf31309fac0c0739efff6"
+      }
+    }
+  },
+  "base_head": "6807786f5082c3a6b3c87f1da2662ab588bafde6",
+  "complete_declaration": {
+    "daemon_explicit": 509,
+    "mock_explicit": 498,
+    "total_explicit": 1007,
+    "whole_modules": 7
+  },
+  "historical_failed_run": {
+    "installed_artifact_checkout_revision": "a0c471131572c81888cc4c8bdd4c8ee4bec956aa",
+    "pr_run_head": "6807786f5082c3a6b3c87f1da2662ab588bafde6",
+    "run_id": 37210167852
+  },
+  "issue128_closed": false,
+  "native_or_hardware_acceptance": false,
+  "private_review_descriptors": {
+    "matrix_narrow_handoff": {
+      "bytes": 4201,
+      "sha256": "aac6cf1fd04fb6134b4890ca7fc9a90b5ff9d0b60d739be15f8936e62b368043"
+    },
+    "matrix_static": {
+      "bytes": 3648,
+      "sha256": "932fb3a8c2a18180cc8418445b1c2d1d6a30a1562c2789781d2e67f548fe020f"
+    },
+    "refresh_artifact": {
+      "bytes": 7011,
+      "sha256": "f90df2feadcbc923e0a2d45ea346d501e1027696e7bce3541b7ef268a1d7c3fd"
+    },
+    "serial_artifact": {
+      "bytes": 2955,
+      "sha256": "7a160d91cbca14f7377d6ae026f8d0db954f2a5f01333947b4fbe88bedfa5c01"
+    }
+  },
+  "schema": "cbus-installed-wheel-backend-matrix-preparation-v1",
+  "scoped_generated_outputs": {
+    "toolkit-cli/research/fixtures/cgate-dbsetxml-unit-differential-cmqttd.json": {
+      "bytes": 63716,
+      "sha256": "e50a66d971d09745b801856f2da89fbab6328ccb6da510c1449f92f6c1daeadd"
+    },
+    "toolkit-cli/research/fixtures/cgate-dbsetxml-unit-differential-mock.json": {
+      "bytes": 61811,
+      "sha256": "660fec81613bbecbf2033cba5bdb02961641c779cf002ef75779cba5d562fc89"
+    },
+    "toolkit-cli/research/fixtures/cgate-session-differential-cmqttd.json": {
+      "bytes": 35931,
+      "sha256": "abdfef5ceed9b79031fbee489b0370ec33f73466a458e529cec5ce134bcf01fe"
+    },
+    "toolkit-cli/research/fixtures/cgate-session-differential-fixed.json": {
+      "bytes": 33563,
+      "sha256": "6f477a0330b0daeb9fdde69ca10fa633ddd212ba8abaa8c6c6b7aa1260a1f2e9"
+    },
+    "toolkit-cli/research/fixtures/cgate-session-physical-applicability.json": {
+      "bytes": 2877,
+      "sha256": "6c8f6953d4732ee5a6450d171fca9bd78b3509b08bca3820296de4f1f60c895e"
+    },
+    "toolkit-cli/research/fixtures/cgate-tagged-session-differential-cgate-mock.json": {
+      "bytes": 32992,
+      "sha256": "bf990396a357a8a11a7ecdb2129e2eedeb2d87317c0467205c5a2ad53afdb77f"
+    },
+    "toolkit-cli/research/fixtures/cgate-tagged-session-differential-cmqttd.json": {
+      "bytes": 35117,
+      "sha256": "b14ddc950e2068aa83f4251a8b1f69b1e8d7dba972cd3f53cac8375995e5aa06"
+    },
+    "toolkit-cli/research/release-gates/skip-census.json": {
+      "bytes": 392365,
+      "sha256": "d36987d96580e3866aa46397b8f3e90de7860280c98b3c4a2d57fd7b3c0aa771"
+    },
+    "toolkit-cli/src/cbus_toolkit/cgate-contract-inventory.json": {
+      "bytes": 4277587,
+      "sha256": "d8b08aeafadbc0284a42fc06ab8ff586cc2bdbede4b91cd207a1e1dc388812ad"
+    },
+    "toolkit-cli/src/cbus_toolkit/parity-evidence.json": {
+      "bytes": 33215,
+      "sha256": "6136deb618d774bd558d91745941dbf4fba6215999b035ffc2e990e3d3c0742d"
+    },
+    "toolkit-cli/src/cbus_toolkit/parity-obligations.json": {
+      "bytes": 12931091,
+      "sha256": "7d1dd896bc7a249355f21f57be42b705ee53d11f5f05028045f0e0a557cf4428"
+    }
+  },
+  "state": "NARROW_LOCAL_CHECKS_PASSED_FULL_HOSTED_PENDING",
+  "tested_source_files": {
+    ".github/workflows/ci.yml": {
+      "bytes": 32116,
+      "sha256": "36d633b3268507b748d53aa71f2adfccc3d21f29f37081e68132b4e3901a4d30"
+    },
+    "toolkit-cli/Makefile": {
+      "bytes": 150337,
+      "sha256": "4706fede20bcc8796012a3e192d61e4bd3a10c22537b143b16169a9e5a013d7f"
+    },
+    "toolkit-cli/research/installed_rust_interop.py": {
+      "bytes": 51168,
+      "sha256": "bd2f3b539dfbcf74d66d7d2d23709b4cb3ffb0458c18bc0ffec29542eeaab3f3"
+    },
+    "toolkit-cli/tests/test_installed_rust_interop_matrix.py": {
+      "bytes": 14766,
+      "sha256": "af87fbfb13e3212fb58ef2fedd4d2096f1fd568812919a27acc3c6fcd3fd4c3a"
+    },
+    "toolkit-cli/tests/test_serial_reconcile_recovery.py": {
+      "bytes": 18065,
+      "sha256": "217ccd8b78eb13f7a1f0feb11a2af2c9cd7b73b54aef3b85a47687dde64b4256"
+    }
+  },
+  "traces_concatenated": false
+}
