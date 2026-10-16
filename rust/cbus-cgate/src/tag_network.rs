@@ -2122,16 +2122,22 @@ impl Server {
         if raw.starts_with('!') {
             return Ok(None);
         }
-        if let Ok(Some(selection)) = self.tag_selection(raw) {
-            if self.projects[&selection.project].tag_networks[&selection.key]
-                .database_network
-                .is_none()
-            {
-                // Numeric-looking names keep established lexical ownership.
-                // Numeric Value routing is only a fallback for the associated
-                // typed owner when no independent named selection wins.
-                return Ok(None);
+        match self.tag_selection(raw) {
+            Ok(Some(selection)) => {
+                if self.projects[&selection.project].tag_networks[&selection.key]
+                    .database_network
+                    .is_none()
+                {
+                    // Numeric-looking names keep established lexical ownership.
+                    // Numeric Value routing is only a fallback for the associated
+                    // typed owner when no independent named selection wins.
+                    return Ok(None);
+                }
             }
+            Ok(None) => {}
+            // Preserve an independent lexical missing-descendant error instead
+            // of falling through to the associated numeric owner.
+            Err(reason) => return Err(reason),
         }
         let path = if raw.starts_with("//") {
             raw.to_string()
@@ -2175,6 +2181,110 @@ impl Server {
             }
             _ => Err("Associated numeric Level identity disagrees with its owner".to_string()),
         }
+    }
+
+    /// Resolve a canonical numeric Group/NetVar parent (`//PROJECT/NET/APP/GROUP`
+    /// or bare `NET/APP/GROUP` in the selected project) through the exact
+    /// selected associated owner.
+    ///
+    /// Lexical precedence, missing-descendant errors, OIDs and Unit/foreign/
+    /// retired fences are preserved: an independent lexical winner returns
+    /// `None`, a lexical error is propagated, `!oid` parents stay with the
+    /// established OID flow, and the returned owner always reuses the OID
+    /// fence instead of inventing a route.
+    fn associated_numeric_level_parent_operand(
+        &self,
+        raw: &str,
+    ) -> Result<Option<AssociatedLevelOperand>, String> {
+        if raw.starts_with('!') {
+            return Ok(None);
+        }
+        match self.tag_selection(raw) {
+            Ok(Some(selection)) => {
+                if self.projects[&selection.project].tag_networks[&selection.key]
+                    .database_network
+                    .is_none()
+                {
+                    return Ok(None);
+                }
+            }
+            Ok(None) => {}
+            Err(reason) => return Err(reason),
+        }
+        let path = if raw.starts_with("//") {
+            raw.trim_end_matches('/').to_string()
+        } else if let Some(project) = self.current.as_deref() {
+            format!("//{project}/{}", raw.trim_matches('/'))
+        } else {
+            return Ok(None);
+        };
+        let parts = path.trim_start_matches('/').split('/').collect::<Vec<_>>();
+        if parts.len() != 4 || parts[2].eq_ignore_ascii_case("p") {
+            return Ok(None);
+        }
+        let (Some(number), Ok(_app), Ok(_group)) = (
+            parts[1].parse::<u8>().ok(),
+            parts[2].parse::<u8>(),
+            parts[3].parse::<u8>(),
+        ) else {
+            return Ok(None);
+        };
+        let project = parts[0];
+        if self
+            .associated_level_owner(project, &format!("//{project}/{number}"))
+            .is_none()
+        {
+            return Ok(None);
+        }
+        if self.current.as_deref() != Some(project) {
+            return Err("Associated Level project not selected".to_string());
+        }
+        // Pending Groups/NetVars own their numeric path; a SAFE NetVar without
+        // a pending mirror owns it through its typed record instead.
+        if let Some(object) = self.db_pending.values().find(|object| {
+            object.project == project
+                && matches!(object.element.as_str(), "Group" | "NetVar")
+                && object.path.as_deref() == Some(path.as_str())
+        }) {
+            let oid = object.oid.clone();
+            let element = object.element.clone();
+            match self.associated_level_operand(&format!("!{oid}"))? {
+                Some(operand)
+                    if operand.element == element
+                        && operand.addressed
+                        && operand.canonical == path =>
+                {
+                    return Ok(Some(operand));
+                }
+                _ => {
+                    return Err(
+                        "Associated numeric Level identity disagrees with its owner".to_string()
+                    );
+                }
+            }
+        }
+        let app_path = format!("//{project}/{number}/{}", parts[2]);
+        let group_address: u8 = parts[3].parse().unwrap_or(0);
+        if let Some(level) = self.db_levels.values().find(|level| {
+            level.netvar && level.parent == app_path && level.address == group_address
+        }) {
+            let oid = level.oid.clone();
+            match self.associated_level_operand(&format!("!{oid}"))? {
+                Some(operand)
+                    if operand.element == "NetVar"
+                        && operand.addressed
+                        && operand.canonical == path =>
+                {
+                    return Ok(Some(operand));
+                }
+                _ => {
+                    return Err(
+                        "Associated numeric Level identity disagrees with its owner".to_string()
+                    );
+                }
+            }
+        }
+        Ok(None)
     }
 
     fn associated_level_value_command(&mut self, tag: &str, words: &[&str]) -> Option<Response> {
@@ -2479,14 +2589,18 @@ impl Server {
         let parent_word = if copy { words[2] } else { words[1] };
         let parent = match self.associated_level_operand(parent_word) {
             Ok(Some(parent)) => parent,
-            Ok(None) => {
-                // Independent named rows retain their TagNode handler. If a
-                // source already chose the associated owner, do not hand its
-                // child to an unrelated graph or opaque fallback.
-                return source
-                    .as_ref()
-                    .map(|_| failure("Associated Level destination not found"));
-            }
+            Ok(None) => match self.associated_numeric_level_parent_operand(parent_word) {
+                Ok(Some(parent)) => parent,
+                Ok(None) => {
+                    // Independent named rows retain their TagNode handler. If a
+                    // source already chose the associated owner, do not hand its
+                    // child to an unrelated graph or opaque fallback.
+                    return source
+                        .as_ref()
+                        .map(|_| failure("Associated Level destination not found"));
+                }
+                Err(reason) => return Some(failure(&reason)),
+            },
             Err(reason) => return Some(failure(&reason)),
         };
         if !matches!(parent.element.as_str(), "Group" | "NetVar") {
