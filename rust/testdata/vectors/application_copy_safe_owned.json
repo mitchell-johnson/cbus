@@ -1,0 +1,61 @@
+{
+  "format": "cbus-application-copy-owned-literal-v1",
+  "profile": "owned Application SAFE regression derived from documented target3.4 HELP*58; not a native mutation capture",
+  "help_source": "toolkit-cli/research/fixtures/native-cgate-help-differential-acceptance.json",
+  "help_profile": "target_cgate_3_4",
+  "help_star_index": 58,
+  "help_literal_sha256": "e2f07ed5de96e7d3c35607c7b7e1ec2b0c848de1feae600f983df5de7b32da8f",
+  "source_xml": "<Application><OID>aaaaaaaa-aaaa-4aaa-8aaa-000000000056</OID><TagName>Source</TagName><Address>56</Address><Group><OID>bbbbbbbb-bbbb-4bbb-8bbb-000000000007</OID><TagName>Heat</TagName><Address>7</Address><Level><OID>cccccccc-cccc-4ccc-8ccc-000000000073</OID><TagName>Null level</TagName><Address>3</Address></Level><TagsDLT><TagDLT><OID>dddddddd-dddd-4ddd-8ddd-000000000707</OID><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Keep &amp; retain</TagValue></TagDLT></TagsDLT></Group><Group><OID>bbbbbbbb-bbbb-4bbb-8bbb-000000000008</OID><TagName>Cool</TagName><Address>8</Address><Level Value=\"77\"><OID>cccccccc-cccc-4ccc-8ccc-000000000084</OID><TagName>Seventy seven</TagName><Address>4</Address><TagsDLT><TagDLT><OID>dddddddd-dddd-4ddd-8ddd-000000000804</OID><LanguageID>1</LanguageID><FlavourID>1</FlavourID><TagType>TEXT</TagType><TagValue>Literal</TagValue></TagDLT></TagsDLT></Level><TagsDLT/></Group><NetVar><OID>bbbbbbbb-bbbb-4bbb-8bbb-000000000009</OID><TagName>Variable</TagName><Address>9</Address><Level Value=\"200\"><OID>cccccccc-cccc-4ccc-8ccc-000000000092</OID><TagName>Two hundred</TagName><Address>2</Address><TagsDLT/></Level></NetVar></Application>",
+  "source_oid_count": 9,
+  "base_application_order": [
+    72,
+    0,
+    71,
+    66,
+    56
+  ],
+  "same_network_copy_order": [
+    72,
+    0,
+    71,
+    66,
+    56,
+    80
+  ],
+  "node_values": {
+    "7/3": null,
+    "8/4": "77",
+    "9/2": "200"
+  },
+  "same_parent": {
+    "source": "//COPY/254/56",
+    "parent": "//COPY/254",
+    "address": 80,
+    "tag_name": "Copied source"
+  },
+  "cross_network": {
+    "source": "//COPY/254/56",
+    "parent": "//COPY/253",
+    "address": 30,
+    "tag_name": "Copied source"
+  },
+  "refusal_codes_are_owned_not_target_native": true,
+  "unresolved": [
+    "Exact native numeric/descendant success and error envelopes",
+    "Native external-reference disposition beyond documented field retention",
+    "Case and locale equivalence for duplicate TagName",
+    "Unclassified extension objects and ambiguous OID histories",
+    "Group and Level native creation order"
+  ],
+  "native_execution": false,
+  "physical_execution": false,
+  "null_level_seed": {
+    "constructor": "DBADDSAFE //COPY/254/56/7 Level 3 Null level",
+    "value_getter": "DBGET !issued-null-level-oid/Value",
+    "value_getter_status": 342,
+    "value_getter_suffix": "=null",
+    "identity": "fresh issued OID replaces only the source literal placeholder; all other eight literal OIDs remain",
+    "tags_dlt": "plain fresh constructor has no TagsDLT child; populated sibling/group label collections remain exact",
+    "source_xml_is_expected_constructed_state_not_direct_missing_Value_upload": true
+  }
+}
