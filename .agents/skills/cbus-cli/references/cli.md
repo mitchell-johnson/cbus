@@ -31,6 +31,11 @@ feature document lists what each of the other 38 preferences does.
 For a saved Group/eDLT project label or another supported database object, use
 `cbus-toolkit cgate --host HOST database get-xml PATH --project NAME --output
 new.xml`. It creates a new UTF-8 file and emits the exported document hash.
+For a larger read-only export, add `--max-xml-bytes BYTES` (1..134217728).
+This requires `--output`, preserves ordinary read bounds and admits 64 KiB
+of additional wire framing; independent server limits still apply. Owned
+Rust servers retain a 32 MiB queued-wire batch cap, and the tested single-line
+export is 17 MiB. A failed read publishes no file and is never replayed.
 Review a separate edited copy, then use `database set-xml PATH edited.xml
 --project NAME --expect-current-sha256 EXPORTED_HASH --readback`. The guard
 performs a fresh read before one native `DBSETXML` here-document; it is not an
