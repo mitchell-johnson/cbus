@@ -1095,9 +1095,22 @@ source metadata refuse before commit. Never retry an uncertain mutation or save.
 Existing Unit/shared-OID and raw owners remain unchanged.
 
 Application scalar acceptance does not prove numeric Level Value mutation.
-Issue 131 still covers the ordinary unassociated numeric false-success route;
-use only an admitted unique issued Level OID with fresh scalar and whole-XML
-readback. Raw values require their existing associated owner. Target 3.4 HELP*
+The separate now-adopted consistency fix is described in
+`toolkit-cli/docs/ordinary-level-value.md`. Its adopted branch separately passed
+exact source 12 and fresh installed mock 6/daemon 6 cases with the current
+runner. The separate resilience report at
+`toolkit-cli/docs/acceptance/2026-10-05-ordinary-level-resilience/report.md` records
+source five and fresh installed mock two/daemon three cases for public NetVar
+edits, lost successful Value/save receipts and disk-backed restart. Owned policy
+is source-backed; issue 131 remains open pending merge/required CI at that
+checkpoint. Prior proofs remain distinct. These focused proofs do not execute
+the full configured 1,067 explicit identities plus seven whole modules. In a build with
+the fix, use canonical numeric coordinates, `--project` on the same connection
+and a complete coherent typed byte owner. Require fresh numeric/OID/whole-XML
+readback. A coherent presently loaded foreign owner can explain an exact global
+OID-cache byte; it does not prove which historical writer created that cache.
+A cache alone is not owner authority. Unsafe, Unit/shared-OID and existing
+associated raw owners remain separate. Target 3.4 HELP*
 documents the copy/set business rules but not the missing exact mutation,
 error/no-op/case/whitespace receipts of issues 124/125. Those native boundaries,
 native/hardware acceptance and the general parity ledger remain open.
@@ -1106,3 +1119,29 @@ The original full source Make interop checkpoint passed all 1,050 required IDs
 and seven whole core modules, with two optional UnitSpec skips. The fresh
 installed 28/31 focused phases are separate. Later matrix/serial/metadata
 composition and issue 131 adoption are outside that original acceptance.
+
+
+## Conversion XML and prepared thermostat zone controls
+
+Conversion creation, replacement and read-only recovery use a conversion-only
+semantic XML comparator. Inherited `xml:space="preserve"`, mixed-content
+separators, CDATA and whitespace-only leaves are significant; only default-scope
+element-container formatting indentation is ignored. Detached Units retain
+actual ancestor scope and namespace context. Invalid directives refuse locally.
+Read `toolkit-cli/docs/conversion-xml-preservation.md`; preserve stopped journals,
+never replay uncertain sends, and never promote legacy journal observations to
+new semantic persistence proof. Across cmqttd restart, retain the same state file
+and journal endpoint; distinguish the current durable tree from the saved image
+and keep lost-SAVE journals uncertain even when both match. Mock storage is
+process-local. This does not widen native XML schema admission.
+
+Use `{"op":"zone-checkbox-binding","binding":"MeasuredZones.Zone2","checked":true}`
+in the existing ordered `--output-operation` history for one of the 34 prepared
+thermostat Boolean bindings. Require the current fresh owner and explicit
+`--temperature-preference celsius`; equality guards, synchronous callbacks,
+shared damper/output references and one sealed family save apply. Read
+`toolkit-cli/docs/thermostat-zone-controls.md` for the exact closed roster,
+profile and Basic/Programmable consequences. JSON diagnostics are observations,
+not resumable owner state. Unknown bindings, non-Booleans and caller callbacks
+refuse before connection. Native GUI admission/dispatch, Application migration,
+Delete, unrecovered temperature/time controls and hardware remain separate work.

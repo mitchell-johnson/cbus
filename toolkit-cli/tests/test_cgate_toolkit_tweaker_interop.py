@@ -223,8 +223,10 @@ def test_public_toolkit_tweaker_preview_apply_family(backend, variable, source, 
         final, call = cli(relay, evidence, specs, profile, source, target, extra=apply_flags(preview))
         assert final["phase"] == "complete" and final["created"] and final["applied"] and final["accepted"]
         assert final["planned_assignments_complete"] and not final["outcome_uncertain"]
-        assert final["xml_comparison"] == {"whitespace_only_text_around_element_children_compared": False,
-                                           "xml_space_preserve_override_enforced": False}
+        assert final["xml_comparison"] == {"formatting_only_container_indentation_compared": False,
+                                           "xml_space_preserve_override_enforced": True,
+                                           "mixed_content_text_whitespace_compared": True,
+                                           "whitespace_only_leaf_values_compared": True}
         assert final["plan_sha256"] == preview["plan_sha256"] == plan_digest(final["plan"])
         assert final["verified_expected_parameters"] == final["plan"]["expected_parameters"]
         assert [{k: v for k, v in row.items() if k != "confirmed"} for row in final["assignments"]] == final["plan"]["assignments"]

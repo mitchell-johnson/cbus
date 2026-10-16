@@ -136,8 +136,15 @@ Address/TagName edits that preserve identities, data and recorded creation order
 Use `--project` on the operation's connection, read back the complete graph and
 save the changed project explicitly. Never replay an uncertain write. The
 bounded owned source and installed checks are separate from exact native
-acceptance in issues 124/125; ordinary unassociated numeric Level Value writes
-remain limited by issue 131.
+acceptance in issues 124/125. The separate [ordinary numeric Level Value
+fix](docs/ordinary-level-value.md) has isolated library/source/wheel/Rust proofs
+and separate adopted-branch source 12 and fresh installed mock 6/daemon 6
+acceptance. A separate [five-case resilience checkpoint](docs/acceptance/2026-10-05-ordinary-level-resilience/report.md)
+passed source five and fresh installed mock two/daemon three cases for public
+NetVar edits, lost successful receipts and disk-backed restart. Owned policy is
+source-backed; issue 131 remains open pending merge/required CI at that
+checkpoint. Full configured execution and exact native equivalence remain
+separate.
 
 `cgate file-upload SERVER_PATH LOCAL_FILE [--project NAME]` sends a bounded binary
 snapshot through the server FILE protocol. cmqttd stores it in its virtual
