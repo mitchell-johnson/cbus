@@ -228,5 +228,44 @@ class ModelTests(unittest.TestCase):
         self.assertEqual(caught.exception.details["code"], "database_full")
 
 
+class KeyglHydraBoundaryTests(unittest.TestCase):
+    """Issue #58 remaining item: the KEYGL5/Hydra sibling scanner routines.
+
+    No committed receipt, fixture or documentation describes the behavior of
+    ``TfrmKEYGL5.IsSerialNumber``/``AcquireBarCode``,
+    ``TfrmHydraWPFBase.BarCodeScan`` or ``THydraDataModule.BarCodeScan``.
+    Recovering them requires the pinned original executable and MAP through
+    ``research/barcode_scanner_original.py``, so the Python model must not
+    invent these routines. These pins lock the boundary and name the next file
+    to change; they establish no original GUI, scanner or hardware acceptance.
+    """
+
+    def test_original_receipt_covers_no_keygl5_hydra_scanner_methods(self):
+        # Next: research/barcode_scanner_original.py must pin the sibling
+        # routines in this receipt before the Python model implements them.
+        for sibling in ("TfrmKEYGL5", "TfrmHydraWPFBase", "THydraDataModule"):
+            with self.subTest(sibling):
+                self.assertFalse(any(sibling.lower() in name for name in RECEIPT["methods"]))
+
+    def test_barcode_docs_record_sibling_routines_as_unanalyzed(self):
+        # The committed doc keeps the sibling routines in its Unresolved list;
+        # implementing them first requires original-instruction evidence.
+        text = (ROOT / "docs/barcode.md").read_text()
+        for routine in ("TfrmKEYGL5.IsSerialNumber", "AcquireBarCode",
+                        "TfrmHydraWPFBase.BarCodeScan", "THydraDataModule.BarCodeScan"):
+            with self.subTest(routine):
+                self.assertIn(routine, text)
+        self.assertIn("were not analyzed", text)
+
+    def test_no_keygl5_hydra_scanner_surface_in_barcode_modules(self):
+        # Next: barcode_scanner.py KEYGL5/Hydra routines, only after original
+        # evidence exists; an unbuilt boundary must not imply a surface.
+        import cbus_toolkit.barcode_database as database
+        for module in (model, database):
+            with self.subTest(module.__name__):
+                leaked = [name for name in dir(module) if "keygl" in name.lower() or "hydra" in name.lower()]
+                self.assertEqual(leaked, [])
+
+
 if __name__ == "__main__":
     unittest.main()

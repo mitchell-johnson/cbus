@@ -175,7 +175,7 @@ containing control characters and an oversized initializer refuse before ADD.
 
 ## Unresolved
 
-- Sibling routines `TfrmKEYGL5.IsSerialNumber`/`AcquireBarCode`, `TfrmHydraWPFBase.BarCodeScan` and `THydraDataModule.BarCodeScan` were not analyzed.
+- Sibling routines `TfrmKEYGL5.IsSerialNumber`/`AcquireBarCode`, `TfrmHydraWPFBase.BarCodeScan` and `THydraDataModule.BarCodeScan` were not analyzed. Recovering them needs the pinned original executable and MAP, which are not committed; `tests/test_barcode_scanner.py` pins this boundary (no original receipt coverage, no modeled surface) so the routines stay unbuilt rather than implied.
 - The meaning of the unit-dialog `+0xDD` guard is unresolved.
 - Unit-dialog serial validation (`CheckSerialNumber`, `CIS_CBus.ValidateSerialNumber`) is unresolved.
 - Emulation does not cover the Tag Name dialog's tag validation, if any.
