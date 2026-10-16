@@ -24,9 +24,16 @@
 #                       twelve exact-wire Unit mapper cases plus two full Network reads
 #   make check-dbgetxml-wire-interop
 #                       Python client and pipelined XML reads on both Rust servers
-#   make check-wheel    build a fresh wheel, install it with every supported
-#                       extra in an isolated Python 3.13 venv, and run the
+#   make check-wheel    build a fresh wheel with test/research/serial/usb
+#                       extras in an isolated Python 3.13 venv, and run the
 #                       full offline suite without importing from src/
+#   make check-wheel-interop
+#                       require an explicit retained output directory and both
+#                       existing Rust executables; install a fresh wheel and run
+#                       complete maintained interop selections with import guards
+#   make check-thermostat-temperature-owner
+#                       focused temperature load/save owner and preserved settings
+#                       checks using explicitly supplied existing Rust executables
 #   make check-parity-register  verify generated scope/evidence accounting
 #   make refresh-parity-receipts
 #                       rebuild both servers, re-run every source-bound
@@ -41,6 +48,8 @@ VENV = .venv
 PY = $(VENV)/bin/python
 RUST_DIR = ../rust
 WHEEL_PY ?= python3.13
+WHEEL_INTEROP_BACKEND ?=
+WHEEL_INTEROP_TIMEOUT ?= 7200
 PYTEST_EXTRA ?= -ra
 CGATE_INTEROP_PYTEST_EXTRA ?= $(PYTEST_EXTRA)
 CMQTT_INTEROP_PYTEST_EXTRA ?= $(PYTEST_EXTRA)
@@ -63,6 +72,46 @@ check-offline: compile check-parity-register
 		--ignore=tests/test_cmqtt_programming_methods_interop.py \
 		--ignore=tests/test_cmqtt_dali_commissioning_interop.py \
 		$(PYTEST_EXTRA)
+
+check-thermostat-temperature-owner:
+	: $${CBUS_CGATE_MOCK_BIN:?Set CBUS_CGATE_MOCK_BIN to an existing owned cgate-mock executable}
+	: $${CBUS_CMQTTD_BIN:?Set CBUS_CMQTTD_BIN to an existing owned cmqttd executable}
+	test -x "$${CBUS_CGATE_MOCK_BIN}"
+	test -x "$${CBUS_CMQTTD_BIN}"
+	PYTHONDONTWRITEBYTECODE=1 $(PY) -m pytest \
+		tests/test_thermostat_temperature_model.py \
+		tests/test_thermostat_temperature_owner.py \
+		tests/test_thermostat_temperature_owner_backends.py \
+		tests/test_thermostat_temperature.py \
+		tests/test_thermostat_settings_temperature_vectors.py \
+		tests/test_thermostat_quick_zone_controls.py \
+		tests/test_thermostat_settings.py \
+		tests/test_thermostat_settings_guard.py \
+		tests/test_thermostat_remote_references.py \
+		tests/test_thermostat_quick_zone_controls_backends.py \
+		tests/test_ci_test_results.py \
+		-q -p no:cacheprovider $(PYTEST_EXTRA)
+
+check-conversion-xml-preservation:
+	: $${CBUS_CGATE_MOCK_BIN:?Select an existing owned cgate-mock executable}
+	: $${CBUS_CMQTTD_BIN:?Select an existing owned cmqttd executable}
+	test -x "$${CBUS_CGATE_MOCK_BIN}"
+	test -x "$${CBUS_CMQTTD_BIN}"
+	PYTHONDONTWRITEBYTECODE=1 $(PY) -m pytest \
+		tests/test_conversion_xml_preservation.py \
+		tests/test_conversion_xml_preservation_backends.py \
+		tests/test_conversion_xml_restart_backends.py \
+		-q -p no:cacheprovider $(PYTEST_EXTRA)
+
+check-thermostat-zone-controls:
+	: $${CBUS_CGATE_MOCK_BIN:?Select an existing owned cgate-mock executable}
+	: $${CBUS_CMQTTD_BIN:?Select an existing owned cmqttd executable}
+	test -x "$${CBUS_CGATE_MOCK_BIN}"
+	test -x "$${CBUS_CMQTTD_BIN}"
+	PYTHONDONTWRITEBYTECODE=1 $(PY) -m pytest \
+		tests/test_thermostat_zone_controls.py \
+		tests/test_thermostat_zone_controls_backends.py \
+		-q -p no:cacheprovider $(PYTEST_EXTRA)
 
 check-parity-register:
 	$(PY) research/build_cgate_contract_inventory.py --check
@@ -347,6 +396,45 @@ check-cgate-interop: compile
 		'tests/test_thermostat_output_default_unicode_backends.py::test_public_ASCII_ambiguity_and_duplicate_Edit_refuse_before_backup[ASCII-duplicate-Edit-still-refused-mock]' \
 		'tests/test_thermostat_output_default_unicode_backends.py::test_public_ASCII_default_snapshot_keeps_unrelated_opaque_Value_freshness[mock]' \
 		'tests/test_thermostat_output_default_unicode_backends.py::test_public_ASCII_default_then_lost_quoted_Unicode_Edit_never_replays[mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSA-show-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSA-relay-warnings-master-independent-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSA5-show-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSA5-relay-warnings-master-independent-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSB-show-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSB-relay-warnings-master-independent-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSB5-show-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSB5-relay-warnings-master-independent-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-mask-only-no-inferred-update-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[inactive-caches-before-unused-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[expansion-shrink-reexpand-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[bit-zero-not-a-damper-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[only-zone-1-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[only-zone-2-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[only-zone-3-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[only-zone-4-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[first-free-not-old-source-byte-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[four-first-free-source-order-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[same-generated-tag-existing-reuse-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[generated-tag-at-unused-no-create-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[slave-missing-remains-nil-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[slave-existing-stays-model-bound-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[reopen-does-not-clear-cache-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[after-show-help-only-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[click-true-alert-without-model-write-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[click-false-no-alert-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[setup-checked-does-not-click-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-save-factor-0-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-save-factor-1-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-save-factor-2-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-save-factor-3-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-save-factor-6-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-save-factor-10-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-and-click-separate-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[graph-only-created-zones-retained-without-pp-change-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_damper_history_refuses_before_backup[group-callback-requires-form-show-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_damper_lost_successful_save_never_replays[PP SAVE_TO_SOURCE-binding-save-factor-6-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_damper_lost_successful_save_never_replays[PROJECT SAVE-binding-save-factor-6-mock]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_damper_opaque_level_stale_refuses_before_backup[mock]' \
 		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[programmable-temporary-unused-fan-swap-mock]' \
 		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[programmable-alias-shared-load-order-mock]' \
 		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[basic-generated-peer-and-unused-damper-mock]' \
@@ -507,6 +595,106 @@ check-cgate-interop: compile
 		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_pending_scene_name_and_cache_injection_refuse_without_write[cache-injection-mock]' \
 		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_lost_successful_save_not_replayed[pp-save-mock]' \
 		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_lost_successful_save_not_replayed[project-save-mock]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_history[basic-master-live-display-and-tail-pc_tsb-mock]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_history[basic-retained-disabled-flags-pc_tsb-mock]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_history[basic-slave-live-display-four-pc_tsb-mock]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_history[basic-master-live-display-and-tail-pc_tsb5-mock]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_history[basic-retained-disabled-flags-pc_tsb5-mock]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_history[basic-slave-live-display-four-pc_tsb5-mock]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_history[programmable-include-exclude-live-pc_tsa-mock]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_history[ordered-plant-one-reuse-pc_tsa-mock]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_history[ordered-plant-one-allocate-pc_tsa-mock]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_history[programmable-include-exclude-live-pc_tsa5-mock]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_history[ordered-plant-one-reuse-pc_tsa5-mock]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_history[ordered-plant-one-allocate-pc_tsa5-mock]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_refuses_before_backup[changed-loaded-role-mock]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_refuses_before_backup[pending-source-message-mock]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_refuses_before_backup[consumed-source-message-mock]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_refuses_before_backup[invalid-display-before-master-setup-mock]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_lost_successful_save_never_replays[PP SAVE_TO_SOURCE-mock]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_lost_successful_save_never_replays[PROJECT SAVE-mock]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_opaque_level_stale_refuses[mock]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_chained_saves[pc_tsa-mock]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_chained_saves[pc_tsa5-mock]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_chained_saves[pc_tsb-mock]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_chained_saves[pc_tsb5-mock]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-pp-save-pc_tsa-mock]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-pp-save-pc_tsa5-mock]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-pp-save-pc_tsb-mock]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-pp-save-pc_tsb5-mock]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-project-save-pc_tsa-mock]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-project-save-pc_tsa5-mock]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-project-save-pc_tsb-mock]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-project-save-pc_tsb5-mock]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[raw-set-rewritten-pc_tsa-mock]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[raw-set-rewritten-pc_tsa5-mock]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[raw-set-rewritten-pc_tsb-mock]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[raw-set-rewritten-pc_tsb5-mock]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[unsigned-overflow-pc_tsa-mock]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[unsigned-overflow-pc_tsa5-mock]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[unsigned-overflow-pc_tsb-mock]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[unsigned-overflow-pc_tsb5-mock]' \
+		'tests/test_cgl_application_order_backends.py::test_public_cgl_retained_native_prefix_order_filters_and_routes[mock]' \
+		'tests/test_cgl_application_order_backends.py::test_public_cgl_saved_load_runtime_reannouncement_preserves_order[mock]' \
+		'tests/test_cgl_application_order_backends.py::test_public_cgl_typed_replace_readdress_copy_delete_recreate[mock]' \
+		'tests/test_cgl_application_order_backends.py::test_public_cgl_complete_network_replacement_retains_and_appends[mock]' \
+		'tests/test_cgl_application_order_backends.py::test_public_cgl_project_copy_native_archive_and_graph_isolation[mock]' \
+		'tests/test_cgl_application_order_backends.py::test_public_cgl_lost_import_success_is_not_replayed_or_rolled_back[mock]' \
+		'tests/test_cgl_application_order_backends.py::test_public_cgl_invalid_python_document_has_no_prefix_mutation[mock]' \
+		'tests/test_application_copy_safe_backends.py::test_public_application_copy_lost_301_no_replay_or_inverse_cleanup[mock]' \
+		'tests/test_application_copy_safe_backends.py::test_public_application_copy_lost_project_save_preserves_complete_copy[mock]' \
+		'tests/test_application_copy_safe_backends.py::test_public_application_copy_sibling_conflicts_do_not_mutate[mock]' \
+		'tests/test_application_copy_safe_backends.py::test_public_application_copy_unsaved_close_drops_only_destination[mock]' \
+		'tests/test_application_copy_safe_backends.py::test_public_application_copy_wrong_parent_and_raw_level_refuse[mock]' \
+		'tests/test_application_copy_safe_backends.py::test_public_application_cross_project_copy_preserves_source[mock]' \
+		'tests/test_application_copy_safe_backends.py::test_public_application_oid_copy_to_network_oid[mock]' \
+		'tests/test_application_copy_safe_backends.py::test_public_numeric_application_copy_complete_save_reload_isolation[mock]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_lost_success_is_not_replayed[mock-lost-move]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_lost_success_is_not_replayed[mock-lost-save]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_move_preserves_full_graph[mock-numeric]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_move_preserves_full_graph[mock-oid]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_noop_rename_and_replacement_share_identity[mock]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_refusal_is_atomic[mock-blank-name]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_refusal_is_atomic[mock-hex]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_refusal_is_atomic[mock-minus]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_refusal_is_atomic[mock-name-collision]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_refusal_is_atomic[mock-occupied]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_refusal_is_atomic[mock-overflow]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_refusal_is_atomic[mock-plus]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_refusal_is_atomic[mock-text]' \
+		'tests/test_ordinary_level_value_backends.py::test_public_numeric_level_byte_edit_readbacks_save_reload[mock]' \
+		'tests/test_ordinary_level_value_backends.py::test_public_invalid_numeric_level_bytes_refuse_atomically[mock]' \
+		'tests/test_ordinary_level_value_backends.py::test_public_plain_and_copied_null_levels_become_bytes[mock]' \
+		'tests/test_ordinary_level_value_backends.py::test_public_numeric_then_issued_oid_keeps_coherent_aliases[mock]' \
+		'tests/test_ordinary_level_value_backends.py::test_public_selected_project_copy_retained_oid_bytes_are_isolated[mock]' \
+		'tests/test_ordinary_level_value_backends.py::test_public_associated_raw_level_owner_keeps_its_lexemes[mock]' \
+		'tests/test_ordinary_level_value_followon_backends.py::test_public_numeric_level_lost_success_is_not_replayed[mock-value]' \
+		'tests/test_ordinary_level_value_followon_backends.py::test_public_numeric_level_lost_success_is_not_replayed[mock-save]' \
+		'tests/test_conversion_xml_preservation_backends.py::test_public_conversion_creation_preserve_and_default_reset[mock]' \
+		'tests/test_conversion_xml_preservation_backends.py::test_public_conversion_replace_backup_reopen_and_recovery_preserve[mock]' \
+		'tests/test_conversion_xml_preservation_backends.py::test_public_conversion_creation_mixed_separator_loss_refuses[mock]' \
+		'tests/test_conversion_xml_preservation_backends.py::test_public_conversion_backup_preserved_separator_loss_stops_before_add[mock]' \
+		'tests/test_conversion_xml_preservation_backends.py::test_public_conversion_predelete_preserve_parent_tail_loss_keeps_source[mock]' \
+		'tests/test_conversion_xml_preservation_backends.py::test_public_conversion_reopen_cdata_loss_refuses_completed_receipt[mock]' \
+		'tests/test_conversion_xml_preservation_backends.py::test_public_conversion_recovery_current_or_backup_space_loss_read_only[mock]' \
+		'tests/test_conversion_xml_preservation_backends.py::test_public_conversion_save_refusal_retains_preserved_graph[mock]' \
+		'tests/test_conversion_xml_preservation_backends.py::test_public_conversion_lost_save_200_retains_graph_without_replay[mock]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-UIAllocatedZones-mock]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-InternalPlantZones-mock]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-InternalPlantModes-mock]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-MeasuredZones-mock]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-CoolingPlantInstalledZones-mock]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-VentingPlantInstalledZones-mock]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-HeatingPlantInstalledZones-mock]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[empty-heating-callback-chain-mock]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[vent-mode-family-fan-save-tail-mock]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[basic-operation-zone-tail-pc_tsb-mock]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[basic-operation-zone-tail-pc_tsb5-mock]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_refuses_before_backup[unsettled-profile-mock]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_refuses_before_backup[pending-queue-mock]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_failed_stage_never_saves_or_inverts[mock]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_lost_successful_save_never_replays[PP SAVE_TO_SOURCE-mock]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_lost_successful_save_never_replays[PROJECT SAVE-mock]' \
 		-q -p no:cacheprovider $(CGATE_INTEROP_PYTEST_EXTRA)
 
 check-cmqtt-interop: compile
@@ -778,6 +966,45 @@ check-cmqtt-interop: compile
 		'tests/test_thermostat_output_default_unicode_backends.py::test_public_ASCII_ambiguity_and_duplicate_Edit_refuse_before_backup[ASCII-duplicate-Edit-still-refused-daemon]' \
 		'tests/test_thermostat_output_default_unicode_backends.py::test_public_ASCII_default_snapshot_keeps_unrelated_opaque_Value_freshness[daemon]' \
 		'tests/test_thermostat_output_default_unicode_backends.py::test_public_ASCII_default_then_lost_quoted_Unicode_Edit_never_replays[daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSA-show-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSA-relay-warnings-master-independent-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSA5-show-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSA5-relay-warnings-master-independent-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSB-show-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSB-relay-warnings-master-independent-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSB5-show-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSB5-relay-warnings-master-independent-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-mask-only-no-inferred-update-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[inactive-caches-before-unused-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[expansion-shrink-reexpand-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[bit-zero-not-a-damper-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[only-zone-1-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[only-zone-2-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[only-zone-3-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[only-zone-4-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[first-free-not-old-source-byte-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[four-first-free-source-order-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[same-generated-tag-existing-reuse-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[generated-tag-at-unused-no-create-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[slave-missing-remains-nil-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[slave-existing-stays-model-bound-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[reopen-does-not-clear-cache-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[after-show-help-only-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[click-true-alert-without-model-write-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[click-false-no-alert-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[setup-checked-does-not-click-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-save-factor-0-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-save-factor-1-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-save-factor-2-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-save-factor-3-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-save-factor-6-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-save-factor-10-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-and-click-separate-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[graph-only-created-zones-retained-without-pp-change-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_damper_history_refuses_before_backup[group-callback-requires-form-show-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_damper_lost_successful_save_never_replays[PP SAVE_TO_SOURCE-binding-save-factor-6-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_damper_lost_successful_save_never_replays[PROJECT SAVE-binding-save-factor-6-daemon]' \
+		'tests/test_thermostat_damper_controls_backends.py::test_public_damper_opaque_level_stale_refuses_before_backup[daemon]' \
 		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[programmable-temporary-unused-fan-swap-daemon]' \
 		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[programmable-alias-shared-load-order-daemon]' \
 		'tests/test_thermostat_output_groups_backends.py::test_public_output_group_load_and_ordered_selections[basic-generated-peer-and-unused-damper-daemon]' \
@@ -938,6 +1165,116 @@ check-cmqtt-interop: compile
 		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_pending_scene_name_and_cache_injection_refuse_without_write[cache-injection-daemon]' \
 		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_lost_successful_save_not_replayed[pp-save-daemon]' \
 		'tests/test_cgate_edlt_scene_name_control_interop.py::test_public_scene_name_control_lost_successful_save_not_replayed[project-save-daemon]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_history[basic-master-live-display-and-tail-pc_tsb-daemon]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_history[basic-retained-disabled-flags-pc_tsb-daemon]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_history[basic-slave-live-display-four-pc_tsb-daemon]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_history[basic-master-live-display-and-tail-pc_tsb5-daemon]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_history[basic-retained-disabled-flags-pc_tsb5-daemon]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_history[basic-slave-live-display-four-pc_tsb5-daemon]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_history[programmable-include-exclude-live-pc_tsa-daemon]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_history[ordered-plant-one-reuse-pc_tsa-daemon]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_history[ordered-plant-one-allocate-pc_tsa-daemon]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_history[programmable-include-exclude-live-pc_tsa5-daemon]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_history[ordered-plant-one-reuse-pc_tsa5-daemon]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_history[ordered-plant-one-allocate-pc_tsa5-daemon]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_refuses_before_backup[changed-loaded-role-daemon]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_refuses_before_backup[pending-source-message-daemon]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_refuses_before_backup[consumed-source-message-daemon]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_refuses_before_backup[invalid-display-before-master-setup-daemon]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_lost_successful_save_never_replays[PP SAVE_TO_SOURCE-daemon]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_lost_successful_save_never_replays[PROJECT SAVE-daemon]' \
+		'tests/test_thermostat_quick_zone_controls_backends.py::test_public_full_owner_opaque_level_stale_refuses[daemon]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_chained_saves[pc_tsa-daemon]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_chained_saves[pc_tsa5-daemon]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_chained_saves[pc_tsb-daemon]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_chained_saves[pc_tsb5-daemon]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-pp-save-pc_tsa-daemon]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-pp-save-pc_tsa5-daemon]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-pp-save-pc_tsb-daemon]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-pp-save-pc_tsb5-daemon]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-project-save-pc_tsa-daemon]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-project-save-pc_tsa5-daemon]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-project-save-pc_tsb-daemon]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-project-save-pc_tsb5-daemon]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[raw-set-rewritten-pc_tsa-daemon]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[raw-set-rewritten-pc_tsa5-daemon]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[raw-set-rewritten-pc_tsb-daemon]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[raw-set-rewritten-pc_tsb5-daemon]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[unsigned-overflow-pc_tsa-daemon]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[unsigned-overflow-pc_tsa5-daemon]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[unsigned-overflow-pc_tsb-daemon]' \
+		'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[unsigned-overflow-pc_tsb5-daemon]' \
+		'tests/test_cgl_application_order_backends.py::test_public_cgl_retained_native_prefix_order_filters_and_routes[daemon]' \
+		'tests/test_cgl_application_order_backends.py::test_public_cgl_saved_load_runtime_reannouncement_preserves_order[daemon]' \
+		'tests/test_cgl_application_order_backends.py::test_public_cgl_typed_replace_readdress_copy_delete_recreate[daemon]' \
+		'tests/test_cgl_application_order_backends.py::test_public_cgl_complete_network_replacement_retains_and_appends[daemon]' \
+		'tests/test_cgl_application_order_backends.py::test_public_cgl_project_copy_native_archive_and_graph_isolation[daemon]' \
+		'tests/test_cgl_application_order_backends.py::test_public_cgl_lost_import_success_is_not_replayed_or_rolled_back[daemon]' \
+		'tests/test_cgl_application_order_backends.py::test_public_cgl_invalid_python_document_has_no_prefix_mutation[daemon]' \
+		'tests/test_cgl_application_order_backends.py::test_public_cmqttd_cgl_durable_restart_and_explicit_legacy_fallback[recorded-restart]' \
+		'tests/test_cgl_application_order_backends.py::test_public_cmqttd_cgl_durable_restart_and_explicit_legacy_fallback[legacy-missing-field]' \
+		'tests/test_application_copy_safe_backends.py::test_public_application_copy_lost_301_no_replay_or_inverse_cleanup[daemon]' \
+		'tests/test_application_copy_safe_backends.py::test_public_application_copy_lost_project_save_preserves_complete_copy[daemon]' \
+		'tests/test_application_copy_safe_backends.py::test_public_application_copy_sibling_conflicts_do_not_mutate[daemon]' \
+		'tests/test_application_copy_safe_backends.py::test_public_application_copy_unsaved_close_drops_only_destination[daemon]' \
+		'tests/test_application_copy_safe_backends.py::test_public_application_copy_wrong_parent_and_raw_level_refuse[daemon]' \
+		'tests/test_application_copy_safe_backends.py::test_public_application_cross_project_copy_preserves_source[daemon]' \
+		'tests/test_application_copy_safe_backends.py::test_public_application_oid_copy_to_network_oid[daemon]' \
+		'tests/test_application_copy_safe_backends.py::test_public_numeric_application_copy_complete_save_reload_isolation[daemon]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_cmqttd_restart_preserves_address_and_oid' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_lost_success_is_not_replayed[daemon-lost-move]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_lost_success_is_not_replayed[daemon-lost-save]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_move_preserves_full_graph[daemon-numeric]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_move_preserves_full_graph[daemon-oid]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_noop_rename_and_replacement_share_identity[daemon]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_refusal_is_atomic[daemon-blank-name]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_refusal_is_atomic[daemon-hex]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_refusal_is_atomic[daemon-minus]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_refusal_is_atomic[daemon-name-collision]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_refusal_is_atomic[daemon-occupied]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_refusal_is_atomic[daemon-overflow]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_refusal_is_atomic[daemon-plus]' \
+		'tests/test_application_safe_set_backends.py::test_public_application_safe_refusal_is_atomic[daemon-text]' \
+		'tests/test_ordinary_level_value_backends.py::test_public_numeric_level_byte_edit_readbacks_save_reload[daemon]' \
+		'tests/test_ordinary_level_value_backends.py::test_public_invalid_numeric_level_bytes_refuse_atomically[daemon]' \
+		'tests/test_ordinary_level_value_backends.py::test_public_plain_and_copied_null_levels_become_bytes[daemon]' \
+		'tests/test_ordinary_level_value_backends.py::test_public_numeric_then_issued_oid_keeps_coherent_aliases[daemon]' \
+		'tests/test_ordinary_level_value_backends.py::test_public_selected_project_copy_retained_oid_bytes_are_isolated[daemon]' \
+		'tests/test_ordinary_level_value_backends.py::test_public_associated_raw_level_owner_keeps_its_lexemes[daemon]' \
+		'tests/test_ordinary_level_value_followon_backends.py::test_public_numeric_level_lost_success_is_not_replayed[daemon-value]' \
+		'tests/test_ordinary_level_value_followon_backends.py::test_public_numeric_level_lost_success_is_not_replayed[daemon-save]' \
+		'tests/test_ordinary_level_value_followon_backends.py::test_public_numeric_group_and_netvar_levels_survive_cmqttd_restart' \
+		'tests/test_conversion_xml_preservation_backends.py::test_public_conversion_creation_preserve_and_default_reset[daemon]' \
+		'tests/test_conversion_xml_preservation_backends.py::test_public_conversion_replace_backup_reopen_and_recovery_preserve[daemon]' \
+		'tests/test_conversion_xml_preservation_backends.py::test_public_conversion_creation_mixed_separator_loss_refuses[daemon]' \
+		'tests/test_conversion_xml_preservation_backends.py::test_public_conversion_backup_preserved_separator_loss_stops_before_add[daemon]' \
+		'tests/test_conversion_xml_preservation_backends.py::test_public_conversion_predelete_preserve_parent_tail_loss_keeps_source[daemon]' \
+		'tests/test_conversion_xml_preservation_backends.py::test_public_conversion_reopen_cdata_loss_refuses_completed_receipt[daemon]' \
+		'tests/test_conversion_xml_preservation_backends.py::test_public_conversion_recovery_current_or_backup_space_loss_read_only[daemon]' \
+		'tests/test_conversion_xml_preservation_backends.py::test_public_conversion_save_refusal_retains_preserved_graph[daemon]' \
+		'tests/test_conversion_xml_preservation_backends.py::test_public_conversion_lost_save_200_retains_graph_without_replay[daemon]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-UIAllocatedZones-daemon]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-InternalPlantZones-daemon]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-InternalPlantModes-daemon]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-MeasuredZones-daemon]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-CoolingPlantInstalledZones-daemon]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-VentingPlantInstalledZones-daemon]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-HeatingPlantInstalledZones-daemon]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[empty-heating-callback-chain-daemon]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[vent-mode-family-fan-save-tail-daemon]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[basic-operation-zone-tail-pc_tsb-daemon]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[basic-operation-zone-tail-pc_tsb5-daemon]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_refuses_before_backup[unsettled-profile-daemon]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_refuses_before_backup[pending-queue-daemon]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_failed_stage_never_saves_or_inverts[daemon]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_lost_successful_save_never_replays[PP SAVE_TO_SOURCE-daemon]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_lost_successful_save_never_replays[PROJECT SAVE-daemon]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_schema_refuses_before_connection[unprepared-schedule]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_schema_refuses_before_connection[unprepared-standby]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_schema_refuses_before_connection[nonboolean]' \
+		'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_schema_refuses_before_connection[missing-celsius]' \
+		'tests/test_conversion_xml_restart_backends.py::test_public_conversion_completed_journal_daemon_restart_preserves_xml' \
+		'tests/test_conversion_xml_restart_backends.py::test_public_conversion_lost_save_daemon_restart_keeps_uncertainty' \
 		-q -p no:cacheprovider $(CMQTT_INTEROP_PYTEST_EXTRA)
 
 check-session-differential: build-interop
@@ -1005,6 +1342,13 @@ check-interop: check-session-differential check-tagged-session-differential chec
 	$(MAKE) check-cgate-interop
 	$(MAKE) check-cmqtt-interop
 
+check-wheel-interop:
+	test -n "$(WHEEL_INTEROP_OUTPUT)"
+	PYTHONPATH= "$(WHEEL_PY)" research/installed_rust_interop.py \
+		--mock-bin "$(CGATE_MOCK_BIN)" --cmqttd-bin "$(CMQTTD_BIN)" \
+		--output "$(WHEEL_INTEROP_OUTPUT)" --timeout "$(WHEEL_INTEROP_TIMEOUT)" \
+		$(if $(strip $(WHEEL_INTEROP_BACKEND)),--backend "$(WHEEL_INTEROP_BACKEND)")
+
 check-wheel:
 	@tmp=$$(mktemp -d); trap 'rm -rf "$$tmp"' EXIT; \
 	project=$$(pwd -P); source_root="$$project/src"; \
@@ -1025,8 +1369,9 @@ compile:
 	$(PY) -m compileall -q src/cbus_toolkit
 
 .PHONY: check check-offline check-native check-hardware build-interop \
+	check-thermostat-temperature-owner \
 	check-session-differential \
 	check-tagged-session-differential \
 	check-dbsetxml-unit-differential \
-	check-cgate-interop check-cmqtt-interop check-interop check-wheel \
+	check-cgate-interop check-cmqtt-interop check-interop check-wheel check-wheel-interop \
 	check-parity-register refresh-parity-receipts coverage require-complete compile
