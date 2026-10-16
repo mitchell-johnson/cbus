@@ -10,8 +10,16 @@ from unittest.mock import patch
 
 from cbus_toolkit.cgate import CGateError, CGateResponse
 from cbus_toolkit.cli import main
+from cbus_toolkit.programming import ProgrammingCommandError
 from cbus_toolkit.simulator import net_voltage_text, with_net_voltage
-from cbus_toolkit.unit_diagnostics import DiagnosticsError, NetworkDiagnostics
+from cbus_toolkit.unit_diagnostics import (
+    DiagnosticsError,
+    NetworkDiagnostics,
+    _database_units,
+    _failure,
+    _pingu as _parse_pingu,
+    _property,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = json.loads((ROOT / 'research/fixtures/native-unit-diagnostics.json').read_text())
@@ -244,6 +252,109 @@ class RuleTests(unittest.TestCase):
                            '--unit', '16', '--no-burden', '--no-clock'])
         self.assertEqual(status, 0)
         self.assertEqual(json.loads(output.getvalue())['units'][0]['voltage'], 31.8)
+
+
+def _db(body):
+    return _response(['347-' + body, '344 End XML snippet'])
+
+
+class PrivateHelperTests(unittest.TestCase):
+    def test_database_units_parses_types_and_missing_type(self):
+        body = ('<Network><Address>254</Address>'
+                '<Unit><Address>0</Address></Unit>'
+                '<Unit><Address>4</Address><UnitType>KEYE1</UnitType></Unit>'
+                '<Unit><Address>5</Address><UnitType></UnitType></Unit>'
+                '</Network>')
+        self.assertEqual(_database_units(_db(body), NETWORK), {0: None, 4: 'KEYE1', 5: None})
+
+    def test_database_units_accepts_the_full_address_space(self):
+        body = ('<Network><Address>254</Address>' + ''.join(
+            f'<Unit><Address>{address}</Address><UnitType>T</UnitType></Unit>' for address in range(256))
+            + '</Network>')
+        units = _database_units(_db(body), NETWORK)
+        self.assertEqual(len(units), 256)
+        self.assertEqual((units[0], units[255]), ('T', 'T'))
+
+    def test_database_units_rejects_network_mismatch(self):
+        for body in ('<Network><Unit><Address>4</Address></Unit></Network>',
+                     '<Network><Address>253</Address><Unit><Address>4</Address></Unit></Network>'):
+            with self.assertRaisesRegex(DiagnosticsError, 'does not match the requested network'):
+                _database_units(_db(body), NETWORK)
+
+    def test_database_units_rejects_noncanonical_addresses(self):
+        templates = ['<Unit><Address>{}</Address></Unit>', '<Unit></Unit>']
+        for raw in ('256', '04', ' 4', '4 ', '', '+4'):
+            body = f'<Network><Address>254</Address>{templates[0].format(raw)}</Network>'
+            with self.assertRaisesRegex(DiagnosticsError, 'canonical decimal byte'):
+                _database_units(_db(body), NETWORK)
+        with self.assertRaisesRegex(DiagnosticsError, 'canonical decimal byte'):
+            _database_units(_db(f'<Network><Address>254</Address>{templates[1]}</Network>'), NETWORK)
+
+    def test_database_units_rejects_duplicates(self):
+        body = ('<Network><Address>254</Address>'
+                '<Unit><Address>4</Address></Unit><Unit><Address>4</Address></Unit></Network>')
+        with self.assertRaisesRegex(DiagnosticsError, 'duplicate unit addresses'):
+            _database_units(_db(body), NETWORK)
+        body = ('<Network><Address>254</Address><Address>254</Address>'
+                '<Unit><Address>4</Address></Unit></Network>')
+        with self.assertRaisesRegex(DiagnosticsError, 'duplicate Address fields'):
+            _database_units(_db(body), NETWORK)
+        body = ('<Network><Address>254</Address><Unit><Address>4</Address>'
+                '<UnitType>A</UnitType><UnitType>B</UnitType></Unit></Network>')
+        with self.assertRaisesRegex(DiagnosticsError, 'duplicate UnitType fields'):
+            _database_units(_db(body), NETWORK)
+
+    def test_database_units_without_native_xml_raises_value_error(self):
+        with self.assertRaises(ValueError):
+            _database_units(_response(['200 OK.']), NETWORK)
+        with self.assertRaises(ValueError):
+            _database_units(_db('<Project><Address>254</Address></Project>'), NETWORK)
+
+    def test_pingu_parses_empty_single_and_bounded_lists(self):
+        self.assertEqual(_parse_pingu(_response(['302-Units=', '200 OK.'])), [])
+        self.assertEqual(_parse_pingu(_response(['302-Units=4', '200 OK.'])), [4])
+        self.assertEqual(_parse_pingu(_response(['302-Units=0, 4, 255', '200 OK.'])), [0, 4, 255])
+
+    def test_pingu_rejects_noncanonical_unordered_and_duplicate_lists(self):
+        for first in ('302-Units=256', '302-Units=00', '302-Units=04', '302-Units=5, 4', '302-Units=4, 4'):
+            with self.assertRaisesRegex(DiagnosticsError, 'unique, ordered decimal values'):
+                _parse_pingu(_response([first, '200 OK.']))
+        for first in ('302-Units=4,4', '302-Units=4 ', '302-Units= 4',
+                      '302-Units=-1', '302-Units=4, 5,', '302-Units=one'):
+            with self.assertRaisesRegex(DiagnosticsError, 'exact unit address list'):
+                _parse_pingu(_response([first, '200 OK.']))
+
+    def test_pingu_requires_the_exact_success_shape(self):
+        with self.assertRaisesRegex(DiagnosticsError, 'exact successful NET PINGU reply'):
+            _parse_pingu(_response(['302-Units=4', '200 OK.', '200 OK.']))
+        with self.assertRaisesRegex(DiagnosticsError, 'exact successful NET PINGU reply'):
+            _parse_pingu(_response(['302-Units=4']))
+        with self.assertRaisesRegex(DiagnosticsError, 'exact successful NET PINGU reply'):
+            _parse_pingu(CGateResponse(('302-Units=4', '200 OK.'), '200 OK.', 302))
+
+    def test_property_returns_the_suffix_only_on_an_exact_match(self):
+        path = f'{NETWORK}/p/4'
+        self.assertEqual(_property(_response([f'300 {path}: NetVoltage=31.8']), path, 'NetVoltage'), '31.8')
+        self.assertEqual(_property(_response([f'300 {path}: NetVoltage=']), path, 'NetVoltage'), '')
+        self.assertIsNone(_property(_response([f'300 {path}: NetVoltageX=1']), path, 'NetVoltage'))
+        self.assertIsNone(_property(_response([f'300 {path}: BurdenActive=yes']), path, 'NetVoltage'))
+        self.assertIsNone(_property(_response(['404 Not found']), path, 'NetVoltage'))
+        self.assertIsNone(_property(
+            _response([f'300 {path}: NetVoltage=1', f'300 {path}: NetVoltage=2']), path, 'NetVoltage'))
+        mismatched = CGateResponse((f'300 {path}: NetVoltage=1',), f'300 {path}: NetVoltage=1', 200)
+        self.assertIsNone(_property(mismatched, path, 'NetVoltage'))
+
+    def test_failure_shapes_cover_cgate_programming_and_transport_errors(self):
+        error = CGateError(_response(['404 Not found']))
+        self.assertEqual(_failure('voltage', error), {'step': 'voltage', 'status': 404, 'reply': ['404 Not found']})
+        reply = _response(['460 No such parameter: ClockGenEnable'])
+        shaped = _failure('clock-get', ProgrammingCommandError(reply, [(460, 'no such parameter')]))
+        self.assertEqual(shaped, {'step': 'clock-get', 'status': 460,
+                                  'reply': ['460 No such parameter: ClockGenEnable']})
+        orphan = _failure('clock-load', ProgrammingCommandError(None, [(408, 'no such address')]))
+        self.assertEqual(orphan, {'step': 'clock-load', 'status': None, 'reply': []})
+        transport = _failure('burden', RuntimeError('recorded transport failure'))
+        self.assertEqual(transport, {'step': 'burden', 'status': None, 'reply': ['recorded transport failure']})
 
 
 @unittest.skipUnless(os.environ.get('CBUS_CGATE_TEST_HOST'), 'Set CBUS_CGATE_TEST_HOST for disposable native diagnostics')
