@@ -1,0 +1,1824 @@
+{
+  "PEC_collision": {
+    "after_clear": "PEC group ObjectReferenceAttribute nil dedicated callback. Generic expression change delivers HandleMaintEnableGroupChange0xfa7840; group255 clears Offfalse. At handler tail a MANUAL concrete VMT14 callback occurs0xfa757d even without identity change, so current unused PEC Off is also normalized.",
+    "bank_key_consequence": "SetPECenableGroup/Off themselves do not call bank/key/maintenance/captured-power setters. Attribute manager/unit notifications generic. Other block/group/selection operations in the same fresh handler are separately admitted below.",
+    "clear_site": "0xfa74ee SetLightLevelMaintEnableGroup(primaryApplication.Groups.GroupByAddress255,false)",
+    "identity": "Source compares resolved object identity, not address alone. Explicit minimum context: PEC/PIR/Join/DualJoin/Corridor group identities with application identity, CorridorActive, eight current Block.Group identities. Under one primary application identity this can safely reduce to numeric addresses.",
+    "no_maintenance_active_guard": "The group collision checks run even if MaintActive is false; do not condition on checkbox Checked.",
+    "secondary_group_note": "A same numeric group address in another application is distinct identity.",
+    "unchanged_case": "Used PEC group distinct from all listed contexts remains same object; manual VMT14 changes radio Enabled only, Off preserved.",
+    "unused_skip": "GetPECenableGroup.IsUnused() at0xfa7414; unused branch0xfa741b jumps directly to subsequent maintenance/broadcast checks.",
+    "used_clear_if_any": [
+      {
+        "predicate": "PECenableGroup identity equals JoinGroup",
+        "site": "0xfa7439"
+      },
+      {
+        "predicate": "PECenableGroup identity equals DualJoinGroup",
+        "site": "0xfa7459"
+      },
+      {
+        "predicate": "PECenableGroup identity equals PIRenableGroup",
+        "site": "0xfa7475"
+      },
+      {
+        "predicate": "PECenableGroup identity equals CorridorLinkGroup AND CorridorLinkActive",
+        "site": "0xfa7491..0xfa74a2"
+      },
+      {
+        "predicate": "BlockCollection.ItemByGroup(PECenableGroup) nonnil (any existing bank/input block group)",
+        "site": "0xfa74bd..0xfa74c4"
+      }
+    ]
+  },
+  "broadcast": {
+    "broadcast_choices": {
+      "exclude": "Current MaintBlock iff both MaintActive and BroadcastActive. Also any block shared by a current Scene key or by a key with ANY current occupancy flag.",
+      "order": "Blocks0..7 ascending; collection preserves append order.",
+      "preserve": "No bank.SwitchActive, group-used, free-allocation, primary/secondary or template-special filter otherwise."
+    },
+    "clear_occupancy_from_key_blocks": {
+      "entry": "Both input-key and occupancy collections must exist.",
+      "per_row_gate": "Re-read CURRENT BroadcastActive and CURRENT BroadcastBlock once for each row; require key HasBlock.",
+      "setter_order": [
+        "LightAndMovement=false",
+        "DarkAndMovement=false",
+        "AnyMovement=false",
+        "Sunset=false"
+      ],
+      "within_row": "Once row admitted, all four setters are invoked even if a preceding callback changes active/ref; Boolean equal assignments remain no-op."
+    },
+    "compatibility": {
+      "Scene_filter": "Form choice population separately rejects IsSceneKey even when occupancy flags are all false.",
+      "formula": "not(LightAndMovement or DarkAndMovement or AnyMovement or Sunset)",
+      "method": "0xd0147c"
+    },
+    "dependencies": {
+      "bank_owned_store_feedback_sha256": "1c3a48dd52d43d8c6c405b490fa8b26c5c913e99304ee3b101452be2831e5e1a",
+      "template_counter_correction_sha256": "84799fd3211ca4247d5321d8e6696a629cca7117c5a236e54c54cd0adef67595"
+    },
+    "fresh_form_manual_broadcast": {
+      "candidate_guard": "Native Count<0 guard does NOT exclude Count0. Index0 of empty TList raises native index error; source model must surface this refusal, never invent a nil candidate.",
+      "initial_gate": "BroadcastActive read once before entering key loop; UI Checked is not the model predicate.",
+      "iteration": "All8 ascending. HasBlock(CURRENT BroadcastBlock) tested once per key.",
+      "per_admitted_key": [
+        "LightAndMovement=false",
+        "DarkAndMovement=false",
+        "AnyMovement=false",
+        "Sunset=false",
+        "Re-read IsSceneKey AFTER all four setters; if true, SetMacroFunctionTemplate16"
+      ],
+      "post_loop": "Re-read MaintActive and both current block references. If MaintActive and same references, repopulate available broadcast blocks and get candidate index0.",
+      "tail": "Optional installed external broadcast form callback, then PopulateAvailableMaintainanceValues. Fresh native constructor callback state must be bound by owner."
+    },
+    "input_key_blocks_changed_order": [
+      "Inherited CoreKey InputKeyBlocksChanged notification",
+      "Clear occupancy flags across all8 keys using CURRENT state",
+      "Reassign BroadcastBlock from all8 key blocks",
+      "Direct non-Smart RefreshEventFlagsFromMacroFunction for only originally changed key"
+    ],
+    "literal_request_vectors": [
+      {
+        "active": true,
+        "broadcast_block": 3,
+        "expected_rows": [
+          [
+            0,
+            null
+          ],
+          [
+            1,
+            null
+          ],
+          [
+            2,
+            null
+          ],
+          [
+            3,
+            8
+          ],
+          [
+            4,
+            null
+          ],
+          [
+            5,
+            null
+          ],
+          [
+            6,
+            null
+          ],
+          [
+            7,
+            null
+          ]
+        ],
+        "kind": "unit-afterchange-timer-only-request",
+        "maint_active": false
+      },
+      {
+        "active": false,
+        "broadcast_block": 3,
+        "expected_rows": [
+          [
+            0,
+            null
+          ],
+          [
+            1,
+            null
+          ],
+          [
+            2,
+            null
+          ],
+          [
+            3,
+            null
+          ],
+          [
+            4,
+            null
+          ],
+          [
+            5,
+            null
+          ],
+          [
+            6,
+            null
+          ],
+          [
+            7,
+            null
+          ]
+        ],
+        "kind": "unit-afterchange-timer-only-request",
+        "maint_active": true,
+        "maint_block": 3
+      },
+      {
+        "active": true,
+        "broadcast_block": 3,
+        "expected_requests": [],
+        "kind": "unit-afterchange-gate",
+        "maint_active": true,
+        "maint_block": 3
+      },
+      {
+        "all8_keys_have_block2": true,
+        "entry_active": true,
+        "entry_broadcast_block": 2,
+        "expected_template16_keys": [
+          0,
+          1,
+          4,
+          5
+        ],
+        "kind": "function-request-matrix",
+        "qualification": "Literal per-row predicates; each actual setter owns nested effects and may change later row contexts.",
+        "templates": [
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          16,
+          26
+        ]
+      },
+      {
+        "broadcast_block_before_row0": 2,
+        "entry_active": true,
+        "expected_next_requests": [
+          [
+            "SetTemplate",
+            0,
+            16
+          ],
+          [
+            "SetTemplate",
+            1,
+            16
+          ]
+        ],
+        "kind": "ordered-current-reference-reread",
+        "owner_broadcast_after_row0": 6,
+        "row0_refs": [
+          2
+        ],
+        "row0_template": 29,
+        "row1_refs": [
+          6
+        ],
+        "row1_template": 34
+      },
+      {
+        "compatible": [
+          true,
+          true,
+          true,
+          false,
+          true,
+          true,
+          true,
+          true
+        ],
+        "expected_set_broadcast": 4,
+        "kind": "candidate-reassignment",
+        "primary_blocks": [
+          null,
+          null,
+          4,
+          2,
+          7,
+          null,
+          null,
+          null
+        ],
+        "raw_broadcast_block": 2,
+        "row3_has_raw_broadcast": true
+      },
+      {
+        "admitted_key": 0,
+        "expected_requests": [
+          [
+            "Light",
+            0,
+            false
+          ],
+          [
+            "Dark",
+            0,
+            false
+          ],
+          [
+            "Any",
+            0,
+            false
+          ],
+          [
+            "Sunset",
+            0,
+            false
+          ],
+          [
+            "Template",
+            0,
+            16
+          ]
+        ],
+        "flags": [
+          true,
+          false,
+          true,
+          false
+        ],
+        "kind": "manual-broadcast-row",
+        "qualification": "Equal Boolean requests remain present in native sequence but have no callback. Scene predicate is read from returned current owner state.",
+        "scene_after_four_owner_callbacks": true
+      },
+      {
+        "active": true,
+        "choice_count": 0,
+        "expected_refusal": "Native TList.Get(0) out-of-bounds; no successful fallback value.",
+        "kind": "manual-broadcast-empty-fallback",
+        "maint_active": true,
+        "same_block": true
+      }
+    ],
+    "observer_and_depth": {
+      "bank_counter_dependency": "Bank HandleBlockChange skips when bank updating; owned High/Low store writes retain their source guard. Use separate feedback receipt for exact subscription scheduling.",
+      "boolean_equal": "SetAsBoolean unchanged returns before BeginUpdate or callbacks.",
+      "collection_reentry": "ReferenceCollection.Changed calls inherited generic Changed first, optional sort, then its own OnChange only when recursion flag+0x58 false; nested same-collection callback is suppressed. No whole-owner/global callback suppression is inferred.",
+      "generic_block_current": "Tracked CURRENT subscriber CurrentElementChanged directly calls DoCurrentElementChanged without object identity guard; timer override Block publication may run bank aggregate if bank update counter0.",
+      "object_reference_equal": "SetFlashObject enters/exits attribute update and dedicated AfterChange even unchanged; it skips actual reference write only.",
+      "template_equal": "Tracked root current-pointer equality skips Smart on that root event alone; dedicated key TemplateAfterChange still runs.",
+      "template_unequal": "Attribute generic publication while parent key updating -> tracked root Update sees new pointer -> Occupancy Smart callback -> dedicated key TemplateAfterChange while same parent depth -> manager parent EndUpdate."
+    },
+    "reassign_from_key_blocks": {
+      "active_gate": false,
+      "candidate": "First compatible key whose PrimaryBlock is non-null; nil primary keeps candidate empty so later compatible rows may supply it.",
+      "conflict": "Any incompatible key HasBlock(CURRENT BroadcastBlock), current pointer reread on each such row.",
+      "iteration": "Keys ascending, current occupancy flags, skip nil occupancy only in native generic profile.",
+      "write": "If any conflict and candidate non-null, call SetBroadcastBlock(candidate), including equal object reference. Otherwise no setter."
+    },
+    "unit_after_change": {
+      "entry_gate": "Skip both refresh routines iff current MaintActive AND current BroadcastActive AND current MaintBlock object is current BroadcastBlock object. This includes two nil references.",
+      "function_loop": {
+        "affected_templates": [
+          29,
+          30,
+          33,
+          34
+        ],
+        "callback_reread": "Next key observes any nested changed broadcast reference, allocation and template.",
+        "entry": "Capture BroadcastActive and non-null BroadcastBlock once before entering; no repeat Active gate within loop.",
+        "iteration": "Eight input keys ascending 0..7, count captured once.",
+        "per_row_reads": "HasBlock(CURRENT BroadcastBlock); if true read CURRENT MacroFunctionTemplate.FunctionType.",
+        "write": "SetMacroFunctionTemplate(template16), retaining exact key parent update-depth; no naked macro-field replacement."
+      },
+      "otherwise_order": [
+        "RefreshLightLevelBroadcastBlockTimerExpiryCommandOverride",
+        "RefreshLightLevelBroadcastBlockFunction"
+      ],
+      "timer_loop": {
+        "callback_reread": "Resume next row with current owning state after all nested callbacks.",
+        "equal_ref": "Never skip equal reference setter. Dedicated AfterChange and generic Block publication follow inherited attribute semantics.",
+        "iteration": "Eight input blocks ascending 0..7, count captured once at entry.",
+        "per_row_reads": "Compare row block object with current BroadcastBlock, then current BroadcastActive only for equal block.",
+        "write": "SetTimerExpiryCommandOverride(microfunction8) for equal active block; nil for every other row or equal inactive block."
+      }
+    }
+  },
+  "enable_bindings": {
+    "PEC": {
+      "binding": "ST7 roots link+14 in unit at0xfa7ccd, sets LightLevelMaintEnableGroup at0xfa7ce0, installs concrete VMT14 callback at0xfa7cf6 BEFORE SetActive(true)0xfa7d04.",
+      "constructor": "0xfa4288 creates expression link+14 at0xfa42eb/0xfa42f3.",
+      "director": "0xfc4bc0 creates frame at0xfc4bd9 and controller class0xfbcd3c via constructor0xfa4288 at0xfc4c0a. VMT24 dispatch0xfc4c3f is Surface Initialise0xfbd108.",
+      "equal_false": "Boolean SetAsBoolean compares at0x7f45f2 and equal-return0x7f45f5 before update/store/notification.",
+      "handler": "GetLightLevelMaintEnableGroup0xcfb15c and GetAddressAsInteger0xf47a10; compare255 at0xfa7883. Unused branch SetLightLevelMaintEnableGroupOff(false)0xcfd210 at0xfa7891 then disables radio2cc. Used branch changes radio Enabled only and preserves Off.",
+      "inheritance": "Surface Initialise calls ST7 Initialise0xfa7c08 at0xfbd12b. Surface controller VMT14 = HandleMaintEnableGroupChange0xfa7840.",
+      "initial_delivery": {
+        "Changed": "0x84d824 forces Evaluate(true) at 0x84d894 while active. Evaluate forces ProcessElementChange even if identity is equal.",
+        "SetActive": "0x84de00 sets active, dispatches VMT 0x14 = Changed 0x84d824, and SetEvaluationMode(0) calls Evaluate(true).",
+        "constructor": "Group expression link +0x20 is created at 0xfae4e7, stored 0xfae4ef, controller begins inactive. Controller Create 0x84d460 installs tracked value handler 0x84dc5c.",
+        "event_delivery": "DoFlashHandleChanged calls controller.OnValueChange; TFlashExpressionLink.ControllerValueChange 0x84f6e0 then calls installed link event +0x40, HandleOccupancyEnableGroupChange 0xfaf778.",
+        "expression_notification": "ProcessElementChange 0x84cd70 -> controller.ExpressionElementChanged 0x84da84 -> tracked VMT 0x28 = SetRootElement 0x84ed10 -> Update 0x84ed88 -> DoCurrentElementChanged 0x84e5e8 -> installed FlashHandleValueChanged 0x84dc5c -> DoFlashHandleChanged 0x84d8c4.",
+        "link_controller": "TFlashExpressionLink.CreateRequiredFlashHandle 0x84f7d0 installs controller.OnValueChange = ControllerValueChange 0x84f6e0 at 0x84f803.",
+        "qualification": "For the ordinary resolved SENLLA unit/group object and a fresh active link, the initial group callback is delivered. Component-loading state can suppress GetActive while DFM is loading; this frame controller is constructed and activated after frame construction."
+      },
+      "off_attributes": "Constructor PEC Off+2ec created nil callback0xcfb9ba; PIR Off+2fc nil0xcfbaca. Setters only call BooleanAttribute.SetValue. No direct maintenance/block/key or captured-power setter.",
+      "order": "Enable callback precedes SetupFlashHooks at0xfa7dc1, SetupFlashComponents at0xfa7dc9, and Off radio prepare at0xfa4534.",
+      "power": "LoadPowerFailState captures raw PEC/PIR logic BEFORE fresh frame. Fresh Off setters do not recapture state. SavePowerFailState consumes captured state plus CURRENT cleared Off.",
+      "qualification": "No direct dedicated Off callback mutates bank/key/maintenance/captured power. This does not suppress generic unit observer delivery; the separately assigned owner block observer audit resolves independent aggregate consequences.",
+      "unequal_notification": "True-to-false propagates ordinary attribute/manager/unit dirty and observer notifications. TFlashAttribute.Changed optional dedicated callback test0x7ec65c/call0x7ec66c is nil for these Off attrs. Initial radio render maps existing Boolean to index and same-Boolean feedback is equal and inert."
+    },
+    "PIR": {
+      "binding": "Installs0xfaf778 at0xfafd62 BEFORE SetActive0xfafd70.",
+      "handler": "Compare2550xfaf7bb -> SetOccupancyEnableGroupOff(false)0xcfd3b0 at0xfaf7c9. Used branch0xfaf7e3 has no model setter.",
+      "visibility": "Both initial enable callbacks happen before subsequent Surface hide operations."
+    }
+  },
+  "format": "cbus-senlla-fresh-forms-static-v1",
+  "fresh_reopened_mismatches": 0,
+  "group_include_predicates": {
+    "PEC": "Unused forcesTrue; used excludes Join,DualJoin,PIR,any Block.Group,active Corridor object identity. Fresh true/false output.",
+    "PIR": "Preserve incoming Include; used only clears for Join,DualJoin,PEC while MaintActive,active Corridor. No Block.Group filter."
+  },
+  "literal_vectors": [
+    {
+      "active": true,
+      "broadcast_block": 3,
+      "expected_rows": [
+        [
+          0,
+          null
+        ],
+        [
+          1,
+          null
+        ],
+        [
+          2,
+          null
+        ],
+        [
+          3,
+          8
+        ],
+        [
+          4,
+          null
+        ],
+        [
+          5,
+          null
+        ],
+        [
+          6,
+          null
+        ],
+        [
+          7,
+          null
+        ]
+      ],
+      "kind": "unit-afterchange-timer-only-request",
+      "maint_active": false
+    },
+    {
+      "active": false,
+      "broadcast_block": 3,
+      "expected_rows": [
+        [
+          0,
+          null
+        ],
+        [
+          1,
+          null
+        ],
+        [
+          2,
+          null
+        ],
+        [
+          3,
+          null
+        ],
+        [
+          4,
+          null
+        ],
+        [
+          5,
+          null
+        ],
+        [
+          6,
+          null
+        ],
+        [
+          7,
+          null
+        ]
+      ],
+      "kind": "unit-afterchange-timer-only-request",
+      "maint_active": true,
+      "maint_block": 3
+    },
+    {
+      "active": true,
+      "broadcast_block": 3,
+      "expected_requests": [],
+      "kind": "unit-afterchange-gate",
+      "maint_active": true,
+      "maint_block": 3
+    },
+    {
+      "all8_keys_have_block2": true,
+      "entry_active": true,
+      "entry_broadcast_block": 2,
+      "expected_template16_keys": [
+        0,
+        1,
+        4,
+        5
+      ],
+      "kind": "function-request-matrix",
+      "qualification": "Literal per-row predicates; each actual setter owns nested effects and may change later row contexts.",
+      "templates": [
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        16,
+        26
+      ]
+    },
+    {
+      "broadcast_block_before_row0": 2,
+      "entry_active": true,
+      "expected_next_requests": [
+        [
+          "SetTemplate",
+          0,
+          16
+        ],
+        [
+          "SetTemplate",
+          1,
+          16
+        ]
+      ],
+      "kind": "ordered-current-reference-reread",
+      "owner_broadcast_after_row0": 6,
+      "row0_refs": [
+        2
+      ],
+      "row0_template": 29,
+      "row1_refs": [
+        6
+      ],
+      "row1_template": 34
+    },
+    {
+      "compatible": [
+        true,
+        true,
+        true,
+        false,
+        true,
+        true,
+        true,
+        true
+      ],
+      "expected_set_broadcast": 4,
+      "kind": "candidate-reassignment",
+      "primary_blocks": [
+        null,
+        null,
+        4,
+        2,
+        7,
+        null,
+        null,
+        null
+      ],
+      "raw_broadcast_block": 2,
+      "row3_has_raw_broadcast": true
+    },
+    {
+      "admitted_key": 0,
+      "expected_requests": [
+        [
+          "Light",
+          0,
+          false
+        ],
+        [
+          "Dark",
+          0,
+          false
+        ],
+        [
+          "Any",
+          0,
+          false
+        ],
+        [
+          "Sunset",
+          0,
+          false
+        ],
+        [
+          "Template",
+          0,
+          16
+        ]
+      ],
+      "flags": [
+        true,
+        false,
+        true,
+        false
+      ],
+      "kind": "manual-broadcast-row",
+      "qualification": "Equal Boolean requests remain present in native sequence but have no callback. Scene predicate is read from returned current owner state.",
+      "scene_after_four_owner_callbacks": true
+    },
+    {
+      "active": true,
+      "choice_count": 0,
+      "expected_refusal": "Native TList.Get(0) out-of-bounds; no successful fallback value.",
+      "kind": "manual-broadcast-empty-fallback",
+      "maint_active": true,
+      "same_block": true
+    },
+    {
+      "MaintActive": false,
+      "PEC": [
+        56,
+        7
+      ],
+      "PIR": [
+        56,
+        7
+      ],
+      "expected_Off": false,
+      "expected_clear": [
+        56,
+        255
+      ],
+      "kind": "maintenance-collision-inactive"
+    },
+    {
+      "PEC": [
+        56,
+        20
+      ],
+      "PIR": [
+        57,
+        20
+      ],
+      "expected_Off_preserved": true,
+      "expected_PEC": [
+        56,
+        20
+      ],
+      "kind": "distinct-app-same-number",
+      "other_collisions": false
+    },
+    {
+      "all_banks_active": true,
+      "block0_group": [
+        56,
+        255
+      ],
+      "broadcast_block": 0,
+      "key0_scene": false,
+      "kind": "allocation-unfiltered",
+      "requests": [
+        [
+          "Secondary",
+          0,
+          true
+        ],
+        [
+          "Group",
+          0,
+          [
+            57,
+            20
+          ]
+        ],
+        [
+          "MaintBlock",
+          0
+        ]
+      ],
+      "selected_group": [
+        57,
+        20
+      ]
+    },
+    {
+      "MaintActive": false,
+      "candidate_is_PEC": true,
+      "expected_PIR_include": true,
+      "kind": "PIR-PEC-choice-guard"
+    },
+    {
+      "TagName": "NEWUNIT",
+      "UnitName_apply": false,
+      "actual_control_text": "Aa B_<C>9z!",
+      "expected_TagName": "AB_C9!",
+      "expected_text": "AB_C9!",
+      "kind": "name-filter"
+    },
+    {
+      "App2": null,
+      "expected_secondary": false,
+      "kind": "nil-secondary-allocation",
+      "selected_group_application": 56
+    },
+    {
+      "App2": null,
+      "expected_error": "GetAddressAsInteger nil dereference",
+      "free_probe": true,
+      "kind": "nil-secondary-choice"
+    },
+    {
+      "expected": [
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "kind": "scene-status",
+      "templates": [
+        23,
+        24,
+        25,
+        null,
+        16,
+        26,
+        34,
+        6
+      ]
+    },
+    {
+      "actual_control_text": "ABC",
+      "actual_controller_cache": "abc",
+      "actual_model_UnitName": "abc",
+      "after_cache": "abc",
+      "cached_text_differs": false,
+      "kind": "unchanged-native-visible-text",
+      "logical_SetText_target": "ABC",
+      "native_SetText_equal": true
+    }
+  ],
+  "maintenance_allocation": {
+    "no_free": "No setter and no inferred creation.",
+    "requests": [
+      "SetSecondaryApplication(selected Group.Application is CURRENT SecondaryApplication)",
+      "SetGroup(captured selected Group)",
+      "SetLightLevelMaintBlock(captured Block)"
+    ],
+    "scan": "All8 ascending, first unused Group and same-index non-Scene key; do not repeat BankActive/Broadcast choice filters."
+  },
+  "maintenance_choices": {
+    "block_filters": [
+      "Current BroadcastBlock excluded only if both active",
+      "Bank.SwitchActive true excluded"
+    ],
+    "block_order": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "extra_groups": "Only if free probe succeeds: primary manager then secondary manager if secondary address!=255; exclude255 and any object identical to any Block.Group.",
+    "free_probe": "First accepted unused Group with SAME-INDEX key non-Scene; short circuit once true, no key allocation/HasBlock check.",
+    "labels": "Group.TagName + ' (' + Application.TagName + ')'",
+    "ordering": "Lookup TStringList remains unsorted; target DFM has no Sorted/list contents; source appends in explicit order."
+  },
+  "maintenance_selection": {
+    "MaintBlockChanged_other": "IndexOf(expression callback text) and SetItemIndex, then PopulateBroadcast.",
+    "MaintBlockChanged_same_active": "PopulateMaintenance and SetItemIndex0; no Broadcast populate at this branch tail.",
+    "SetItemIndex": "EditValue/property OnChange can precede final index comparison; dynamic-20 after index change is Click. No same-index blanket no-op or unconditional OnChange.",
+    "SetupNonFlash": "After separate target clamp, install Properties.OnChange=HandleMaintBlockComboChange then IndexOf(CURRENT MaintBlock.GetAsString) and SetItemIndex.",
+    "manual_same_active": "After PEC collision setter, reread both active/current refs then populateMaintenance and SetItemIndex0; manual PEC enable callback; PopulateBroadcast.",
+    "selected_object": "GetItemObject index-1 yields nil; Block selects MaintBlock; Group invokes allocation; nil/other causes no setter."
+  },
+  "method_count": 190,
+  "methods": {
+    "CIS_CBus.CharIsCBusName": {
+      "address": "0x7f2b10",
+      "sha256": "936ea15856e663d5d5c620e69fedb13878ebf16e78d704b5fa2ecfa8be685faa",
+      "span_instruction_count": 50
+    },
+    "CIS_Handles.TFlashCollectionVariable.Count": {
+      "address": "0x85020c",
+      "sha256": "a1058553bedf8eacde0bd190384add610f0cc017698b858e570e0ea79bdf329c",
+      "span_instruction_count": 15
+    },
+    "CIS_Handles.TFlashCollectionVariable.GetItems": {
+      "address": "0x850268",
+      "sha256": "c63d29dfa0553cb4030c240c8ea017d47f87c2ca1cbd382e38f1cafdbb6e254f",
+      "span_instruction_count": 15
+    },
+    "CIS_Handles.TFlashExpression.ProcessElementChange": {
+      "address": "0x84cd70",
+      "sha256": "d154e06e619d63de4fc6631abf5abd75c23dec81806abdf2d04aeb0beb104643",
+      "span_instruction_count": 18
+    },
+    "CIS_Handles.TFlashExpressionController.Changed": {
+      "address": "0x84d824",
+      "sha256": "58e08f90ef77c3b2cb390bb40b29a6bcbd333e6da9bd7c6d849884ccf0aa8638",
+      "span_instruction_count": 58
+    },
+    "CIS_Handles.TFlashExpressionController.DoFlashHandleChanged": {
+      "address": "0x84d8c4",
+      "sha256": "a654f051fa8ee88be8cdbaff0146f58ca9c54899af62d5951ccec7f00d883a2e",
+      "span_instruction_count": 150
+    },
+    "CIS_Handles.TFlashExpressionController.ExpressionElementChanged": {
+      "address": "0x84da84",
+      "sha256": "77d85563d9723d7dfe71ebbc71e5fd29afcbb21b464a7cd7e25d32c0788d7ea4",
+      "span_instruction_count": 75
+    },
+    "CIS_Handles.TFlashExpressionController.FlashHandleValueChanged": {
+      "address": "0x84dc5c",
+      "sha256": "dea67640ac0b6054b9b0f5b84e015b3a9d66868cc3c09acb539bd209885999a9",
+      "span_instruction_count": 29
+    },
+    "CIS_Handles.TFlashExpressionController.SetActive": {
+      "address": "0x84de00",
+      "sha256": "c68d7335d1464ae4ef0ad248f1c194fd134039dde911ba71d06c6802224b3ebf",
+      "span_instruction_count": 38
+    },
+    "CIS_Handles.TFlashExpressionLink.ControllerValueChange": {
+      "address": "0x84f6e0",
+      "sha256": "c2e843fcd8a00ba1e4c7dc67e0183ea683364cf966f4caa4111f14b0225f13e5",
+      "span_instruction_count": 82
+    },
+    "CIS_Handles.TFlashExpressionLink.Create": {
+      "address": "0x84f57c",
+      "sha256": "408713f54e6bf9a6927e9308a5a24d49a01b12075dce30aea5f04796772d7db1",
+      "span_instruction_count": 25
+    },
+    "CIS_Handles.TFlashExpressionLink.CreateRequiredFlashHandle": {
+      "address": "0x84f7d0",
+      "sha256": "a81059147e3a38a065da8fd288400aa434240da5c46e4cdd5f5f7ec176e0332a",
+      "span_instruction_count": 35
+    },
+    "CIS_Handles.TFlashTrackedHandle.Create": {
+      "address": "0x84e434",
+      "sha256": "b9be2de0b848e23753c250146d813082e1a424443d1963765ad019d5e779abd8",
+      "span_instruction_count": 72
+    },
+    "CIS_Handles.TFlashTrackedHandle.CurrentElementChanged": {
+      "address": "0x84e590",
+      "sha256": "c8d33e8fc8303e8d9601155bf9068e2ef51516e7bb06579578137e8a7304afe8",
+      "span_instruction_count": 12
+    },
+    "CIS_Handles.TFlashTrackedHandle.DoCurrentElementChanged": {
+      "address": "0x84e5e8",
+      "sha256": "eb3aa5518f291213aa3df7d087c5053f501beec42283603b147899a9055884ab",
+      "span_instruction_count": 102
+    },
+    "CIS_Handles.TFlashTrackedHandle.DoRootElementChanged": {
+      "address": "0x84e7b0",
+      "sha256": "2863558d737c18291c1a917233ae216a1ab643174f5cf046a526bedf98fe641e",
+      "span_instruction_count": 29
+    },
+    "CIS_Handles.TFlashTrackedHandle.GetCurrentElement": {
+      "address": "0x84e898",
+      "sha256": "8d398b3cc5eb75bc3fc1236252f5b7ad304908c02c125d9fc0ec45e8a57f3f1c",
+      "span_instruction_count": 23
+    },
+    "CIS_Handles.TFlashTrackedHandle.RootElementChanged": {
+      "address": "0x84eb7c",
+      "sha256": "ad3169bf4f1e16a6ecd1330ff1440e5e76c2bf1365dd40ee15354956d3ff0b83",
+      "span_instruction_count": 12
+    },
+    "CIS_Handles.TFlashTrackedHandle.SetRootElement": {
+      "address": "0x84ed10",
+      "sha256": "77f983ddc462d965cdc08ea0ab6b15f4e38d41a34e5da04870e0f4db7ccaa987",
+      "span_instruction_count": 42
+    },
+    "CIS_Handles.TFlashTrackedHandle.Update": {
+      "address": "0x84ed88",
+      "sha256": "3adc26cd56d1552a15cab928c2990fff00531500d26463cffdd1420d1924c6ce",
+      "span_instruction_count": 152
+    },
+    "CIS_ICBusInputUnit.StatusReportIntegerToString": {
+      "address": "0xc9b43c",
+      "sha256": "f4e5d7ec0d6884fdfd2aec9cc26f02101340a56d3ddfcc54a87a971b23b539ba",
+      "span_instruction_count": 47
+    },
+    "CIS_ICBusInputUnit.StatusReportStringToInteger": {
+      "address": "0xc9b4c4",
+      "sha256": "2051f1708024a6f12bdc7e6bceeaffce194225e26d1f22826df6674c90dffa53",
+      "span_instruction_count": 54
+    },
+    "CIS_TBaseObject.TBASEObject.EndUpdate": {
+      "address": "0x7682a4",
+      "sha256": "610e82c914a9ecc27873e0233a595367a34bd81797f127ad2441039ca55559fc",
+      "span_instruction_count": 16
+    },
+    "CIS_TBooleanAttribute.TBooleanAttribute.SetAsBoolean": {
+      "address": "0x7f45e0",
+      "sha256": "a73b6ecb850a1689c915d3e76d6d7ac87f64dc44d16451833664360f748703aa",
+      "span_instruction_count": 37
+    },
+    "CIS_TBooleanAttribute.TBooleanAttribute.SetValue": {
+      "address": "0x7f4638",
+      "sha256": "20ebbe8b25bbe47083eda33ae679753ae091e0b5f948b021a77ff53f71c13c3c",
+      "span_instruction_count": 16
+    },
+    "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval": {
+      "address": "0xc9d4bc",
+      "sha256": "8d62b0be7aae433851cc3e910519bc7a54ce43b267fdad393b84d010ea5c434c",
+      "span_instruction_count": 14
+    },
+    "CIS_TCBusInputUnit.TCBusInputUnit.SetStatusReportInterval": {
+      "address": "0xc9d5a0",
+      "sha256": "60bd2443b95a1ad5197272ee18e17d72cd4b7e8909108ae1be5fee04c6a04fa3",
+      "span_instruction_count": 40
+    },
+    "CIS_TCBusInputUnitCGateAgent.TCBusInputUnitCGateAgent.AfterLoadProgrammingInformation": {
+      "address": "0xcc66cc",
+      "sha256": "5f8ec869a6b79608d1e2db5913e7f27201c14df1292fa3f964c02b4f0381de65",
+      "span_instruction_count": 14
+    },
+    "CIS_TCBusInputUnitCGateAgent.TCBusInputUnitCGateAgent.BeforeSaveProgrammingInformation": {
+      "address": "0xcc6764",
+      "sha256": "0eba1bc768f21b3c94a74fa80aa1bfdf9695c0067129c740a4260fddd73ff775",
+      "span_instruction_count": 14
+    },
+    "CIS_TCBusInputUnitCGateAgent.TCBusInputUnitCGateAgent.LoadStatusReportInterval": {
+      "address": "0xcc6738",
+      "sha256": "5fe23d0fc72d03f1d3d8364cf7c189004003ac0d6beabd41266ca92d20c9be43",
+      "span_instruction_count": 17
+    },
+    "CIS_TCBusInputUnitCGateAgent.TCBusInputUnitCGateAgent.SaveStatusReportInterval": {
+      "address": "0xcc6860",
+      "sha256": "57c41e61920e30a4633a1b8cb3936b7e561ac9cc579fb04a03dcef07e287d662",
+      "span_instruction_count": 119
+    },
+    "CIS_TCBusMultisensorUnit.QuickSet": {
+      "address": "0xd00e30",
+      "sha256": "cea54e937ad1fbe2f7d7534b814714b90c1ccc35338201f029114412bc8df41e",
+      "span_instruction_count": 26
+    },
+    "CIS_TCBusMultisensorUnit.TInputKeyOccupancy.EventFlagChanged": {
+      "address": "0xd0102c",
+      "sha256": "ae9e7a66b1dc4e13d409d6543b3bb3eebde243d16aa16f5f09ec5a6f32146740",
+      "span_instruction_count": 81
+    },
+    "CIS_TCBusMultisensorUnit.TInputKeyOccupancy.HandleMacroFunctionChange": {
+      "address": "0xd00b4c",
+      "sha256": "a8456780af4d28543d809e61e6d15a42b97b8ac9a8d2568cf4503e98394fd534",
+      "span_instruction_count": 57
+    },
+    "CIS_TCBusMultisensorUnit.TInputKeyOccupancy.InternalCreate": {
+      "address": "0xd00520",
+      "sha256": "a9a8bd1448c2b42207e22892a2d3a63fc1bec417b020ecc3e4946c3d354cc06a",
+      "span_instruction_count": 104
+    },
+    "CIS_TCBusMultisensorUnit.TInputKeyOccupancy.IsCompatibleWithLightLevelBroadcast": {
+      "address": "0xd0147c",
+      "sha256": "46183bad1926c65b76115bbce2098eebd9defb9ff8a379e28bc59e29e642760d",
+      "span_instruction_count": 30
+    },
+    "CIS_TCBusMultisensorUnit.TInputKeyOccupancy.RefreshEventFlagsFromMacroFunction": {
+      "address": "0xd00e7c",
+      "sha256": "54afd416723b7efdc6f2e4d0c22879b9248608dbb7827cc4ef82fbe41b2b0dd1",
+      "span_instruction_count": 83
+    },
+    "CIS_TCBusMultisensorUnit.TInputKeyOccupancy.RefreshEventFlagsFromMacroFunctionSmart": {
+      "address": "0xd00bf4",
+      "sha256": "537d3bcc55767c837100776703b7fa6205ebac9c7d9c57a0ed107fc07ae00547",
+      "span_instruction_count": 161
+    },
+    "CIS_TCBusMultisensorUnit.TInputKeyOccupancy.RefreshMacroFunctionFromEventFlags": {
+      "address": "0xd01138",
+      "sha256": "e2d1f24795754883fea787c978fe4c1f10f35fb619aeaf6f705d6d5ab3537f67",
+      "span_instruction_count": 74
+    },
+    "CIS_TCBusMultisensorUnit.TInputKeyOccupancy.SetInputKey": {
+      "address": "0xd0085c",
+      "sha256": "822f0ec12f71f1812670c6eb85dea9861a9ab33cafdfdc245fc459b3eb7d4e8a",
+      "span_instruction_count": 38
+    },
+    "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.GetDualJoinGroup": {
+      "address": "0xd08e70",
+      "sha256": "caf90216618c21e8a3f5a5e87fe890e3e3847fb5cfe0b0fbb57f4eff33a95ce1",
+      "span_instruction_count": 14
+    },
+    "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.GetJoinGroup": {
+      "address": "0xd08e4c",
+      "sha256": "30a52deff715d00ff07e8509dfc5771f295dbf1cf89c96476eb4c16b165c6cbd",
+      "span_instruction_count": 14
+    },
+    "CIS_TCBusObject.TCGateObject.GetAddressAsInteger": {
+      "address": "0xf47a10",
+      "sha256": "29e51f5d44bbbdf14cf1164607c98dc68cb323c7caa1f2d593bed173972e9341",
+      "span_instruction_count": 14
+    },
+    "CIS_TCBusObject.TCGateObject.HandleTagNameAfterChange": {
+      "address": "0xf47b04",
+      "sha256": "a46b76fa204592199ff06435847c7f67f4f44b69a4c313a13ef1790d57661a23",
+      "span_instruction_count": 61
+    },
+    "CIS_TCBusObject.TCGateObject.InternalCreate": {
+      "address": "0xf47718",
+      "sha256": "4f01608515a4aa6f5c989179f9eb001c39157861197fa9bfee3755f93370e260",
+      "span_instruction_count": 66
+    },
+    "CIS_TCBusObject.TCGateObject.TagNameBeforeChange": {
+      "address": "0xf48228",
+      "sha256": "2a548f988428e39627a1b2f2ea550bd51b23b893cd4b990f2399d84f2a737829",
+      "span_instruction_count": 10
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetLightLevelMaintEnableGroup": {
+      "address": "0xcfb15c",
+      "sha256": "1d8b1cda498a1bd21f575297523fe007caa6c5645717682491f642d8d0692f20",
+      "span_instruction_count": 14
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetOccupancyEnableGroup": {
+      "address": "0xcfb418",
+      "sha256": "b80d51869e9eec671826eda2d4e3274846c8769e4aacace16f83803995e3ce4a",
+      "span_instruction_count": 14
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.HandleLightLevelBroadcastActiveAfterChange": {
+      "address": "0xcfb580",
+      "sha256": "3c4b38d3d6c699780b3421544686a2b5de62156e056ec4c3f1ad8657f83382c3",
+      "span_instruction_count": 30
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.HandleLightLevelBroadcastBlockAfterChange": {
+      "address": "0xcfb5d0",
+      "sha256": "e89957cd36533785ce4dce3608e7cc0dcf9bb5125b770f8ce4214656543c6a96",
+      "span_instruction_count": 30
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.InputKeyBlocksChanged": {
+      "address": "0xcfb704",
+      "sha256": "61218b01b82ea6ff2b8fd705169a0cdcf33cf36098bd58a7bf0076da018c9626",
+      "span_instruction_count": 25
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.InternalCreate": {
+      "address": "0xcfb754",
+      "sha256": "537b1668cddac7fbec235ded5f00f9a37961ca8d739518f497b14e9e9299387d",
+      "span_instruction_count": 411
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.RefreshLightLevelBroadcastBlockFromKeyBlocks": {
+      "address": "0xcfc684",
+      "sha256": "4f665811d17455469d8e4dca9a10f8df830d3699845dc798431de2ea890fb513",
+      "span_instruction_count": 66
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.RefreshLightLevelBroadcastBlockFunction": {
+      "address": "0xcfc754",
+      "sha256": "c5b3dbfa64ae12884610b3f10ae251d92aa47214cc43119bdbc07b634dcf55be",
+      "span_instruction_count": 64
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.RefreshLightLevelBroadcastBlockTimerExpiryCommandOverride": {
+      "address": "0xcfc820",
+      "sha256": "7ca9f7ef9f0a0368fe097b4edd5365014e58128b5189b6b9a29ef19e9533383e",
+      "span_instruction_count": 56
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.RefreshOccupancyKeyCollection": {
+      "address": "0xcfcc40",
+      "sha256": "72565ef2901bcd1260c66549aa2e81bfdd4563f1bbf63c2fd4051f9a11b6008b",
+      "span_instruction_count": 48
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.RefreshOccupancyKeysFromKeyBlocks": {
+      "address": "0xcfccd0",
+      "sha256": "370eff28729166aebff913dd1de1231b052a201a95ae7a8d99c28182c7db3de4",
+      "span_instruction_count": 66
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetLightLevelBroadcastActive": {
+      "address": "0xcfd0ec",
+      "sha256": "410fcc094ffe50b38f9a8d5a3cf3596574d05b73ec8988a751ab72ccdee4934a",
+      "span_instruction_count": 38
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetLightLevelBroadcastBlock": {
+      "address": "0xcfd148",
+      "sha256": "205e83cefb2a864da6f247b710d376e6f97274dea976d3c474db0522f7cae588",
+      "span_instruction_count": 14
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetLightLevelMaintBlock": {
+      "address": "0xcfd1c8",
+      "sha256": "7cfb45258c22962d697b19e4e9e6ecc9346a8c1cd85d56de21841f82267e3c0a",
+      "span_instruction_count": 14
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetLightLevelMaintEnableGroup": {
+      "address": "0xcfd1ec",
+      "sha256": "d3e2e91c77b3dd5d735b02cd7d3b8184bc392e5155792c7f8cb0ca16db225961",
+      "span_instruction_count": 14
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetLightLevelMaintEnableGroupOff": {
+      "address": "0xcfd210",
+      "sha256": "7a47071e2d84d90379e595cb62d06ab42c5bd5155723b99c4c0591961a38bb83",
+      "span_instruction_count": 38
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetOccupancyEnableGroupOff": {
+      "address": "0xcfd3b0",
+      "sha256": "37245fbcf150bb838c84b9d9c7abc4b62ad1a05524bb3bb47485f953f8c30c7f",
+      "span_instruction_count": 38
+    },
+    "CIS_TCommonCBus.TCBUSUnit.GetApplication2Object": {
+      "address": "0xf2ebf0",
+      "sha256": "585977982818789244bf6a034df13b44148eec0ed51ba70d9997cf754d6ded49",
+      "span_instruction_count": 17
+    },
+    "CIS_TCommonCBus.TCBusGroup.IsUnused": {
+      "address": "0xf27e14",
+      "sha256": "d8303f159f3cd7404170fc45c6a79fcae0f526960c8eecc758908e64dea9ee19",
+      "span_instruction_count": 14
+    },
+    "CIS_TCommonCBus.TCBusGroupManager.Add": {
+      "address": "0xf288f0",
+      "sha256": "d704bcb463fb41fb081f4a84151545818e93ca35b31da0eb74cb763d3bd3c0a9",
+      "span_instruction_count": 27
+    },
+    "CIS_TCommonCBus.TCBusGroupManager.GetItem": {
+      "address": "0xf28954",
+      "sha256": "cb04c68ad43b24ea371ad092f28ce43b62d51c34a402763b0dbe5471d7e2a8da",
+      "span_instruction_count": 14
+    },
+    "CIS_TCommonCBus.TCBusGroupManager.GroupByAddress": {
+      "address": "0xf28b68",
+      "sha256": "ca91f7a53a7820a9be87286f6c481e624bd888fc7a1f5c64f0a7a34ebbd91930",
+      "span_instruction_count": 115
+    },
+    "CIS_TCommonCBus.TCBusGroupManager.GroupByAddressExclude": {
+      "address": "0xf28d10",
+      "sha256": "de132e634835a15c14207e5da78c5ee56b88a8a18d2a0bee4ea06161eabb36d2",
+      "span_instruction_count": 39
+    },
+    "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.InputKeyBlocksChangedExternal": {
+      "address": "0xc9fce8",
+      "sha256": "df58f79411aa29624cb4f848113eccc3acae446be67f255cba52a9350007af8d",
+      "span_instruction_count": 14
+    },
+    "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.GetCorridorLinkActive": {
+      "address": "0xd06178",
+      "sha256": "d701f166e3d35fd694811b2ac42e9b5de8a065495c72ad738ef0994327461654",
+      "span_instruction_count": 14
+    },
+    "CIS_TCoreNeoProInputUnit.TCoreNeoProInputUnit.GetCorridorLinkGroup": {
+      "address": "0xd061c0",
+      "sha256": "9c6e5232f6f3fd71369c0c0cdd4e19656af4dd1ae435bacfc94e7039fddfdf4b",
+      "span_instruction_count": 14
+    },
+    "CIS_TCustomFlashObject.TCISAttribute.BeginUpdate": {
+      "address": "0x7ece44",
+      "sha256": "6de4a0d04b15908b765af24d99a5cdaa4f545e0cde28b76eb0fc08a2df0a1e3a",
+      "span_instruction_count": 17
+    },
+    "CIS_TCustomFlashObject.TCISAttribute.Changed": {
+      "address": "0x7eca04",
+      "sha256": "a0555ce79dbca9a348f621ea0b8240717b93c20f1a34e388916991d999fe52a6",
+      "span_instruction_count": 26
+    },
+    "CIS_TCustomFlashObject.TCISAttribute.EndUpdate": {
+      "address": "0x7ece6c",
+      "sha256": "8b9f2118995f3e08987dc82ff018726b4666e63088daf4cc184c0bffd4d87209",
+      "span_instruction_count": 17
+    },
+    "CIS_TCustomFlashObject.TFlashAttribute.Changed": {
+      "address": "0x7ec640",
+      "sha256": "d868d2dafaac989a3ad04ffb5231e3c06d580f550aa3b55b4e2a4c637aec99c5",
+      "span_instruction_count": 22
+    },
+    "CIS_TCustomFlashObject.TFlashAttribute.Create": {
+      "address": "0x7ec504",
+      "sha256": "16586b827e44dc711a2f4c0a707d68161215272b525b1a787c2c3e5c8857961f",
+      "span_instruction_count": 68
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReference.SetFlashObject": {
+      "address": "0x7ed6d4",
+      "sha256": "159d5010edfa3ee972a627f414609ac6dc02e1645e7c98cf8cc46fba8221b740",
+      "span_instruction_count": 131
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.Changed": {
+      "address": "0x7e8900",
+      "sha256": "b4976d9b63be3603887e2b25726738b7e597bcc93c47c1b80f68fbab80fbdbe9",
+      "span_instruction_count": 46
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.GetCount": {
+      "address": "0x7e8f50",
+      "sha256": "3bed5d6086da786370d0de930b1ffde4624dac8888ef6941defc4987f85acf88",
+      "span_instruction_count": 16
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.GetItem": {
+      "address": "0x7e8f74",
+      "sha256": "8ac41f35a9c7c9c6272999126445e42e2d5417a682e287015bb924a74213f00c",
+      "span_instruction_count": 18
+    },
+    "CIS_TFlashObjectExpressionLink.TFlashObjectExpressionLink.Create": {
+      "address": "0xca0a40",
+      "sha256": "b71e0e6404166bb3bb73dc7a76562057765593bc65394ac8441646f201cd20d4",
+      "span_instruction_count": 42
+    },
+    "CIS_TFlashObjectExpressionLink.TFlashObjectExpressionLink.SetOnExpressionChange": {
+      "address": "0xca0bc8",
+      "sha256": "2475c4eaf3c0b6bd7ced1cbe8ebaec32cd3e3fe6f6ba201d3d9628c15f200d57",
+      "span_instruction_count": 14
+    },
+    "CIS_TInputKey.TInputBlock.InternalCreate": {
+      "address": "0xd0eb24",
+      "sha256": "d77f6d36bef2117af4735234256acbd7b5952516832c047599b7b9b97dd798b0",
+      "span_instruction_count": 163
+    },
+    "CIS_TInputKey.TInputBlock.SetTimerExpiryCommandOverride": {
+      "address": "0xd0f488",
+      "sha256": "13b7e9250316ad4b4c328bc405ef1cade4e20d6b2e5eacd0c9c532cb15b4d17d",
+      "span_instruction_count": 14
+    },
+    "CIS_TInputKey.TInputBlockCollection.ItemByGroup": {
+      "address": "0xd10464",
+      "sha256": "b121ead16702d19f8ef5e503b90da465125033e9a85c88c785df8dc57e9054d6",
+      "span_instruction_count": 37
+    },
+    "CIS_TInputKey.TInputKey.GetIsSceneKey": {
+      "address": "0xd115bc",
+      "sha256": "9c401b20facab664a58af884324a05e2d44dbd46923db67e83d4f99761fc6b0e",
+      "span_instruction_count": 32
+    },
+    "CIS_TInputKey.TInputKey.HandleBlockListNewChange": {
+      "address": "0xd12a9c",
+      "sha256": "746da0f0b00963efca7301dbd159c20e199ec8d9aa0a3be54796f4439a54a8dd",
+      "span_instruction_count": 22
+    },
+    "CIS_TInputKey.TInputKey.HandleMacroFunctionTemplateAfterChangeEvent": {
+      "address": "0xd12adc",
+      "sha256": "9c3ffcbb23e10e3883536bc7fa3e8ffca5e802435ff9cd94f0920291c5850faf",
+      "span_instruction_count": 97
+    },
+    "CIS_TInputKey.TInputKey.MacroFunctionRefresh": {
+      "address": "0xd11a18",
+      "sha256": "9359947b91ecd3e3ee96b08ae77933ed57c97044a50bb0477f71f537a09498ee",
+      "span_instruction_count": 17
+    },
+    "CIS_TInputKey.TInputKey.RefreshBlocksFromTemplate": {
+      "address": "0xd12668",
+      "sha256": "ef0a34087c39fb0483e85b8a0781730d6e98733103105f8d7435d7ed8b55f8ff",
+      "span_instruction_count": 14
+    },
+    "CIS_TInputKey.TInputKey.RefreshMacroFunctionFromTemplate": {
+      "address": "0xd11c14",
+      "sha256": "d73920eaf21e1b0c24ab401116ce15a5ccbc9ad6057371b49df918f393b3531c",
+      "span_instruction_count": 26
+    },
+    "CIS_TInputKey.TInputKey.SetMacroFunctionTemplate": {
+      "address": "0xd1171c",
+      "sha256": "9b8d8858816d9432b30aa4973a357213844d43094067eabf5686446a14f99cfb",
+      "span_instruction_count": 14
+    },
+    "CIS_TManagedFlashObject.TManagedFlashObject.Changed": {
+      "address": "0x76a3cc",
+      "sha256": "b023093d2d5fc225bec7df2eb4141b72381f327f47f40c1fde28f3604d73bca8",
+      "span_instruction_count": 31
+    },
+    "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.InternalCreate": {
+      "address": "0x7ddab0",
+      "sha256": "7f821b1e02a7c98575a2a418169c49296de91d5cbb09e572f6891f181899ab87",
+      "span_instruction_count": 38
+    },
+    "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.ObjectChanged": {
+      "address": "0x7ddb94",
+      "sha256": "defb321f13691804f565bf1516e77eb5e4d9301f30e71ca2b010ad663a03a02a",
+      "span_instruction_count": 16
+    },
+    "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.ReferenceChanged": {
+      "address": "0x7ddbb8",
+      "sha256": "90ad6ac5ea0469f6ec435659b4f33bf047f2aa16066b8a9ca6ca485377674e35",
+      "span_instruction_count": 16
+    },
+    "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.SetFlashObject": {
+      "address": "0x7ddbf4",
+      "sha256": "913604d6225e746aa93b92f5d35fe62e5ff619e0fdec33baab261c92ccd8a0bb",
+      "span_instruction_count": 66
+    },
+    "CIS_TStringAttribute.TStringAttribute.InternalSetAsString": {
+      "address": "0x7f37d4",
+      "sha256": "330257dc83aadc5bdb317bdeaba91e23b789bae49704cf85edf625fc04127c2a",
+      "span_instruction_count": 121
+    },
+    "CIS_TStringAttribute.TStringAttribute.SetAsString": {
+      "address": "0x7f3b28",
+      "sha256": "777856caf320242bbfb37ea187954b5968fc8bb4ab0a7d1269c134c85d55776b",
+      "span_instruction_count": 14
+    },
+    "CIS_TStringAttribute.TStringAttribute.SetValue": {
+      "address": "0x7f39a0",
+      "sha256": "a67d5dafb78a0a50cba55a19106f14eaae4711315660e5b2d2ad22ee95e5780c",
+      "span_instruction_count": 34
+    },
+    "CIS_TcdLearnUnitGlobal.TcdLearnUnitGlobal.HandleStatusReportComboChange": {
+      "address": "0xfb63d4",
+      "sha256": "514b1122f2ad34f949e47586ada6dc4db4228e06a1c677246b517756c95e57ab",
+      "span_instruction_count": 35
+    },
+    "CIS_TcdLearnUnitGlobal.TcdLearnUnitGlobal.Initialise": {
+      "address": "0xfb61a4",
+      "sha256": "5f06de2006e1c7796bd332d4fdc883886f05fcc9e1edc6645dbda73d018cd574",
+      "span_instruction_count": 28
+    },
+    "CIS_TcdLearnUnitGlobal.TcdLearnUnitGlobal.PopulateNonFlashComponents": {
+      "address": "0xfb62fc",
+      "sha256": "7503ca0bf6d5ffc5663cfc4586c032ce7571c2ca2275870ac04d8e239a866c5b",
+      "span_instruction_count": 72
+    },
+    "CIS_TcdLearnUnitGlobal.TcdLearnUnitGlobal.SetupNonFlashComponents": {
+      "address": "0xfb6220",
+      "sha256": "0ef822077edcc17da2e1e9dce11118101ddcb19c96043a0c6986c865368c3aa7",
+      "span_instruction_count": 71
+    },
+    "CIS_TcdLightLevelSensor.TcdLightLevelSensor.Create": {
+      "address": "0xfa4288",
+      "sha256": "3eebd3342368f833cfdbf124244a5b8048ca53afd6ece834b000a5968e72690c",
+      "span_instruction_count": 60
+    },
+    "CIS_TcdLightLevelSensor.TcdLightLevelSensor.SetupFlashComponents": {
+      "address": "0xfa445c",
+      "sha256": "0b82cd80b10eced2ce371ee437d42f73a8f755dc9ee8edf07e441c2d7c8d43e6",
+      "span_instruction_count": 102
+    },
+    "CIS_TcdLightLevelSensor.TcdST7LightLevelSensor.HandleBroadcastBlockExtensionClick": {
+      "address": "0xfa70c4",
+      "sha256": "db392971f736b39614625b78ac14e6537e55193ee8e4aae706454c3ee3c3efde",
+      "span_instruction_count": 52
+    },
+    "CIS_TcdLightLevelSensor.TcdST7LightLevelSensor.HandleFormBroadcastChecked": {
+      "address": "0xfa7220",
+      "sha256": "3ac1375a9121a428597e6c549a0a8697df2c65410b8e9554166638ef42afc2e6",
+      "span_instruction_count": 140
+    },
+    "CIS_TcdLightLevelSensor.TcdST7LightLevelSensor.HandleFormMaintenanceChecked": {
+      "address": "0xfa73fc",
+      "sha256": "4a152ee16af457e91b438db7a528c9d0f9aac42743838b774092eea06278267a",
+      "span_instruction_count": 126
+    },
+    "CIS_TcdLightLevelSensor.TcdST7LightLevelSensor.HandleLightLevelBroadcastBlockChange": {
+      "address": "0xfa7590",
+      "sha256": "ec322c16645a114d4cb954d119bfebfba294f2390a9fe5094514bbd6966b5943",
+      "span_instruction_count": 29
+    },
+    "CIS_TcdLightLevelSensor.TcdST7LightLevelSensor.HandleLightLevelMaintEnableGroupIncludeItem": {
+      "address": "0xfa75e0",
+      "sha256": "1fda1a0712de5431e756f9c967b44412867fcb46b11f664a502862a8ccaa8944",
+      "span_instruction_count": 76
+    },
+    "CIS_TcdLightLevelSensor.TcdST7LightLevelSensor.HandleMaintBlockComboChange": {
+      "address": "0xfa77a8",
+      "sha256": "ddb2b7e3abf6cfef250aa0b670ab4b85375bbc62ddc0a98c83354009f3fb317d",
+      "span_instruction_count": 46
+    },
+    "CIS_TcdLightLevelSensor.TcdST7LightLevelSensor.HandleMaintEnableGroupChange": {
+      "address": "0xfa7840",
+      "sha256": "5363c11afd3c3090f0d8091972062673159bb7ce4e4c7630e1b83e07c20a0ea9",
+      "span_instruction_count": 61
+    },
+    "CIS_TcdLightLevelSensor.TcdST7LightLevelSensor.HandleMaintenanceBlockChange": {
+      "address": "0xfa76c8",
+      "sha256": "3ded1c8b07a33f040b90f0232bb1c9dcbebf21ab45892a90202835348d05e982",
+      "span_instruction_count": 73
+    },
+    "CIS_TcdLightLevelSensor.TcdST7LightLevelSensor.Initialise": {
+      "address": "0xfa7c08",
+      "sha256": "22ac35f6b34b50c19370a4e3dc9a930ae5aa76356683e686e63aa016d74121b9",
+      "span_instruction_count": 222
+    },
+    "CIS_TcdLightLevelSensor.TcdST7LightLevelSensor.PopulateAvailableBroadcastBlocks": {
+      "address": "0xfa801c",
+      "sha256": "9e34f7dbe903af008e61683f0c133786b4bb1f106d5a34e4bcffd1377d1f3957",
+      "span_instruction_count": 139
+    },
+    "CIS_TcdLightLevelSensor.TcdST7LightLevelSensor.PopulateAvailableMaintainanceValues": {
+      "address": "0xfa81ec",
+      "sha256": "930ea88876b69cca3c62e1c1157379af3249d56f1574b3087653791c3a33be05",
+      "span_instruction_count": 338
+    },
+    "CIS_TcdLightLevelSensor.TcdST7LightLevelSensor.SetMaintenanceGroup": {
+      "address": "0xfa8690",
+      "sha256": "9919859aed183f1965677a3283300f83372a527a08d2981d6dcfebc1872667eb",
+      "span_instruction_count": 76
+    },
+    "CIS_TcdLightLevelSensor.TcdST7LightLevelSensor.SetupFlashComponents": {
+      "address": "0xfa8928",
+      "sha256": "8daf5ec484fd93105c34003be20dd947f2bcc99b62574f66e5a861cf5e90251a",
+      "span_instruction_count": 22
+    },
+    "CIS_TcdLightLevelSensor.TcdST7LightLevelSensor.SetupFlashHooks": {
+      "address": "0xfa8968",
+      "sha256": "64cdd73b4175fd1fd5a98ed6ad6b223fa9135ff24e4e31574b069113455bd7c5",
+      "span_instruction_count": 105
+    },
+    "CIS_TcdLightLevelSensor.TcdST7LightLevelSensor.SetupNonFlashComponents": {
+      "address": "0xfa8c0c",
+      "sha256": "7c8c3eb9cec0f9831482ee3ad015a62b76b53b9805ddf1aa110733f8340b2c5f",
+      "span_instruction_count": 64
+    },
+    "CIS_TcdMultiSensorGlobal.TcdMultisensorGlobal.Create": {
+      "address": "0xfa10e0",
+      "sha256": "00c02711f9add17796846db854914358b6fbb4dd07907f898da78033b3a30519",
+      "span_instruction_count": 61
+    },
+    "CIS_TcdMultiSensorGlobal.TcdMultisensorGlobal.SetupNonFlashComponents": {
+      "address": "0xfa1a20",
+      "sha256": "236e05d08e45c21ac2732bd86efcdaa38369dbd479efeb336bf93d35f933be09",
+      "span_instruction_count": 63
+    },
+    "CIS_TcdMultiSensorGlobal.TcdST7MultisensorGlobal.HandleStatusReportComboChange": {
+      "address": "0xfa20e0",
+      "sha256": "8034308d2c60069d9a5258a1ec7e7480e84cab5e518485480fc6aa7c55fcefd9",
+      "span_instruction_count": 35
+    },
+    "CIS_TcdMultiSensorGlobal.TcdST7MultisensorGlobal.Initialise": {
+      "address": "0xfa217c",
+      "sha256": "3f49f358cbd59fb8fc10e6420be83e0b07ae7fe96d5ccca787f813d20d48df6f",
+      "span_instruction_count": 207
+    },
+    "CIS_TcdMultiSensorGlobal.TcdST7MultisensorGlobal.PopulateNonFlashComponents": {
+      "address": "0xfa2574",
+      "sha256": "a9d1aa774530808d826fc991af250274828a0ae1b40bca71904f0b7d7711c475",
+      "span_instruction_count": 72
+    },
+    "CIS_TcdOccupancySensor.TcdST7OccupancySensor.HandleManualOnResetClick": {
+      "address": "0xfaf758",
+      "sha256": "ae60a8dcf5a2ffaa4a6ab5e0540ee0235d9b2120914590fb969a8c5e6ebdd245",
+      "span_instruction_count": 14
+    },
+    "CIS_TcdOccupancySensor.TcdST7OccupancySensor.HandleOccupancyEnableGroupChange": {
+      "address": "0xfaf778",
+      "sha256": "3a97aa56ded67456c8354761df120edb9d1180fe74763e49c4ecea56a93893e5",
+      "span_instruction_count": 56
+    },
+    "CIS_TcdOccupancySensor.TcdST7OccupancySensor.HandleOccupancyEnableGroupIncludeItem": {
+      "address": "0xfaf820",
+      "sha256": "b6f94e519e73617f90fa8c2a9535656ddcbc4e13c524eff5cb2b4db2b66fb767",
+      "span_instruction_count": 52
+    },
+    "CIS_TcdOccupancySensor.TcdST7OccupancySensor.Initialise": {
+      "address": "0xfaf8b8",
+      "sha256": "0273b8a09345403f07a3fe4556c4ebc57a7e4a8e092ab5304ed563ef1752e60e",
+      "span_instruction_count": 502
+    },
+    "CIS_TcdOccupancySensor.TcdST7OccupancySensor.SetupFlashComponents": {
+      "address": "0xfb0570",
+      "sha256": "de9b9ef6026769d1b9bdfd0561699a0b65ff0ee5e2a4d8e27f52926d0c47fe25",
+      "span_instruction_count": 134
+    },
+    "CIS_TcdSurfaceMountLightLevelSensor.TcdSurfaceMountLightLevelSensor.Initialise": {
+      "address": "0xfbd108",
+      "sha256": "90f8edccb96fca7be33f8de1ef49b4351dc3f06bf171d3fe6fd00800c71b905d",
+      "span_instruction_count": 120
+    },
+    "CIS_TcdSurfaceMountLightLevelSensor.TcdSurfaceMountLightLevelSensor.SetupFlashHooks": {
+      "address": "0xfbd584",
+      "sha256": "0c49b80b041577822d96031a569f689b5f2d25b7e61afcd6332fbe2934645b48",
+      "span_instruction_count": 71
+    },
+    "CIS_TcdSurfaceMountLightLevelSensor.TcdSurfaceMountLightLevelSensor.SurfaceMountForm": {
+      "address": "0xfbd7d4",
+      "sha256": "06a1faed545ebb7c4b0d0ac56ea209fb2b1ee06a0d701cf59c4878168e37c578",
+      "span_instruction_count": 13
+    },
+    "CIS_TddKeyM8.TddKeyM8.Initialise": {
+      "address": "0xf94544",
+      "sha256": "df3e63ada09689bd67a795f574771ac127a7e1f6df5298cd839e96e9d672a770",
+      "span_instruction_count": 347
+    },
+    "CIS_TddST7Sensors.TddST7LightLevelSensor.InitialiseSubFormGlobals": {
+      "address": "0xfbb314",
+      "sha256": "5e582b56194e92959665575a7b02a8ebdc053962f3f32a97f666bfc599d5b925",
+      "span_instruction_count": 36
+    },
+    "CIS_TddST7Sensors.TddST7Multisensor.HandleDecisionMacroFunctionChangeOccupancy": {
+      "address": "0xfb7680",
+      "sha256": "2124b438f9eac6918a0dd310cf6f6acdbf7d46122a9755764aa9a90f20021008",
+      "span_instruction_count": 20
+    },
+    "CIS_TddST7Sensors.TddST7Multisensor.HandleDecisionOccupancyRefreshMacroFunction": {
+      "address": "0xfb76cc",
+      "sha256": "f753329a6002a87bfff3d42cc250d80c8641a61c2d98eabe6c1d1c3c5df0543e",
+      "span_instruction_count": 12
+    },
+    "CIS_TddST7Sensors.TddST7Multisensor.Initialise": {
+      "address": "0xfb6a40",
+      "sha256": "8a3a2d8a00346efb9ee243998cbd1249d230dfb83c061d8e4bf39e266e07e6da",
+      "span_instruction_count": 63
+    },
+    "CIS_TddST7Sensors.TddST7Multisensor.InitialiseSubFormGlobals": {
+      "address": "0xfb6ce8",
+      "sha256": "3a57436d1b1b1da944b8e2a0bc47f87e18824ec13762dd3556c9dba3499e424f",
+      "span_instruction_count": 79
+    },
+    "CIS_TddSurfaceMountSensors.TddSurfaceMountLightLevelSensor.Initialise": {
+      "address": "0xfc5298",
+      "sha256": "f4be6f5e0d5d2972c041cd402759bb7a435301298dcb715de568529f84ef5d36",
+      "span_instruction_count": 15
+    },
+    "CIS_TddSurfaceMountSensors.TddSurfaceMountMultisensor.Initialise": {
+      "address": "0xfc4a94",
+      "sha256": "ebb33b1c2d305e0c1e6eed5ab263c708fd8fdd129af066984481236037d70d69",
+      "span_instruction_count": 48
+    },
+    "CIS_TddSurfaceMountSensors.TddSurfaceMountMultisensor.InitialiseSubFormLightLevel": {
+      "address": "0xfc4bc0",
+      "sha256": "93fa5fe65ee48e4cba89001501bb91ba9a4ea18c95c898e299fcd936eafa92ec",
+      "span_instruction_count": 56
+    },
+    "CIS_TfrmUnitIdentification.TfrmUnitIdentification.GetData": {
+      "address": "0xdc0984",
+      "sha256": "759ee4e42f8fbdd161ad91a058074b2c2a24c966d8b2f4f7680a9d43bc0f0d20",
+      "span_instruction_count": 15
+    },
+    "CIS_TfrmUnitIdentification.TfrmUnitIdentification.SetupFlashComponents": {
+      "address": "0xdc0dac",
+      "sha256": "a95241cac5f1c738a333a9da8a9fc7b3a55f10627e1c5d7533ce9dacd8ac11b3",
+      "span_instruction_count": 101
+    },
+    "CIS_TfrmUnitIdentification.TfrmUnitIdentification.edtUnitNameChange": {
+      "address": "0xdc15f0",
+      "sha256": "bf5c2c02a757a3e177f46a429320e67d7b11646f35750d144a4fc056e70bca28",
+      "span_instruction_count": 145
+    },
+    "CIS_TfrmUnitIdentification.TfrmUnitIdentification.edtUnitNameExit": {
+      "address": "0xdc13cc",
+      "sha256": "46c8e62ec43e37a6eee52a4559f079a934f2041efc08e592b6565739e8bd1c4d",
+      "span_instruction_count": 135
+    },
+    "Classes.InitInheritedComponent": {
+      "address": "0x64350c",
+      "sha256": "fa15225d082c2dc32d32510ee03605a79658e3616e4e4ee618a1a794e49c0c62",
+      "span_instruction_count": 69
+    },
+    "Classes.NotifyGlobalLoading": {
+      "address": "0x6433f4",
+      "sha256": "253b724f0aafa8a0e118060d35fa1162bd7a1067b54b5c67e458d7ea6d4614bd",
+      "span_instruction_count": 24
+    },
+    "Classes.TComponent.Loaded": {
+      "address": "0x64fa58",
+      "sha256": "2f788be93d5566fe373ba6d13f5659ccab80b61021d4df6055bc89e46907eb06",
+      "span_instruction_count": 6
+    },
+    "Classes.TList.Get": {
+      "address": "0x64393c",
+      "sha256": "010af392a703b39a9b2524d9ae64956e176620e970621c119b38b33661843f1b",
+      "span_instruction_count": 16
+    },
+    "Classes.TStringList.CompareStrings": {
+      "address": "0x647a04",
+      "sha256": "6de38ba947dd038af06c34cd825ae8d49f7e84f2ae86e8e81d7bcdb2541dfc56",
+      "span_instruction_count": 11
+    },
+    "Classes.TStringList.IndexOf": {
+      "address": "0x6476d4",
+      "sha256": "4dd6f59a884d8c2f477aacdef3e76376b02b129885715a352aa49e1630b862b3",
+      "span_instruction_count": 26
+    },
+    "Classes.TStrings.IndexOf": {
+      "address": "0x6464dc",
+      "sha256": "57eb13c899451400be84927ada6b855d48ce99101dcff3cdc47c893d278e6eb9",
+      "span_instruction_count": 59
+    },
+    "Controls.TControl.GetText": {
+      "address": "0x6f62a0",
+      "sha256": "935a3f80eb9e69c78990309b5b642d80716ec9bbd6778249b48f56c0e1e66b4f",
+      "span_instruction_count": 25
+    },
+    "Controls.TControl.SetText": {
+      "address": "0x6f62d8",
+      "sha256": "10f59879b5e52541c5423af3b5cc89491d61a3cd871d665ead72ed63140619f3",
+      "span_instruction_count": 41
+    },
+    "Controls.TControl.SetTextBuf": {
+      "address": "0x6f56d0",
+      "sha256": "fc78f3554ce7d94f881f17c94f6ab33cc7a70bcb621e3ac769efd4a7f923d9ae",
+      "span_instruction_count": 14
+    },
+    "Forms.TCustomFrame.Create": {
+      "address": "0x71b3bc",
+      "sha256": "0208183cf2c19913ccd08e09f16dbaf800b99bae7401913abcf1e5b82e51ad31",
+      "span_instruction_count": 89
+    },
+    "StdCtrls.TCustomEdit.CMTextChanged": {
+      "address": "0x685e8c",
+      "sha256": "72d12362d08dc23214fa6ff0b4696d7b374557276f70087a35e26aef8984e351",
+      "span_instruction_count": 21
+    },
+    "StdCtrls.TCustomEdit.CNCommand": {
+      "address": "0x685e2c",
+      "sha256": "957f8faf58bf46f8607bdc9a579117f0087c1a96c283670c9cf1bc1be68ce431",
+      "span_instruction_count": 12
+    },
+    "StdCtrls.TCustomEdit.Change": {
+      "address": "0x685c80",
+      "sha256": "775ac5a540032dd2cc2fc173b934b3fd6a6355e111db3880df3ae49f051101ed",
+      "span_instruction_count": 11
+    },
+    "SysUtils.AnsiCompareText": {
+      "address": "0x618cb0",
+      "sha256": "9cc63b66ab4bc741bb7bd430cb0d1bfb97b808927701b8cbba2fbdf882213948",
+      "span_instruction_count": 79
+    },
+    "cxDropDownEdit.TcxCustomComboBox.ChangeHandler": {
+      "address": "0x99634c",
+      "sha256": "06d89f90854de32c0985e21652c5aff9abb0cf6ff68d3dda4a3dcd3e560906fd",
+      "span_instruction_count": 104
+    },
+    "cxDropDownEdit.TcxCustomComboBoxProperties.GetItems": {
+      "address": "0x9960f8",
+      "sha256": "ee9e798e153dfaa6e68773c749c92bbff318e1f30c04cd2d3340f16b427e832d",
+      "span_instruction_count": 13
+    },
+    "cxEdit.TcxCustomEdit.ChangeHandler": {
+      "address": "0x962430",
+      "sha256": "cdb2d54fdf05a5ad474aaf43c2930f332216ed8991154cf54508852153c76a8a",
+      "span_instruction_count": 32
+    },
+    "cxEdit.TcxCustomEdit.DoChange": {
+      "address": "0x9627c4",
+      "sha256": "93cdb4ad55a4a882254267b03a7a494dea4746c7032b62b18a12dfd811cf487f",
+      "span_instruction_count": 79
+    },
+    "cxEdit.TcxCustomEdit.DoOnChange": {
+      "address": "0x96312c",
+      "sha256": "7a505079de1ca0dbc2a37caa3cd695ad39182531883aba4ee0afb6c3bf47df1c",
+      "span_instruction_count": 33
+    },
+    "cxEdit.TcxCustomEdit.InitializeInnerEdit": {
+      "address": "0x9638c8",
+      "sha256": "67a994906e8cb74530fd84277e1e7f2465c580bb019a75580b177e6b8958bb0f",
+      "span_instruction_count": 33
+    },
+    "cxEdit.TcxCustomEdit.InternalSetEditValue": {
+      "address": "0x963d70",
+      "sha256": "e9faf2e59a8a70cee10cce7f34471e87b3bc88ed45ba7f99306b90b64617205a",
+      "span_instruction_count": 60
+    },
+    "cxEdit.TcxCustomEdit.Loaded": {
+      "address": "0x9619ec",
+      "sha256": "d5c00951fa6041f254344f2e706e64111053221ae545d033f8e8049c740df924",
+      "span_instruction_count": 73
+    },
+    "cxEdit.TcxCustomEdit.SetInternalEditValue": {
+      "address": "0x964940",
+      "sha256": "1be96b7401f55d8756e948f583ba16cc432e78c6cec7520261f612393da2ded3",
+      "span_instruction_count": 27
+    },
+    "cxEdit.TcxEditChangeEventsCatcher.Lock": {
+      "address": "0x95f8f0",
+      "sha256": "2951fe24dbb02aef4557c98dba5018052970985dc9a80443856b18d8361034a1",
+      "span_instruction_count": 67
+    },
+    "cxMaskEdit.TcxCustomMaskEdit.ChangeHandler": {
+      "address": "0x987df0",
+      "sha256": "59f643c35293adad96463c9e64a6359c22a804a72de62108a9437fd553a11b43",
+      "span_instruction_count": 61
+    },
+    "cxTextEdit.TcxCustomInnerTextEditHelper.SetEditValue": {
+      "address": "0x96d4c8",
+      "sha256": "35ee5b3bc9b43f51ae46a79227f0ddb5a38a5fd1dd3557e9b7c4f0962df3d75d",
+      "span_instruction_count": 70
+    },
+    "cxTextEdit.TcxCustomInnerTextEditHelper.SetOnChange": {
+      "address": "0x96d5b4",
+      "sha256": "a9dcdecec739c2c3dfe72b7940bee105ed1503852668e34b1652ec5c49d1787d",
+      "span_instruction_count": 13
+    },
+    "cxTextEdit.TcxCustomTextEdit.ChangeHandler": {
+      "address": "0x973e0c",
+      "sha256": "c39064fd3974c1cdee1862a38228a07e0b6b16ff19d275fca8aaefe34c05fff3",
+      "span_instruction_count": 65
+    },
+    "cxTextEdit.TcxCustomTextEdit.GetItemIndex": {
+      "address": "0x97680c",
+      "sha256": "d54060f576d733a291f622896dba1d24b63cb6f37894b8a5699abc2801444fcc",
+      "span_instruction_count": 45
+    },
+    "cxTextEdit.TcxCustomTextEdit.GetItemObject": {
+      "address": "0x97687c",
+      "sha256": "1eb7ea0dfd97f3b8aeab57ae18c429cc2f11ebfdfae0455bd68fdd2262adce02",
+      "span_instruction_count": 29
+    },
+    "cxTextEdit.TcxCustomTextEdit.HandleSelectItem": {
+      "address": "0x9768dc",
+      "sha256": "c92241b5b6fc21cbe0d4bbc59efae7c2d95f4eecd7e45de20fc86a31a85a1dab",
+      "span_instruction_count": 102
+    },
+    "cxTextEdit.TcxCustomTextEdit.SetItemIndex": {
+      "address": "0x976c24",
+      "sha256": "1af8bb7021060715b71506413293b8fb65038e06b258aa0c32ebcab2b30920fa",
+      "span_instruction_count": 117
+    },
+    "cxTextEdit.TcxCustomTextEdit.SynchronizeDisplayValue": {
+      "address": "0x976d80",
+      "sha256": "82f787de6b833dd96ef573fbacdd35e74f05cf77f39d6c51d115c5db455bf2c6",
+      "span_instruction_count": 192
+    },
+    "cxTextEdit.TcxCustomTextEditLookupData.Create": {
+      "address": "0x96fc88",
+      "sha256": "7d0f9cfb39ed0e67260641982f4d58ff73ccb777c93cd08e0486893cf7e407bb",
+      "span_instruction_count": 32
+    },
+    "cxTextEdit.TcxCustomTextEditLookupData.GetDisplayText": {
+      "address": "0x96fe18",
+      "sha256": "f3f3ec69ae29e6c1966fd644af9e4edf85965512b8b340352ba9fc6382391cca",
+      "span_instruction_count": 66
+    },
+    "cxTextEdit.TcxCustomTextEditLookupData.InternalLocate": {
+      "address": "0x96ff70",
+      "sha256": "33c858fddc33e75d4b788a537145b6c189eae067947972071f90de918f512aee",
+      "span_instruction_count": 157
+    },
+    "cxTextEdit.TcxCustomTextEditLookupData.ListChanged": {
+      "address": "0x970590",
+      "sha256": "06d979ccc3836323b02e82685f358f50277d7703c36f3f8a75f416388034a972",
+      "span_instruction_count": 17
+    },
+    "cxTextEdit.TcxCustomTextEditLookupData.SetCurrentKey": {
+      "address": "0x97095c",
+      "sha256": "709c6894847897de30c95bb577d81dfaf01659f99dc55f86b2135b2e193d149b",
+      "span_instruction_count": 125
+    },
+    "cxTextEdit.TcxCustomTextEditLookupData.TextChanged": {
+      "address": "0x970b08",
+      "sha256": "b1acb0665faa23c92f74680ffa2fcec80d6163508728ff6c4d0599a16974372d",
+      "span_instruction_count": 72
+    },
+    "cxTextEdit.TcxCustomTextEditProperties.Create": {
+      "address": "0x971838",
+      "sha256": "ce885645426c8c31e69d0adb660e4534c888c1aa3f16213704930fd0836256e6",
+      "span_instruction_count": 57
+    },
+    "cxTextEdit.TcxCustomTextEditProperties.GetLookupItems": {
+      "address": "0x972df0",
+      "sha256": "50b0f9429e39e763d47eceb66426c8ca97f3de3fea6c05831684411902d29e2a",
+      "span_instruction_count": 12
+    }
+  },
+  "original_gui_execution": false,
+  "original_instruction_execution": false,
+  "physical_acceptance": false,
+  "request_protocol": {
+    "attribute_substrate": "Delegate native CanDoChange guard, BeforeChange changed flag/original pointer, nonnil-to-nil reset notifications, parent depth and exception unwinding to senlla_lifecycle owning adapter; no naked assignment.",
+    "continuation": "After every request complete synchronous native setter/control/callback semantics retaining attribute-manager parent update-depth, then send current immutable context.",
+    "control_boundary": "IndexOf uses Windows CompareString LCID0x400,NORM_IGNORECASE; actual selected-object/rendering facts are an executor boundary, never Python host locale/casefold.",
+    "current_lists": "Return current native broadcast collection after Populate; fallback indexes that collection rather than recomputing from changed graph.",
+    "identities": "Actual manager-owned object IDs and complete ordered group inventories; no missing-object creation is invented.",
+    "metadata_boundary": "Require actual control text; raw PP to native ecUpperCase/window message behavior and later umExit Apply are not inferred."
+  },
+  "scene_status": {
+    "context": "Validate supplied Scene status exactly against current template. Re-read after preceding owning callbacks.",
+    "getter": "GetIsSceneKey0xd115bc",
+    "nil_template": false,
+    "types": [
+      23,
+      24,
+      25
+    ]
+  },
+  "scope": "Internal fresh PEC/PIR normalization, complete existing-object maintenance/broadcast choices, allocation and native request handlers. Owning key/application/Scene/bank engine and Windows control executor remain distinct.",
+  "secondary_nil": {
+    "allocation": "GetApp2Object pointer compared to selected Group.Application without dereference. Nil actual App2 therefore yields secondaryFalse; no fake app255 object required.",
+    "choices": "Only after free probe, GetApp2Object then GetAddressAsInteger; no nil guard, so actual nil native-dereference error. If free probe false, neither App2 nor its address is read."
+  },
+  "source_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "source_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "supporting_receipt_sha256": {
+    "PEC": "ea604d1e9f0fb0e6bcb94201d3effe8b6974c2c27c02c27b91a2f507633abb10",
+    "broadcast": "559a51bec373db7db01b222a3a22759e0db667c09ea6ab25a6589baafc7cf84e",
+    "director": "a0b3bd6c5c5794628ed64705a28e0fa172633d543d3a6963f086b32e95da1dd6",
+    "enable": "093e6bd7ab6973caf8bd99de9cc704c69a4f61eaf6426f88b13eb550ca5419e9",
+    "identification_tag_writer": "bb7e1158f33921fc59001bdef7cc8f26240f80aba9c0fe95d988968a56c53268"
+  },
+  "unit_name": {
+    "TagName": "Immediate assignment only if empty or exact case-sensitive NEWUNIT.",
+    "UnitName": "Direct setup form Exit does not run FlashEdit umExit Apply; clean text may be pending. Scalar writer needs final actual UnitName metadata.",
+    "admitted_codepoints": [
+      [
+        33,
+        59
+      ],
+      [
+        61,
+        61
+      ],
+      [
+        63,
+        96
+      ]
+    ],
+    "cache": "Use actual controller cache and actual model text after each control request. Unchanged SetText may deliver no Change event, so visible Text differing from model does not establish a new pending cache. No automatic umExit Apply inferred.",
+    "filter": "Preserve admitted actual UTF16 code units in order; remove all others; empty survivors NEWUNIT.",
+    "no_inferred_transform": [
+      "Trim",
+      "uppercase",
+      "space replacement",
+      "MaxLength window behavior"
+    ],
+    "request_order": [
+      "SetText(logical filtered target), execute native control notifications then resume actual context",
+      "Re-read CURRENT TagName; if empty or NEWUNIT, re-read CURRENT control Text and SetTagName(actual text)"
+    ],
+    "tag_attribute_writer": {
+      "after_change": "HandleTagNameAfterChange0xf47b04 installed0xf47793.",
+      "before_change": "Owner virtual98 copied to attr+78 at0xf47781; resolved TCBUSUnit method TCGateObject.TagNameBeforeChange0xf48228 is empty.",
+      "class": "TCISTagAttribute",
+      "class_symbol": "0xf470d4",
+      "manager": "owner+0x30 passed to Create0xf4774c",
+      "maximum_utf16_code_units": 32,
+      "owner": "TCBUSUnit cast by GetData0xdc0984",
+      "owner_field_offset": 156,
+      "slots": {
+        "0x0": {
+          "address": "0x7ece44",
+          "method": "CIS_TCustomFlashObject.TCISAttribute.BeginUpdate"
+        },
+        "0x30": {
+          "address": "0x7f3b28",
+          "method": "CIS_TStringAttribute.TStringAttribute.SetAsString"
+        },
+        "0x4": {
+          "address": "0x7ec640",
+          "method": "CIS_TCustomFlashObject.TFlashAttribute.Changed"
+        },
+        "0x78": {
+          "address": "0x7f37d4",
+          "method": "CIS_TStringAttribute.TStringAttribute.InternalSetAsString"
+        },
+        "0x7c": {
+          "address": "0x7f39a0",
+          "method": "CIS_TStringAttribute.TStringAttribute.SetValue"
+        },
+        "0x8": {
+          "address": "0x7ece6c",
+          "method": "CIS_TCustomFlashObject.TCISAttribute.EndUpdate"
+        }
+      },
+      "vmt": "0xf4712c"
+    },
+    "tag_setter_contracts": {
+      "dedicated_effect": "HandleTagNameAfterChange invokes optional owner OnTagNameChange callback then conditionally enables existing manager after-change timer when managerstate3/expectedclass/notinitializing. Owning executor must bind these actual callback facts.",
+      "direct_exit": "SetText filtered target executes first; TagName predicate and actual Text reread afterward. Direct Exit invokes no FlashEdit Apply.",
+      "no_reference_gate": "String setter has no ObjectReference CanDoChange own-updating guard and does not ignore proposed candidate.",
+      "not_unitdata_writer": "Standalone UnitData.SetTagName0xd6ee80 is not the Exit target."
+    },
+    "tag_setter_order": [
+      "SetValue converts supplied Variant to Unicode string.",
+      "SetAsString delegates virtual78 InternalSetAsString.",
+      "Compute current-versus-requested exact string equality into mutable changed flag and mutable candidate.",
+      "Optional BeforeChange invoked BEFORE Begin even on equal request; honors both mutable candidate and changed flag.",
+      "Changed false returns with no Begin, assignment, End or dedicated callback.",
+      "Changed true checks mutable candidate UTF16 length against MaxLength32; failure raises before Begin and does not clamp.",
+      "Begin invokes manager then own counter; store MUTABLE candidate under Begin/End finally.",
+      "End uses proved generic/manager/dedicated/owner ordering and exception counter retention."
+    ]
+  },
+  "unused_group_ownership": {
+    "create_false": "Nil when255 is absent; fresh PEC collision uses create=false and may not fabricate an unused object.",
+    "create_true": "If lookup nil, GroupManager.Add appends a manager item then setsAddress255; existing canonical unused objects are manager members.",
+    "lookup": "GroupByAddress calls GroupByAddressExclude, which loops manager GetItem and compares actual group.Address. Address255 has no separate-object branch."
+  }
+}

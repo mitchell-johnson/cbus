@@ -1,0 +1,1347 @@
+{
+  "authority": {
+    "evidence_kind": "read_only_static_source_with_independently_authored_literals",
+    "native_form_verified": false,
+    "original_instruction_execution": false,
+    "physical_acceptance": false,
+    "source_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "source_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+    "source_receipt_sha256": "7fe1bc92708fe4916959a19d2b9e52b6bc0cb683f3e39c08694226db942fd11e"
+  },
+  "flags_order": [
+    "LightAndMovement",
+    "DarkAndMovement",
+    "AnyMovement",
+    "Sunset"
+  ],
+  "format": "cbus-senlla-occupancy-transition-source-v1",
+  "literal_macro_vectors": [
+    {
+      "after": [
+        false,
+        false,
+        false,
+        false,
+        true,
+        true
+      ],
+      "bank_event_flags": [],
+      "before": [
+        false,
+        false,
+        false,
+        false,
+        true,
+        true
+      ],
+      "broadcast_key": false,
+      "decision_handler_installed": false,
+      "id": "nil_preserves_fresh",
+      "macro_decision": null,
+      "template": null
+    },
+    {
+      "after": [
+        false,
+        false,
+        true,
+        true,
+        true,
+        true
+      ],
+      "bank_event_flags": [],
+      "before": [
+        false,
+        false,
+        true,
+        true,
+        true,
+        true
+      ],
+      "broadcast_key": false,
+      "decision_handler_installed": true,
+      "id": "nil_preserves_occupied",
+      "macro_decision": null,
+      "template": null
+    },
+    {
+      "after": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "bank_event_flags": [],
+      "before": [
+        false,
+        false,
+        false,
+        false,
+        true,
+        true
+      ],
+      "broadcast_key": false,
+      "decision_handler_installed": false,
+      "id": "first_ordinary16_nil_handler",
+      "macro_decision": null,
+      "template": 16
+    },
+    {
+      "after": [
+        false,
+        false,
+        false,
+        true,
+        true,
+        false
+      ],
+      "bank_event_flags": [
+        [
+          false,
+          false,
+          false,
+          true
+        ]
+      ],
+      "before": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "broadcast_key": false,
+      "decision_handler_installed": false,
+      "id": "ordinary34_seed",
+      "macro_decision": null,
+      "template": 34
+    },
+    {
+      "after": [
+        false,
+        false,
+        false,
+        true,
+        true,
+        false
+      ],
+      "bank_event_flags": [],
+      "before": [
+        false,
+        false,
+        false,
+        true,
+        true,
+        false
+      ],
+      "broadcast_key": false,
+      "decision_handler_installed": false,
+      "id": "equal34_has_no_bank_event",
+      "macro_decision": null,
+      "template": 34
+    },
+    {
+      "after": [
+        false,
+        false,
+        false,
+        false,
+        true,
+        false
+      ],
+      "bank_event_flags": [
+        [
+          false,
+          false,
+          false,
+          true
+        ],
+        [
+          false,
+          false,
+          false,
+          false
+        ]
+      ],
+      "before": [
+        true,
+        false,
+        false,
+        true,
+        false,
+        false
+      ],
+      "broadcast_key": false,
+      "decision_handler_installed": false,
+      "id": "scene24_clears_flags",
+      "macro_decision": null,
+      "template": 24
+    },
+    {
+      "after": [
+        false,
+        false,
+        false,
+        false,
+        true,
+        false
+      ],
+      "bank_event_flags": [
+        [
+          false,
+          false,
+          false,
+          true
+        ],
+        [
+          false,
+          false,
+          false,
+          false
+        ]
+      ],
+      "before": [
+        true,
+        false,
+        false,
+        true,
+        false,
+        false
+      ],
+      "broadcast_key": false,
+      "decision_handler_installed": false,
+      "id": "scene25_clears_flags",
+      "macro_decision": null,
+      "template": 25
+    },
+    {
+      "after": [
+        true,
+        false,
+        false,
+        true,
+        false,
+        false
+      ],
+      "bank_event_flags": [],
+      "before": [
+        true,
+        false,
+        false,
+        true,
+        true,
+        true
+      ],
+      "broadcast_key": false,
+      "decision_handler_installed": false,
+      "id": "scene25_to16_nil_handler_preserves_raw",
+      "macro_decision": null,
+      "template": 16
+    },
+    {
+      "after": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "bank_event_flags": [
+        [
+          false,
+          false,
+          false,
+          true
+        ],
+        [
+          false,
+          false,
+          false,
+          false
+        ]
+      ],
+      "before": [
+        false,
+        true,
+        false,
+        true,
+        false,
+        true
+      ],
+      "broadcast_key": false,
+      "decision_handler_installed": true,
+      "id": "ordinary94false95true_still_refreshes",
+      "macro_decision": null,
+      "template": 26
+    },
+    {
+      "after": [
+        false,
+        false,
+        true,
+        true,
+        false,
+        false
+      ],
+      "bank_event_flags": [],
+      "before": [
+        false,
+        false,
+        true,
+        true,
+        true,
+        true
+      ],
+      "broadcast_key": false,
+      "decision_handler_installed": false,
+      "id": "ordinary_nil_handler_preserves_flags",
+      "macro_decision": null,
+      "template": 26
+    },
+    {
+      "after": [
+        false,
+        false,
+        true,
+        true,
+        false,
+        false
+      ],
+      "bank_event_flags": [],
+      "before": [
+        false,
+        false,
+        true,
+        true,
+        true,
+        false
+      ],
+      "broadcast_key": false,
+      "decision_handler_installed": true,
+      "id": "ordinary_decision_false_preserves_flags",
+      "macro_decision": false,
+      "template": 26
+    },
+    {
+      "after": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "bank_event_flags": [
+        [
+          false,
+          false,
+          false,
+          true
+        ],
+        [
+          false,
+          false,
+          false,
+          false
+        ]
+      ],
+      "before": [
+        false,
+        false,
+        true,
+        true,
+        true,
+        false
+      ],
+      "broadcast_key": false,
+      "decision_handler_installed": true,
+      "id": "ordinary_decision_true_clears_flags",
+      "macro_decision": true,
+      "template": 26
+    },
+    {
+      "after": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "bank_event_flags": [
+        [
+          false,
+          false,
+          false,
+          true
+        ],
+        [
+          false,
+          false,
+          false,
+          false
+        ]
+      ],
+      "before": [
+        false,
+        false,
+        true,
+        true,
+        true,
+        false
+      ],
+      "broadcast_key": true,
+      "decision_handler_installed": true,
+      "id": "broadcast_bypasses_question_with_handler",
+      "macro_decision": null,
+      "template": 26
+    },
+    {
+      "after": [
+        false,
+        false,
+        true,
+        true,
+        false,
+        false
+      ],
+      "bank_event_flags": [],
+      "before": [
+        false,
+        false,
+        true,
+        true,
+        true,
+        true
+      ],
+      "broadcast_key": true,
+      "decision_handler_installed": false,
+      "id": "broadcast_ignored_without_handler",
+      "macro_decision": null,
+      "template": 26
+    },
+    {
+      "after": [
+        false,
+        false,
+        false,
+        true,
+        false,
+        false
+      ],
+      "bank_event_flags": [],
+      "before": [
+        false,
+        false,
+        false,
+        true,
+        true,
+        true
+      ],
+      "broadcast_key": false,
+      "decision_handler_installed": false,
+      "id": "type31_is_ordinary",
+      "macro_decision": null,
+      "template": 31
+    },
+    {
+      "after": [
+        false,
+        false,
+        false,
+        true,
+        false,
+        false
+      ],
+      "bank_event_flags": [],
+      "before": [
+        false,
+        false,
+        false,
+        true,
+        true,
+        true
+      ],
+      "broadcast_key": false,
+      "decision_handler_installed": false,
+      "id": "type32_is_ordinary",
+      "macro_decision": null,
+      "template": 32
+    },
+    {
+      "after": [
+        true,
+        false,
+        false,
+        false,
+        true,
+        false
+      ],
+      "bank_event_flags": [
+        [
+          true,
+          false,
+          false,
+          true
+        ],
+        [
+          true,
+          false,
+          false,
+          true
+        ],
+        [
+          true,
+          false,
+          false,
+          false
+        ]
+      ],
+      "before": [
+        false,
+        false,
+        true,
+        true,
+        false,
+        false
+      ],
+      "broadcast_key": false,
+      "decision_handler_installed": false,
+      "id": "special29_nested_clear_duplicates",
+      "macro_decision": null,
+      "template": 29
+    },
+    {
+      "after": [
+        false,
+        true,
+        false,
+        false,
+        true,
+        false
+      ],
+      "bank_event_flags": [
+        [
+          false,
+          true,
+          false,
+          true
+        ],
+        [
+          false,
+          true,
+          false,
+          true
+        ],
+        [
+          false,
+          true,
+          false,
+          false
+        ]
+      ],
+      "before": [
+        false,
+        false,
+        true,
+        true,
+        false,
+        false
+      ],
+      "broadcast_key": false,
+      "decision_handler_installed": false,
+      "id": "special30_nested_clear_duplicates",
+      "macro_decision": null,
+      "template": 30
+    },
+    {
+      "after": [
+        false,
+        false,
+        true,
+        false,
+        true,
+        false
+      ],
+      "bank_event_flags": [
+        [
+          false,
+          false,
+          false,
+          true
+        ],
+        [
+          false,
+          false,
+          true,
+          true
+        ],
+        [
+          false,
+          false,
+          true,
+          false
+        ]
+      ],
+      "before": [
+        true,
+        false,
+        false,
+        true,
+        false,
+        false
+      ],
+      "broadcast_key": false,
+      "decision_handler_installed": false,
+      "id": "special33_quickset_order",
+      "macro_decision": null,
+      "template": 33
+    },
+    {
+      "after": [
+        false,
+        false,
+        false,
+        true,
+        true,
+        false
+      ],
+      "bank_event_flags": [
+        [
+          false,
+          false,
+          false,
+          false
+        ],
+        [
+          false,
+          false,
+          false,
+          true
+        ]
+      ],
+      "before": [
+        false,
+        false,
+        true,
+        false,
+        false,
+        false
+      ],
+      "broadcast_key": false,
+      "decision_handler_installed": false,
+      "id": "special34_quickset_order",
+      "macro_decision": null,
+      "template": 34
+    }
+  ],
+  "literal_packed_parameters": {
+    "PIRDark": [
+      240
+    ],
+    "PIRDarkMovement": [
+      204
+    ],
+    "PIRLightMovement": [
+      170
+    ]
+  },
+  "literal_plain_raw_vectors": [
+    {
+      "bank_event_flags": [],
+      "final_flags": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "initial_flags": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "raw_L_D_S": [
+        0,
+        0,
+        0
+      ],
+      "raw_save_L_D_S": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "bank_event_flags": [
+        [
+          true,
+          false,
+          false,
+          false
+        ]
+      ],
+      "final_flags": [
+        true,
+        false,
+        false,
+        false
+      ],
+      "initial_flags": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "raw_L_D_S": [
+        1,
+        0,
+        0
+      ],
+      "raw_save_L_D_S": [
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "bank_event_flags": [
+        [
+          false,
+          true,
+          false,
+          false
+        ]
+      ],
+      "final_flags": [
+        false,
+        true,
+        false,
+        false
+      ],
+      "initial_flags": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "raw_L_D_S": [
+        0,
+        1,
+        0
+      ],
+      "raw_save_L_D_S": [
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "bank_event_flags": [
+        [
+          false,
+          false,
+          true,
+          false
+        ]
+      ],
+      "final_flags": [
+        false,
+        false,
+        true,
+        false
+      ],
+      "initial_flags": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "raw_L_D_S": [
+        1,
+        1,
+        0
+      ],
+      "raw_save_L_D_S": [
+        1,
+        1,
+        0
+      ]
+    },
+    {
+      "bank_event_flags": [
+        [
+          false,
+          false,
+          false,
+          true
+        ]
+      ],
+      "final_flags": [
+        false,
+        false,
+        false,
+        true
+      ],
+      "initial_flags": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "raw_L_D_S": [
+        0,
+        0,
+        1
+      ],
+      "raw_save_L_D_S": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "bank_event_flags": [
+        [
+          true,
+          false,
+          false,
+          false
+        ],
+        [
+          true,
+          false,
+          false,
+          true
+        ]
+      ],
+      "final_flags": [
+        true,
+        false,
+        false,
+        true
+      ],
+      "initial_flags": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "raw_L_D_S": [
+        1,
+        0,
+        1
+      ],
+      "raw_save_L_D_S": [
+        1,
+        0,
+        1
+      ]
+    },
+    {
+      "bank_event_flags": [
+        [
+          false,
+          true,
+          false,
+          false
+        ],
+        [
+          false,
+          true,
+          false,
+          true
+        ]
+      ],
+      "final_flags": [
+        false,
+        true,
+        false,
+        true
+      ],
+      "initial_flags": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "raw_L_D_S": [
+        0,
+        1,
+        1
+      ],
+      "raw_save_L_D_S": [
+        0,
+        1,
+        1
+      ]
+    },
+    {
+      "bank_event_flags": [
+        [
+          false,
+          false,
+          true,
+          false
+        ],
+        [
+          false,
+          false,
+          true,
+          true
+        ]
+      ],
+      "final_flags": [
+        false,
+        false,
+        true,
+        true
+      ],
+      "initial_flags": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "raw_L_D_S": [
+        1,
+        1,
+        1
+      ],
+      "raw_save_L_D_S": [
+        1,
+        1,
+        1
+      ]
+    }
+  ],
+  "literal_template34_raw_vectors": [
+    {
+      "final_flags": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "flags_entering_raw_occupancy_load": [
+        false,
+        false,
+        false,
+        true
+      ],
+      "post_bank_load_event_flags": [
+        [
+          false,
+          false,
+          false,
+          false
+        ]
+      ],
+      "qualification": "Early template34 sets Sunsettrue before raw bank load. This vector lists later occupancy events only; Active/Allowed final bytes require the separate bank transition and form initialization stages.",
+      "raw_L_D_S": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "final_flags": [
+        true,
+        false,
+        false,
+        false
+      ],
+      "flags_entering_raw_occupancy_load": [
+        false,
+        false,
+        false,
+        true
+      ],
+      "post_bank_load_event_flags": [
+        [
+          true,
+          false,
+          false,
+          true
+        ],
+        [
+          true,
+          false,
+          false,
+          false
+        ]
+      ],
+      "qualification": "Early template34 sets Sunsettrue before raw bank load. This vector lists later occupancy events only; Active/Allowed final bytes require the separate bank transition and form initialization stages.",
+      "raw_L_D_S": [
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "final_flags": [
+        false,
+        true,
+        false,
+        false
+      ],
+      "flags_entering_raw_occupancy_load": [
+        false,
+        false,
+        false,
+        true
+      ],
+      "post_bank_load_event_flags": [
+        [
+          false,
+          true,
+          false,
+          true
+        ],
+        [
+          false,
+          true,
+          false,
+          false
+        ]
+      ],
+      "qualification": "Early template34 sets Sunsettrue before raw bank load. This vector lists later occupancy events only; Active/Allowed final bytes require the separate bank transition and form initialization stages.",
+      "raw_L_D_S": [
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "final_flags": [
+        false,
+        false,
+        true,
+        false
+      ],
+      "flags_entering_raw_occupancy_load": [
+        false,
+        false,
+        false,
+        true
+      ],
+      "post_bank_load_event_flags": [
+        [
+          false,
+          false,
+          true,
+          true
+        ],
+        [
+          false,
+          false,
+          true,
+          false
+        ]
+      ],
+      "qualification": "Early template34 sets Sunsettrue before raw bank load. This vector lists later occupancy events only; Active/Allowed final bytes require the separate bank transition and form initialization stages.",
+      "raw_L_D_S": [
+        1,
+        1,
+        0
+      ]
+    },
+    {
+      "final_flags": [
+        false,
+        false,
+        false,
+        true
+      ],
+      "flags_entering_raw_occupancy_load": [
+        false,
+        false,
+        false,
+        true
+      ],
+      "post_bank_load_event_flags": [],
+      "qualification": "Early template34 sets Sunsettrue before raw bank load. This vector lists later occupancy events only; Active/Allowed final bytes require the separate bank transition and form initialization stages.",
+      "raw_L_D_S": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "final_flags": [
+        true,
+        false,
+        false,
+        true
+      ],
+      "flags_entering_raw_occupancy_load": [
+        false,
+        false,
+        false,
+        true
+      ],
+      "post_bank_load_event_flags": [
+        [
+          true,
+          false,
+          false,
+          true
+        ]
+      ],
+      "qualification": "Early template34 sets Sunsettrue before raw bank load. This vector lists later occupancy events only; Active/Allowed final bytes require the separate bank transition and form initialization stages.",
+      "raw_L_D_S": [
+        1,
+        0,
+        1
+      ]
+    },
+    {
+      "final_flags": [
+        false,
+        true,
+        false,
+        true
+      ],
+      "flags_entering_raw_occupancy_load": [
+        false,
+        false,
+        false,
+        true
+      ],
+      "post_bank_load_event_flags": [
+        [
+          false,
+          true,
+          false,
+          true
+        ]
+      ],
+      "qualification": "Early template34 sets Sunsettrue before raw bank load. This vector lists later occupancy events only; Active/Allowed final bytes require the separate bank transition and form initialization stages.",
+      "raw_L_D_S": [
+        0,
+        1,
+        1
+      ]
+    },
+    {
+      "final_flags": [
+        false,
+        false,
+        true,
+        true
+      ],
+      "flags_entering_raw_occupancy_load": [
+        false,
+        false,
+        false,
+        true
+      ],
+      "post_bank_load_event_flags": [
+        [
+          false,
+          false,
+          true,
+          true
+        ]
+      ],
+      "qualification": "Early template34 sets Sunsettrue before raw bank load. This vector lists later occupancy events only; Active/Allowed final bytes require the separate bank transition and form initialization stages.",
+      "raw_L_D_S": [
+        1,
+        1,
+        1
+      ]
+    }
+  ],
+  "method_pins": {
+    "CIS_TBooleanAttribute.TBooleanAttribute.InternalCreate": {
+      "address": "0x7f44d8",
+      "instruction_count": 23,
+      "sha256": "9daaa841bbc3d91fa4cffd9bd02c2c5fa749ad053d5961672d6ea9d9d6df4cee"
+    },
+    "CIS_TBooleanAttribute.TBooleanAttribute.SetAsBoolean": {
+      "address": "0x7f45e0",
+      "instruction_count": 37,
+      "sha256": "a73b6ecb850a1689c915d3e76d6d7ac87f64dc44d16451833664360f748703aa"
+    },
+    "CIS_TBooleanAttribute.TBooleanAttribute.SetValue": {
+      "address": "0x7f4638",
+      "instruction_count": 16,
+      "sha256": "20ebbe8b25bbe47083eda33ae679753ae091e0b5f948b021a77ff53f71c13c3c"
+    },
+    "CIS_TCBusMultisensorUnit.QuickSet": {
+      "address": "0xd00e30",
+      "instruction_count": 26,
+      "sha256": "cea54e937ad1fbe2f7d7534b814714b90c1ccc35338201f029114412bc8df41e"
+    },
+    "CIS_TCBusMultisensorUnit.TInputKeyOccupancy.EventFlagChanged": {
+      "address": "0xd0102c",
+      "instruction_count": 81,
+      "sha256": "ae9e7a66b1dc4e13d409d6543b3bb3eebde243d16aa16f5f09ec5a6f32146740"
+    },
+    "CIS_TCBusMultisensorUnit.TInputKeyOccupancy.HandleAnyMovementChanged": {
+      "address": "0xd00a80",
+      "instruction_count": 25,
+      "sha256": "391f99a295a1132089b744a0a91ec6fb93f56ba3fb57d0e98d06d06b325afd04"
+    },
+    "CIS_TCBusMultisensorUnit.TInputKeyOccupancy.HandleDarkAndMovementChanged": {
+      "address": "0xd00ac4",
+      "instruction_count": 25,
+      "sha256": "94d9343318c73878f1fbdbb399c6d4ccab60847382cb00f516c94e945d586a1d"
+    },
+    "CIS_TCBusMultisensorUnit.TInputKeyOccupancy.HandleLightAndMovementChanged": {
+      "address": "0xd00b08",
+      "instruction_count": 25,
+      "sha256": "e3fa06e25a550fc26043a854ce3346b19ec62c63bff1574f583b59d6890102da"
+    },
+    "CIS_TCBusMultisensorUnit.TInputKeyOccupancy.HandleMacroFunctionChange": {
+      "address": "0xd00b4c",
+      "instruction_count": 57,
+      "sha256": "a8456780af4d28543d809e61e6d15a42b97b8ac9a8d2568cf4503e98394fd534"
+    },
+    "CIS_TCBusMultisensorUnit.TInputKeyOccupancy.InternalCreate": {
+      "address": "0xd00520",
+      "instruction_count": 104,
+      "sha256": "a9a8bd1448c2b42207e22892a2d3a63fc1bec417b020ecc3e4946c3d354cc06a"
+    },
+    "CIS_TCBusMultisensorUnit.TInputKeyOccupancy.RefreshBlockBankSwitchFromEventFlags": {
+      "address": "0xd0120c",
+      "instruction_count": 188,
+      "sha256": "f95617190fc519ec2980fd3e08c88a0d36ef80a11170422a92fd504ce5133ed5"
+    },
+    "CIS_TCBusMultisensorUnit.TInputKeyOccupancy.RefreshEventFlagsFromMacroFunction": {
+      "address": "0xd00e7c",
+      "instruction_count": 83,
+      "sha256": "54afd416723b7efdc6f2e4d0c22879b9248608dbb7827cc4ef82fbe41b2b0dd1"
+    },
+    "CIS_TCBusMultisensorUnit.TInputKeyOccupancy.RefreshEventFlagsFromMacroFunctionSmart": {
+      "address": "0xd00bf4",
+      "instruction_count": 161,
+      "sha256": "537d3bcc55767c837100776703b7fa6205ebac9c7d9c57a0ed107fc07ae00547"
+    },
+    "CIS_TCBusMultisensorUnit.TInputKeyOccupancy.SetAnyMovement": {
+      "address": "0xd00910",
+      "instruction_count": 38,
+      "sha256": "27197318e3dfe09a391b47049ef65e35768bf60b6d59f86032e54275fffb90c5"
+    },
+    "CIS_TCBusMultisensorUnit.TInputKeyOccupancy.SetDarkAndMovement": {
+      "address": "0xd0096c",
+      "instruction_count": 38,
+      "sha256": "96d05578df57d7c70a886deb746721baff47e80ac2d34b323b1b2e8cbeb00862"
+    },
+    "CIS_TCBusMultisensorUnit.TInputKeyOccupancy.SetInputKey": {
+      "address": "0xd0085c",
+      "instruction_count": 38,
+      "sha256": "822f0ec12f71f1812670c6eb85dea9861a9ab33cafdfdc245fc459b3eb7d4e8a"
+    },
+    "CIS_TCBusMultisensorUnit.TInputKeyOccupancy.SetLightAndMovement": {
+      "address": "0xd009c8",
+      "instruction_count": 38,
+      "sha256": "d95016f81b3f7d4a92e5b76439a1050b36a973c81943bf19c14632f807a8df47"
+    },
+    "CIS_TCBusMultisensorUnit.TInputKeyOccupancy.SetSunset": {
+      "address": "0xd00a24",
+      "instruction_count": 38,
+      "sha256": "39bc537f6c60e7111a9bb131331fea53c423ae7a0b294648dabdf6f6fd464bb2"
+    },
+    "CIS_TCBusST7SensorCGateAgent.LoadOccupancyKeys": {
+      "address": "0xcf4208",
+      "instruction_count": 106,
+      "sha256": "a72596e7e1a9204a1476a546b8e08984eb10ef01c4c5b8fbeb68d2e4f5856e6e"
+    },
+    "CIS_TCBusST7SensorCGateAgent.SaveOccupancyKeys": {
+      "address": "0xcf4dac",
+      "instruction_count": 143,
+      "sha256": "f089b04138fb80ec885b31e8fcdc7a428d2d89333cf126318c7647c0f38b6c6d"
+    },
+    "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.AfterLoadProgrammingInformation": {
+      "address": "0xcf4890",
+      "instruction_count": 310,
+      "sha256": "b95f7ef2ddc5a46390e257d26f216ce54d29b30bda54fe119a674bd12ad687f1"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.RefreshOccupancyKeyCollection": {
+      "address": "0xcfcc40",
+      "instruction_count": 48,
+      "sha256": "72565ef2901bcd1260c66549aa2e81bfdd4563f1bbf63c2fd4051f9a11b6008b"
+    },
+    "CIS_TInputKey.TInputKey.InternalCreate": {
+      "address": "0xd10cb8",
+      "instruction_count": 145,
+      "sha256": "3b8072724cc423845b158309fa18a8fd5d24860199a3c30ea49e1bb4437456ad"
+    },
+    "CIS_TManagedFlashObject.TManagedFlashObject.Create": {
+      "address": "0x76a0f0",
+      "instruction_count": 41,
+      "sha256": "9215469e1caa2ba3be6240f941122ea159a70408d0b95304dfb8de53c86e97f9"
+    },
+    "CIS_TManagedFlashObject.TManagedFlashObject.Destroy": {
+      "address": "0x76a16c",
+      "instruction_count": 78,
+      "sha256": "6f6d86cecfbbd24a3c8722ec973a4279b793aa4fa1f845b4568c0f64216bd597"
+    },
+    "CIS_TddST7Sensors.TddST7Multisensor.HandleDecisionMacroFunctionChangeOccupancy": {
+      "address": "0xfb7680",
+      "instruction_count": 20,
+      "sha256": "2124b438f9eac6918a0dd310cf6f6acdbf7d46122a9755764aa9a90f20021008"
+    },
+    "CIS_TddST7Sensors.TddST7Multisensor.Initialise": {
+      "address": "0xfb6a40",
+      "instruction_count": 63,
+      "sha256": "8a3a2d8a00346efb9ee243998cbd1249d230dfb83c061d8e4bf39e266e07e6da"
+    }
+  },
+  "rules": {
+    "bank_event": "For each referenced block in key reference order, find its ST7 bank. If any current occupancy flagtrue directly call SetSwitchActive(false), even if Allowed alreadyfalse. Then SetSwitchAllowed(notAnyFlags and not(maintenanceActive and same maintenanceBlock)).",
+    "direct_GUI338_edits_excluded": true,
+    "equal_boolean_writes_have_no_events": true,
+    "macro_enum_domain": [
+      0,
+      58
+    ],
+    "nested_unequal_clears_deliver_events_before_initiator": true,
+    "nil_handler_default_during_raw_load": true,
+    "no_cross_key_aggregate": true,
+    "raw_load": "For each key: if rawL and rawD set Anytrue; otherwise set Light(rawL), Dark(rawD), Anyfalse. Set Sunset(rawS) last. Light/Dark/Any true wrappers clear the other movement flags before their own EventFlagChanged. Sunset has no mutual exclusion.",
+    "raw_parameter_shape": {
+      "PIRDark": {
+        "bit_size": 8,
+        "element_count": 1,
+        "offset": 52
+      },
+      "PIRDarkMovement": {
+        "bit_size": 8,
+        "element_count": 1,
+        "offset": 51
+      },
+      "PIRLightMovement": {
+        "bit_size": 8,
+        "element_count": 1,
+        "offset": 50
+      },
+      "packing": "Key index i is bit 1 << i. Light OR Any enters LightMovement; Dark OR Any enters DarkMovement; Sunset enters PIRDark. Each parameter result contains one unsigned byte."
+    },
+    "scene_types": [
+      24,
+      25
+    ],
+    "special_macro_types": [
+      29,
+      30,
+      33,
+      34
+    ],
+    "unit_state2_is_destruction": true
+  },
+  "scope": "Internal explicit occupancy flag/Smart/bank-event transitions. No owner construction, complete93 loader/save, application graph, Scene allocator, fresh scalar normalization, direct GUI338 edits, or public CLI admission. Stable movement flags are mutually exclusive.",
+  "state_order": [
+    "light",
+    "dark",
+    "any_movement",
+    "sunset",
+    "decision_pending_0x94",
+    "refresh_from_macro_0x95"
+  ]
+}

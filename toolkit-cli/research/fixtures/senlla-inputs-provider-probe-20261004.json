@@ -1,0 +1,20 @@
+{
+  "authored_values_sha256": "85676e010c8767d3517d6e6beb6c861f19cdab3305f6333d0049eddf056c53bb",
+  "canonical_decoded_type": "SENLLA",
+  "canonical_filename": "SENLLA.xml",
+  "complete_toolkit_save": false,
+  "encoded_authored_memory_sha256": "4f3de2695b9bf842b5ee82e6f0092a258a4a80b4e52b2eef5921b25ed8b96474",
+  "format": "cbus-senlla-inputs-provider-probe-v1",
+  "hardware_access": false,
+  "numeric_roundtrip_count": 91,
+  "provider_parameters": 93,
+  "required_parameters": 93,
+  "sixbit_roundtrip_count": 2,
+  "source_module_sha256": "333c08b84038716d7bc29d36d594f7a9d7d4e92861bda83b810524a2a17c2f13",
+  "spec_sha256": "57fe64e107fb9f23395102d87f34ac111c7f462e1e2e26376aa4e894ecef7bee",
+  "synthetic_complete_snapshot_valid": true,
+  "typebit_omitted_metadata_count": 21,
+  "vendor_defaults_retained": false,
+  "vendor_definition_retained": false,
+  "vendor_execution": false
+}

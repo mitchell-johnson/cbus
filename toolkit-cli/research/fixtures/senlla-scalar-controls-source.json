@@ -1,0 +1,1679 @@
+{
+  "author_validation": {
+    "exact_spans_reopened": 147,
+    "full_suite_run": false,
+    "mismatches": 0
+  },
+  "complete_toolkit_save": false,
+  "format": "senlla-scalar-controls-source-v1",
+  "literal_vectors": [
+    {
+      "initialized_target": 200,
+      "input_margin_percent": 100,
+      "input_target": 255,
+      "pending_margin_percent": 100
+    },
+    {
+      "display_margin_position": 100,
+      "input_margin_percent": 25500,
+      "pending_cache": "25500",
+      "saved_on_exit": 25500
+    },
+    {
+      "initialized_status": [
+        3,
+        3,
+        3,
+        3,
+        255
+      ],
+      "input_status": [
+        0,
+        1,
+        2,
+        3,
+        255
+      ]
+    },
+    {
+      "display_index": 2,
+      "initialized_indicator": 2,
+      "input_indicator": 3,
+      "list_excluded": [
+        3
+      ]
+    },
+    {
+      "after_first": [
+        200,
+        1000
+      ],
+      "after_later": [
+        0,
+        2550
+      ],
+      "before_high": 1000,
+      "before_low": 200,
+      "both_use_flags": true,
+      "inactive_rows": 8
+    },
+    {
+      "margin_use": true,
+      "stop_kind": "group_is_unused",
+      "stop_source": "0xfc4291"
+    },
+    {
+      "margin_use": false,
+      "stop_kind": "group_is_unused",
+      "stop_source": "0xfc42d3",
+      "target_use": true
+    },
+    {
+      "margin_use": false,
+      "stop_kind": "bank_collection_count",
+      "stop_source": "0xca468b",
+      "target_use": false
+    },
+    {
+      "bound_element_non_nil": true,
+      "radio_enabled_after_render": true,
+      "radio_enabled_before_render": false
+    }
+  ],
+  "method_count": 147,
+  "methods": [
+    {
+      "address": "0x6853a8",
+      "instruction_count": 5,
+      "method": "StdCtrls.TCustomEdit.SetCharCase",
+      "span_sha256": "1369f1a62256436f06b2fbf7ec5ac799b2a49dc74552f5169045ab8aa9aaffb9"
+    },
+    {
+      "address": "0x6858a8",
+      "instruction_count": 60,
+      "method": "StdCtrls.TCustomEdit.CreateParams",
+      "span_sha256": "16c7696e80443a647e5877a2d54a0783d6bfff186e5e70ba5859d2c100978ea1"
+    },
+    {
+      "address": "0x68a018",
+      "instruction_count": 4,
+      "method": "StdCtrls.TCustomCheckBox.GetChecked",
+      "span_sha256": "d5c6781b84b9f1d3724d32698ee3bb8c182e81813b1ea549d8eabc7b00b7bd29"
+    },
+    {
+      "address": "0x68a038",
+      "instruction_count": 8,
+      "method": "StdCtrls.TCustomCheckBox.SetChecked",
+      "span_sha256": "2dd31e6946c58a2a3cd5150def186274c93e31f806a070df082774617c91a12a"
+    },
+    {
+      "address": "0x68a04c",
+      "instruction_count": 26,
+      "method": "StdCtrls.TCustomCheckBox.SetState",
+      "span_sha256": "89423b148559fdc63f522fafc0aa8a1c1484599b151e92e9f1e81e129507f046"
+    },
+    {
+      "address": "0x698200",
+      "instruction_count": 48,
+      "method": "ExtCtrls.TCustomRadioGroup.SetItemIndex",
+      "span_sha256": "e365908c614b0e7cc78ec357cd8972ed8b0a43d1b7268be0801557599d40de2a"
+    },
+    {
+      "address": "0x6f62d8",
+      "instruction_count": 41,
+      "method": "Controls.TControl.SetText",
+      "span_sha256": "10f59879b5e52541c5423af3b5cc89491d61a3cd871d665ead72ed63140619f3"
+    },
+    {
+      "address": "0x7e8f50",
+      "instruction_count": 16,
+      "method": "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.GetCount",
+      "span_sha256": "3bed5d6086da786370d0de930b1ffde4624dac8888ef6941defc4987f85acf88"
+    },
+    {
+      "address": "0x7e8f74",
+      "instruction_count": 18,
+      "method": "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.GetItem",
+      "span_sha256": "8ac41f35a9c7c9c6272999126445e42e2d5417a682e287015bb924a74213f00c"
+    },
+    {
+      "address": "0x7e9240",
+      "instruction_count": 29,
+      "method": "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.ResolveAllReferences",
+      "span_sha256": "f859c3279c335507b4e3b49844a4a22e97a6b0a8b79ee67e5de282319e39b3d3"
+    },
+    {
+      "address": "0x7f2b10",
+      "instruction_count": 50,
+      "method": "CIS_CBus.CharIsCBusName",
+      "span_sha256": "936ea15856e663d5d5c620e69fedb13878ebf16e78d704b5fa2ecfa8be685faa"
+    },
+    {
+      "address": "0x7f43d8",
+      "instruction_count": 16,
+      "method": "CIS_TBooleanAttribute.TBooleanAttribute.AsBoolean",
+      "span_sha256": "2cfe846f81b43ffb85b825d2ce07981061cf2cb10d1d09c55397337b8703a4db"
+    },
+    {
+      "address": "0x7f4470",
+      "instruction_count": 25,
+      "method": "CIS_TBooleanAttribute.TBooleanAttribute.GetAsString",
+      "span_sha256": "c6cd2578b33f8ee4537fa9a1a7d6391a005543a4c66c9741afc1707523de0637"
+    },
+    {
+      "address": "0x84836c",
+      "instruction_count": 36,
+      "method": "CIS_TEnumeratedTypeAttribute.TEnumeratedTypeAttribute.InternalSetAsString",
+      "span_sha256": "c5c6adc34a20acdc12ebc0c5c0fe635c283404afa6b7d9876a8def509b330086"
+    },
+    {
+      "address": "0x84847c",
+      "instruction_count": 16,
+      "method": "CIS_TEnumeratedTypeAttribute.TEnumeratedTypeAttribute.SetValue",
+      "span_sha256": "2f107c6e6edcf3a85269a7cfdd34f9fe84518b0530c233fefe1a7981bc0e3ffd"
+    },
+    {
+      "address": "0x848d8c",
+      "instruction_count": 9,
+      "method": "CIS_TEnumeratedTypeAttribute.TEnumeratedValues.SetAsString",
+      "span_sha256": "ffbe5d93e7a04e08345a2b8ed94a0d88abbd8cf94c102206779f88186dc07f1a"
+    },
+    {
+      "address": "0x848f94",
+      "instruction_count": 14,
+      "method": "CIS_TEnumeratedTypeAttribute.TEnumeratedValue.SetAsString",
+      "span_sha256": "9c045ba5915cc945f42fec99d52b659fc89418b973df467348dfcb6aebf8f09a"
+    },
+    {
+      "address": "0x84d460",
+      "instruction_count": 99,
+      "method": "CIS_Handles.TFlashExpressionController.Create",
+      "span_sha256": "3faa04cacc05609dfe063e35c71e5509fae37191ebdd3b72b755772b0c13d7e5"
+    },
+    {
+      "address": "0x84d7d0",
+      "instruction_count": 10,
+      "method": "CIS_Handles.TFlashExpressionController.Apply",
+      "span_sha256": "2b20a0e320b7c22e3ec0a96c53c0ce12108420c22bd7c12117a6c1e7757f11f4"
+    },
+    {
+      "address": "0x84d7e4",
+      "instruction_count": 26,
+      "method": "CIS_Handles.TFlashExpressionController.CanAcceptValue",
+      "span_sha256": "211a5e7d21dea18074ae8bdc8d0aee9cd5451e1964faf0e68eb31413db687cbc"
+    },
+    {
+      "address": "0x84d8c4",
+      "instruction_count": 150,
+      "method": "CIS_Handles.TFlashExpressionController.DoFlashHandleChanged",
+      "span_sha256": "a654f051fa8ee88be8cdbaff0146f58ca9c54899af62d5951ccec7f00d883a2e"
+    },
+    {
+      "address": "0x84da68",
+      "instruction_count": 14,
+      "method": "CIS_Handles.TFlashExpressionController.ExitingControl",
+      "span_sha256": "17e744c7a7db8c56192b9db6948fd6bfba7698167b7ca3a651672baae330634f"
+    },
+    {
+      "address": "0x84dc5c",
+      "instruction_count": 29,
+      "method": "CIS_Handles.TFlashExpressionController.FlashHandleValueChanged",
+      "span_sha256": "dea67640ac0b6054b9b0f5b84e015b3a9d66868cc3c09acb539bd209885999a9"
+    },
+    {
+      "address": "0x84dcac",
+      "instruction_count": 21,
+      "method": "CIS_Handles.TFlashExpressionController.GetActive",
+      "span_sha256": "8f7d9571a3eba2f41169d875d944fc91662b34ad0717e2fc98427db7c8b2e657"
+    },
+    {
+      "address": "0x84dd1c",
+      "instruction_count": 13,
+      "method": "CIS_Handles.TFlashExpressionController.GetUpdateLocked",
+      "span_sha256": "a011fa54e9af0a8bf558d116ffd0cbe9d3a39331c84bbf3132bd314582041d24"
+    },
+    {
+      "address": "0x84dd64",
+      "instruction_count": 9,
+      "method": "CIS_Handles.TFlashExpressionController.LockUpdate",
+      "span_sha256": "6e254474c069516e5aa1810bbc314befede5a078b97fbb48da90fcd886b7bc0e"
+    },
+    {
+      "address": "0x84e008",
+      "instruction_count": 16,
+      "method": "CIS_Handles.TFlashExpressionController.UnlockUpdate",
+      "span_sha256": "119432cbcb5199057bcd82a1c35a14a784099d2dde6eefa6eb296c4e5e7d72e3"
+    },
+    {
+      "address": "0x84f0c4",
+      "instruction_count": 84,
+      "method": "CIS_Handles.TFlashBooleanController.Apply",
+      "span_sha256": "d1ab4978774ddbcca6c73143fb3d4d2719e5641feab1f568beb10f7020606b5b"
+    },
+    {
+      "address": "0x84f1a4",
+      "instruction_count": 30,
+      "method": "CIS_Handles.TFlashBooleanController.GetAsBoolean",
+      "span_sha256": "d1a2eddd23f85575937b5b96abdc5803aa4218fb2beaabe5813c6fc6dc1d2ab2"
+    },
+    {
+      "address": "0x84f1f8",
+      "instruction_count": 24,
+      "method": "CIS_Handles.TFlashBooleanController.SetAsBoolean",
+      "span_sha256": "66cdf6c7a2b116225703cf46bf53f4fc38f6207619e068e1d979bca5ac8731fc"
+    },
+    {
+      "address": "0x84f234",
+      "instruction_count": 69,
+      "method": "CIS_Handles.TFlashBooleanController.UpdateCachedValue",
+      "span_sha256": "3c97552d795ece5d5f1a52e4015ea4c88038f6bf78514c64c0b063334fcca2ec"
+    },
+    {
+      "address": "0x84f2f8",
+      "instruction_count": 57,
+      "method": "CIS_Handles.TFlashStringController.Apply",
+      "span_sha256": "73c4dec8995337520e7f986b675c71e86e5d26cc18beb943a0ebbffd584967f8"
+    },
+    {
+      "address": "0x84f38c",
+      "instruction_count": 31,
+      "method": "CIS_Handles.TFlashStringController.GetAsString",
+      "span_sha256": "bdad58dacb7a206083e18a74aa88a18e23b5045252e67f678a0c762ce763151b"
+    },
+    {
+      "address": "0x84f3e0",
+      "instruction_count": 30,
+      "method": "CIS_Handles.TFlashStringController.SetAsString",
+      "span_sha256": "ed46f66e4a5f03d891e45d26f185b4cfdb8ed73700fb145f0b2495334df5392b"
+    },
+    {
+      "address": "0x84f430",
+      "instruction_count": 31,
+      "method": "CIS_Handles.TFlashStringController.UpdateCachedValue",
+      "span_sha256": "13d683614d8b3abc5897c2b3147438cbd49b9ee836dda6708ff7b1fa3b566bcb"
+    },
+    {
+      "address": "0x8507bc",
+      "instruction_count": 72,
+      "method": "CIS_TIntegerAttribute.TIntegerAttribute.InternalSetAsString",
+      "span_sha256": "1a1f417bc5b50f3b9bc2a86a88f2db11a0af57b147328d7898c676bf18ba0d97"
+    },
+    {
+      "address": "0xae7958",
+      "instruction_count": 56,
+      "method": "CIS_TFlashEdit.TFlashEdit.RenderDisplay",
+      "span_sha256": "f65c44006ca2281ad57831092381e3000d3c8b03fc51331b77bb8302f5e1e4bb"
+    },
+    {
+      "address": "0xae7a54",
+      "instruction_count": 38,
+      "method": "CIS_TFlashEdit.TFlashEdit.Change",
+      "span_sha256": "0e0a6021912322ed8a172d572175bbb3c4b4df56d42f3b189cb18d8c4fff452f"
+    },
+    {
+      "address": "0xae7ac0",
+      "instruction_count": 12,
+      "method": "CIS_TFlashEdit.TFlashEdit.DoExit",
+      "span_sha256": "8e9463504ad675d3a229361904b28364bd54bffd296cd4625310dcea31aa3526"
+    },
+    {
+      "address": "0xae7ae0",
+      "instruction_count": 54,
+      "method": "CIS_TFlashEdit.TFlashEdit.ControllerValueChange",
+      "span_sha256": "080bfb0e40a0c0c0984393e09d7168c200c55820a9eaccfd1f2a1d41a67b8dba"
+    },
+    {
+      "address": "0xae8120",
+      "instruction_count": 73,
+      "method": "CIS_TFlashCheckBox.TFlashCheckBox.ControllerValueChange",
+      "span_sha256": "a88dbece0e574e8fc0e537c3c3398a5a296ebc8104eafd7180eccea9a36ea7d8"
+    },
+    {
+      "address": "0xae8248",
+      "instruction_count": 17,
+      "method": "CIS_TFlashCheckBox.TFlashCheckBox.Change",
+      "span_sha256": "e28f5e895c982ffe9a92d3fcedcbdbfafe88cb195d32758769d9ef645a7b258c"
+    },
+    {
+      "address": "0xae8278",
+      "instruction_count": 34,
+      "method": "CIS_TFlashCheckBox.TFlashCheckBox.CMChanged",
+      "span_sha256": "e167f6335bb26ebba294e4facda4b27ebf8baf31acecc9d8d98cb148f9def71e"
+    },
+    {
+      "address": "0xbc0348",
+      "instruction_count": 69,
+      "method": "CIS_TFlashRadioGroup.TFlashRadioGroup.Create",
+      "span_sha256": "3f573a730ceb68625b8784270afb7185f85edde8a344c25d653152aa590f9606"
+    },
+    {
+      "address": "0xbc0534",
+      "instruction_count": 141,
+      "method": "CIS_TFlashRadioGroup.TFlashRadioGroup.PopulateFlashList",
+      "span_sha256": "f0ad0d7e282420a756f65995a614c4f541453404834005b0008a8e05422c1012"
+    },
+    {
+      "address": "0xbc06e4",
+      "instruction_count": 100,
+      "method": "CIS_TFlashRadioGroup.TFlashRadioGroup.Click",
+      "span_sha256": "56805ba41683c2c2c3768da4b5f95e25046c3e66c907896696dabcaf2c3f3f54"
+    },
+    {
+      "address": "0xbc087c",
+      "instruction_count": 21,
+      "method": "CIS_TFlashRadioGroup.TFlashRadioGroup.UpdateEnableState",
+      "span_sha256": "d3dcb9fe16c432c0d4f780e5c286af6b406720fc91a0f461ed267e5724b30bd5"
+    },
+    {
+      "address": "0xbc0914",
+      "instruction_count": 46,
+      "method": "CIS_TFlashRadioGroup.TFlashRadioGroup.SetBooleanInverse",
+      "span_sha256": "d1ee62b187d30f6d9acb923146e8696dda897e11734a74902def18ff0e81ca44"
+    },
+    {
+      "address": "0xbc0c34",
+      "instruction_count": 96,
+      "method": "CIS_TFlashRadioGroup.TFlashRadioGroup.HandleFlashValueChanged",
+      "span_sha256": "5a0b95531753780ba59e8d3a31f423511b2a70e35889f2065c93d73632765830"
+    },
+    {
+      "address": "0xc08038",
+      "instruction_count": 27,
+      "method": "cxTrackBar.TcxCustomTrackBarProperties.FixPosition",
+      "span_sha256": "80400fab79cd91ed3b3b43a63da4203ee0fd6e1c2181d94437d6cb4d02649772"
+    },
+    {
+      "address": "0xc08dec",
+      "instruction_count": 53,
+      "method": "cxTrackBar.TcxCustomTrackBar.SetPosition",
+      "span_sha256": "d8fe45b771720d12d0226ffe3cbc82b8b8ac4cc018ff05791c39038d6673c12d"
+    },
+    {
+      "address": "0xc09b38",
+      "instruction_count": 62,
+      "method": "CIS_TFlashCxTrackBar.TFlashCxTrackBar.ControllerValueChange",
+      "span_sha256": "c90dfc6489a2794dcd0a79230fdec3663785b64de7f63a28978d06e0ee31ce4e"
+    },
+    {
+      "address": "0xc09ecc",
+      "instruction_count": 100,
+      "method": "CIS_TFlashCxTrackBar.TFlashCxTrackBarProperties.DoChanged",
+      "span_sha256": "16fe95cd8dd38e435d46284f06c86f6c0d1ddee2c0b07ac0d662ae457fc26902"
+    },
+    {
+      "address": "0xc0ad20",
+      "instruction_count": 19,
+      "method": "CIS_TFlashCxTrackBarEdit.TcxTrackBarEdit.Change",
+      "span_sha256": "dbd4afbbaa5666c6ca009789d458ecdc34dbbb06073a5f6656b9a7e91ec28692"
+    },
+    {
+      "address": "0xc0b434",
+      "instruction_count": 14,
+      "method": "CIS_TFlashCxTrackBarEdit.TcxTrackBarEdit.OnInternalEditChange",
+      "span_sha256": "348e9292c8fa077416bb8ae57c69f53ef2df9ca6af8fc0e442648c11daad1e29"
+    },
+    {
+      "address": "0xc0b480",
+      "instruction_count": 18,
+      "method": "CIS_TFlashCxTrackBarEdit.TcxTrackBarEdit.OnInternalTrackBarChange",
+      "span_sha256": "e78c5e9804a5b78a463523d25e9d7c3c76a5fe37599bf0b5c011467cb68d0585"
+    },
+    {
+      "address": "0xc0b538",
+      "instruction_count": 14,
+      "method": "CIS_TFlashCxTrackBarEdit.TcxTrackBarEdit.SetEditText",
+      "span_sha256": "c713e89a335be7c3c8c66d1e474982ef2f3557d298cfec8411bc49d0b7fc8501"
+    },
+    {
+      "address": "0xc0b63c",
+      "instruction_count": 14,
+      "method": "CIS_TFlashCxTrackBarEdit.TcxTrackBarEdit.SetPosition",
+      "span_sha256": "1e57a445ef6ae4ae9768894c95c17544d69cbdff64d22205b209b56dd3601bf7"
+    },
+    {
+      "address": "0xc0b744",
+      "instruction_count": 80,
+      "method": "CIS_TFlashCxTrackBarEdit.TcxTrackBarEdit.UpdateEditFromTrackBar",
+      "span_sha256": "deeb85e0de4188571ffb9e194c174cc9fd03cfbe44378feaf5114f849d58ef8a"
+    },
+    {
+      "address": "0xc0b830",
+      "instruction_count": 112,
+      "method": "CIS_TFlashCxTrackBarEdit.TcxTrackBarEdit.UpdateTrackBarFromEdit",
+      "span_sha256": "f4f6898806390495ba6caf3742eff485c823954309c1d24816c4ab2f922b8a7b"
+    },
+    {
+      "address": "0xc0b978",
+      "instruction_count": 14,
+      "method": "CIS_TFlashCxTrackBarEdit.TFlashCxTrackBarEdit.Change",
+      "span_sha256": "7b4221171612c7a854f469c56819f1d9a0302f276d472767b5dbfe42d0b7a2dd"
+    },
+    {
+      "address": "0xc0b99c",
+      "instruction_count": 9,
+      "method": "CIS_TFlashCxTrackBarEdit.TFlashCxTrackBarEdit.ControllerElementChange",
+      "span_sha256": "ffbe5d93e7a04e08345a2b8ed94a0d88abbd8cf94c102206779f88186dc07f1a"
+    },
+    {
+      "address": "0xc0b9ac",
+      "instruction_count": 45,
+      "method": "CIS_TFlashCxTrackBarEdit.TFlashCxTrackBarEdit.ControllerExpressionChanged",
+      "span_sha256": "240a3db8a9e32ca693985c08dfe898db32fbb0852a0513329cb20d31ba6e44f2"
+    },
+    {
+      "address": "0xc0ba40",
+      "instruction_count": 48,
+      "method": "CIS_TFlashCxTrackBarEdit.TFlashCxTrackBarEdit.ControllerValueChange",
+      "span_sha256": "812eaa1357cdd7031648ffd0e73cb923b587f3d82141c4bccc14e1ad3452d23f"
+    },
+    {
+      "address": "0xc0bad0",
+      "instruction_count": 51,
+      "method": "CIS_TFlashCxTrackBarEdit.TFlashCxTrackBarEdit.Create",
+      "span_sha256": "c534e7c3134469fa7e084a2d035c78e3b10f332a659452f903bbe071f5943941"
+    },
+    {
+      "address": "0xc0bc1c",
+      "instruction_count": 48,
+      "method": "CIS_TFlashCxTrackBarEdit.TFlashCxTrackBarEdit.RefreshDisplayFromFlash",
+      "span_sha256": "78c5e20fae921647f2e8bed97a3f2e7ffff3625e8945ebd05b9c6640a688fc35"
+    },
+    {
+      "address": "0xc0bcac",
+      "instruction_count": 46,
+      "method": "CIS_TFlashCxTrackBarEdit.TFlashCxTrackBarEdit.RefreshFlashFromDisplay",
+      "span_sha256": "d797d8345b279fdc803420a62e800c6f02512a512e6bb416594d3196e6eec5cb"
+    },
+    {
+      "address": "0xc0bd90",
+      "instruction_count": 12,
+      "method": "CIS_TFlashCxTrackBarEdit.TFlashCxTrackBarEdit.SetFlashPosition",
+      "span_sha256": "2c02ecd9587e7ba61feb6c6af7758e47dcde51f28eabcfb4fec05b09de6827a6"
+    },
+    {
+      "address": "0xc0fc64",
+      "instruction_count": 60,
+      "method": "CIS_FlashGUI.PrepareFlashCheckbox",
+      "span_sha256": "5f393b85cba762ab7d5e7cb128e7f2733576c5b09a570225a5fa27bc2b013bc9"
+    },
+    {
+      "address": "0xc10804",
+      "instruction_count": 60,
+      "method": "CIS_FlashGUI.PrepareFlashEdit",
+      "span_sha256": "43647f90c11f88f4cef63dab2abea37a25baec3784646d0b68b4d2ee53f04c5b"
+    },
+    {
+      "address": "0xc108d0",
+      "instruction_count": 88,
+      "method": "CIS_FlashGUI.PrepareFlashRadioGroup",
+      "span_sha256": "24463fd0e86f1133d61c9f4a1e97f846abcb9b023963be5ec75d951da7b1a553"
+    },
+    {
+      "address": "0xc10a10",
+      "instruction_count": 68,
+      "method": "CIS_FlashGUI.PrepareFlashRadioGroupSimple",
+      "span_sha256": "230c6d4e48d9f9e0f3c75cdbf7c73d3b856cec6e896480f26390fc04d2573cfc"
+    },
+    {
+      "address": "0xc10afc",
+      "instruction_count": 60,
+      "method": "CIS_FlashGUI.PrepareFlashCxTrackBarEdit",
+      "span_sha256": "f35e5d63b4682d44e6d2f48e74021c3e5b962c49cc549490618c0294450035db"
+    },
+    {
+      "address": "0xc9b43c",
+      "instruction_count": 47,
+      "method": "CIS_ICBusInputUnit.StatusReportIntegerToString",
+      "span_sha256": "f4e5d7ec0d6884fdfd2aec9cc26f02101340a56d3ddfcc54a87a971b23b539ba"
+    },
+    {
+      "address": "0xc9b4c4",
+      "instruction_count": 54,
+      "method": "CIS_ICBusInputUnit.StatusReportStringToInteger",
+      "span_sha256": "2051f1708024a6f12bdc7e6bceeaffce194225e26d1f22826df6674c90dffa53"
+    },
+    {
+      "address": "0xc9d4bc",
+      "instruction_count": 14,
+      "method": "CIS_TCBusInputUnit.TCBusInputUnit.GetStatusReportInterval",
+      "span_sha256": "8d62b0be7aae433851cc3e910519bc7a54ce43b267fdad393b84d010ea5c434c"
+    },
+    {
+      "address": "0xca3ac8",
+      "instruction_count": 14,
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.GetBankSwitchHighGroup",
+      "span_sha256": "c1ff091c0fa8c1aaa03b8ea2ebf46332b333268e0474e5676cfd453416239f8d"
+    },
+    {
+      "address": "0xca3aec",
+      "instruction_count": 14,
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.GetBankSwitchLowGroup",
+      "span_sha256": "6ce6d826730d48331a027f5a4805351ac995aca6d1fda9ae9fc08fad20c6ddc5"
+    },
+    {
+      "address": "0xca3b10",
+      "instruction_count": 14,
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.GetIsUsingLightLevelMarginGroup",
+      "span_sha256": "19266fab2cff3539b25825efd827a96a05d4d285d472e78611bdf0f0609eae3a"
+    },
+    {
+      "address": "0xca3b34",
+      "instruction_count": 14,
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.GetIsUsingLightLevelTargetGroup",
+      "span_sha256": "a646af268f895133a607efa6c7fee1cf0cf2f9644e66dddb1d05a0fdee38cdc1"
+    },
+    {
+      "address": "0xca3b58",
+      "instruction_count": 12,
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.GetLightLevelBanks",
+      "span_sha256": "51f7af190b12ed68e8c95d3b3e67713a81a74f4c48e09a0bf0efb4f9673524ea"
+    },
+    {
+      "address": "0xca3b74",
+      "instruction_count": 14,
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.GetLightLevelMarginGroup",
+      "span_sha256": "fd6543f6985d6784f6aa5fbd022ccd9046195ddeeec421ff01a880752302839c"
+    },
+    {
+      "address": "0xca3b98",
+      "instruction_count": 14,
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.GetLightLevelTargetGroup",
+      "span_sha256": "61cec66661325c7e223cedd28b861c9cea9d018efb8c697e340feb39e28904bd"
+    },
+    {
+      "address": "0xca3f90",
+      "instruction_count": 14,
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.GetPowerUpBankSwitchGroupState",
+      "span_sha256": "6d07d93556fcac3534626520ae2aebec8bd058958706ec5c7d67b044427277b1"
+    },
+    {
+      "address": "0xca3fb4",
+      "instruction_count": 14,
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.GetPowerUpMarginGroupState",
+      "span_sha256": "943e4533f58bc0debd993503add09a7eb956c2869c51041979e852b06fd11db7"
+    },
+    {
+      "address": "0xca4020",
+      "instruction_count": 14,
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.GetPowerUpTargetGroupState",
+      "span_sha256": "978c8fd604bdfccc9931cd5bd5924b7a77c39bd0aae0ede1d821b1c13006c5c9"
+    },
+    {
+      "address": "0xca461c",
+      "instruction_count": 31,
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.IsUsingBankSwitchHighGroup",
+      "span_sha256": "19723e6a22db0676f5dd1556920f8873be63488c973cebc52721f54a604609fb"
+    },
+    {
+      "address": "0xca4674",
+      "instruction_count": 31,
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.IsUsingBankSwitchLowGroup",
+      "span_sha256": "a7a90a97e4dc17160a450f4ee1409dc88e04585a557d5daf1573a71c731d5b83"
+    },
+    {
+      "address": "0xca5010",
+      "instruction_count": 14,
+      "method": "CIS_TCBusSurfaceMountSensorUnit.TInputBlockSurfaceMountBankSwitchCollection.GetItem",
+      "span_sha256": "75ce2a8c8f44c55c5ef1f442e613d8b77710dc79d1258193a3f120539236fb7a"
+    },
+    {
+      "address": "0xcfd26c",
+      "instruction_count": 40,
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetLightLevelMarginPerc",
+      "span_sha256": "3e4be69da9fd6f3497358471cdc48fcf45c863260bb43d480fb75488f5064efb"
+    },
+    {
+      "address": "0xcfd32c",
+      "instruction_count": 40,
+      "method": "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetLightLevelTargetLux",
+      "span_sha256": "79d3df5d1bd1ddf5565be583cb06b1791da9b16e3da370e1832dbb25445c4640"
+    },
+    {
+      "address": "0xd00478",
+      "instruction_count": 14,
+      "method": "CIS_TCBusMultisensorUnit.TInputBlockBankSwitchCollection.GetItem",
+      "span_sha256": "47bee103604b75a5a9b105919d52d5a583471ec9c49ce407440f9da8d3a299df"
+    },
+    {
+      "address": "0xdc0dac",
+      "instruction_count": 101,
+      "method": "CIS_TfrmUnitIdentification.TfrmUnitIdentification.SetupFlashComponents",
+      "span_sha256": "a95241cac5f1c738a333a9da8a9fc7b3a55f10627e1c5d7533ce9dacd8ac11b3"
+    },
+    {
+      "address": "0xdc13cc",
+      "instruction_count": 135,
+      "method": "CIS_TfrmUnitIdentification.TfrmUnitIdentification.edtUnitNameExit",
+      "span_sha256": "46c8e62ec43e37a6eee52a4559f079a934f2041efc08e592b6565739e8bd1c4d"
+    },
+    {
+      "address": "0xdc15f0",
+      "instruction_count": 145,
+      "method": "CIS_TfrmUnitIdentification.TfrmUnitIdentification.edtUnitNameChange",
+      "span_sha256": "bf5c2c02a757a3e177f46a429320e67d7b11646f35750d144a4fc056e70bca28"
+    },
+    {
+      "address": "0xeca758",
+      "instruction_count": 80,
+      "method": "CIS_TddCBusUnit.TddCBusUnit.OnApply",
+      "span_sha256": "b7615ab37baf2441c146c8b7ba1ac8781a9f8b5d2b2de2080ca7887d69a498e6"
+    },
+    {
+      "address": "0xf27e14",
+      "instruction_count": 14,
+      "method": "CIS_TCommonCBus.TCBusGroup.IsUnused",
+      "span_sha256": "d8303f159f3cd7404170fc45c6a79fcae0f526960c8eecc758908e64dea9ee19"
+    },
+    {
+      "address": "0xf47a10",
+      "instruction_count": 14,
+      "method": "CIS_TCBusObject.TCGateObject.GetAddressAsInteger",
+      "span_sha256": "29e51f5d44bbbdf14cf1164607c98dc68cb323c7caa1f2d593bed173972e9341"
+    },
+    {
+      "address": "0xf47e88",
+      "instruction_count": 17,
+      "method": "CIS_TCBusObject.TCGateAddressAttribute.GetSimpleDecimalAddress",
+      "span_sha256": "8f34b58ddf020b15c8051cf598e509d320a078b99288cffbd08b5f8c993ff2c5"
+    },
+    {
+      "address": "0xf47eb8",
+      "instruction_count": 149,
+      "method": "CIS_TCBusObject.TCGateAddressAttribute.PopulateCacheValues",
+      "span_sha256": "7d8463e3db2a186503eb7f66f81d6f5be7936f8c0ca24b84b16b8f940b6124f6"
+    },
+    {
+      "address": "0xfa12d4",
+      "instruction_count": 255,
+      "method": "CIS_TcdMultiSensorGlobal.TcdMultisensorGlobal.SetupFlashComponents",
+      "span_sha256": "8290f9bd0f6f16c8b62660eff8834d29e9179295022c2e80111280a72cb5f004"
+    },
+    {
+      "address": "0xfa1a20",
+      "instruction_count": 63,
+      "method": "CIS_TcdMultiSensorGlobal.TcdMultisensorGlobal.SetupNonFlashComponents",
+      "span_sha256": "236e05d08e45c21ac2732bd86efcdaa38369dbd479efeb336bf93d35f933be09"
+    },
+    {
+      "address": "0xfa20e0",
+      "instruction_count": 35,
+      "method": "CIS_TcdMultiSensorGlobal.TcdST7MultisensorGlobal.HandleStatusReportComboChange",
+      "span_sha256": "8034308d2c60069d9a5258a1ec7e7480e84cab5e518485480fc6aa7c55fcefd9"
+    },
+    {
+      "address": "0xfa217c",
+      "instruction_count": 207,
+      "method": "CIS_TcdMultiSensorGlobal.TcdST7MultisensorGlobal.Initialise",
+      "span_sha256": "3f49f358cbd59fb8fc10e6420be83e0b07ae7fe96d5ccca787f813d20d48df6f"
+    },
+    {
+      "address": "0xfa2574",
+      "instruction_count": 72,
+      "method": "CIS_TcdMultiSensorGlobal.TcdST7MultisensorGlobal.PopulateNonFlashComponents",
+      "span_sha256": "a9d1aa774530808d826fc991af250274828a0ae1b40bca71904f0b7d7711c475"
+    },
+    {
+      "address": "0xfa445c",
+      "instruction_count": 102,
+      "method": "CIS_TcdLightLevelSensor.TcdLightLevelSensor.SetupFlashComponents",
+      "span_sha256": "0b82cd80b10eced2ce371ee437d42f73a8f755dc9ee8edf07e441c2d7c8d43e6"
+    },
+    {
+      "address": "0xfa4798",
+      "instruction_count": 24,
+      "method": "CIS_TcdLightLevelSensor.TcdLightLevelSensor.SetupNonFlashComponents",
+      "span_sha256": "52e9b7c6d8f5a2b560a3a21ca103a89c414949e0b766b9bdb22fca1ac14879fc"
+    },
+    {
+      "address": "0xfa6588",
+      "instruction_count": 122,
+      "method": "CIS_TcdLightLevelSensor.ConfigureLuxEdit",
+      "span_sha256": "7e169aba2f809c2ce554a2eb30467d31dc75175241d393489fb86379f22c7e2b"
+    },
+    {
+      "address": "0xfa78fc",
+      "instruction_count": 57,
+      "method": "CIS_TcdLightLevelSensor.TcdST7LightLevelSensor.HandleSliderChanged",
+      "span_sha256": "41946999b132812486b8fde17cca65dd3875ffdda574fb7eadb11df58498cacb"
+    },
+    {
+      "address": "0xfa79d0",
+      "instruction_count": 37,
+      "method": "CIS_TcdLightLevelSensor.TcdST7LightLevelSensor.HandleTargetLuxChange",
+      "span_sha256": "4d3727c32e244c26139cb68acd72a5da0603684dea5b95905cf0bc36350e3e81"
+    },
+    {
+      "address": "0xfa7c08",
+      "instruction_count": 222,
+      "method": "CIS_TcdLightLevelSensor.TcdST7LightLevelSensor.Initialise",
+      "span_sha256": "22ac35f6b34b50c19370a4e3dc9a930ae5aa76356683e686e63aa016d74121b9"
+    },
+    {
+      "address": "0xfa8790",
+      "instruction_count": 20,
+      "method": "CIS_TcdLightLevelSensor.TcdST7LightLevelSensor.SetTargetLuxByteValue",
+      "span_sha256": "17b140f453a2e6798b99900bedb8137592d78a5b20622101f303d87629765df6"
+    },
+    {
+      "address": "0xfa87c8",
+      "instruction_count": 42,
+      "method": "CIS_TcdLightLevelSensor.TcdST7LightLevelSensor.SetTargetLuxEditText",
+      "span_sha256": "852062cd43613d9bbfea68a975369a68196bb4f0c8a17f8bb63513e6f135f7ad"
+    },
+    {
+      "address": "0xfa884c",
+      "instruction_count": 20,
+      "method": "CIS_TcdLightLevelSensor.ConfigureLuxTrack",
+      "span_sha256": "9c9a56101bfc72fd5a735d2cb54c46041d15f2116ca9b3bb33cc141d90ce885f"
+    },
+    {
+      "address": "0xfa888c",
+      "instruction_count": 53,
+      "method": "CIS_TcdLightLevelSensor.ConfigureLuxEdit",
+      "span_sha256": "ed4710ad7bca86a6fb4666c0781848591508e27f6c667bbb355ac7e807348863"
+    },
+    {
+      "address": "0xfa8928",
+      "instruction_count": 22,
+      "method": "CIS_TcdLightLevelSensor.TcdST7LightLevelSensor.SetupFlashComponents",
+      "span_sha256": "8daf5ec484fd93105c34003be20dd947f2bcc99b62574f66e5a861cf5e90251a"
+    },
+    {
+      "address": "0xfa8968",
+      "instruction_count": 105,
+      "method": "CIS_TcdLightLevelSensor.TcdST7LightLevelSensor.SetupFlashHooks",
+      "span_sha256": "64cdd73b4175fd1fd5a98ed6ad6b223fa9135ff24e4e31574b069113455bd7c5"
+    },
+    {
+      "address": "0xfa8c0c",
+      "instruction_count": 64,
+      "method": "CIS_TcdLightLevelSensor.TcdST7LightLevelSensor.SetupNonFlashComponents",
+      "span_sha256": "7c8c3eb9cec0f9831482ee3ad015a62b76b53b9805ddf1aa110733f8340b2c5f"
+    },
+    {
+      "address": "0xfa8cd0",
+      "instruction_count": 75,
+      "method": "CIS_TcdLightLevelSensor.TcdST7LightLevelSensor.UpdateLightLevelRange",
+      "span_sha256": "881a079dcdaad3f5328d46e96cdc6a178a2cd78c1d2564476c06968e78e18002"
+    },
+    {
+      "address": "0xfaac58",
+      "instruction_count": 9,
+      "method": "CIS_TcdLightLevelBankSwitch.TcdLightLevelBankSwitch.HandleFormBankCheckboxClick",
+      "span_sha256": "ffbe5d93e7a04e08345a2b8ed94a0d88abbd8cf94c102206779f88186dc07f1a"
+    },
+    {
+      "address": "0xfaac68",
+      "instruction_count": 23,
+      "method": "CIS_TcdLightLevelBankSwitch.TcdLightLevelBankSwitch.RefreshBankEnabled",
+      "span_sha256": "ba872baf8938b8a346410a75cd942a3899faa834e86e94c706fff8b8c3689d33"
+    },
+    {
+      "address": "0xfac770",
+      "instruction_count": 28,
+      "method": "CIS_TcdLightLevelBankSwitch.TcdST7LightLevelBankSwitch.RefreshBankEnableable",
+      "span_sha256": "9d4bd6aac2b08db5c402741f7204239f78119a7e172070f64899e52145e034bf"
+    },
+    {
+      "address": "0xfad064",
+      "instruction_count": 287,
+      "method": "CIS_TcdLightLevelBankSwitch.TcdST7LightLevelBankSwitch.SetupFlashComponents",
+      "span_sha256": "20c1f4330c8f1c5dccbd98e2c8c907d3a98ea4a68c0c45918100b04707eb553f"
+    },
+    {
+      "address": "0xfb0f3c",
+      "instruction_count": 46,
+      "method": "CIS_TcdMultisensorRestore.TcdMultisensorRestore.SetupFlashComponents",
+      "span_sha256": "4896d543af08e6b197434edf3d709b166b18bdc0b0696899bbaa17d892836f3b"
+    },
+    {
+      "address": "0xfb7190",
+      "instruction_count": 40,
+      "method": "CIS_TddST7Sensors.TddST7Multisensor.OnApply",
+      "span_sha256": "942db364d5daf7965e6f03cb90105ff3bbf610a05d92730a06c845bc52cf5d97"
+    },
+    {
+      "address": "0xfbcef8",
+      "instruction_count": 36,
+      "method": "CIS_TcdSurfaceMountLightLevelSensor.TcdSurfaceMountLightLevelSensor.HandleMarginGroupChange",
+      "span_sha256": "d8fcc647b4f93978064cc1a3596ec5f3ba4e25da198d63d340cc964c49ecaa48"
+    },
+    {
+      "address": "0xfbcf60",
+      "instruction_count": 29,
+      "method": "CIS_TcdSurfaceMountLightLevelSensor.TcdSurfaceMountLightLevelSensor.HandleMarginPercChange",
+      "span_sha256": "ca052c5011736240859b0f78d75748a4f792f622caf15f56a3917febd9d2e1b2"
+    },
+    {
+      "address": "0xfbd000",
+      "instruction_count": 36,
+      "method": "CIS_TcdSurfaceMountLightLevelSensor.TcdSurfaceMountLightLevelSensor.HandleTargetGroupChange",
+      "span_sha256": "e94c1daabef27e57a49e271230a0829086072125ecda1f3161d46e66c0a87217"
+    },
+    {
+      "address": "0xfbd068",
+      "instruction_count": 29,
+      "method": "CIS_TcdSurfaceMountLightLevelSensor.TcdSurfaceMountLightLevelSensor.HandleTargetLuxChange",
+      "span_sha256": "d68bfbb459bd43edfd33c81ecb803f3e4ae078740fa6993894f07d91285b57b7"
+    },
+    {
+      "address": "0xfbd108",
+      "instruction_count": 120,
+      "method": "CIS_TcdSurfaceMountLightLevelSensor.TcdSurfaceMountLightLevelSensor.Initialise",
+      "span_sha256": "90f8edccb96fca7be33f8de1ef49b4351dc3f06bf171d3fe6fd00800c71b905d"
+    },
+    {
+      "address": "0xfbd43c",
+      "instruction_count": 90,
+      "method": "CIS_TcdSurfaceMountLightLevelSensor.TcdSurfaceMountLightLevelSensor.LoadTargetMarginGroupValue",
+      "span_sha256": "6f6ca5604ac5920d0daae1be7872251ff987d3a5284960a22d3212a07691549f"
+    },
+    {
+      "address": "0xfbd584",
+      "instruction_count": 71,
+      "method": "CIS_TcdSurfaceMountLightLevelSensor.TcdSurfaceMountLightLevelSensor.SetupFlashHooks",
+      "span_sha256": "0c49b80b041577822d96031a569f689b5f2d25b7e61afcd6332fbe2934645b48"
+    },
+    {
+      "address": "0xfbd810",
+      "instruction_count": 119,
+      "method": "CIS_TcdSurfaceMountLightLevelSensor.TcdSurfaceMountLightLevelSensor.UpdateCurrentMarginValue",
+      "span_sha256": "d7bce286129e24218d0d8483a424e4189c93d9a003b681f3ccfcf847d6417de1"
+    },
+    {
+      "address": "0xfbd9e0",
+      "instruction_count": 72,
+      "method": "CIS_TcdSurfaceMountLightLevelSensor.TcdSurfaceMountLightLevelSensor.UpdateCurrentTargetValue",
+      "span_sha256": "a4902044013f6275892d480c2060ed95893a56a992ea1b997004290d26ec488e"
+    },
+    {
+      "address": "0xfbdaf0",
+      "instruction_count": 134,
+      "method": "CIS_TcdSurfaceMountLightLevelSensor.TcdSurfaceMountLightLevelSensor.UpdateLightLevelRange",
+      "span_sha256": "b178f79e65b404a7bd22cd4c1acd30ad94ca68afbfc8b7066c6c728ce75c9d69"
+    },
+    {
+      "address": "0xfbdd58",
+      "instruction_count": 112,
+      "method": "CIS_TcdSurfaceMountLightLevelSensor.TcdSurfaceMountLightLevelSensor.UpdateMarginControlsVisible",
+      "span_sha256": "cdd88d7c0070b5c680c6bbdd4325de7da40bb306671f08dff3463a5af4a27480"
+    },
+    {
+      "address": "0xfbdef0",
+      "instruction_count": 28,
+      "method": "CIS_TcdSurfaceMountLightLevelSensor.TcdSurfaceMountLightLevelSensor.UpdateModesEnabled",
+      "span_sha256": "446ba0ca2d0c5fd6c58a7e82680f1f7ed64db20266235fe0360a618a3d4d6201"
+    },
+    {
+      "address": "0xfbdf44",
+      "instruction_count": 50,
+      "method": "CIS_TcdSurfaceMountLightLevelSensor.TcdSurfaceMountLightLevelSensor.UpdateTargetControlCheckboxes",
+      "span_sha256": "3624ae878fe72df6cd04a2418e650538b9beaa27079b87a2b42b8c51f4761cb0"
+    },
+    {
+      "address": "0xfc0b10",
+      "instruction_count": 237,
+      "method": "CIS_TcdSurfaceMountLightLevelBankSwitch.TcdSurfaceMountLightLevelBankSwitch.HandleGroupCheckBoxCheck",
+      "span_sha256": "fa22d0c76ab582ab17506cff68f7e9b42708942a858f27b234e1d1138edcabf7"
+    },
+    {
+      "address": "0xfc1350",
+      "instruction_count": 42,
+      "method": "CIS_TcdSurfaceMountLightLevelBankSwitch.TcdSurfaceMountLightLevelBankSwitch.RefreshBankEnabled",
+      "span_sha256": "8301210472a13b24410258c182e363957a5ccf97e8ed4f8d070ed6477c1c6fc7"
+    },
+    {
+      "address": "0xfc2b14",
+      "instruction_count": 384,
+      "method": "CIS_TcdSurfaceMountLightLevelBankSwitch.TcdSurfaceMountLightLevelBankSwitch.SetupFlashComponents",
+      "span_sha256": "998acc2f0a6cc78910454d464f8ee2215de39f01e5f821b7c570850de179a6c9"
+    },
+    {
+      "address": "0xfc3988",
+      "instruction_count": 27,
+      "method": "CIS_TcdSurfaceMountMultisensorRestore.TcdSurfaceMountMultisensorRestore.Initialise",
+      "span_sha256": "ee0eebd019e7d4ee66dcb61858ff08cae5e4a483449a737b9fe536b4eb0e55e1"
+    },
+    {
+      "address": "0xfc39e0",
+      "instruction_count": 99,
+      "method": "CIS_TcdSurfaceMountMultisensorRestore.TcdSurfaceMountMultisensorRestore.SetupFlashComponents",
+      "span_sha256": "a3294abfa6432a531f44ce6e6847ff4787c2c0a84b680ea812dcf461bbda3e0b"
+    },
+    {
+      "address": "0xfc3dd0",
+      "instruction_count": 142,
+      "method": "CIS_TcdSurfaceMountMultisensorRestore.TcdSurfaceMountMultisensorRestore.SetupFlashHooks",
+      "span_sha256": "34f2e17fe69ff4d83ce3bea32ebc37e76b31b282b5a5a710d547b74ef3649617"
+    },
+    {
+      "address": "0xfc426c",
+      "instruction_count": 147,
+      "method": "CIS_TcdSurfaceMountMultisensorRestore.TcdSurfaceMountMultisensorRestore.UpdateEnables",
+      "span_sha256": "5209cb5350edc2ee2fd324bf6ee0c8ed1234f69611a61e6c79b80f622f03a2f0"
+    },
+    {
+      "address": "0xfc4bc0",
+      "instruction_count": 56,
+      "method": "CIS_TddSurfaceMountSensors.TddSurfaceMountMultisensor.InitialiseSubFormLightLevel",
+      "span_sha256": "93fa5fe65ee48e4cba89001501bb91ba9a4ea18c95c898e299fcd936eafa92ec"
+    },
+    {
+      "address": "0xfcaf34",
+      "instruction_count": 34,
+      "method": "CIS_TddSENPILL.TddSENPILL.OnApply",
+      "span_sha256": "0cef770024b21cbaf10d4fa661bf6f5570123a1c098f2d14dfd0d52eb861bc3b"
+    }
+  ],
+  "native_gui_acceptance": false,
+  "original_execution": false,
+  "physical_acceptance": false,
+  "remaining": [
+    "Global enum combos/object controls",
+    "Surface group TargetLevel.Value and current Network.InterfaceState query route",
+    "frame managed hook/display lifetimes",
+    "actual focus/message and full Apply/save orchestration",
+    "Enum-list mutation/rebinding",
+    "Actual managed bank Count/GetItem/reverse-reference resolution and conditional dirty Address cache ownership for Restore UpdateEnables"
+  ],
+  "resources": {
+    "TFRMLIGHTLEVELBANKSWITCH": {
+      "bytes": 27068,
+      "selected_controls": [
+        {
+          "control_class": "TFlashRadioGroup",
+          "name": "rgBankFunction8",
+          "properties": {
+            "BooleanInverse": false,
+            "FlashController.UpdateMode": "umExit",
+            "ItemIndex": 0
+          }
+        },
+        {
+          "control_class": "TFlashCxTrackBarEdit",
+          "name": "trkBankLow8",
+          "properties": {
+            "EditText": "0",
+            "FlashController.UpdateMode": "umExit",
+            "FlashPosition": false,
+            "Max": 100,
+            "Min": 0,
+            "Position": 0
+          }
+        },
+        {
+          "control_class": "TFlashCxTrackBarEdit",
+          "name": "trkBankHigh8",
+          "properties": {
+            "EditText": "0",
+            "FlashController.UpdateMode": "umExit",
+            "FlashPosition": false,
+            "Max": 100,
+            "Min": 0,
+            "Position": 0
+          }
+        },
+        {
+          "control_class": "TFlashRadioGroup",
+          "name": "rgBankFunction7",
+          "properties": {
+            "BooleanInverse": false,
+            "FlashController.UpdateMode": "umExit",
+            "ItemIndex": 0
+          }
+        },
+        {
+          "control_class": "TFlashCxTrackBarEdit",
+          "name": "trkBankLow7",
+          "properties": {
+            "EditText": "0",
+            "FlashController.UpdateMode": "umExit",
+            "FlashPosition": false,
+            "Max": 100,
+            "Min": 0,
+            "Position": 0
+          }
+        },
+        {
+          "control_class": "TFlashCxTrackBarEdit",
+          "name": "trkBankHigh7",
+          "properties": {
+            "EditText": "0",
+            "FlashController.UpdateMode": "umExit",
+            "FlashPosition": false,
+            "Max": 100,
+            "Min": 0,
+            "Position": 0
+          }
+        },
+        {
+          "control_class": "TFlashRadioGroup",
+          "name": "rgBankFunction6",
+          "properties": {
+            "BooleanInverse": false,
+            "FlashController.UpdateMode": "umExit",
+            "ItemIndex": 0
+          }
+        },
+        {
+          "control_class": "TFlashCxTrackBarEdit",
+          "name": "trkBankLow6",
+          "properties": {
+            "EditText": "0",
+            "FlashController.UpdateMode": "umExit",
+            "FlashPosition": false,
+            "Max": 100,
+            "Min": 0,
+            "Position": 0
+          }
+        },
+        {
+          "control_class": "TFlashCxTrackBarEdit",
+          "name": "trkBankHigh6",
+          "properties": {
+            "EditText": "0",
+            "FlashController.UpdateMode": "umExit",
+            "FlashPosition": false,
+            "Max": 100,
+            "Min": 0,
+            "Position": 0
+          }
+        },
+        {
+          "control_class": "TFlashRadioGroup",
+          "name": "rgBankFunction5",
+          "properties": {
+            "BooleanInverse": false,
+            "FlashController.UpdateMode": "umExit",
+            "ItemIndex": 0
+          }
+        },
+        {
+          "control_class": "TFlashCxTrackBarEdit",
+          "name": "trkBankLow5",
+          "properties": {
+            "EditText": "0",
+            "FlashController.UpdateMode": "umExit",
+            "FlashPosition": false,
+            "Max": 100,
+            "Min": 0,
+            "Position": 0
+          }
+        },
+        {
+          "control_class": "TFlashCxTrackBarEdit",
+          "name": "trkBankHigh5",
+          "properties": {
+            "EditText": "0",
+            "FlashController.UpdateMode": "umExit",
+            "FlashPosition": false,
+            "Max": 100,
+            "Min": 0,
+            "Position": 0
+          }
+        },
+        {
+          "control_class": "TFlashRadioGroup",
+          "name": "rgBankFunction4",
+          "properties": {
+            "BooleanInverse": false,
+            "FlashController.UpdateMode": "umExit",
+            "ItemIndex": 0
+          }
+        },
+        {
+          "control_class": "TFlashCxTrackBarEdit",
+          "name": "trkBankLow4",
+          "properties": {
+            "EditText": "0",
+            "FlashController.UpdateMode": "umExit",
+            "FlashPosition": false,
+            "Max": 100,
+            "Min": 0,
+            "Position": 0
+          }
+        },
+        {
+          "control_class": "TFlashCxTrackBarEdit",
+          "name": "trkBankHigh4",
+          "properties": {
+            "EditText": "0",
+            "FlashController.UpdateMode": "umExit",
+            "FlashPosition": false,
+            "Max": 100,
+            "Min": 0,
+            "Position": 0
+          }
+        },
+        {
+          "control_class": "TFlashRadioGroup",
+          "name": "rgBankFunction3",
+          "properties": {
+            "BooleanInverse": false,
+            "FlashController.UpdateMode": "umExit",
+            "ItemIndex": 0
+          }
+        },
+        {
+          "control_class": "TFlashCxTrackBarEdit",
+          "name": "trkBankLow3",
+          "properties": {
+            "EditText": "0",
+            "FlashController.UpdateMode": "umExit",
+            "FlashPosition": false,
+            "Max": 100,
+            "Min": 0,
+            "Position": 0
+          }
+        },
+        {
+          "control_class": "TFlashCxTrackBarEdit",
+          "name": "trkBankHigh3",
+          "properties": {
+            "EditText": "0",
+            "FlashController.UpdateMode": "umExit",
+            "FlashPosition": false,
+            "Max": 100,
+            "Min": 0,
+            "Position": 0
+          }
+        },
+        {
+          "control_class": "TFlashRadioGroup",
+          "name": "rgBankFunction2",
+          "properties": {
+            "BooleanInverse": false,
+            "FlashController.UpdateMode": "umExit",
+            "ItemIndex": 0
+          }
+        },
+        {
+          "control_class": "TFlashCxTrackBarEdit",
+          "name": "trkBankLow2",
+          "properties": {
+            "EditText": "0",
+            "FlashController.UpdateMode": "umExit",
+            "FlashPosition": false,
+            "Max": 100,
+            "Min": 0,
+            "Position": 0
+          }
+        },
+        {
+          "control_class": "TFlashCxTrackBarEdit",
+          "name": "trkBankHigh2",
+          "properties": {
+            "EditText": "0",
+            "FlashController.UpdateMode": "umExit",
+            "FlashPosition": false,
+            "Max": 100,
+            "Min": 0,
+            "Position": 0
+          }
+        },
+        {
+          "control_class": "TFlashRadioGroup",
+          "name": "rgBankFunction1",
+          "properties": {
+            "BooleanInverse": false,
+            "FlashController.UpdateMode": "umExit",
+            "ItemIndex": 0
+          }
+        },
+        {
+          "control_class": "TFlashCxTrackBarEdit",
+          "name": "trkBankLow1",
+          "properties": {
+            "EditText": "0",
+            "FlashController.UpdateMode": "umExit",
+            "FlashPosition": false,
+            "Max": 100,
+            "Min": 0,
+            "Position": 0
+          }
+        },
+        {
+          "control_class": "TFlashCxTrackBarEdit",
+          "name": "trkBankHigh1",
+          "properties": {
+            "EditText": "0",
+            "FlashController.UpdateMode": "umExit",
+            "FlashPosition": false,
+            "Max": 100,
+            "Min": 0,
+            "Position": 0
+          }
+        },
+        {
+          "control_class": "TFlashCheckBox",
+          "name": "chkBankEnable1",
+          "properties": {
+            "FlashController.UpdateMode": "umChange"
+          }
+        },
+        {
+          "control_class": "TFlashCheckBox",
+          "name": "chkBankEnable2",
+          "properties": {
+            "FlashController.UpdateMode": "umChange"
+          }
+        },
+        {
+          "control_class": "TFlashCheckBox",
+          "name": "chkBankEnable3",
+          "properties": {
+            "FlashController.UpdateMode": "umChange"
+          }
+        },
+        {
+          "control_class": "TFlashCheckBox",
+          "name": "chkBankEnable4",
+          "properties": {
+            "FlashController.UpdateMode": "umChange"
+          }
+        },
+        {
+          "control_class": "TFlashCheckBox",
+          "name": "chkBankEnable5",
+          "properties": {
+            "FlashController.UpdateMode": "umChange"
+          }
+        },
+        {
+          "control_class": "TFlashCheckBox",
+          "name": "chkBankEnable6",
+          "properties": {
+            "FlashController.UpdateMode": "umChange"
+          }
+        },
+        {
+          "control_class": "TFlashCheckBox",
+          "name": "chkBankEnable7",
+          "properties": {
+            "FlashController.UpdateMode": "umChange"
+          }
+        },
+        {
+          "control_class": "TFlashCheckBox",
+          "name": "chkBankEnable8",
+          "properties": {
+            "FlashController.UpdateMode": "umChange"
+          }
+        }
+      ],
+      "sha256": "3ac0967570455b20b6f3df00134592347f8d6ec56e96996ab78c356eea9bbdfb"
+    },
+    "TFRMLIGHTLEVELSENSOR": {
+      "bytes": 6734,
+      "selected_controls": [
+        {
+          "control_class": "TFlashCxTrackBarEdit",
+          "name": "trkMargin",
+          "properties": {
+            "EditText": "1",
+            "FlashController.UpdateMode": "umExit",
+            "FlashPosition": true,
+            "Max": 100,
+            "Min": 1,
+            "Position": 1
+          }
+        },
+        {
+          "control_class": "TFlashCxTrackBar",
+          "name": "trkTargetLux",
+          "properties": {
+            "FlashController.UpdateMode": "umExit",
+            "Properties.Max": 255,
+            "UseRawValues": true
+          }
+        },
+        {
+          "control_class": "TFlashCheckBox",
+          "name": "chkMaintenance",
+          "properties": {
+            "FlashController.UpdateMode": "umChange"
+          }
+        },
+        {
+          "control_class": "TFlashRadioGroup",
+          "name": "rgMaintenanceLogic",
+          "properties": {
+            "BooleanInverse": false,
+            "FlashController.UpdateMode": "umExit",
+            "ItemIndex": 0
+          }
+        },
+        {
+          "control_class": "TFlashCheckBox",
+          "name": "chkBroadcast",
+          "properties": {
+            "FlashController.UpdateMode": "umChange"
+          }
+        }
+      ],
+      "sha256": "29ed3b9194b6762ab19acec60f41d5256c9f183318fa930832151784dd0d93ea"
+    },
+    "TFRMMULTISENSORGLOBAL": {
+      "bytes": 11823,
+      "selected_controls": [
+        {
+          "control_class": "TFlashCheckBox",
+          "name": "chkPEKey",
+          "properties": {
+            "FlashController.UpdateMode": "umChange"
+          }
+        },
+        {
+          "control_class": "TFlashCheckBox",
+          "name": "chkPIRKey",
+          "properties": {
+            "FlashController.UpdateMode": "umChange"
+          }
+        },
+        {
+          "control_class": "TFlashCheckBox",
+          "name": "chkNECRemote",
+          "properties": {
+            "FlashController.UpdateMode": "umChange"
+          }
+        },
+        {
+          "control_class": "TFlashCheckBox",
+          "name": "chkClipsalRemote",
+          "properties": {
+            "FlashController.UpdateMode": "umChange"
+          }
+        },
+        {
+          "control_class": "TFlashRadioGroup",
+          "name": "rgBank",
+          "properties": {
+            "BooleanInverse": false,
+            "FlashController.UpdateMode": "umExit"
+          }
+        },
+        {
+          "control_class": "TFlashRadioGroup",
+          "name": "rgIndicatorControl",
+          "properties": {
+            "BooleanInverse": false,
+            "FlashController.UpdateMode": "umExit",
+            "ItemIndex": 0
+          }
+        }
+      ],
+      "sha256": "63a4688209ea1953f7cbd776ebfbf8f6ebb26cab879b828106cc16a97bed3e32"
+    },
+    "TFRMMULTISENSORRESTORE": {
+      "bytes": 1218,
+      "selected_controls": [
+        {
+          "control_class": "TFlashRadioGroup",
+          "name": "rgPIR",
+          "properties": {
+            "BooleanInverse": false,
+            "FlashController.UpdateMode": "umExit",
+            "ItemIndex": 0
+          }
+        },
+        {
+          "control_class": "TFlashRadioGroup",
+          "name": "rgPEC",
+          "properties": {
+            "BooleanInverse": false,
+            "FlashController.UpdateMode": "umExit",
+            "ItemIndex": 0
+          }
+        }
+      ],
+      "sha256": "9ac6f71b14a28e1945518802cbae9e774bb1bba0ac8f673814a9287a3480de2a"
+    },
+    "TFRMSURFACEMOUNTLIGHTLEVELBANKSWITCH": {
+      "bytes": 21832,
+      "selected_controls": [
+        {
+          "control_class": "TFlashCheckBox",
+          "name": "chkHighGroup8",
+          "properties": {
+            "FlashController.UpdateMode": "umChange"
+          }
+        },
+        {
+          "control_class": "TFlashCheckBox",
+          "name": "chkLowGroup8",
+          "properties": {
+            "FlashController.UpdateMode": "umChange"
+          }
+        },
+        {
+          "control_class": "TFlashCheckBox",
+          "name": "chkHighGroup7",
+          "properties": {
+            "FlashController.UpdateMode": "umChange"
+          }
+        },
+        {
+          "control_class": "TFlashCheckBox",
+          "name": "chkLowGroup7",
+          "properties": {
+            "FlashController.UpdateMode": "umChange"
+          }
+        },
+        {
+          "control_class": "TFlashCheckBox",
+          "name": "chkHighGroup6",
+          "properties": {
+            "FlashController.UpdateMode": "umChange"
+          }
+        },
+        {
+          "control_class": "TFlashCheckBox",
+          "name": "chkLowGroup6",
+          "properties": {
+            "FlashController.UpdateMode": "umChange"
+          }
+        },
+        {
+          "control_class": "TFlashCheckBox",
+          "name": "chkHighGroup5",
+          "properties": {
+            "FlashController.UpdateMode": "umChange"
+          }
+        },
+        {
+          "control_class": "TFlashCheckBox",
+          "name": "chkLowGroup5",
+          "properties": {
+            "FlashController.UpdateMode": "umChange"
+          }
+        },
+        {
+          "control_class": "TFlashCheckBox",
+          "name": "chkHighGroup4",
+          "properties": {
+            "FlashController.UpdateMode": "umChange"
+          }
+        },
+        {
+          "control_class": "TFlashCheckBox",
+          "name": "chkLowGroup4",
+          "properties": {
+            "FlashController.UpdateMode": "umChange"
+          }
+        },
+        {
+          "control_class": "TFlashCheckBox",
+          "name": "chkHighGroup3",
+          "properties": {
+            "FlashController.UpdateMode": "umChange"
+          }
+        },
+        {
+          "control_class": "TFlashCheckBox",
+          "name": "chkLowGroup3",
+          "properties": {
+            "FlashController.UpdateMode": "umChange"
+          }
+        },
+        {
+          "control_class": "TFlashCheckBox",
+          "name": "chkHighGroup2",
+          "properties": {
+            "FlashController.UpdateMode": "umChange"
+          }
+        },
+        {
+          "control_class": "TFlashCheckBox",
+          "name": "chkLowGroup2",
+          "properties": {
+            "FlashController.UpdateMode": "umChange"
+          }
+        },
+        {
+          "control_class": "TFlashCheckBox",
+          "name": "chkHighGroup1",
+          "properties": {
+            "FlashController.UpdateMode": "umChange"
+          }
+        },
+        {
+          "control_class": "TFlashCheckBox",
+          "name": "chkLowGroup1",
+          "properties": {
+            "FlashController.UpdateMode": "umChange"
+          }
+        },
+        {
+          "control_class": "TFlashCxTrackBar",
+          "name": "trkLowThresholdGroupCurrentLevel",
+          "properties": {
+            "FlashController.UpdateMode": "umExit",
+            "Properties.Max": 255,
+            "UseRawValues": true
+          }
+        },
+        {
+          "control_class": "TFlashCxTrackBar",
+          "name": "trkHighThresholdGroupCurrentLevel",
+          "properties": {
+            "FlashController.UpdateMode": "umExit",
+            "Properties.Max": 255,
+            "UseRawValues": true
+          }
+        }
+      ],
+      "sha256": "46ff1475fd426a8ca7ceeacae3d625172707c04b40a200ea83cbde469423149b"
+    },
+    "TFRMSURFACEMOUNTLIGHTLEVELSENSOR": {
+      "bytes": 4543,
+      "selected_controls": [
+        {
+          "control_class": "TFlashCxTrackBar",
+          "name": "trkTargetGroupCurrentLevel",
+          "properties": {
+            "FlashController.UpdateMode": "umExit",
+            "Properties.Max": 255,
+            "UseRawValues": true
+          }
+        },
+        {
+          "control_class": "TFlashCxTrackBar",
+          "name": "trkMarginGroupCurrentLevel",
+          "properties": {
+            "FlashController.UpdateMode": "umExit",
+            "Properties.Max": 255,
+            "UseRawValues": true
+          }
+        }
+      ],
+      "sha256": "6de0b739d7c45282ea895426b8a4e9fa4dad56cbc8b9ea81ef439c92aae118d4"
+    },
+    "TFRMSURFACEMOUNTMULTISENSORRESTORE": {
+      "bytes": 2470,
+      "selected_controls": [
+        {
+          "control_class": "TFlashRadioGroup",
+          "name": "rgTargetGroup",
+          "properties": {
+            "BooleanInverse": false,
+            "FlashController.UpdateMode": "umExit",
+            "ItemIndex": 0
+          }
+        },
+        {
+          "control_class": "TFlashRadioGroup",
+          "name": "rgMarginGroup",
+          "properties": {
+            "BooleanInverse": false,
+            "FlashController.UpdateMode": "umExit",
+            "ItemIndex": 0
+          }
+        },
+        {
+          "control_class": "TFlashRadioGroup",
+          "name": "rgBankSwitchGroup",
+          "properties": {
+            "BooleanInverse": false,
+            "FlashController.UpdateMode": "umExit",
+            "ItemIndex": 0
+          }
+        },
+        {
+          "control_class": "TFlashCxTrackBarEdit",
+          "name": "trkTargetGroupLevel",
+          "properties": {
+            "EditText": "0",
+            "FlashController.UpdateMode": "umExit",
+            "FlashPosition": false,
+            "Max": 255,
+            "Min": 0,
+            "Position": 0
+          }
+        },
+        {
+          "control_class": "TFlashCxTrackBarEdit",
+          "name": "trkMarginGroupLevel",
+          "properties": {
+            "EditText": "0",
+            "FlashController.UpdateMode": "umExit",
+            "FlashPosition": false,
+            "Max": 255,
+            "Min": 0,
+            "Position": 0
+          }
+        },
+        {
+          "control_class": "TFlashCxTrackBarEdit",
+          "name": "trkBankSwitchGroupLevel",
+          "properties": {
+            "EditText": "0",
+            "FlashController.UpdateMode": "umExit",
+            "FlashPosition": false,
+            "Max": 255,
+            "Min": 0,
+            "Position": 0
+          }
+        }
+      ],
+      "sha256": "a47856de9b5b2221232cba9b1a2c7aef512da3c2421e272b41a69b1a22acb940"
+    }
+  },
+  "scope": "Persistent SAME-attribute typed scalar render/cache/exit and explicit source-position bindings; no full bootstrap/save admission",
+  "source": {
+    "exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+  },
+  "source_rules": {
+    "apply": "actual focused controller exits, not an Apply-all traversal",
+    "bank": "ascending rows; inactive clears own low/high then all8 Low->High2550, CURRENT High->Low0",
+    "bank_threshold_scope": "Threshold model setters only; complete fc0b10 checkbox handler performs managed GetItem/current-use visibility reads before and between setters and remains owning boundary.",
+    "checkbox": "render ReadLock suppresses dynamic Click; actual manual handlers remain own source positions",
+    "controller": "render under lock, CURRENT post-render reread/cache restore; umExit only actual exit",
+    "indicator": "exclude ordinal3 ->radio count3 ->loaded3 native clamp/directwrite2",
+    "margin": "display1..100, original pending percent retained",
+    "power": "UpdateEnables prefix stops with typed unresolved request at CURRENT group IsUnused or actual bank collection Count; no numeric identity/fixed tuple replacement for native address cache or collection effects.",
+    "radio_render_tail": "After SetItemIndex and its nested direct setter/Click callbacks, HandleFlashValueChanged sets Enabled from CURRENT element nonnil; bound attribute profile therefore restores True even for equal ItemIndex.",
+    "status": "source resources,253 choices3..255,installpropertyhandlerthenexactmatchselection",
+    "target": "captured >200 clamp direct setter before maintenance OnChange install"
+  }
+}

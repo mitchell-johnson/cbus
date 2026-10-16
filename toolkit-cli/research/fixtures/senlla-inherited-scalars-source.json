@@ -1,0 +1,1172 @@
+{
+  "authority": {
+    "executable_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+    "spec_sha256": "57fe64e107fb9f23395102d87f34ac111c7f462e1e2e26376aa4e894ecef7bee"
+  },
+  "broadcast_literals": [
+    {
+      "loaded": false,
+      "raw": 0,
+      "saved": 0
+    },
+    {
+      "loaded": true,
+      "raw": 1,
+      "saved": 4
+    },
+    {
+      "loaded": true,
+      "raw": 2,
+      "saved": 4
+    },
+    {
+      "loaded": true,
+      "raw": 3,
+      "saved": 4
+    },
+    {
+      "loaded": true,
+      "raw": 4,
+      "saved": 4
+    },
+    {
+      "loaded": true,
+      "raw": 5,
+      "saved": 4
+    },
+    {
+      "loaded": true,
+      "raw": 6,
+      "saved": 4
+    },
+    {
+      "loaded": false,
+      "raw": 7,
+      "saved": 0
+    }
+  ],
+  "date": "2026-10-04",
+  "decoded_effective_layouts": {
+    "Application": {
+      "address": 33,
+      "array_size": 2,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "AreaGroupAddress": {
+      "address": 67,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "BankSwitchGroupLevelStore": {
+      "address": 22,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 2,
+      "bit_size": 1,
+      "type": "bit"
+    },
+    "BankSwitchGroupUsed": {
+      "address": 72,
+      "array_size": 8,
+      "array_skip": 0,
+      "bit_address": 6,
+      "bit_size": 1,
+      "type": "int"
+    },
+    "BankSwitchThresholdBehaviour": {
+      "address": 22,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 4,
+      "bit_size": 2,
+      "type": "int"
+    },
+    "BankSwitchThresholdGroup": {
+      "address": 21,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "BlockAllocation": {
+      "address": 54,
+      "array_size": 8,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "BlockBankSwitchActive": {
+      "address": 72,
+      "array_size": 8,
+      "array_skip": 0,
+      "bit_address": 5,
+      "bit_size": 1,
+      "type": "int"
+    },
+    "BlockGroupLogic": {
+      "address": 72,
+      "array_size": 8,
+      "array_skip": 0,
+      "bit_address": 4,
+      "bit_size": 1,
+      "type": "int"
+    },
+    "BroadcastActive": {
+      "address": 70,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 5,
+      "bit_size": 3,
+      "type": "int"
+    },
+    "BroadcastBlock": {
+      "address": 70,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 3,
+      "type": "int"
+    },
+    "CUSTYPE": {
+      "address": 247,
+      "array_size": 8,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "ControlAppGroupAddress": {
+      "address": 95,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "CorridorLinkActive": {
+      "address": 68,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 7,
+      "bit_size": 1,
+      "type": "bit"
+    },
+    "CorridorLinkBlock": {
+      "address": 68,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 3,
+      "bit_size": 3,
+      "type": "int"
+    },
+    "CorridorLinkEnablerGroup": {
+      "address": 92,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "CorridorLinkOfficeBlock": {
+      "address": 68,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 3,
+      "type": "int"
+    },
+    "DebounceTime": {
+      "address": 48,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 6,
+      "type": "int"
+    },
+    "DisableIR": {
+      "address": 53,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 2,
+      "bit_size": 1,
+      "type": "bit"
+    },
+    "DisableIRNEC": {
+      "address": 53,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 3,
+      "bit_size": 1,
+      "type": "bit"
+    },
+    "DualJoinEnablerControlGroup": {
+      "address": 94,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "DualJoinEnablerGroup": {
+      "address": 91,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "EEPROM Checksum": {
+      "address": 31,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "EEPROMCheckSumActive": {
+      "address": 30,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "EEPROMChecksumAlarm": {
+      "address": 62,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 7,
+      "bit_size": 1,
+      "type": "bit"
+    },
+    "EEPROMLevelStore": {
+      "address": 62,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 1,
+      "bit_size": 1,
+      "type": "bit"
+    },
+    "GroupAddress": {
+      "address": 80,
+      "array_size": 8,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "IRBank": {
+      "address": 53,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 2,
+      "type": "int"
+    },
+    "IRBankKeyOffset": {
+      "address": 53,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 4,
+      "bit_size": 3,
+      "type": "int"
+    },
+    "IndicatorBlockAssignment": {
+      "address": 96,
+      "array_size": 8,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 3,
+      "type": "int"
+    },
+    "IndicatorControl": {
+      "address": 70,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 3,
+      "bit_size": 2,
+      "type": "int"
+    },
+    "JPCommand": {
+      "address": 104,
+      "array_size": 8,
+      "array_skip": 1,
+      "bit_address": 4,
+      "bit_size": 4,
+      "type": "int"
+    },
+    "KeyDisableInverted": {
+      "address": 62,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 2,
+      "bit_size": 1,
+      "type": "bit"
+    },
+    "LPCommand": {
+      "address": 105,
+      "array_size": 8,
+      "array_skip": 1,
+      "bit_address": 4,
+      "bit_size": 4,
+      "type": "int"
+    },
+    "LRCommand": {
+      "address": 105,
+      "array_size": 8,
+      "array_skip": 1,
+      "bit_address": 0,
+      "bit_size": 4,
+      "type": "int"
+    },
+    "LearnAnyApp": {
+      "address": 62,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 4,
+      "bit_size": 1,
+      "type": "bit"
+    },
+    "LearnMode": {
+      "address": 62,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 3,
+      "bit_size": 1,
+      "type": "bit"
+    },
+    "LearnedFlag": {
+      "address": 62,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 5,
+      "bit_size": 1,
+      "type": "bit"
+    },
+    "LightIndex": {
+      "address": 0,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "LightLevel": {
+      "address": 1,
+      "array_size": 10,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "LightLevelMarginGroup": {
+      "address": 20,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "LightLevelMarginGroupLevelStore": {
+      "address": 22,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 1,
+      "bit_size": 1,
+      "type": "bit"
+    },
+    "LightLevelStore1": {
+      "address": 120,
+      "array_size": 8,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "LightLevelStore2": {
+      "address": 128,
+      "array_size": 8,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "LightLevelTargetGroup": {
+      "address": 19,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "LightLevelTargetGroupLevelStore": {
+      "address": 22,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 1,
+      "type": "bit"
+    },
+    "LongPressTime": {
+      "address": 49,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 6,
+      "type": "int"
+    },
+    "PECEnablerGroup": {
+      "address": 89,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "PECEnablerGroupLogic": {
+      "address": 99,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 5,
+      "bit_size": 1,
+      "type": "bit"
+    },
+    "PECFunctionActive": {
+      "address": 96,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 6,
+      "bit_size": 1,
+      "type": "bit"
+    },
+    "PECFunctionBlock": {
+      "address": 96,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 3,
+      "bit_size": 3,
+      "type": "int"
+    },
+    "PECFunctionIRActive": {
+      "address": 97,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 6,
+      "bit_size": 1,
+      "type": "bit"
+    },
+    "PECFunctionIRKey": {
+      "address": 97,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 3,
+      "bit_size": 3,
+      "type": "int"
+    },
+    "PECLevelStore": {
+      "address": 99,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 3,
+      "bit_size": 1,
+      "type": "bit"
+    },
+    "PECMarginLux": {
+      "address": 28,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "PECScaleFactor": {
+      "address": 29,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "PECTargetLux": {
+      "address": 27,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "PIRDark": {
+      "address": 52,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "PIRDarkMovement": {
+      "address": 51,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "PIREnablerGroup": {
+      "address": 88,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "PIREnablerGroupLogic": {
+      "address": 99,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 6,
+      "bit_size": 1,
+      "type": "bit"
+    },
+    "PIRFunctionIRActive": {
+      "address": 98,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 6,
+      "bit_size": 1,
+      "type": "bit"
+    },
+    "PIRFunctionIRKey": {
+      "address": 98,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 3,
+      "bit_size": 3,
+      "type": "int"
+    },
+    "PIRLevelStore": {
+      "address": 99,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 4,
+      "bit_size": 1,
+      "type": "bit"
+    },
+    "PIRLightMovement": {
+      "address": 50,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "PatchEnable": {
+      "address": 160,
+      "array_size": 2,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "PotentiometerAFunction": {
+      "address": 101,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 3,
+      "bit_size": 2,
+      "type": "int"
+    },
+    "PotentiometerATimerBlock": {
+      "address": 102,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 3,
+      "bit_size": 3,
+      "type": "int"
+    },
+    "PotentiometerBBankSwitchEnable": {
+      "address": 103,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 6,
+      "bit_size": 1,
+      "type": "int"
+    },
+    "PotentiometerBFunction": {
+      "address": 101,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 5,
+      "bit_size": 2,
+      "type": "int"
+    },
+    "PotentiometerBTimerBlock": {
+      "address": 103,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 3,
+      "bit_size": 3,
+      "type": "int"
+    },
+    "PowerUpBankSwitchGroupLevel": {
+      "address": 18,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "PowerUpMarginGroupLevel": {
+      "address": 17,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "PowerUpTargetGroupLevel": {
+      "address": 16,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "Project": {
+      "address": 35,
+      "array_size": 8,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "sixbit"
+    },
+    "RampRate": {
+      "address": 64,
+      "array_size": 2,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "RetardationIndex": {
+      "address": 71,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "SRCommand": {
+      "address": 104,
+      "array_size": 8,
+      "array_skip": 1,
+      "bit_address": 0,
+      "bit_size": 4,
+      "type": "int"
+    },
+    "SceneCycleSelector": {
+      "address": 62,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 6,
+      "bit_size": 1,
+      "type": "bit"
+    },
+    "SceneKeySelector": {
+      "address": 96,
+      "array_size": 8,
+      "array_skip": 0,
+      "bit_address": 7,
+      "bit_size": 1,
+      "type": "int"
+    },
+    "SceneTable": {
+      "address": 162,
+      "array_size": 80,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "SceneTablePointer": {
+      "address": 152,
+      "array_size": 8,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "SceneToggleSelector": {
+      "address": 62,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 1,
+      "type": "bit"
+    },
+    "SecondApplicationBlocks": {
+      "address": 69,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "SerialNo": {
+      "address": 243,
+      "array_size": 4,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "SingleJoinEnablerControlGroup": {
+      "address": 93,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "SingleJoinEnablerGroup": {
+      "address": 90,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "StatusReportInterval": {
+      "address": 66,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "TimerExpiryCommand": {
+      "address": 72,
+      "array_size": 8,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 4,
+      "type": "int"
+    },
+    "TimerHighByte": {
+      "address": 136,
+      "array_size": 8,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "TimerLowByte": {
+      "address": 144,
+      "array_size": 8,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "UnitAddress": {
+      "address": 32,
+      "array_size": 1,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "int"
+    },
+    "UnitName": {
+      "address": 42,
+      "array_size": 8,
+      "array_skip": 0,
+      "bit_address": 0,
+      "bit_size": 8,
+      "type": "sixbit"
+    }
+  },
+  "format": "cbus-senlla-inherited-scalars-static-handoff-v1",
+  "method_pins": {
+    "CIS_TBooleanAttribute.TBooleanAttribute.SetAsBoolean": {
+      "address": "0x7f45e0",
+      "instructions": 37,
+      "sha256": "a73b6ecb850a1689c915d3e76d6d7ac87f64dc44d16451833664360f748703aa"
+    },
+    "CIS_TBooleanAttribute.TBooleanAttribute.SetValue": {
+      "address": "0x7f4638",
+      "instructions": 16,
+      "sha256": "20ebbe8b25bbe47083eda33ae679753ae091e0b5f948b021a77ff53f71c13c3c"
+    },
+    "CIS_TCBusMultisensorUnit.IntegerToMultisensorIndicatorControl": {
+      "address": "0xcff2b8",
+      "instructions": 33,
+      "sha256": "53bb0035e88399e6b10e17fe41f0b37fc6bda48a3e4333158085849d9ba379be"
+    },
+    "CIS_TCBusMultisensorUnit.IntegerToPotentiometerFunction": {
+      "address": "0xcff14c",
+      "instructions": 33,
+      "sha256": "031c9f2558b1ed45a472f033aaa9e9536ffff7add5b4e78b1db97f361765fa1f"
+    },
+    "CIS_TCBusMultisensorUnit.MultisensorIndicatorControlToInteger": {
+      "address": "0xcff374",
+      "instructions": 33,
+      "sha256": "55ac55f566807e280db99d952de289616defff44ee51e34016663dd76407109e"
+    },
+    "CIS_TCBusMultisensorUnit.PotentiometerFunctionToInteger": {
+      "address": "0xcff1fc",
+      "instructions": 33,
+      "sha256": "5b24ca3aa5e1db49100e593a8754a058e621c91a709b4efc12e351510e3e192a"
+    },
+    "CIS_TCBusMultisensorUnit.TCBusMultisensorUnit.GetIndicatorControl": {
+      "address": "0xd0304c",
+      "instructions": 14,
+      "sha256": "2af334cac3a14c77e6666f24affac022e28c49d96ed2b2eea14e63835c85f535"
+    },
+    "CIS_TCBusMultisensorUnit.TCBusMultisensorUnit.IndicatorControlPropertyEnabled": {
+      "address": "0xd04024",
+      "instructions": 37,
+      "sha256": "f40979fe714ac2681e046076cd9c4d16673f823a189fe09da7a49e6b13ca9c8a"
+    },
+    "CIS_TCBusMultisensorUnit.TCBusMultisensorUnit.SetIndicatorControl": {
+      "address": "0xd03660",
+      "instructions": 41,
+      "sha256": "b775806c50c9189c4453008e9f377a052d7f1dedb809c00446b5f9caf3d6783a"
+    },
+    "CIS_TCBusST7SensorCGateAgent.LoadPowerFail": {
+      "address": "0xcf46f4",
+      "instructions": 122,
+      "sha256": "4dc8b2868bb23faaade864131f0c8f1ac42ad6bf35ad76ed83f0d7c866d143be"
+    },
+    "CIS_TCBusST7SensorCGateAgent.SavePowerFail": {
+      "address": "0xcf52e0",
+      "instructions": 183,
+      "sha256": "7187571b7da10c70d19b5fa0c519cb011addebaba6c848902198cab93d8816e0"
+    },
+    "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.AfterLoadProgrammingInformation": {
+      "address": "0xcf4890",
+      "instructions": 310,
+      "sha256": "b95f7ef2ddc5a46390e257d26f216ce54d29b30bda54fe119a674bd12ad687f1"
+    },
+    "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.BeforeSaveProgrammingInformation": {
+      "address": "0xcf5558",
+      "instructions": 379,
+      "sha256": "eb35e5e7970257148af40f2b6f6417fd6c63606bb1ae246ba0298af70d49746a"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetInfraredKeyOffset": {
+      "address": "0xcfafa4",
+      "instructions": 14,
+      "sha256": "33e5c037b15bfb54d50c07b3bcc180a027f3b9b5ddc3af379ad216ddacda2776"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetInfraredLightLevelActive": {
+      "address": "0xcfafc8",
+      "instructions": 14,
+      "sha256": "75482f0daf88467f23b52a6a37cc75457efe34aee64fa705690c3366ed1d79de"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetInfraredLightLevelKey": {
+      "address": "0xcfafec",
+      "instructions": 14,
+      "sha256": "bc66f92c1511456b8c462b5795839bfb29f454075edf18d04544e2b118dbd350"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetInfraredOccupancyActive": {
+      "address": "0xcfb010",
+      "instructions": 14,
+      "sha256": "d395bd1156b18fe12d80e918bdbb829e7d1537a4e21e56eb5a50f801543b4d9c"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetInfraredOccupancyKey": {
+      "address": "0xcfb034",
+      "instructions": 14,
+      "sha256": "54c48bdef234d8dd128a836171d9d9630aba5e09944c0f3915b663a7dc1458ca"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetLightLevelMaintActive": {
+      "address": "0xcfb114",
+      "instructions": 14,
+      "sha256": "4048d383ad4710abbdf47b5e617dec18e7fbcbf7bcedca72426e32735a9549f5"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetLightLevelMaintBlock": {
+      "address": "0xcfb138",
+      "instructions": 14,
+      "sha256": "97a1ddd2759f4dad73234cc6b4c032d7cfcc1adcd55fd0f30cd373105beb70a9"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetLightLevelMaintEnableGroup": {
+      "address": "0xcfb15c",
+      "instructions": 14,
+      "sha256": "1d8b1cda498a1bd21f575297523fe007caa6c5645717682491f642d8d0692f20"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetLightLevelMaintEnableGroupOff": {
+      "address": "0xcfb180",
+      "instructions": 14,
+      "sha256": "ef2df1ed60451149ddf5cdfa24d5628c276dfa5eb176f6022ced5b2da0b76908"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetPotentiometerABlock": {
+      "address": "0xcfb460",
+      "instructions": 14,
+      "sha256": "8cb721c61d83177b66c51c3922273ca9d86fd1e04677c3f1cbc6c68fd5bdc121"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetPotentiometerAFunction": {
+      "address": "0xcfb484",
+      "instructions": 14,
+      "sha256": "2f178ef9c3aa8925775ce854a195b31982bd87dd5726f8fe5fc1bc1e288c2f7d"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetPotentiometerAReading": {
+      "address": "0xcfb4a8",
+      "instructions": 14,
+      "sha256": "1051513b0d37bccf20bef03be05d46c6b4bc6daedbd7f41149b9ee210065eee2"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetPotentiometerBBlock": {
+      "address": "0xcfb4cc",
+      "instructions": 14,
+      "sha256": "b11bfa6be5e337fbb29b362af2f28e76c53010a81533edc395497b09eabc12ff"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetPotentiometerBFunction": {
+      "address": "0xcfb4f0",
+      "instructions": 14,
+      "sha256": "aaa1fd3d03804a683b8870a18386d925236962c76d31576a74f9959ce946360e"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetPotentiometerBReading": {
+      "address": "0xcfb514",
+      "instructions": 14,
+      "sha256": "8bcda97cef3bb739fe513a6f1354f95b0b2e24279c37b35732218b4beb9e0bca"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.InfraredBankPropertyEnabled": {
+      "address": "0xcfb65c",
+      "instructions": 10,
+      "sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.InternalCreate": {
+      "address": "0xcfb754",
+      "instructions": 411,
+      "sha256": "537b1668cddac7fbec235ded5f00f9a37961ca8d739518f497b14e9e9299387d"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.IsInfraredNECSupported": {
+      "address": "0xcfc38c",
+      "instructions": 10,
+      "sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetInfraredKeyOffset": {
+      "address": "0xcfce14",
+      "instructions": 14,
+      "sha256": "dcd01b3692bfad6c96ee417fdae638ce240de9297c3c5f945b4879cad349b649"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetInfraredLightLevelActive": {
+      "address": "0xcfce38",
+      "instructions": 38,
+      "sha256": "09a62080b9de05261e91ee9d93572230049840344229f2289f0c0132c2753526"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetInfraredLightLevelKey": {
+      "address": "0xcfce94",
+      "instructions": 14,
+      "sha256": "d8dc0488f633632cd2303e23d53b4c827da582b06818ed10d82b545a362f40bd"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetInfraredOccupancyActive": {
+      "address": "0xcfceb8",
+      "instructions": 38,
+      "sha256": "4507742adb5b71af692206a5f063c88c36d94376caeeffee1d590f2dd95b73a1"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetInfraredOccupancyKey": {
+      "address": "0xcfcf14",
+      "instructions": 14,
+      "sha256": "05c4d48a0a89edd61940c97593b5c609d4547c739301f4bd78b2b19553c0011b"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetLightLevelMaintActive": {
+      "address": "0xcfd16c",
+      "instructions": 38,
+      "sha256": "fb5be8062283283a1111c76950acb7eeaf767a96ae8353c9ce003b783603de17"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetLightLevelMaintBlock": {
+      "address": "0xcfd1c8",
+      "instructions": 14,
+      "sha256": "7cfb45258c22962d697b19e4e9e6ecc9346a8c1cd85d56de21841f82267e3c0a"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetLightLevelMaintEnableGroup": {
+      "address": "0xcfd1ec",
+      "instructions": 14,
+      "sha256": "d3e2e91c77b3dd5d735b02cd7d3b8184bc392e5155792c7f8cb0ca16db225961"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetLightLevelMaintEnableGroupOff": {
+      "address": "0xcfd210",
+      "instructions": 38,
+      "sha256": "7a47071e2d84d90379e595cb62d06ab42c5bd5155723b99c4c0591961a38bb83"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetPotentiometerABlock": {
+      "address": "0xcfd40c",
+      "instructions": 14,
+      "sha256": "ed340cfc2b9f99bc59740361d229ad35d4b5d6b99d93346c10c560b8503dad2f"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetPotentiometerAFunction": {
+      "address": "0xcfd430",
+      "instructions": 41,
+      "sha256": "1bec4efc285f20ec3a58ce46bff98a0496eb7658c718909d125c42b7c59c5ea1"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetPotentiometerAReading": {
+      "address": "0xcfd494",
+      "instructions": 40,
+      "sha256": "aa2350ba23b8c42199cc076c21e278b4024aa92f0450b9db0eed306d033e71df"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetPotentiometerBBlock": {
+      "address": "0xcfd4f4",
+      "instructions": 14,
+      "sha256": "f637ac5348979e3e229c85080675a343bb7fb20be3f50804c7e2d4148182cb11"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetPotentiometerBFunction": {
+      "address": "0xcfd518",
+      "instructions": 41,
+      "sha256": "c66b8564ab152bdd229ccecc02b4790db6192b48ff322c656c29b6c73beb8bdb"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetPotentiometerBReading": {
+      "address": "0xcfd57c",
+      "instructions": 40,
+      "sha256": "93e976a3d99b4512f567c6761d19539f5d0e6d05bd1bddfbaed6e2b64d3a3f09"
+    },
+    "CIS_TCBusSurfaceMountSensorCGateAgent.LoadPowerFail": {
+      "address": "0x1217558",
+      "instructions": 164,
+      "sha256": "9cb77c575d6714adf689545c2c89a1236201d467a6168fe3321c3f1f1375b960"
+    },
+    "CIS_TCBusSurfaceMountSensorCGateAgent.SavePowerFail": {
+      "address": "0x1217b18",
+      "instructions": 184,
+      "sha256": "a48cda317c9868fbc7a8ea1abb1ed83856e6afa881a37b807f64a8aaa9325bd9"
+    },
+    "CIS_TIntegerAttribute.TIntegerAttribute.SetAsInteger": {
+      "address": "0x8508d0",
+      "instructions": 117,
+      "sha256": "fe86a3242886bc6a02237e6e6d2c8ea087831da5e62a03f622a6243d3b427ba9"
+    },
+    "CIS_TIntegerAttribute.TIntegerAttribute.SetValue": {
+      "address": "0x850ac4",
+      "instructions": 16,
+      "sha256": "c235e34aa3a39fef0b9fd3487c67e3e7d9ddf0605258d0117e569caadc2b289d"
+    }
+  },
+  "ordered_after_load": [
+    "CoreNeoPro inheritance",
+    "IR offset and PEC/PIR IR active and key refs",
+    "IndicatorControl",
+    "target and margin from original raw target",
+    "raw banks Active then EnableOff",
+    "Scale",
+    "PEC maintenance Active then Block then EnableGroup then EnableOff",
+    "broadcast Active then Block",
+    "occupancy raw flags",
+    "PIR EnableGroup then EnableOff",
+    "power-up states",
+    "potentiometer functionA then functionB then blockA then blockB"
+  ],
+  "power_literal_inputs": "raw_off is read at load; save_off is supplied current save-time model logic. SavePowerFail reads save_off and never writes it.",
+  "power_literals": [
+    {
+      "loaded_state": 1,
+      "raw_level": 255,
+      "raw_off": false,
+      "raw_store": false,
+      "save_off": false,
+      "saved_level": 255,
+      "saved_store": false
+    },
+    {
+      "loaded_state": 0,
+      "raw_level": 255,
+      "raw_off": true,
+      "raw_store": false,
+      "save_off": true,
+      "saved_level": 255,
+      "saved_store": false
+    },
+    {
+      "loaded_state": 0,
+      "raw_level": 42,
+      "raw_off": false,
+      "raw_store": false,
+      "save_off": false,
+      "saved_level": 0,
+      "saved_store": false
+    },
+    {
+      "loaded_state": 1,
+      "raw_level": 42,
+      "raw_off": true,
+      "raw_store": false,
+      "save_off": true,
+      "saved_level": 0,
+      "saved_store": false
+    },
+    {
+      "loaded_state": 2,
+      "raw_level": 42,
+      "raw_off": false,
+      "raw_store": true,
+      "save_off": false,
+      "saved_level": 42,
+      "saved_store": true
+    },
+    {
+      "loaded_state": 2,
+      "raw_level": 42,
+      "raw_off": true,
+      "raw_store": true,
+      "save_off": false,
+      "saved_level": 42,
+      "saved_store": true
+    },
+    {
+      "loaded_state": 1,
+      "raw_level": 0,
+      "raw_off": true,
+      "raw_store": false,
+      "save_off": false,
+      "saved_level": 255,
+      "saved_store": false
+    },
+    {
+      "loaded_state": 0,
+      "raw_level": 255,
+      "raw_off": true,
+      "raw_store": false,
+      "save_off": false,
+      "saved_level": 0,
+      "saved_store": false
+    }
+  ],
+  "qualification": {
+    "complete_owning_save_implemented": false,
+    "fresh_controls_not_closed_by_this_handoff": true,
+    "native_or_hardware_acceptance": false,
+    "numeric_layout_facts_only": true,
+    "original_gui_executed": false,
+    "original_instructions_executed": false,
+    "source_static_only": true,
+    "vendor_xml_or_defaults_retained": false
+  },
+  "scalar_facts": {
+    "BroadcastActive": "Raw1..6 loads true;0 or7 loads false. Normal save writes4 if logicaltrue else0.",
+    "IRBankKeyOffset_PECFunctionIRKey_PIRFunctionIRKey": "Raw0..7 maps key number(raw+1); save uses stable key collection index. Allocation-reference moves do not reorder the eight keys.",
+    "IndicatorControl": "Native enum integer0..3, both directions preserve exact value; other values raise.",
+    "PEC_Maint_Active_Block": "Attribute constructors and setters install no direct changed callback; bank Allowed recomputation belongs to explicit bank/block or occupancy events, not blanket maintenance assignment.",
+    "PotentiometerAFunction_PotentiometerBFunction": "Native enum integer0..3, both directions preserve exact value; block refs are raw0..7 and save indexes same block collection.",
+    "PotentiometerBBankSwitchEnable": "Normal ST7 BeforeSave writesfalse unconditionally at0xcf5a97; it is not a SENLL forced-conversion override.",
+    "fresh_logic_delta": "The occupancy frame later clears EnableOff when EnableGroup address255; the owning power serializer must use captured power state with the then-current logic, not recompute state from mutated logic.",
+    "power_load": "Storeflagtrue\u2192state2; else raw level255 means state0 if EnableOfftrue else1; any other level means state1 if EnableOfftrue else0.",
+    "power_save": "Captured state2 preserves raw level and writes Storeflagtrue. State0/1 writes Storeflagfalse and raw level255 iff bool(state)!=current EnableOff, otherwise0.",
+    "power_slots": {
+      "light_level": {
+        "LightLevel_index": 9,
+        "logic": "PECEnablerGroupLogic",
+        "store": "PECLevelStore"
+      },
+      "occupancy": {
+        "LightLevel_index": 8,
+        "logic": "PIREnablerGroupLogic",
+        "store": "PIRLevelStore"
+      }
+    },
+    "surface_power": "Three target/margin/bank states and overlays remain in the earlier13-field surface source handoff; ST7 power normalization occurs before final surface overlay."
+  }
+}

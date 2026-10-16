@@ -1,0 +1,1487 @@
+{
+  "format": "cbus-senlla-ordered-key-reference-source-v1",
+  "authority": {
+    "executable_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+    "spec_filename": "SENLLA.xml",
+    "spec_sha256": "57fe64e107fb9f23395102d87f34ac111c7f462e1e2e26376aa4e894ecef7bee"
+  },
+  "scope": {
+    "unit_type": "SENLLA",
+    "runtime_key_count": 8,
+    "block_count": 8,
+    "source_only": true,
+    "original_instruction_execution": false,
+    "original_gui_acceptance": false,
+    "native_runtime_acceptance": false,
+    "physical_acceptance": false,
+    "repository_modified_by_read_only_audit": false,
+    "complete_unit_save_implemented": false
+  },
+  "raw_projection": {
+    "field": "BlockAllocation",
+    "address": 54,
+    "array_size": 8,
+    "bit_size": 8,
+    "rule": "Load each unsigned byte as ascending bits0..7. Later reference append/extract order is retained; save ORs membership bits without sorting references.",
+    "primary_block": "First reference when nonempty; otherwise nil.",
+    "primary_group": "Only exactly one reference projects that block's group object; zero/multiple projects nil. Per-application unused255 is a real object distinct from nil."
+  },
+  "association_algorithms": [
+    {
+      "operation": "add",
+      "guard": "If key already owns block, complete no-op.",
+      "change": "BeginUpdate(key), append reference, EndUpdate(key). Never sort.",
+      "direct_refreshes_when_key_not_updating": [
+        "RefreshKeysSecondaryFromBlockSecondary(block)",
+        "RefreshPrimaryGroupFromBlockGroups(key)"
+      ]
+    },
+    {
+      "operation": "remove",
+      "guard": "If key does not own block, complete no-op.",
+      "change": "BeginUpdate(key), extract only that reference preserving other order, EndUpdate(key).",
+      "direct_refreshes_when_key_not_updating": [
+        "RefreshPrimaryGroupFromBlockGroups(key)",
+        "RefreshKeysSecondaryFromBlockSecondary(block)"
+      ]
+    },
+    {
+      "operation": "transfer",
+      "guard": "Collision caller scans keys0..7; only current owners of source receive operations.",
+      "change": "For each source-owning key: AddBlock(destination) before RemoveBlock(source). Already-owned destination stays in its original position."
+    },
+    {
+      "operation": "swap_mappings",
+      "guard": "Both/neither membership unchanged.",
+      "change": "For exclusive membership keys ascending: RemoveBlock(old) then AddBlock(new). Afterwards request conditional indicator remap only if current indicator BlockNumber equals old blockIndex+1. Data swapping is a separate owner phase."
+    }
+  ],
+  "callback_boundaries": {
+    "reference_list_change": "Actual reference append/extract emits HandleBlockListNewChange -> owning unit InputKeyBlocksChangedExternal. The component returns mutation evidence; it does not execute unit delegates or nested callbacks.",
+    "key_update_guard": "Only the direct refreshes after Add/Remove are suppressed when the key remains updating. Nested external-list/delegate dispatch is an owning lifecycle responsibility.",
+    "boolean_noop": "SetAsBoolean compares old value and suppresses all work for unchanged Boolean. Same-app loaded duplicates do not transfer references absent actual Boolean change.",
+    "collision_scan": "After changed Secondary Boolean, choose target app; scan all blocks ascending excluding self, nil group, and destination unused255. Probe target GroupByAddress(source numeric address,false), compare object identity against destination group. First collision transfers every owning key ascending, then source group becomes target unused255; continue scan with current255, then bind AppForBlock.",
+    "key_application": "Block refresh scans keys ascending, skips updating keys, computes state0 primary/empty,1 secondary,2 both from block Booleans. Actual enum change invokes key app refresh, block secondary refresh, primary-group refresh, level14/15 identification, template derivation, then Scene type23/24/25 reset16 for state1/2. Return/replay these callbacks in owner order rather than deriving from final masks."
+  },
+  "destination_resolution": {
+    "existing": "Existing target application group object bypasses decision.",
+    "no_handler": "CreateAllowed defaults true; missing target numeric group is looked up with create=true.",
+    "handler": "For missing target, createAllowed starts false; check UNIT PRIMARY application's CanAddGroups even when target is secondary. If true, pass true by-reference to handler, which may decline.",
+    "decline": "When target lookup yields nil, target unused255 is resolved create=true and assigned. Old numeric group is not retained.",
+    "fresh_timing": "InputUnit.InternalCreate does not set decision pointer1b8/1bc. M8.Initialise assigns it at f94993 after InitialiseFunctionCombos f94932 and SetupFlashHooks f9495c. Entire inherited constructor chain absence of an earlier assignment remains an independently reviewed admission fact.",
+    "project_metadata": "Network application202/control group/level create-enabled getters and group tagging can alter project objects. This internal reference component creates no metadata and does not decide handler outcomes."
+  },
+  "qualified_callback_literals": [
+    {
+      "name": "unchanged_false_duplicate_groups",
+      "before": {
+        "applications": [
+          56,
+          57
+        ],
+        "secondary_mask": 0,
+        "groups": [
+          20,
+          20,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255
+        ],
+        "ordered_references": [
+          [
+            1,
+            2
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            1
+          ],
+          [
+            2
+          ],
+          [],
+          [
+            1,
+            3,
+            5
+          ],
+          [
+            1,
+            4
+          ],
+          [
+            0,
+            1,
+            2
+          ]
+        ]
+      },
+      "control": {
+        "block": 1,
+        "secondary": false
+      },
+      "expected": {
+        "secondary_mask": 0,
+        "groups": [
+          20,
+          20,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255
+        ],
+        "ordered_references": [
+          [
+            1,
+            2
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            1
+          ],
+          [
+            2
+          ],
+          [],
+          [
+            1,
+            3,
+            5
+          ],
+          [
+            1,
+            4
+          ],
+          [
+            0,
+            1,
+            2
+          ]
+        ],
+        "association_transfer": false
+      }
+    },
+    {
+      "name": "first_ascending_destination_only",
+      "before": {
+        "applications": [
+          56,
+          57
+        ],
+        "secondary_mask": 4,
+        "groups": [
+          20,
+          20,
+          20,
+          255,
+          255,
+          255,
+          255,
+          255
+        ],
+        "ordered_references": [
+          [
+            2
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ]
+      },
+      "control": {
+        "block": 2,
+        "secondary": false
+      },
+      "expected": {
+        "secondary_mask": 0,
+        "groups": [
+          20,
+          20,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255
+        ],
+        "ordered_references": [
+          [
+            0
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "masks": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "name": "other_application_same_numeric_group_does_not_collide",
+      "before": {
+        "applications": [
+          56,
+          57
+        ],
+        "secondary_mask": 0,
+        "groups": [
+          20,
+          20,
+          255,
+          255,
+          255,
+          255,
+          255,
+          255
+        ],
+        "group_objects": [
+          [
+            56,
+            20
+          ],
+          [
+            56,
+            20
+          ],
+          [
+            56,
+            255
+          ],
+          [
+            56,
+            255
+          ],
+          [
+            56,
+            255
+          ],
+          [
+            56,
+            255
+          ],
+          [
+            56,
+            255
+          ],
+          [
+            56,
+            255
+          ]
+        ],
+        "ordered_references": [
+          [
+            0
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "target_inventory": [
+          [
+            57,
+            20
+          ],
+          [
+            57,
+            255
+          ]
+        ]
+      },
+      "control": {
+        "block": 0,
+        "secondary": true
+      },
+      "expected": {
+        "secondary_mask": 1,
+        "ordered_references": [
+          [
+            0
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "association_transfer": false,
+        "source_group_object": [
+          57,
+          20
+        ]
+      },
+      "qualification": "Destination block1 has primary object(56,20), which differs from target probe(57,20). Existing target inventory avoids an unresolved creation decision."
+    }
+  ],
+  "focused_source_literals": [
+    {
+      "name": "collision_add_destination_before_remove_source",
+      "operation": {
+        "type": "transfer",
+        "source": 1,
+        "destination": 0
+      },
+      "before": {
+        "ordered_references": [
+          [
+            1,
+            2
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            1
+          ],
+          [
+            2
+          ],
+          [],
+          [
+            1,
+            3,
+            5
+          ],
+          [
+            1,
+            4
+          ],
+          [
+            0,
+            1,
+            2
+          ]
+        ],
+        "masks": [
+          6,
+          3,
+          2,
+          4,
+          0,
+          42,
+          18,
+          7
+        ]
+      },
+      "after": {
+        "ordered_references": [
+          [
+            2,
+            0
+          ],
+          [
+            0
+          ],
+          [
+            0
+          ],
+          [
+            2
+          ],
+          [],
+          [
+            3,
+            5,
+            0
+          ],
+          [
+            4,
+            0
+          ],
+          [
+            0,
+            2
+          ]
+        ],
+        "masks": [
+          5,
+          1,
+          1,
+          4,
+          0,
+          41,
+          17,
+          5
+        ],
+        "primary_blocks": [
+          2,
+          0,
+          0,
+          2,
+          null,
+          3,
+          4,
+          0
+        ]
+      },
+      "expected_operation_order": [
+        [
+          0,
+          "add",
+          0
+        ],
+        [
+          0,
+          "remove",
+          1
+        ],
+        [
+          1,
+          "add",
+          0
+        ],
+        [
+          1,
+          "remove",
+          1
+        ],
+        [
+          2,
+          "add",
+          0
+        ],
+        [
+          2,
+          "remove",
+          1
+        ],
+        [
+          5,
+          "add",
+          0
+        ],
+        [
+          5,
+          "remove",
+          1
+        ],
+        [
+          6,
+          "add",
+          0
+        ],
+        [
+          6,
+          "remove",
+          1
+        ],
+        [
+          7,
+          "add",
+          0
+        ],
+        [
+          7,
+          "remove",
+          1
+        ]
+      ],
+      "no_op_add_keys": [
+        1,
+        7
+      ],
+      "callback_state_qualification": "Association phase only. Apps56/57, source block1 secondary/group20, destination block0 primary/group20. Boolean true->false selects this first collision and clears source group to primary unused255. Subsequent owner callbacks are not applied by this component."
+    },
+    {
+      "name": "existing_destination_is_not_reappended",
+      "operation": {
+        "type": "transfer",
+        "source": 3,
+        "destination": 5
+      },
+      "before": {
+        "ordered_references": [
+          [
+            5,
+            3,
+            0
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "masks": [
+          41,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "after": {
+        "ordered_references": [
+          [
+            5,
+            0
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "masks": [
+          33,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "primary_blocks": [
+          5,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      "expected_operation_order": [
+        [
+          0,
+          "add",
+          5
+        ],
+        [
+          0,
+          "remove",
+          3
+        ]
+      ],
+      "no_op_add_keys": [
+        0
+      ]
+    },
+    {
+      "name": "source_absent_has_no_transfer_attempt",
+      "operation": {
+        "type": "transfer",
+        "source": 7,
+        "destination": 1
+      },
+      "before": {
+        "ordered_references": [
+          [
+            4,
+            0
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "masks": [
+          17,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "after": {
+        "ordered_references": [
+          [
+            4,
+            0
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "masks": [
+          17,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "primary_blocks": [
+          4,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      "expected_operation_order": [],
+      "no_op_add_keys": []
+    },
+    {
+      "name": "add_appends_without_sorting",
+      "operation": {
+        "type": "add",
+        "key": 0,
+        "block": 1
+      },
+      "before": {
+        "ordered_references": [
+          [
+            5,
+            3
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "masks": [
+          40,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "after": {
+        "ordered_references": [
+          [
+            5,
+            3,
+            1
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "masks": [
+          42,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "primary_blocks": [
+          5,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      "expected_operation_order": [
+        [
+          0,
+          "add",
+          1
+        ]
+      ],
+      "no_op_add_keys": []
+    },
+    {
+      "name": "duplicate_add_is_complete_noop",
+      "operation": {
+        "type": "add",
+        "key": 0,
+        "block": 3
+      },
+      "before": {
+        "ordered_references": [
+          [
+            5,
+            3
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "masks": [
+          40,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "after": {
+        "ordered_references": [
+          [
+            5,
+            3
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "masks": [
+          40,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "primary_blocks": [
+          5,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      "expected_operation_order": [
+        [
+          0,
+          "add",
+          3
+        ]
+      ],
+      "no_op_add_keys": [
+        0
+      ]
+    },
+    {
+      "name": "remove_extracts_only_selected_reference",
+      "operation": {
+        "type": "remove",
+        "key": 0,
+        "block": 3
+      },
+      "before": {
+        "ordered_references": [
+          [
+            5,
+            3,
+            1
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "masks": [
+          42,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "after": {
+        "ordered_references": [
+          [
+            5,
+            1
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "masks": [
+          34,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "primary_blocks": [
+          5,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      "expected_operation_order": [
+        [
+          0,
+          "remove",
+          3
+        ]
+      ],
+      "no_op_add_keys": []
+    },
+    {
+      "name": "absent_remove_is_complete_noop",
+      "operation": {
+        "type": "remove",
+        "key": 0,
+        "block": 2
+      },
+      "before": {
+        "ordered_references": [
+          [
+            5,
+            3
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "masks": [
+          40,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "after": {
+        "ordered_references": [
+          [
+            5,
+            3
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "masks": [
+          40,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "primary_blocks": [
+          5,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      "expected_operation_order": [
+        [
+          0,
+          "remove",
+          2
+        ]
+      ],
+      "no_op_add_keys": []
+    },
+    {
+      "name": "swap_mappings_remove_then_append_and_both_unchanged",
+      "operation": {
+        "type": "swap",
+        "first": 1,
+        "second": 3
+      },
+      "before": {
+        "ordered_references": [
+          [
+            1,
+            5
+          ],
+          [
+            3,
+            0
+          ],
+          [
+            1,
+            3,
+            4
+          ],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "masks": [
+          34,
+          9,
+          26,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "after": {
+        "ordered_references": [
+          [
+            5,
+            3
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            3,
+            4
+          ],
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        "masks": [
+          40,
+          3,
+          26,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "primary_blocks": [
+          5,
+          0,
+          1,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      "expected_operation_order": [
+        [
+          0,
+          "remove",
+          1
+        ],
+        [
+          0,
+          "add",
+          3
+        ],
+        [
+          1,
+          "remove",
+          3
+        ],
+        [
+          1,
+          "add",
+          1
+        ]
+      ],
+      "no_op_add_keys": [],
+      "expected_indicator_requests": [
+        [
+          0,
+          2,
+          4,
+          2
+        ],
+        [
+          1,
+          4,
+          2,
+          4
+        ]
+      ]
+    }
+  ],
+  "source_pins": [
+    {
+      "method": "CIS_TBaseObject.TBASEObject.GetUpdating",
+      "address": "0x7682c8",
+      "sha256": "15a86cda3f2887a89cbc51154f72400a48e40d8906668cb74e902ad87c595cdb",
+      "instruction_count": 13
+    },
+    {
+      "method": "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.ObjectChanged",
+      "address": "0x7ddb94",
+      "sha256": "defb321f13691804f565bf1516e77eb5e4d9301f30e71ca2b010ad663a03a02a",
+      "instruction_count": 16
+    },
+    {
+      "method": "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.ReferenceChanged",
+      "address": "0x7ddbb8",
+      "sha256": "90ad6ac5ea0469f6ec435659b4f33bf047f2aa16066b8a9ca6ca485377674e35",
+      "instruction_count": 16
+    },
+    {
+      "method": "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.SetFlashObject",
+      "address": "0x7ddbf4",
+      "sha256": "913604d6225e746aa93b92f5d35fe62e5ff619e0fdec33baab261c92ccd8a0bb",
+      "instruction_count": 66
+    },
+    {
+      "method": "CIS_TCustomFlashObject.TFlashAttribute.Changed",
+      "address": "0x7ec640",
+      "sha256": "d868d2dafaac989a3ad04ffb5231e3c06d580f550aa3b55b4e2a4c637aec99c5",
+      "instruction_count": 22
+    },
+    {
+      "method": "CIS_TCustomFlashObject.TFlashAttribute.CanDoChange",
+      "address": "0x7ec674",
+      "sha256": "284e058e22b7f42055defbb8c1338a58d6d7e9f097ecf5815b566e80312a8f2a",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TBooleanAttribute.TBooleanAttribute.SetAsBoolean",
+      "address": "0x7f45e0",
+      "sha256": "a73b6ecb850a1689c915d3e76d6d7ac87f64dc44d16451833664360f748703aa",
+      "instruction_count": 37
+    },
+    {
+      "method": "CIS_TEnumeratedTypeAttribute.TEnumeratedTypeAttribute.SetAsInteger",
+      "address": "0x8483cc",
+      "sha256": "3c06181be8d17788c283da6867792dd6620eeecbc809bb019b58de1b12d6a877",
+      "instruction_count": 53
+    },
+    {
+      "method": "CIS_TEnumeratedTypeAttribute.TEnumeratedTypeAttribute.SetValue",
+      "address": "0x84847c",
+      "sha256": "2f107c6e6edcf3a85269a7cfdd34f9fe84518b0530c233fefe1a7981bc0e3ffd",
+      "instruction_count": 16
+    },
+    {
+      "method": "CIS_TCBusInputUnit.TCBusInputUnit.InternalCreate",
+      "address": "0xc9d1a4",
+      "sha256": "2ba74cf9888a4e1502382fee7d0a4cabf53eed188a8411e01924aaf3abb33f14",
+      "instruction_count": 34
+    },
+    {
+      "method": "CIS_TCBusInputUnit.TCBusInputUnit.GetOnDecisionCreateApplicationGroups",
+      "address": "0xc9d470",
+      "sha256": "2e43241b5a69d28ba42522c506bb5d86e0ed1e504a7e718940cf0e013cd66ae3",
+      "instruction_count": 16
+    },
+    {
+      "method": "CIS_TCBusInputUnit.TCBusInputUnit.SetOnDecisionCreateApplicationGroups",
+      "address": "0xc9d498",
+      "sha256": "760eef0bad322e47d8b80e240774d0624776a8c8fee32ea96d3ee7fb5de36787",
+      "instruction_count": 13
+    },
+    {
+      "method": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.RefreshKeyBlockOverrides",
+      "address": "0xc9fcb0",
+      "sha256": "494a3d3de7da0c232ada45a412c22b34308512ba69a64a307a2dee62e847af54",
+      "instruction_count": 8
+    },
+    {
+      "method": "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.InputKeyBlocksChanged",
+      "address": "0xc9fcd8",
+      "sha256": "ffbe5d93e7a04e08345a2b8ed94a0d88abbd8cf94c102206779f88186dc07f1a",
+      "instruction_count": 9
+    },
+    {
+      "method": "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.GetBlockGroup",
+      "address": "0xcc75e4",
+      "sha256": "f9c7b8a5d2a5c8e45cdcc61562850251b8d4784595834885992d83e93a906263",
+      "instruction_count": 84
+    },
+    {
+      "method": "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.GetKeyBlocks",
+      "address": "0xcc76f8",
+      "sha256": "cf7076442865a356e71c3b0c8160fad60f9a766ead3651502b359c0f24fb07be",
+      "instruction_count": 109
+    },
+    {
+      "method": "CIS_TCoreKeyInputCGateAgent.SetKeyBlocks",
+      "address": "0xcc8aa8",
+      "sha256": "c5f0fcab4ac93acf8909297b5d789e087ca59353bfcd6ec9abf27d7b62f1d00b",
+      "instruction_count": 118
+    },
+    {
+      "method": "CIS_TInputKey.TInputBlock.SetSecondaryApplication",
+      "address": "0xd0f4ac",
+      "sha256": "44971ebac5cef1eaa02514be2ca1f53686cf093b2bbb6f15cb35c1da1ede74fb",
+      "instruction_count": 38
+    },
+    {
+      "method": "CIS_TInputKey.TInputBlock.HandleGroupAfterChange",
+      "address": "0xd0f580",
+      "sha256": "80e4c3a977b4dc4ae8fdd7002364bd597dd1b311213286b0a672c67ac429e43d",
+      "instruction_count": 49
+    },
+    {
+      "method": "CIS_TInputKey.TInputBlock.RefreshUnitKeysFromBlockGroup",
+      "address": "0xd0f628",
+      "sha256": "2e012ac4b7bfaa0f9dc7318af187b6b702bd2204698b7bb9561db19498331d02",
+      "instruction_count": 42
+    },
+    {
+      "method": "CIS_TInputKey.TInputBlock.HandleSecondaryAfterChange",
+      "address": "0xd0f6ac",
+      "sha256": "d9ce2a683e0d6776b8467c714aba6ce6cc21e0f0de8f2f5312c5f63f4f959943",
+      "instruction_count": 13
+    },
+    {
+      "method": "CIS_TInputKey.TInputBlock.RefreshBlockApplicationFromBlockSecondary",
+      "address": "0xd0f6cc",
+      "sha256": "e58499ede4893d79806595e701cde9465c1f6f5802d419137f56e67c6a64e184",
+      "instruction_count": 147
+    },
+    {
+      "method": "CIS_TInputKey.TInputBlock.HandleApplicationForBlockAfterChange",
+      "address": "0xd0f8d0",
+      "sha256": "a769c23b7ab94c4ca099abeb8c8b84ee3c7d2e2e9a5971af163abab762cf13aa",
+      "instruction_count": 11
+    },
+    {
+      "method": "CIS_TInputKey.TInputBlock.RefreshBlockGroupFromBlockApplication",
+      "address": "0xd0f8e8",
+      "sha256": "ed03d4991a1357a586c57b404b38fd33a92b5427976e2abdb8500d276b559820",
+      "instruction_count": 91
+    },
+    {
+      "method": "CIS_TInputKey.TInputBlock.RefreshKeysSecondaryFromBlockSecondary",
+      "address": "0xd0fa2c",
+      "sha256": "bacb10e6d04a18e3b0e287925d197cb2efb52969e8f213b7a60ff97c937da0a0",
+      "instruction_count": 92
+    },
+    {
+      "method": "CIS_TInputKey.TInputBlockReferenceCollection.Extract",
+      "address": "0xd0fc54",
+      "sha256": "dc9f617c3decd97fbefd86b7d2357739376eb11df03d3ffead111ecf8ecf7be1",
+      "instruction_count": 13
+    },
+    {
+      "method": "CIS_TInputKey.TInputBlockCollection.SwapBlockData",
+      "address": "0xd10540",
+      "sha256": "5ec9939714722bf317baaad0a0f4d1a59fefbb3c5ac4123d6a06ea4a1a2f633a",
+      "instruction_count": 155
+    },
+    {
+      "method": "CIS_TInputKey.TInputKey.GetPrimaryBlock",
+      "address": "0xd11434",
+      "sha256": "4e423d03fee0f16a764e0f95b933d46eb2dfca9bdcb2bfebe00ead54e5735746",
+      "instruction_count": 23
+    },
+    {
+      "method": "CIS_TInputKey.TInputKey.GetApplicationState",
+      "address": "0xd11694",
+      "sha256": "d6652ac8da095c53af16ee435ee1b9adedb0b42c66b71c004d5280c53aa81a3e",
+      "instruction_count": 14
+    },
+    {
+      "method": "CIS_TInputKey.TInputKey.SetApplicationState",
+      "address": "0xd116b8",
+      "sha256": "703f8ad5a2d8f26c25343f85ae37fdec2b0643b58d3aa4c606f8ff2323fb370a",
+      "instruction_count": 41
+    },
+    {
+      "method": "CIS_TInputKey.TInputKey.RefreshSceneRampMacroFunctionFromTemplate",
+      "address": "0xd11c54",
+      "sha256": "835247f0e38877ecbdc80dc0e75cabc1e92c589475f7776094b3277266a0b9db",
+      "instruction_count": 52
+    },
+    {
+      "method": "CIS_TInputKey.TInputKey.RefreshPrimaryGroupFromBlockGroups",
+      "address": "0xd11da4",
+      "sha256": "9333ce099b96a9fad7a1e862e116f6f97357128822a85d2427e27dbd3b46b5bd",
+      "instruction_count": 80
+    },
+    {
+      "method": "CIS_TInputKey.GetBlockAssociatedKeyCount",
+      "address": "0xd12688",
+      "sha256": "78e2d0e3dc80884735328bfd3bba7d178899164786b971cc9be7bd284ecd4e6d",
+      "instruction_count": 36
+    },
+    {
+      "method": "CIS_TInputKey.IsBlockAssociated",
+      "address": "0xd126ec",
+      "sha256": "9dc0a35817e84954954e30f7f6688304425cbba4ca5f52de860ff1f2f3d39e08",
+      "instruction_count": 17
+    },
+    {
+      "method": "CIS_TInputKey.GetBlockAssociatedKey",
+      "address": "0xd12710",
+      "sha256": "4a498120e03cc1f44a22f62046c1f699ebd67ed9109725e845091f54a34244b7",
+      "instruction_count": 43
+    },
+    {
+      "method": "CIS_TInputKey.TInputKey.CalcLinearBlock",
+      "address": "0xd12a64",
+      "sha256": "c2448f5a84c54bd8996286786afa11142891730bfae74a262cebf0176f8cd625",
+      "instruction_count": 19
+    },
+    {
+      "method": "CIS_TInputKey.TInputKey.HandlePrimaryGroupAfterChangeEvent",
+      "address": "0xd12c2c",
+      "sha256": "66fc1b55c6c890248df4f1e47d95fbc8f8ee8c78cd6c7ea69aef739248d2c168",
+      "instruction_count": 33
+    },
+    {
+      "method": "CIS_TInputKey.TInputKey.RefreshKeySecondaryFromBlockSecondary",
+      "address": "0xd12c94",
+      "sha256": "e340a91b36693c906cc4f0d24db98f365df72873eb2235f9af3d3c272216777b",
+      "instruction_count": 45
+    },
+    {
+      "method": "CIS_TInputKey.TInputKey.HandleApplicationStateAfterChange",
+      "address": "0xd12d10",
+      "sha256": "0f798d21f2d44176d98064f9ad4b0678b9e00c37c6d7f10ee79de38be252a7fa",
+      "instruction_count": 21
+    },
+    {
+      "method": "CIS_TInputKey.TInputKey.RefreshKeyApplicationFromKeySecondary",
+      "address": "0xd12d50",
+      "sha256": "e8515589afc4425b5e38862ec948edac9f3d5e38a2119d3622c132f8a9bc7f97",
+      "instruction_count": 75
+    },
+    {
+      "method": "CIS_TInputKey.TInputKey.RefreshBlockSecondaryFromKeySecondary",
+      "address": "0xd12e64",
+      "sha256": "d1a0916a382101c85d428da7788ede1d8d9f18b41a270d13e4e295c93c95995e",
+      "instruction_count": 96
+    },
+    {
+      "method": "CIS_TInputKey.TInputKey.AddBlock",
+      "address": "0xd13110",
+      "sha256": "090cbb187cdd95bb71b55b5fec291ddb1c04378245a84b16aadbde9b518b2fcf",
+      "instruction_count": 48
+    },
+    {
+      "method": "CIS_TInputKey.TInputKey.HasApplicationBlocks",
+      "address": "0xd134a0",
+      "sha256": "7360451b8f4d75e3df5cb25cbf7b74bf372a8056293f0d0df62b796024258cda",
+      "instruction_count": 33
+    },
+    {
+      "method": "CIS_TInputKey.TInputKey.RemoveAllBlocks",
+      "address": "0xd13524",
+      "sha256": "0b80e02e421c1908ed74417a22b95e6e2f21ff5feb6bbfb4e402e2ae484d4ee7",
+      "instruction_count": 37
+    },
+    {
+      "method": "CIS_TInputKey.TInputKey.RemoveBlock",
+      "address": "0xd13594",
+      "sha256": "7311a70836388fc297326b3794956c2bf467d6ef6a46f69c122ad8f645bae749",
+      "instruction_count": 47
+    },
+    {
+      "method": "CIS_TInputKey.TInputKey.AddBlockByNumber",
+      "address": "0xd13614",
+      "sha256": "13aa4111db72d46df5a125dd580f9241780167e45e4e78146e94b0e85b912868",
+      "instruction_count": 71
+    },
+    {
+      "method": "CIS_TInputKey.TInputKey.RemoveBlockByNumber",
+      "address": "0xd1384c",
+      "sha256": "085d2754452e8224a7005e094c795360d95934ee4d8582632f1b54c9eb93c02e",
+      "instruction_count": 71
+    },
+    {
+      "method": "CIS_TInputKey.TInputKey.FindBlockUsedByThisKey",
+      "address": "0xd13b78",
+      "sha256": "0deccdc8b036bcf8ceff92263ad13508d2b53bee521f714becc4875226839d50",
+      "instruction_count": 59
+    },
+    {
+      "method": "CIS_TInputKey.TInputKey.FindFirstBlockNumber",
+      "address": "0xd13d1c",
+      "sha256": "71564a090cf0ab3d0ca7d784b2d937e0ff9e35eced49901ae751a09df01e671d",
+      "instruction_count": 39
+    },
+    {
+      "method": "CIS_TInputKey.TInputKey.ApplicationStateMatchesSecondaryApplication",
+      "address": "0xd13e80",
+      "sha256": "726bd6cd372402da4b3792e13f45b37c5c8381e31df2486699eed6213602d8b1",
+      "instruction_count": 34
+    },
+    {
+      "method": "CIS_TInputKey.TInputKeyCollection.SwapBlockMappings",
+      "address": "0xd14588",
+      "sha256": "a836625e0f6d98a6e2c5f0ba4ef0bbdb866f8fa818a949a0e29f0acf39a903ca",
+      "instruction_count": 137
+    },
+    {
+      "method": "CIS_TCommonCBus.TCBUSApplication.InternalCreate",
+      "address": "0xf25704",
+      "sha256": "74f748a4f29c737d626e5b88c62f5f60f6cd3a03eda9d46c4579f189706b5a0a",
+      "instruction_count": 62
+    },
+    {
+      "method": "CIS_TCommonCBus.TCBUSApplicationManager.CheckAllHaveUnusedGroup",
+      "address": "0xf2644c",
+      "sha256": "0f31bf1d546406be28a383844580c8fd37d4a1d7ab27d941817cf9920e466b14",
+      "instruction_count": 35
+    },
+    {
+      "method": "CIS_TCommonCBus.TLevelManager.FindLevelByAddress",
+      "address": "0xf2742c",
+      "sha256": "682cac65b928f9e1b98dca786b5e53c2fc1d3070ae27722c840d937e5769769e",
+      "instruction_count": 144
+    },
+    {
+      "method": "CIS_TCommonCBus.TCBusGroup.InternalCreate",
+      "address": "0xf27984",
+      "sha256": "856404baa4ac67bbd744210d3a98f471faf7f9d25c35f22aed8aa627046a42fe",
+      "instruction_count": 132
+    },
+    {
+      "method": "CIS_TCommonCBus.TCBusGroup.GetApplication",
+      "address": "0xf27efc",
+      "sha256": "db44181f40e15e94648eda50ab9454a557111f5f7c902e0bdfef667eefef8fe0",
+      "instruction_count": 13
+    },
+    {
+      "method": "CIS_TCommonCBus.TCBusGroupManager.Add",
+      "address": "0xf288f0",
+      "sha256": "d704bcb463fb41fb081f4a84151545818e93ca35b31da0eb74cb763d3bd3c0a9",
+      "instruction_count": 27
+    },
+    {
+      "method": "CIS_TCommonCBus.TCBusGroupManager.GetApplication",
+      "address": "0xf28978",
+      "sha256": "4562e20f0f5b270e08a5dfe8086d6e8738385d9f76900c39fa688c2685a516ff",
+      "instruction_count": 13
+    },
+    {
+      "method": "CIS_TCommonCBus.TCBusGroupManager.GroupByAddress",
+      "address": "0xf28b68",
+      "sha256": "ca91f7a53a7820a9be87286f6c481e624bd888fc7a1f5c64f0a7a34ebbd91930",
+      "instruction_count": 115
+    },
+    {
+      "method": "CIS_TCommonCBus.TCBusGroupManager.GroupByAddressExclude",
+      "address": "0xf28d10",
+      "sha256": "de132e634835a15c14207e5da78c5ee56b88a8a18d2a0bee4ea06161eabb36d2",
+      "instruction_count": 39
+    },
+    {
+      "method": "CIS_TCommonCBus.TCBusGroupManager.FindOrCreateGroupByAddress",
+      "address": "0xf28f34",
+      "sha256": "f3bd4df31dec3c63a3fe83bcc139e25c057b1cbd24f474aaafcb37d17e79df32",
+      "instruction_count": 15
+    },
+    {
+      "method": "CIS_TCommonCBus.TCBusGroupManager.FindGroupByAddress",
+      "address": "0xf28f58",
+      "sha256": "a6f960e5325ea8adc0b36eb2b3c9b7dd1f91a1fa3bbfa958aa30bdeaacf1c24a",
+      "instruction_count": 16
+    },
+    {
+      "method": "CIS_TCommonCBus.TCBusNetwork.FindOrCreateApplicationByAddress",
+      "address": "0xf2b0a0",
+      "sha256": "24edc2caecf56d02ce3d9be02386b266d7bbef46ea4018c2333efd1cd5df7f5f",
+      "instruction_count": 18
+    },
+    {
+      "method": "CIS_TddKeyM8.TddKeyM8.Initialise",
+      "address": "0xf94544",
+      "sha256": "df3e63ada09689bd67a795f574771ac127a7e1f6df5298cd839e96e9d672a770",
+      "instruction_count": 347
+    }
+  ]
+}

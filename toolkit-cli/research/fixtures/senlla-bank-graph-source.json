@@ -1,0 +1,1159 @@
+{
+  "aggregate_bank_route": {
+    "ST7_predicate": "For bank: blocked if MaintActive and sameMaintBlock OR any current key HasBlock(bankBlock) and its occupancy has any flag. Loops all keys, then SetAllowed(!blocked)0xcffc59. No unconditional Active setter.",
+    "allowed_changed": "SetAllowed Boolean equal guard applies. Unequal true->false calls SwitchAllowedChanged0xcffc64, which clears Active only if stilltrue at0xcffc8d. Existing Allowedfalse,Activetrue plus aggregatefalse preservesActive because equalfalse emits no callback.",
+    "delivery": "Actual block identity/value notifications or initial SetBlock activation can invoke HandleBlockChange0xcff79c. Guards: sender nonnil/initialized/notstate2, bank.GetUpdatingfalse/banknotstate2, boundBlock nonnil.",
+    "order": "At0xcff800 RefreshSwitchAllowedFromBlock0xcffa18 BEFORE RefreshLuxLevelsFromBlock0xcff808.",
+    "root_self_feedback": "Parent independently closed: Bank.EndUpdate may force root reevaluation but unchanged Block/current identity suppresses value callback; no deferred HandleBlockChange. This receipt relies on that parent handoff.",
+    "unit_bypass": "Existing unit-observer dependency independently proves no owning-unit aggregate bypass."
+  },
+  "authority": {
+    "native_form_verified": false,
+    "original_instruction_execution": false,
+    "physical_acceptance": false,
+    "repo_edits": false,
+    "source_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "source_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+    "tests_run": false
+  },
+  "format": "cbus-senlla-bank-graph-static-source-v1",
+  "fresh_bound_bank": {
+    "enable_group_off": false,
+    "high_lux": 0,
+    "low_lux": 0,
+    "store1": 0,
+    "store2": 0,
+    "switch_active": false,
+    "switch_allowed": true
+  },
+  "key_reference_callback": {
+    "add": "Append adds reference then collection Changed; block subscription only adds reference to block subscriber list0x7ef878. Non-owning reference does not reparent/mutate target Block.",
+    "dispatch": "Collection Changed invokes OnChange+50 at0x7e8955 under +58 reentry guard. Dedicated OnChange is not gated by collection GetUpdating. HandleBlockListNewChange0xd12a9c owner0x84+30 -> InputKeyBlocksChangedExternal0xc9fce8 at0xd12ad2 -> unit VMT174=0xcfb704.",
+    "installed": "InputKey.InternalCreate creates non-owning real BlockReferenceCollection+ac at0xd10e1e and installs collection.OnChange+50=HandleBlockListNewChange0xd12a9c at0xd10e3b.",
+    "no_direct_aggregate": "This route does not call RefreshSwitchAllowedFromBlock or bank HandleBlockChange. Reference changes alone are not target-block generic changes.",
+    "remove": "Collection.Delete0x7e8bb0 removes list item at0x7e8be4, invokes collection Changed at0x7e8bee BEFORE frees removed reference0x7e8bf4. Callback therefore observes CURRENT list excluding removed block. Unsubscribe0x7ef9f4 edits subscriber list only, no Block Changed.",
+    "unit_order": [
+      {
+        "operation": "CoreKey.InputKeyBlocksChanged0xc9fcd8 (empty)",
+        "site": "0xcfb716"
+      },
+      {
+        "operation": "RefreshOccupancyKeysFromKeyBlocks0xcfccd0",
+        "site": "0xcfb71e"
+      },
+      {
+        "operation": "RefreshLightLevelBroadcastBlockFromKeyBlocks0xcfc684",
+        "site": "0xcfb726"
+      },
+      {
+        "operation": "ItemByInputKey(changedkey)",
+        "site": "0xcfb737"
+      },
+      {
+        "operation": "If occupancy exists, RefreshEventFlagsFromMacroFunction0xd00e7c",
+        "site": "0xcfb748"
+      }
+    ]
+  },
+  "key_reference_direct_refresh": {
+    "guard_97": "not set by this direct method or QuickSet; enclosing macro handler may already hold it",
+    "installed_event_template_handler": "unequal flags may call installed event-to-template handler; owner must replay or component refuses",
+    "join_active_and_key_index_at_least_4": "return without flag change",
+    "method": "CIS_TCBusMultisensorUnit.TInputKeyOccupancy.RefreshEventFlagsFromMacroFunction",
+    "nil_template": "return without flag change",
+    "other_templates": "QuickSet Light, Dark, Any, Sunset in order; only 29,30,33,34 select corresponding true flag",
+    "smart_decision_fields_94_95": "unchanged"
+  },
+  "maintenance_fields": {
+    "active_setter": "SetMaintActive0xcfd16c only BooleanAttribute.SetValue; Boolean equality returns before update/store.",
+    "block_setter": "SetMaintBlock0xcfd1c8 only ObjectReferenceAttribute.SetFlashObject0x7ddbf4 via VMTa8. Pointer equality0x7ddc34/37 skips reference swap at0x7ddc7e/82. Unlike Boolean equality, it still completes Begin/EndUpdate and generic notifications even on same pointer; no dedicated maintenance callback.",
+    "constructor": "MaintActive+2e0 created0xcfb940, MaintBlock+2e4 created0xcfb966, enableGroup+2e8 created0xcfb98c, Off+2ec created0xcfb9b2. All nil dedicated callback; no AfterChange function installed.",
+    "enable_setter": "SetMaintEnableGroup0xcfd1ec same object setter; SetMaintEnableGroupOff0xcfd210 Boolean setter. No direct bank/key writes.",
+    "fresh_actual_surface_UI": "Surface SetupFlashComponents0xfc2b14 replaces inherited0xfad064 and does NOT install MaintActive or MaintBlock links. Hence inherited HandleUnitLightLevelMaintActiveChange0xfac44c/BlockChange0xfac520 do not execute in this actual fresh Surface bank frame.",
+    "inherited_other_controller": "If a separately bound ST7 controller delivers them later: Active handler may replace MaintBlock with FirstAvailableMaintBlock when current active maintenance bank Active, THEN RefreshBankSwitchAllowed all banks ascending0xfac4f5. Block handler only all-bank refresh0xfac548. Their base links are activated0xfad14e/0xfad1a0 BEFORE callbacks assigned0xfad15c/0xfad1ae, so base initial activation does not call them either.",
+    "raw_load_aggregate": "No aggregate permission refresh from loading MaintActive/Block themselves. Later occupancy events consume loaded current maintenance context. Ordinary raw ST7 load occurs before UI bank controllers exist.",
+    "raw_load_order": [
+      {
+        "operation": "LoadLightLevelBanks: bank Active then Off ascending",
+        "site": "0xcf4a40"
+      },
+      {
+        "operation": "MaintActive raw Boolean",
+        "site": "0xcf4a81"
+      },
+      {
+        "operation": "MaintBlock from raw blockIndex",
+        "site": "0xcf4ab6"
+      },
+      {
+        "operation": "PEC enable group",
+        "site": "0xcf4af5"
+      },
+      {
+        "operation": "PEC enable Off",
+        "site": "0xcf4b15"
+      },
+      {
+        "operation": "BroadcastActive raw1..6 -> true",
+        "site": "0xcf4b55"
+      },
+      {
+        "operation": "BroadcastBlock",
+        "site": "0xcf4b8a"
+      },
+      {
+        "operation": "LoadOccupancyKeys raw masks, equality-sensitive per-key events",
+        "site": "0xcf4b90"
+      },
+      {
+        "operation": "LoadPowerFail captures raw logic",
+        "site": "0xcf4bf6"
+      }
+    ]
+  },
+  "method_pins": {
+    "CIS_CBus.ByteToLux2550": {
+      "address": "0x7f2944",
+      "instructions": 27,
+      "sha256": "0e2c812c579d2d1daea7afa1276e5b81d2853fb52aabe27579f43633acc5f30c"
+    },
+    "CIS_CBus.Lux2550ToByte": {
+      "address": "0x7f2990",
+      "instructions": 30,
+      "sha256": "6ad614dd53861785f40775026ddb89259934ec2f34694ac0c00e43ae0c7ed5ad"
+    },
+    "CIS_Handles.TFlashExpression.CurrentElementChanged": {
+      "address": "0x84cc28",
+      "instructions": 12,
+      "sha256": "b44251af21c524fae13c4fad6cb040c05ad8374303a8e5dcccaea27e52125f9c"
+    },
+    "CIS_Handles.TFlashExpression.Evaluate": {
+      "address": "0x84cc6c",
+      "instructions": 83,
+      "sha256": "399f61dd31f5955ee80d2faf8ca10042f06817c456961c456c99f8560c1e820d"
+    },
+    "CIS_Handles.TFlashExpression.MakeDirty": {
+      "address": "0x84cd58",
+      "instructions": 11,
+      "sha256": "cf8b88486e045f398ab7f44eb48edcd023df004b51dc56c4cf1ca94bbbf79e3c"
+    },
+    "CIS_Handles.TFlashExpression.ProcessElementChange": {
+      "address": "0x84cd70",
+      "instructions": 18,
+      "sha256": "d154e06e619d63de4fc6631abf5abd75c23dec81806abdf2d04aeb0beb104643"
+    },
+    "CIS_Handles.TFlashExpression.RootElementChanged": {
+      "address": "0x84ce20",
+      "instructions": 10,
+      "sha256": "2a548f988428e39627a1b2f2ea550bd51b23b893cd4b990f2399d84f2a737829"
+    },
+    "CIS_Handles.TFlashExpression.SetRootElement": {
+      "address": "0x84cec4",
+      "instructions": 33,
+      "sha256": "cdf95fce8a306b3fa0085761ea85222114fc25b68502e17b36c5ee21910c7f9e"
+    },
+    "CIS_Handles.TFlashExpressionController.Changed": {
+      "address": "0x84d824",
+      "instructions": 58,
+      "sha256": "58e08f90ef77c3b2cb390bb40b29a6bcbd333e6da9bd7c6d849884ccf0aa8638"
+    },
+    "CIS_Handles.TFlashExpressionController.Create": {
+      "address": "0x84d460",
+      "instructions": 99,
+      "sha256": "3faa04cacc05609dfe063e35c71e5509fae37191ebdd3b72b755772b0c13d7e5"
+    },
+    "CIS_Handles.TFlashExpressionController.DoFlashHandleChanged": {
+      "address": "0x84d8c4",
+      "instructions": 150,
+      "sha256": "a654f051fa8ee88be8cdbaff0146f58ca9c54899af62d5951ccec7f00d883a2e"
+    },
+    "CIS_Handles.TFlashExpressionController.ExpressionElementChanged": {
+      "address": "0x84da84",
+      "instructions": 75,
+      "sha256": "77d85563d9723d7dfe71ebbc71e5fd29afcbb21b464a7cd7e25d32c0788d7ea4"
+    },
+    "CIS_Handles.TFlashExpressionController.FlashHandleValueChanged": {
+      "address": "0x84dc5c",
+      "instructions": 29,
+      "sha256": "dea67640ac0b6054b9b0f5b84e015b3a9d66868cc3c09acb539bd209885999a9"
+    },
+    "CIS_Handles.TFlashExpressionController.RootLinkChanged": {
+      "address": "0x84ddb4",
+      "instructions": 13,
+      "sha256": "0cb7bc8e8784d7a0b07c3698f8a65a615fbba1890209ec9e478afb274b3368fd"
+    },
+    "CIS_Handles.TFlashExpressionController.SetActive": {
+      "address": "0x84de00",
+      "instructions": 38,
+      "sha256": "c68d7335d1464ae4ef0ad248f1c194fd134039dde911ba71d06c6802224b3ebf"
+    },
+    "CIS_Handles.TFlashHandleFollower.SetFlashHandle": {
+      "address": "0x84fb94",
+      "instructions": 31,
+      "sha256": "5dc5227e390b0737923c0f533987f6dd3d96968598a496efe4e2e48eb69b5e3c"
+    },
+    "CIS_Handles.TFlashLink.Changed": {
+      "address": "0x84e218",
+      "instructions": 25,
+      "sha256": "cd378acc12a3546a6373a4ae0077bc5c91cf9fd24a2058db342ca48b41891263"
+    },
+    "CIS_Handles.TFlashLink.Create": {
+      "address": "0x84e0d0",
+      "instructions": 70,
+      "sha256": "22489179e9c7ec241db46630e38060d23acc293a3dab70c1c6ebfd201aed40a2"
+    },
+    "CIS_Handles.TFlashLink.FlashHandleValueChanged": {
+      "address": "0x84e3e4",
+      "instructions": 30,
+      "sha256": "f06e94b248c0f557fda8e554181fdcf9de1aead8e79b9ea1b41b11a4ff3cbb2f"
+    },
+    "CIS_Handles.TFlashLinkFollower.LinkChanged": {
+      "address": "0x84d3a0",
+      "instructions": 18,
+      "sha256": "e2f5d356db0c9c7d702ee5f1f85d551c8cad914726ce933b702e95046a89082b"
+    },
+    "CIS_Handles.TFlashLinkFollower.SetFlashLink": {
+      "address": "0x84d418",
+      "instructions": 27,
+      "sha256": "0721709f9f6506c746044a3933182a315626c00b304f1d401c5863cb1c5a23f5"
+    },
+    "CIS_Handles.TFlashObjectLink.Create": {
+      "address": "0x84cf7c",
+      "instructions": 50,
+      "sha256": "b0649fe3c12715491e54b42a3a6953bede8f277bdbcbb1b166f63716b5d6a209"
+    },
+    "CIS_Handles.TFlashObjectLink.FlashHandleValueChanged": {
+      "address": "0x84d094",
+      "instructions": 55,
+      "sha256": "15e43905d4e53b03056e3d2790a1db8178c112ceb75c6c4f445a5c6d3394f058"
+    },
+    "CIS_Handles.TFlashObjectLink.SetFlashObject": {
+      "address": "0x84d194",
+      "instructions": 15,
+      "sha256": "fab92984ca755973b9745ea8cc1f212dcfd5f4d63fdc67c2e9da813f454fe794"
+    },
+    "CIS_Handles.TFlashTrackedHandle.Changed": {
+      "address": "0x84e57c",
+      "instructions": 10,
+      "sha256": "6124be6a2726b0993a2894a777de2c38874dcd7da52494eb3e92c0cc9c6313bd"
+    },
+    "CIS_Handles.TFlashTrackedHandle.Create": {
+      "address": "0x84e434",
+      "instructions": 72,
+      "sha256": "b9be2de0b848e23753c250146d813082e1a424443d1963765ad019d5e779abd8"
+    },
+    "CIS_Handles.TFlashTrackedHandle.CurrentElementChanged": {
+      "address": "0x84e590",
+      "instructions": 12,
+      "sha256": "c8d33e8fc8303e8d9601155bf9068e2ef51516e7bb06579578137e8a7304afe8"
+    },
+    "CIS_Handles.TFlashTrackedHandle.DoCurrentElementChanged": {
+      "address": "0x84e5e8",
+      "instructions": 102,
+      "sha256": "eb3aa5518f291213aa3df7d087c5053f501beec42283603b147899a9055884ab"
+    },
+    "CIS_Handles.TFlashTrackedHandle.DoRootElementChanged": {
+      "address": "0x84e7b0",
+      "instructions": 29,
+      "sha256": "2863558d737c18291c1a917233ae216a1ab643174f5cf046a526bedf98fe641e"
+    },
+    "CIS_Handles.TFlashTrackedHandle.SetFollowedFlashHandle": {
+      "address": "0x84ec1c",
+      "instructions": 14,
+      "sha256": "113866757bc4c2f10e5678cb492813b17f381486fd821b94d4803340b627d298"
+    },
+    "CIS_Handles.TFlashTrackedHandle.SetRootElement": {
+      "address": "0x84ed10",
+      "instructions": 42,
+      "sha256": "77f983ddc462d965cdc08ea0ab6b15f4e38d41a34e5da04870e0f4db7ccaa987"
+    },
+    "CIS_Handles.TFlashTrackedHandle.Update": {
+      "address": "0x84ed88",
+      "instructions": 152,
+      "sha256": "3adc26cd56d1552a15cab928c2990fff00531500d26463cffdd1420d1924c6ce"
+    },
+    "CIS_TBaseObject.TBASEObject.BeginUpdate": {
+      "address": "0x768268",
+      "instructions": 9,
+      "sha256": "fccf73e890e583de66651108d405ecb5f566b9df9289d5329d911ef21367728c"
+    },
+    "CIS_TBaseObject.TBASEObject.Changed": {
+      "address": "0x768278",
+      "instructions": 20,
+      "sha256": "5a9c6a024e075c145d2f93358a03b7d4f84d50bd2c6f0dab270718df286b3167"
+    },
+    "CIS_TBaseObject.TBASEObject.EndUpdate": {
+      "address": "0x7682a4",
+      "instructions": 16,
+      "sha256": "610e82c914a9ecc27873e0233a595367a34bd81797f127ad2441039ca55559fc"
+    },
+    "CIS_TBaseObject.TBASEObject.GetUpdating": {
+      "address": "0x7682c8",
+      "instructions": 13,
+      "sha256": "15a86cda3f2887a89cbc51154f72400a48e40d8906668cb74e902ad87c595cdb"
+    },
+    "CIS_TBooleanAttribute.TBooleanAttribute.InternalCreate": {
+      "address": "0x7f44d8",
+      "instructions": 23,
+      "sha256": "9daaa841bbc3d91fa4cffd9bd02c2c5fa749ad053d5961672d6ea9d9d6df4cee"
+    },
+    "CIS_TBooleanAttribute.TBooleanAttribute.SetAsBoolean": {
+      "address": "0x7f45e0",
+      "instructions": 37,
+      "sha256": "a73b6ecb850a1689c915d3e76d6d7ac87f64dc44d16451833664360f748703aa"
+    },
+    "CIS_TCBusMultisensorUnit.QuickSet": {
+      "address": "0xd00e30",
+      "instructions": 26,
+      "sha256": "cea54e937ad1fbe2f7d7534b814714b90c1ccc35338201f029114412bc8df41e"
+    },
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.GetLuxFormula": {
+      "address": "0xcff72c",
+      "instructions": 38,
+      "sha256": "925562e7c786194638fdbe365087f27968f2d7fce1d6c808089e66fbbba14f44"
+    },
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.HandleBlockChange": {
+      "address": "0xcff79c",
+      "instructions": 51,
+      "sha256": "932553af324cdd471d783b65040b9d5a46dbfda26ae78d50d71ce47c82010445"
+    },
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.HighLevelLuxChanged": {
+      "address": "0xcffce0",
+      "instructions": 133,
+      "sha256": "3bb025795ec45ce6aefde16bfa41a19e78eee3dd0b05152b3168223d63a9abd9"
+    },
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.InternalCreate": {
+      "address": "0xcff43c",
+      "instructions": 126,
+      "sha256": "cbfde14703af952c13830dff2eaeb157788d7861800616aafd6430d44ec0a58a"
+    },
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.LowLevelLuxChanged": {
+      "address": "0xcffe78",
+      "instructions": 133,
+      "sha256": "c75a0747341250b935d3ec8336f751b2b148d1c8d4076d2ed06fde186a5ba84f"
+    },
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.RefreshLuxLevelsFromBlock": {
+      "address": "0xcff830",
+      "instructions": 134,
+      "sha256": "1d3b7e23147654f47dbe25463b984b991500a75c909131b3108949bee8cf5bf0"
+    },
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.RefreshSwitchAllowedFromBlock": {
+      "address": "0xcffa18",
+      "instructions": 176,
+      "sha256": "0e66fd6060b0177c440e59aa8334fd69d0c627ea8f2bb5e1e3463e8ded4b3a29"
+    },
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.SetBlock": {
+      "address": "0xd000e8",
+      "instructions": 19,
+      "sha256": "6f34272fed556846644201ecd15043af0599d126182a27b61f26f6071f540b13"
+    },
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.SetEnableGroupOff": {
+      "address": "0xd0011c",
+      "instructions": 38,
+      "sha256": "2caede4fb0e2b3f5a6fdfd7e111ef18e5d2abeeb4aac54cf6f2908bf04c461ee"
+    },
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.SetSwitchActive": {
+      "address": "0xd00238",
+      "instructions": 38,
+      "sha256": "84438b445896051eab82579440b4f2c48ed7e9ac1a603658224a880f5125384f"
+    },
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.SetSwitchAllowed": {
+      "address": "0xd00294",
+      "instructions": 39,
+      "sha256": "0d79c0f5b2ee8e3b8d73d952abca535302be8705f46066bf8c565796d2ac495c"
+    },
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.SwitchActiveChanged": {
+      "address": "0xcffc98",
+      "instructions": 28,
+      "sha256": "79366b9addf7d4ecf52b45b1be7acef34e84cb95b04c2a72d2f59d1e05cbd7f3"
+    },
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.SwitchAllowedChanged": {
+      "address": "0xcffc64",
+      "instructions": 21,
+      "sha256": "b86dee8fa282cdf3b9c41c8eeacbbead896df969be61cea0c277a02d5b23d952"
+    },
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitchCollection.Append": {
+      "address": "0xd00400",
+      "instructions": 14,
+      "sha256": "c929fe8c9f1d976ba0bac49af6ae128d5b08587262fb37b0e2bc7235005a2218"
+    },
+    "CIS_TCBusMultisensorUnit.TInputKeyOccupancy.EventFlagChanged": {
+      "address": "0xd0102c",
+      "instructions": 81,
+      "sha256": "ae9e7a66b1dc4e13d409d6543b3bb3eebde243d16aa16f5f09ec5a6f32146740"
+    },
+    "CIS_TCBusMultisensorUnit.TInputKeyOccupancy.HandleAnyMovementChanged": {
+      "address": "0xd00a80",
+      "instructions": 25,
+      "sha256": "391f99a295a1132089b744a0a91ec6fb93f56ba3fb57d0e98d06d06b325afd04"
+    },
+    "CIS_TCBusMultisensorUnit.TInputKeyOccupancy.HandleDarkAndMovementChanged": {
+      "address": "0xd00ac4",
+      "instructions": 25,
+      "sha256": "94d9343318c73878f1fbdbb399c6d4ccab60847382cb00f516c94e945d586a1d"
+    },
+    "CIS_TCBusMultisensorUnit.TInputKeyOccupancy.HandleLightAndMovementChanged": {
+      "address": "0xd00b08",
+      "instructions": 25,
+      "sha256": "e3fa06e25a550fc26043a854ce3346b19ec62c63bff1574f583b59d6890102da"
+    },
+    "CIS_TCBusMultisensorUnit.TInputKeyOccupancy.IsCompatibleWithLightLevelBroadcast": {
+      "address": "0xd0147c",
+      "instructions": 30,
+      "sha256": "46183bad1926c65b76115bbce2098eebd9defb9ff8a379e28bc59e29e642760d"
+    },
+    "CIS_TCBusMultisensorUnit.TInputKeyOccupancy.RefreshBlockBankSwitchFromEventFlags": {
+      "address": "0xd0120c",
+      "instructions": 188,
+      "sha256": "f95617190fc519ec2980fd3e08c88a0d36ef80a11170422a92fd504ce5133ed5"
+    },
+    "CIS_TCBusMultisensorUnit.TInputKeyOccupancy.RefreshEventFlagsFromMacroFunction": {
+      "address": "0xd00e7c",
+      "instructions": 83,
+      "sha256": "54afd416723b7efdc6f2e4d0c22879b9248608dbb7827cc4ef82fbe41b2b0dd1"
+    },
+    "CIS_TCBusNeoInputCGateAgent.TCBusNeoInputCGateAgent.AfterLoadProgrammingInformation": {
+      "address": "0xcebe04",
+      "instructions": 83,
+      "sha256": "1534462408bb96b90eab0541faf42b7879ea647e9d67928386bafdcf7605a23a"
+    },
+    "CIS_TCBusNeoInputUnit.TCBusNeoInputUnit.MaximumBlockCount": {
+      "address": "0xd0871c",
+      "instructions": 11,
+      "sha256": "05a1daa7bf067f8b5a872d598c8788ec1975e98076aa026242c7e9aa772c940e"
+    },
+    "CIS_TCBusST7SensorCGateAgent.LoadLightLevelBanks": {
+      "address": "0xcf44c4",
+      "instructions": 69,
+      "sha256": "2e324993624dd73d0b25e49fca6eeb1b9ecae9ddd08395c802fc805470821f2d"
+    },
+    "CIS_TCBusST7SensorCGateAgent.LoadOccupancyKeys": {
+      "address": "0xcf4208",
+      "instructions": 106,
+      "sha256": "a72596e7e1a9204a1476a546b8e08984eb10ef01c4c5b8fbeb68d2e4f5856e6e"
+    },
+    "CIS_TCBusST7SensorCGateAgent.TCBusST7MultisensorCGateAgent.AfterLoadProgrammingInformation": {
+      "address": "0xcf4890",
+      "instructions": 310,
+      "sha256": "b95f7ef2ddc5a46390e257d26f216ce54d29b30bda54fe119a674bd12ad687f1"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetLuxFormula": {
+      "address": "0xcfb404",
+      "instructions": 10,
+      "sha256": "d527e24595b31634d21aa3d3a1951c76c1ac7634ec009305c7298d4b1e75cd40"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.InputBlockGroupChanged": {
+      "address": "0xcfb670",
+      "instructions": 49,
+      "sha256": "6fb713f83264aa2e2954c8a33c08d568bcd3d8457b8159037f5f46f1c203dd9c"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.InputKeyBlocksChanged": {
+      "address": "0xcfb704",
+      "instructions": 25,
+      "sha256": "61218b01b82ea6ff2b8fd705169a0cdcf33cf36098bd58a7bf0076da018c9626"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.InternalCreate": {
+      "address": "0xcfb754",
+      "instructions": 411,
+      "sha256": "537b1668cddac7fbec235ded5f00f9a37961ca8d739518f497b14e9e9299387d"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.RefreshLightLevelBroadcastBlockFromKeyBlocks": {
+      "address": "0xcfc684",
+      "instructions": 66,
+      "sha256": "4f665811d17455469d8e4dca9a10f8df830d3699845dc798431de2ea890fb513"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.RefreshOccupancyKeysFromKeyBlocks": {
+      "address": "0xcfccd0",
+      "instructions": 66,
+      "sha256": "370eff28729166aebff913dd1de1231b052a201a95ae7a8d99c28182c7db3de4"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetLightLevelMaintActive": {
+      "address": "0xcfd16c",
+      "instructions": 38,
+      "sha256": "fb5be8062283283a1111c76950acb7eeaf767a96ae8353c9ce003b783603de17"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetLightLevelMaintBlock": {
+      "address": "0xcfd1c8",
+      "instructions": 14,
+      "sha256": "7cfb45258c22962d697b19e4e9e6ecc9346a8c1cd85d56de21841f82267e3c0a"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetLightLevelMaintEnableGroup": {
+      "address": "0xcfd1ec",
+      "instructions": 14,
+      "sha256": "d3e2e91c77b3dd5d735b02cd7d3b8184bc392e5155792c7f8cb0ca16db225961"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.SetLightLevelMaintEnableGroupOff": {
+      "address": "0xcfd210",
+      "instructions": 38,
+      "sha256": "7a47071e2d84d90379e595cb62d06ab42c5bd5155723b99c4c0591961a38bb83"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.InternalCreate": {
+      "address": "0xca4044",
+      "instructions": 175,
+      "sha256": "09cc527e8535cb915b2d40d3ed7f6069c854b9b74476d69f1d4e14616a34dbb8"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.RefreshLightLevelBankCollection": {
+      "address": "0xca46cc",
+      "instructions": 49,
+      "sha256": "dcbbec2e2cec682effdc03024a8615631fc194697220698839ac7f3171b8cf94"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TInputBlockSurfaceMountBankSwitch.InternalCreate": {
+      "address": "0xca4d5c",
+      "instructions": 34,
+      "sha256": "8c323f6159febb43bfe074f486b7cf7f01f4f2f71e82ddf4d11b204946c16f3d"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TInputBlockSurfaceMountBankSwitchCollection.Add": {
+      "address": "0xca4ed4",
+      "instructions": 26,
+      "sha256": "b64a2b4f1dd770d11ca9ed867bd2bab27c6120386f048119914cf71a19961fb2"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TInputBlockSurfaceMountBankSwitchCollection.Append": {
+      "address": "0xca4f18",
+      "instructions": 14,
+      "sha256": "d80436f1c931c6a5526c94695fe5c9fac5201a2b1f415150a8e4a2f7199b3412"
+    },
+    "CIS_TCoreKeyInputCGateAgent.GetBlockValues": {
+      "address": "0xcc80c8",
+      "instructions": 258,
+      "sha256": "2afd629bd1fda14cca390f87889c187b111057bd5d7e05bfe13434c88e816ae9"
+    },
+    "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.AfterLoadProgrammingInformation": {
+      "address": "0xcc85dc",
+      "instructions": 159,
+      "sha256": "18ee9b0a9b14967ee213a979881c3b24ab29b258d1d6083ed97b0213e90cfadc"
+    },
+    "CIS_TCoreKeyInputCGateAgent.TCoreKeyInputCGateAgent.GetKeyBlocks": {
+      "address": "0xcc76f8",
+      "instructions": 109,
+      "sha256": "cf7076442865a356e71c3b0c8160fad60f9a766ead3651502b359c0f24fb07be"
+    },
+    "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.EEPROMLevelPropertiesEnabled": {
+      "address": "0xc9dfd8",
+      "instructions": 10,
+      "sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.EEPROMLevelStorePropertiesEnabled": {
+      "address": "0xc9dfec",
+      "instructions": 10,
+      "sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.InputBlockGroupChanged": {
+      "address": "0xc9fd08",
+      "instructions": 11,
+      "sha256": "87b7183f564caa21f94b37c45b4e80ff84ec124b0c8d92a03b9b95b77377b07f"
+    },
+    "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.InputBlockGroupChangedExternal": {
+      "address": "0xc9fd20",
+      "instructions": 14,
+      "sha256": "eba9555f1d4358a3e74bda42073bc2bfb7fdb80464030ae2b3797bdfc406488f"
+    },
+    "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.InputKeyBlocksChanged": {
+      "address": "0xc9fcd8",
+      "instructions": 9,
+      "sha256": "ffbe5d93e7a04e08345a2b8ed94a0d88abbd8cf94c102206779f88186dc07f1a"
+    },
+    "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.InputKeyBlocksChangedExternal": {
+      "address": "0xc9fce8",
+      "instructions": 14,
+      "sha256": "df58f79411aa29624cb4f848113eccc3acae446be67f255cba52a9350007af8d"
+    },
+    "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.InputKeysChanged": {
+      "address": "0xc9e978",
+      "instructions": 8,
+      "sha256": "494a3d3de7da0c232ada45a412c22b34308512ba69a64a307a2dee62e847af54"
+    },
+    "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.InternalCreate": {
+      "address": "0xc9dcc0",
+      "instructions": 109,
+      "sha256": "d162dd4144f6621f6cd56000a94445072c70e5ec56e2dce512f3d18b9d11d1d9"
+    },
+    "CIS_TCoreKeyInputUnit.TCoreKeyInputUnit.RefreshIndicatorGroupFromBlockGroups": {
+      "address": "0xc9f6c0",
+      "instructions": 50,
+      "sha256": "763b0dc2f6a94b866757d87e52ac56000438af6864ee4e50ae75d556e97083d4"
+    },
+    "CIS_TCoreNeoInputCGateAgent.TCoreNeoInputCGateAgent.AfterLoadProgrammingInformation": {
+      "address": "0xccb180",
+      "instructions": 221,
+      "sha256": "b9d2e4789c26ae1060381db63acb06fa93168e43235344d37e9a1d7d6adad838"
+    },
+    "CIS_TCoreNeoProInputCGateAgent.TCoreNeoProInputCGateAgent.AfterLoadProgrammingInformation": {
+      "address": "0xced154",
+      "instructions": 281,
+      "sha256": "061a7b998b95d268913ceae06b60458195235cf6c0b0b289b2fb5eb44dc3a861"
+    },
+    "CIS_TCustomFlashObject.TCISAttribute.Changed": {
+      "address": "0x7eca04",
+      "instructions": 26,
+      "sha256": "a0555ce79dbca9a348f621ea0b8240717b93c20f1a34e388916991d999fe52a6"
+    },
+    "CIS_TCustomFlashObject.TCollectionManager.Add": {
+      "address": "0x7e7f3c",
+      "instructions": 18,
+      "sha256": "6115903d97d659e87eae16355460eebb033e917a0a311028864b4f5b89eee5b0"
+    },
+    "CIS_TCustomFlashObject.TCustomFlashObject.Changed": {
+      "address": "0x7eaa10",
+      "instructions": 21,
+      "sha256": "9e6fec44f19fbae8f26184192fbaeb86ab4930896d457e942ae6b08334133099"
+    },
+    "CIS_TCustomFlashObject.TCustomFlashObject.Create": {
+      "address": "0x7eabb0",
+      "instructions": 39,
+      "sha256": "2787031c80b1db46caf9e73c4ddd9b4cfd64e63374100e01cc78fe19a72011b7"
+    },
+    "CIS_TCustomFlashObject.TCustomFlashObject.CreateInWorkSpace": {
+      "address": "0x7ea6ac",
+      "instructions": 33,
+      "sha256": "1df68a1522c9278cd4e37130bb722b5c23edc3635f7cacea3b3776542659591a"
+    },
+    "CIS_TCustomFlashObject.TCustomFlashObject.DoChangeNotification": {
+      "address": "0x7eade4",
+      "instructions": 13,
+      "sha256": "0a3010193f71c37b59579c1d8c647ebc77e439fff8b241bc5e1fe989efa45957"
+    },
+    "CIS_TCustomFlashObject.TFlashAttribute.Create": {
+      "address": "0x7ec504",
+      "instructions": 68,
+      "sha256": "16586b827e44dc711a2f4c0a707d68161215272b525b1a787c2c3e5c8857961f"
+    },
+    "CIS_TCustomFlashObject.TFlashEntityManager.Changed": {
+      "address": "0x7ee0ec",
+      "instructions": 17,
+      "sha256": "3505e275d49d0a0a84bcdae1075b0a8fa965c212c55333a290311ffebef4584d"
+    },
+    "CIS_TCustomFlashObject.TFlashEntityManager.ResolveChange": {
+      "address": "0x7ee114",
+      "instructions": 15,
+      "sha256": "a3cefdcd52ed3d90416a0cf4eb9e0a6714ca4da5d133d5330a8088bb718033df"
+    },
+    "CIS_TCustomFlashObject.TFlashObject.SetParent": {
+      "address": "0x7f0a34",
+      "instructions": 32,
+      "sha256": "776be8f2d60e4d817ca85243d44d1213f1d89d0ca80db4873fe7e1946f88f421"
+    },
+    "CIS_TCustomFlashObject.TFlashObject.SubscribeReference": {
+      "address": "0x7ef878",
+      "instructions": 21,
+      "sha256": "5ae09d1ede6919149e11c23333940471661ffa6b067f11e777ec0a9f3c37d858"
+    },
+    "CIS_TCustomFlashObject.TFlashObject.UnSubscribeReference": {
+      "address": "0x7ef9f4",
+      "instructions": 27,
+      "sha256": "21ea4980d728520707307fe342bcd412db4ae826cd7d709f5297d9cd83067ac2"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectCollection.Append": {
+      "address": "0x7e9fd0",
+      "instructions": 18,
+      "sha256": "4e2bc2432cee7bbe7b3a04fca57752f41253a10460ee3f87da96ee298823de45"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectCollection.Create": {
+      "address": "0x7e9b94",
+      "instructions": 47,
+      "sha256": "4a786ea5f95387f65203289e4ad2a79e48c515e8c8473032cf77ceb61cde0e3d"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReference.ObjectChanged": {
+      "address": "0x7ed3c4",
+      "instructions": 17,
+      "sha256": "7afab599ae69adb9977c6f08f5ef6891571a67dfb79150c353a955e49ad4d334"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReference.SetFlashObject": {
+      "address": "0x7ed6d4",
+      "instructions": 131,
+      "sha256": "159d5010edfa3ee972a627f414609ac6dc02e1645e7c98cf8cc46fba8221b740"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.Append": {
+      "address": "0x7e84ac",
+      "instructions": 143,
+      "sha256": "efb8b52181bf7c3850a8692720016f9dd76b785be74c9d23e7b9e6947fca72f3"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.Changed": {
+      "address": "0x7e8900",
+      "instructions": 46,
+      "sha256": "b4976d9b63be3603887e2b25726738b7e597bcc93c47c1b80f68fbab80fbdbe9"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.Create": {
+      "address": "0x7e8334",
+      "instructions": 55,
+      "sha256": "6eed2265e367b15bffaf015a64c4b9d074de8bcbfe79290f79110fc6b67733e5"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.Delete": {
+      "address": "0x7e8bb0",
+      "instructions": 28,
+      "sha256": "10c1c65e10256d022edceb8941e62d3308c6093182ba99c41e73822f65781f89"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.InternalCreate": {
+      "address": "0x7e9050",
+      "instructions": 17,
+      "sha256": "4d57aee5f91dbcb637232a265b3d0857f9210cd9b85b9a73ca9e7489ddfcdd4e"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.OnReferenceChange": {
+      "address": "0x7e90bc",
+      "instructions": 12,
+      "sha256": "4589079c7e5ff1c36ce256dd8cf7ec5c193d6d71a716f6a0df762f0c2af3e60b"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.OnReferencedObjectChange": {
+      "address": "0x7e9b70",
+      "instructions": 15,
+      "sha256": "109f4964f42a44dc31e9acdc162af532ee25f7a904266ced3ff8f936cae5b565"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.ResolveChange": {
+      "address": "0x7e928c",
+      "instructions": 16,
+      "sha256": "a0309351f85cc2e82996204d8679a80451c17aa3ae7e401ecc397c52a62dfd99"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReferenceCollection.SetCollectionManager": {
+      "address": "0x7e92b4",
+      "instructions": 32,
+      "sha256": "e476c2cf451954c0c59af86196b1eb9a935bc3d8e26d469e152c6e1eff80669a"
+    },
+    "CIS_TCustomFlashObject.TFlashObjectReferenceList.Changed": {
+      "address": "0x7f084c",
+      "instructions": 48,
+      "sha256": "82a07e0263b1e3741b0aeaa3513cf0fdf7d941e72038b7095a6cd827f87c6d08"
+    },
+    "CIS_TCustomKeyInputUnit.TCustomKeyInputUnit.InternalCreate": {
+      "address": "0xd0d378",
+      "instructions": 90,
+      "sha256": "c13d99e17e46f456d9ce0d48e455d414fb1843f3cde6eba1777df81015b582e1"
+    },
+    "CIS_TFlashObjectExpressionLink.TFlashObjectExpressionLink.Create": {
+      "address": "0xca0a40",
+      "instructions": 42,
+      "sha256": "b71e0e6404166bb3bb73dc7a76562057765593bc65394ac8441646f201cd20d4"
+    },
+    "CIS_TFlashObjectExpressionLink.TFlashObjectExpressionLink.SetActive": {
+      "address": "0xca0b60",
+      "instructions": 15,
+      "sha256": "2a30e4459ec73951c6c3fcb65add225dd459a9556d4ee131ca2915fd9bf45e87"
+    },
+    "CIS_TFlashObjectExpressionLink.TFlashObjectExpressionLink.SetFlashObject": {
+      "address": "0xca0ba8",
+      "instructions": 14,
+      "sha256": "1fc497fc008be37aeea340d87d89a1a7845a1d80b437dbf9de65a9d4b675d505"
+    },
+    "CIS_TFlashObjectExpressionLink.TFlashObjectExpressionLink.SetOnExpressionChange": {
+      "address": "0xca0bc8",
+      "instructions": 14,
+      "sha256": "2475c4eaf3c0b6bd7ced1cbe8ebaec32cd3e3fe6f6ba201d3d9628c15f200d57"
+    },
+    "CIS_TInputKey.TInputBlock.HandleGroupAfterChange": {
+      "address": "0xd0f580",
+      "instructions": 49,
+      "sha256": "80e4c3a977b4dc4ae8fdd7002364bd597dd1b311213286b0a672c67ac429e43d"
+    },
+    "CIS_TInputKey.TInputBlock.InternalCreate": {
+      "address": "0xd0eb24",
+      "instructions": 163,
+      "sha256": "d77f6d36bef2117af4735234256acbd7b5952516832c047599b7b9b97dd798b0"
+    },
+    "CIS_TInputKey.TInputBlock.RefreshUnitKeysFromBlockGroup": {
+      "address": "0xd0f628",
+      "instructions": 42,
+      "sha256": "2e012ac4b7bfaa0f9dc7318af187b6b702bd2204698b7bb9561db19498331d02"
+    },
+    "CIS_TInputKey.TInputBlock.SetLightStoredLevel1": {
+      "address": "0xd0f284",
+      "instructions": 40,
+      "sha256": "6e75fe20f71afad147d22496586d33a97cb44458a836aef6528393f000815151"
+    },
+    "CIS_TInputKey.TInputBlock.SetLightStoredLevel2": {
+      "address": "0xd0f2e4",
+      "instructions": 40,
+      "sha256": "2ceb8cccc80682bcb06664373cfd5776c49bde78cedb7b9034077c041b2c5534"
+    },
+    "CIS_TInputKey.TInputBlockCollection.Create": {
+      "address": "0xd0fcb8",
+      "instructions": 52,
+      "sha256": "372c41516d2d283caafbe70b195f3c3c800a2cac0daa54bb69fdf9e9e1bb1c72"
+    },
+    "CIS_TInputKey.TInputBlockReferenceCollection.Create": {
+      "address": "0xd0fba0",
+      "instructions": 50,
+      "sha256": "1f34a47e11a9d5386f89ac980027bde0ff943ee6722412fbf84955d7dcf26dbf"
+    },
+    "CIS_TInputKey.TInputKey.HandleBlockListNewChange": {
+      "address": "0xd12a9c",
+      "instructions": 22,
+      "sha256": "746da0f0b00963efca7301dbd159c20e199ec8d9aa0a3be54796f4439a54a8dd"
+    },
+    "CIS_TInputKey.TInputKey.HasBlock": {
+      "address": "0xd13450",
+      "instructions": 16,
+      "sha256": "ec7d942a0699decf80649be419e702cc0e5dbf3cf372656a8ea5ad62063947e2"
+    },
+    "CIS_TInputKey.TInputKey.InternalCreate": {
+      "address": "0xd10cb8",
+      "instructions": 145,
+      "sha256": "3b8072724cc423845b158309fa18a8fd5d24860199a3c30ea49e1bb4437456ad"
+    },
+    "CIS_TInputKey.TInputKeyCollection.Add": {
+      "address": "0xd14348",
+      "instructions": 33,
+      "sha256": "99465c03052b1e0404583f92ceeb6f617702f6c2111211e4a558d3c433b6ef23"
+    },
+    "CIS_TIntegerAttribute.TIntegerAttribute.InternalCreate": {
+      "address": "0x850798",
+      "instructions": 15,
+      "sha256": "eac209442b102a4f5a5479124dfbc3a787aaa3bcd4097f2d318ab4da1ac09ea9"
+    },
+    "CIS_TIntegerAttribute.TIntegerAttribute.SetAsInteger": {
+      "address": "0x8508d0",
+      "instructions": 117,
+      "sha256": "fe86a3242886bc6a02237e6e6d2c8ea087831da5e62a03f622a6243d3b427ba9"
+    },
+    "CIS_TIntegerAttribute.TIntegerAttribute.SetValue": {
+      "address": "0x850ac4",
+      "instructions": 16,
+      "sha256": "c235e34aa3a39fef0b9fd3487c67e3e7d9ddf0605258d0117e569caadc2b289d"
+    },
+    "CIS_TManagedFlashObject.TFlashElementStateSubscriber.ObservedObjectChanged": {
+      "address": "0x76aa10",
+      "instructions": 33,
+      "sha256": "f77d565488bcb7fa0d21e3528e754479da6d1824244b570f956e9f39bb882faf"
+    },
+    "CIS_TManagedFlashObject.TManagedFlashObject.Changed": {
+      "address": "0x76a3cc",
+      "instructions": 31,
+      "sha256": "b023093d2d5fc225bec7df2eb4141b72381f327f47f40c1fde28f3604d73bca8"
+    },
+    "CIS_TManagedFlashObject.TManagedFlashObject.Create": {
+      "address": "0x76a0f0",
+      "instructions": 41,
+      "sha256": "9215469e1caa2ba3be6240f941122ea159a70408d0b95304dfb8de53c86e97f9"
+    },
+    "CIS_TManagedFlashObject.TManagedFlashObject.DoChangeNotification": {
+      "address": "0x76a488",
+      "instructions": 8,
+      "sha256": "494a3d3de7da0c232ada45a412c22b34308512ba69a64a307a2dee62e847af54"
+    },
+    "CIS_TManagedFlashObject.TManagedFlashObject.GetInitialised": {
+      "address": "0x76a46c",
+      "instructions": 13,
+      "sha256": "1c6cb319de5cebf3bdf0250efb1c504569f2a4066a3c8e4423c519c0debdcde0"
+    },
+    "CIS_TManagedFlashObject.TManagedFlashObject.ResolveChange": {
+      "address": "0x76a444",
+      "instructions": 13,
+      "sha256": "39e4a7b9c1144e35249a662a8c4840a11de4943afaa9f1d8ca989093c9cf6f7b"
+    },
+    "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.InternalCreate": {
+      "address": "0x7ddab0",
+      "instructions": 38,
+      "sha256": "7f821b1e02a7c98575a2a418169c49296de91d5cbb09e572f6891f181899ab87"
+    },
+    "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.SetFlashObject": {
+      "address": "0x7ddbf4",
+      "instructions": 66,
+      "sha256": "913604d6225e746aa93b92f5d35fe62e5ff619e0fdec33baab261c92ccd8a0bb"
+    },
+    "CIS_TcdKeyInputBlocks4.TcdKeyInputBlocks4.HandleKeyInputUnitBlockValueChange": {
+      "address": "0xf69f58",
+      "instructions": 33,
+      "sha256": "1fa08420a390d4b847519f7c6e49241c4ae8837a5cf93aef0125ad36d253f697"
+    },
+    "CIS_TcdLightLevelBankSwitch.TcdHC05LightLevelBankSwitch.RefreshBankSwitchAllowed": {
+      "address": "0xfab9f8",
+      "instructions": 28,
+      "sha256": "6d65b0799268852ab22ff4976caa13fd50db21162ea994ee8c23444247237afc"
+    },
+    "CIS_TcdLightLevelBankSwitch.TcdST7LightLevelBankSwitch.HandleUnitLightLevelMaintActiveChange": {
+      "address": "0xfac44c",
+      "instructions": 68,
+      "sha256": "28bb88f22d927f73fdb0cc558be10d08ac46d8c8878a07cade938d21ef70f35a"
+    },
+    "CIS_TcdLightLevelBankSwitch.TcdST7LightLevelBankSwitch.HandleUnitLightLevelMaintBlockChange": {
+      "address": "0xfac520",
+      "instructions": 29,
+      "sha256": "c9178e979610b3db0eec21c0a25bdfb600db1375f1c6765a14e875926b394d21"
+    },
+    "CIS_TcdLightLevelBankSwitch.TcdST7LightLevelBankSwitch.RefreshBankSwitchAllowed": {
+      "address": "0xfaccf8",
+      "instructions": 28,
+      "sha256": "bd4db07dff6440920ae965a0fda002fc0d1cc8e1562e82b8711cbecc59846e8e"
+    },
+    "CIS_TcdLightLevelBankSwitch.TcdST7LightLevelBankSwitch.SetupFlashComponents": {
+      "address": "0xfad064",
+      "instructions": 287,
+      "sha256": "20c1f4330c8f1c5dccbd98e2c8c907d3a98ea4a68c0c45918100b04707eb553f"
+    },
+    "CIS_TcdLightLevelSensor.TcdST7LightLevelSensor.HandleFormMaintenanceChecked": {
+      "address": "0xfa73fc",
+      "instructions": 126,
+      "sha256": "4a152ee16af457e91b438db7a528c9d0f9aac42743838b774092eea06278267a"
+    },
+    "CIS_TcdLightLevelSensor.TcdST7LightLevelSensor.HandleMaintEnableGroupChange": {
+      "address": "0xfa7840",
+      "instructions": 61,
+      "sha256": "5363c11afd3c3090f0d8091972062673159bb7ce4e4c7630e1b83e07c20a0ea9"
+    },
+    "CIS_TcdLightLevelSensor.TcdST7LightLevelSensor.HandleMaintenanceBlockChange": {
+      "address": "0xfa76c8",
+      "instructions": 73,
+      "sha256": "3ded1c8b07a33f040b90f0232bb1c9dcbebf21ab45892a90202835348d05e982"
+    },
+    "CIS_TcdLightLevelSensor.TcdST7LightLevelSensor.Initialise": {
+      "address": "0xfa7c08",
+      "instructions": 222,
+      "sha256": "22ac35f6b34b50c19370a4e3dc9a930ae5aa76356683e686e63aa016d74121b9"
+    },
+    "CIS_TcdLightLevelSensor.TcdST7LightLevelSensor.SetupFlashHooks": {
+      "address": "0xfa8968",
+      "instructions": 105,
+      "sha256": "64cdd73b4175fd1fd5a98ed6ad6b223fa9135ff24e4e31574b069113455bd7c5"
+    },
+    "CIS_TcdSurfaceMountLightLevelBankSwitch.TcdSurfaceMountLightLevelBankSwitch.SetupFlashComponents": {
+      "address": "0xfc2b14",
+      "instructions": 384,
+      "sha256": "998acc2f0a6cc78910454d464f8ee2215de39f01e5f821b7c570850de179a6c9"
+    },
+    "CIS_TfrmKeyInputBlocks4.TfrmKeyInputBlocks4.RefreshDataSource": {
+      "address": "0xf67c7c",
+      "instructions": 19,
+      "sha256": "8447e7ee7fca5da5bc9326f277d3767a1119cb21e2f7b4b0aecdac51e3dc1d67"
+    }
+  },
+  "owned_lux_literals": [
+    {
+      "after": [
+        50,
+        0,
+        true,
+        false,
+        false,
+        5,
+        0
+      ],
+      "aggregate_recomputations": 0,
+      "before": [
+        50,
+        50,
+        true,
+        false,
+        false,
+        5,
+        5
+      ],
+      "id": "direct-surface-low-preserves-active-with-disallowed-bank",
+      "maintenance_active": false,
+      "maintenance_block": null,
+      "operations": [
+        [
+          "low",
+          0
+        ]
+      ]
+    },
+    {
+      "after": [
+        2550,
+        0,
+        true,
+        false,
+        false,
+        255,
+        0
+      ],
+      "aggregate_recomputations": 0,
+      "before": [
+        50,
+        0,
+        true,
+        false,
+        false,
+        5,
+        0
+      ],
+      "id": "fresh-low-group-high-after-surface-low",
+      "maintenance_active": false,
+      "maintenance_block": null,
+      "operations": [
+        [
+          "high",
+          2550
+        ]
+      ]
+    },
+    {
+      "after": [
+        110,
+        20,
+        false,
+        false,
+        false,
+        11,
+        2
+      ],
+      "aggregate_recomputations": 1,
+      "before": [
+        100,
+        20,
+        true,
+        true,
+        false,
+        10,
+        2
+      ],
+      "id": "bound-external-block-write-refreshes-allowed-before-levels",
+      "maintenance_active": true,
+      "maintenance_block": 0,
+      "operations": [
+        [
+          "store",
+          1,
+          11
+        ]
+      ]
+    }
+  ],
+  "owned_store_feedback_order": [
+    {
+      "action": "Assign unequal logical High or Low value; handler calls Bank.BeginUpdate, then bound Block.BeginUpdate.",
+      "high_sites": [
+        "0xcffcf2",
+        "0xcffd0c"
+      ],
+      "low_sites": [
+        "0xcffe8a",
+        "0xcffea4"
+      ],
+      "stage": 1
+    },
+    {
+      "action": "Formula3 ceil/clamp conversion writes Store1 for High or Store2 for Low. The corresponding store attribute has no dedicated AfterChange handler.",
+      "high_store_site": "0xcffdfb",
+      "low_store_site": "0xcfff93",
+      "stage": 2
+    },
+    {
+      "action": "Block.EndUpdate publishes current block notification while Bank own updatecounter is still1. Bank HandleBlockChange rejects at GetUpdating, so neither aggregate Allowed nor captured High/Low refresh runs.",
+      "bank_guard_site": "0xcff7df",
+      "high_end_site": "0xcffe17",
+      "low_end_site": "0xcfffaf",
+      "stage": 3
+    },
+    {
+      "action": "Bank.EndUpdate releases counter0 and publishes bank Changed. Its root object link follower causes expression-controller Changed and force Evaluate of the Block expression.",
+      "high_end_site": "0xcffe34",
+      "low_end_site": "0xcfffcc",
+      "stage": 4
+    },
+    {
+      "action": "Expression result is the same Block object-reference attribute and current dereferenced block. SetRootElement skips same root pointer at0x84ed31. Controller tracked Changed invokes DoRootElementChanged and Update; Update skips same current pointer at0x84eee1. No DoCurrentElementChanged/value-change handler is emitted, so no delayed HandleBlockChange aggregate refresh.",
+      "qualification": "Requires existing identical Block binding; a separate change of Block reference is a different event.",
+      "stage": 5
+    },
+    {
+      "action": "After release, High handler may lower Low when Active and High<Low; Low handler may raise High when Active and Low>High. Any such nested Lux handler repeats these same update guards.",
+      "high_crossing_write": "0xcffe6e",
+      "low_crossing_write": "0xd00006",
+      "stage": 6
+    }
+  ],
+  "reference_maintenance_literals": [
+    {
+      "after": {
+        "bankActive": true,
+        "bankAllowed": true
+      },
+      "aggregate": false,
+      "before": {
+        "bankActive": true,
+        "bankAllowed": true
+      },
+      "case": "add occupied current key ref; ordinary template29 and current Light alreadytrue; no broadcast/Join/GUI side effects",
+      "event_flags_changed": false
+    },
+    {
+      "after": {
+        "removedBankActive": false,
+        "removedBankAllowed": false
+      },
+      "aggregate": false,
+      "before": {
+        "removedBankActive": false,
+        "removedBankAllowed": false
+      },
+      "case": "remove only occupied ref; template29/current Lighttrue; no side effects",
+      "event_flags_changed": false
+    },
+    {
+      "after": {
+        "bankActive": false,
+        "bankAllowed": false
+      },
+      "before": {
+        "bankActive": true,
+        "bankAllowed": true
+      },
+      "case": "add ref; refresh template29 changes Lightfalse->true; no GUI macro edits",
+      "ordered_ops": [
+        "SetActive(false)",
+        "SetAllowed(false)"
+      ]
+    },
+    {
+      "after": {
+        "bankActive": true,
+        "bankAllowed": true
+      },
+      "bank_operations": [],
+      "before": {
+        "bankActive": true,
+        "bankAllowed": true
+      },
+      "case": "load MaintActivefalse->true with same bank; no UI controller"
+    },
+    {
+      "after": {
+        "bankActive": true,
+        "bankAllowed": false
+      },
+      "before": {
+        "bankActive": true,
+        "bankAllowed": false
+      },
+      "case": "later aggregateblocked with Allowedfalse and Activetrue",
+      "ordered_ops": [
+        "SetAllowed(false) equal"
+      ]
+    },
+    {
+      "after": {
+        "bankActive": false,
+        "bankAllowed": false
+      },
+      "case": "unoccupied per-key event on loaded active maintenance block, Allowedtrue/Activetrue",
+      "ordered_ops": [
+        "SetAllowed(false)",
+        "unequal Allowed callback SetActive(false)"
+      ]
+    }
+  ],
+  "scope": {
+    "application_scene_template_ownership": false,
+    "complete_93_parameter_save": false,
+    "original_execution": false,
+    "original_gui_execution": false,
+    "owning_bank_dependency_engine": true,
+    "physical_acceptance": false,
+    "unit_type": "SENLLA"
+  },
+  "sources": [
+    {
+      "method_count": 63,
+      "name": "senlla-fresh-constructor-core-banks-derived.json",
+      "sha256": "25d683c74aa7ce89c98c489234388eb0cfdd86ab0a9266aed4868f10446129bf"
+    },
+    {
+      "method_count": 77,
+      "name": "senlla-bank-owned-store-feedback-derived.json",
+      "sha256": "1c3a48dd52d43d8c6c405b490fa8b26c5c913e99304ee3b101452be2831e5e1a"
+    },
+    {
+      "method_count": 55,
+      "name": "senlla-fresh-bank-key-maintenance-events-derived.json",
+      "sha256": "b3246cc9beba05c251cfb1643253bdaa1a4cc9f05c6b4c3d0ebaf9b1b4d99f8f"
+    }
+  ]
+}

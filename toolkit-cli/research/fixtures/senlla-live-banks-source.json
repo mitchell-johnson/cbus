@@ -1,0 +1,469 @@
+{
+  "authority": {
+    "native_form_verified": false,
+    "original_instruction_execution": false,
+    "physical_acceptance": false,
+    "source_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+    "source_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb"
+  },
+  "constructor": {
+    "Block": null,
+    "EnableGroupOff": false,
+    "HighLevelLux": 0,
+    "LowLevelLux": 0,
+    "SwitchActive": false,
+    "SwitchAllowed": false,
+    "UseHighLevelGroup": false,
+    "UseLowLevelGroup": false
+  },
+  "fields": {
+    "Block": 120,
+    "BlockExpressionLink": 144,
+    "EnableGroupOff": 132,
+    "HighLevelLux": 136,
+    "LowLevelLux": 140,
+    "SwitchActive": 124,
+    "SwitchAllowed": 128,
+    "UseHighLevelGroup": 156,
+    "UseLowLevelGroup": 152
+  },
+  "format": "cbus-senlla-live-banks-source-v1",
+  "formula3": {
+    "byte_to_lux_multiplier": 10,
+    "ceil_divisor": 10,
+    "negative_byte": 0,
+    "over_2550_byte": 255,
+    "stored_input_clamp": {
+      "above_255_lux": 2550,
+      "below_zero_lux": 0
+    }
+  },
+  "literal_vectors": [
+    {
+      "byte": 0,
+      "lux": -1
+    },
+    {
+      "byte": 1,
+      "lux": 1
+    },
+    {
+      "byte": 124,
+      "lux": 1234
+    },
+    {
+      "byte": 255,
+      "lux": 2551
+    },
+    {
+      "high": 50,
+      "initially_active": false,
+      "low": 90,
+      "store1": 5,
+      "store2": 9
+    },
+    {
+      "final_low": 50,
+      "final_store2": 5,
+      "high": 50,
+      "low": 90,
+      "set_active": true
+    },
+    {
+      "active": true,
+      "allowed": false,
+      "final_active": true,
+      "set_allowed": false
+    },
+    {
+      "callback_replaces_second_with": 1,
+      "references": [
+        2,
+        0
+      ],
+      "visited": [
+        2,
+        1
+      ]
+    },
+    {
+      "external_store": -1,
+      "final_lux": 0,
+      "final_store": -1,
+      "initial_lux": 0
+    },
+    {
+      "external_store": 256,
+      "final_lux": 2550,
+      "final_store": 255,
+      "initial_lux": 0
+    },
+    {
+      "external_store": 256,
+      "final_lux": 2550,
+      "final_store": 256,
+      "initial_lux": 2550
+    },
+    {
+      "aggregate_flag_reads": [
+        1,
+        0
+      ],
+      "event_flag_reads": [
+        0,
+        0
+      ],
+      "flags": [
+        true,
+        false,
+        false,
+        false
+      ],
+      "untouched_event_publication_guards": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "InputKey_getter_count": 1,
+      "references": []
+    },
+    {
+      "InputKey_getter_count": 3,
+      "references": [
+        2,
+        0
+      ]
+    }
+  ],
+  "method_pins": {
+    "CIS_CBus.ByteToLux2550": {
+      "address": "0x7f2944",
+      "instruction_count": 27,
+      "sha256": "0e2c812c579d2d1daea7afa1276e5b81d2853fb52aabe27579f43633acc5f30c"
+    },
+    "CIS_CBus.Lux2550ToByte": {
+      "address": "0x7f2990",
+      "instruction_count": 30,
+      "sha256": "6ad614dd53861785f40775026ddb89259934ec2f34694ac0c00e43ae0c7ed5ad"
+    },
+    "CIS_Handles.TFlashExpressionController.SetActive": {
+      "address": "0x84de00",
+      "instruction_count": 38,
+      "sha256": "c68d7335d1464ae4ef0ad248f1c194fd134039dde911ba71d06c6802224b3ebf"
+    },
+    "CIS_Handles.TFlashTrackedHandle.CurrentElementChanged": {
+      "address": "0x84e590",
+      "instruction_count": 12,
+      "sha256": "c8d33e8fc8303e8d9601155bf9068e2ef51516e7bb06579578137e8a7304afe8"
+    },
+    "CIS_Handles.TFlashTrackedHandle.SetRootElement": {
+      "address": "0x84ed10",
+      "instruction_count": 42,
+      "sha256": "77f983ddc462d965cdc08ea0ab6b15f4e38d41a34e5da04870e0f4db7ccaa987"
+    },
+    "CIS_Handles.TFlashTrackedHandle.Update": {
+      "address": "0x84ed88",
+      "instruction_count": 152,
+      "sha256": "3adc26cd56d1552a15cab928c2990fff00531500d26463cffdd1420d1924c6ce"
+    },
+    "CIS_TBaseObject.TBASEObject.BeginUpdate": {
+      "address": "0x768268",
+      "instruction_count": 9,
+      "sha256": "fccf73e890e583de66651108d405ecb5f566b9df9289d5329d911ef21367728c"
+    },
+    "CIS_TBooleanAttribute.TBooleanAttribute.AsBoolean": {
+      "address": "0x7f43d8",
+      "instruction_count": 16,
+      "sha256": "2cfe846f81b43ffb85b825d2ce07981061cf2cb10d1d09c55397337b8703a4db"
+    },
+    "CIS_TBooleanAttribute.TBooleanAttribute.InternalCreate": {
+      "address": "0x7f44d8",
+      "instruction_count": 23,
+      "sha256": "9daaa841bbc3d91fa4cffd9bd02c2c5fa749ad053d5961672d6ea9d9d6df4cee"
+    },
+    "CIS_TBooleanAttribute.TBooleanAttribute.SetAsBoolean": {
+      "address": "0x7f45e0",
+      "instruction_count": 37,
+      "sha256": "a73b6ecb850a1689c915d3e76d6d7ac87f64dc44d16451833664360f748703aa"
+    },
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.GetLuxFormula": {
+      "address": "0xcff72c",
+      "instruction_count": 38,
+      "sha256": "925562e7c786194638fdbe365087f27968f2d7fce1d6c808089e66fbbba14f44"
+    },
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.HandleBlockChange": {
+      "address": "0xcff79c",
+      "instruction_count": 51,
+      "sha256": "932553af324cdd471d783b65040b9d5a46dbfda26ae78d50d71ce47c82010445"
+    },
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.HighLevelLuxChanged": {
+      "address": "0xcffce0",
+      "instruction_count": 133,
+      "sha256": "3bb025795ec45ce6aefde16bfa41a19e78eee3dd0b05152b3168223d63a9abd9"
+    },
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.InternalCreate": {
+      "address": "0xcff43c",
+      "instruction_count": 126,
+      "sha256": "cbfde14703af952c13830dff2eaeb157788d7861800616aafd6430d44ec0a58a"
+    },
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.LowLevelLuxChanged": {
+      "address": "0xcffe78",
+      "instruction_count": 133,
+      "sha256": "c75a0747341250b935d3ec8336f751b2b148d1c8d4076d2ed06fde186a5ba84f"
+    },
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.RefreshLuxLevelsFromBlock": {
+      "address": "0xcff830",
+      "instruction_count": 134,
+      "sha256": "1d3b7e23147654f47dbe25463b984b991500a75c909131b3108949bee8cf5bf0"
+    },
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.RefreshSwitchAllowedFromBlock": {
+      "address": "0xcffa18",
+      "instruction_count": 176,
+      "sha256": "0e66fd6060b0177c440e59aa8334fd69d0c627ea8f2bb5e1e3463e8ded4b3a29"
+    },
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.SetBlock": {
+      "address": "0xd000e8",
+      "instruction_count": 19,
+      "sha256": "6f34272fed556846644201ecd15043af0599d126182a27b61f26f6071f540b13"
+    },
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.SetEnableGroupOff": {
+      "address": "0xd0011c",
+      "instruction_count": 38,
+      "sha256": "2caede4fb0e2b3f5a6fdfd7e111ef18e5d2abeeb4aac54cf6f2908bf04c461ee"
+    },
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.SetSwitchActive": {
+      "address": "0xd00238",
+      "instruction_count": 38,
+      "sha256": "84438b445896051eab82579440b4f2c48ed7e9ac1a603658224a880f5125384f"
+    },
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.SetSwitchAllowed": {
+      "address": "0xd00294",
+      "instruction_count": 39,
+      "sha256": "0d79c0f5b2ee8e3b8d73d952abca535302be8705f46066bf8c565796d2ac495c"
+    },
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.SwitchActiveChanged": {
+      "address": "0xcffc98",
+      "instruction_count": 28,
+      "sha256": "79366b9addf7d4ecf52b45b1be7acef34e84cb95b04c2a72d2f59d1e05cbd7f3"
+    },
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitch.SwitchAllowedChanged": {
+      "address": "0xcffc64",
+      "instruction_count": 21,
+      "sha256": "b86dee8fa282cdf3b9c41c8eeacbbead896df969be61cea0c277a02d5b23d952"
+    },
+    "CIS_TCBusMultisensorUnit.TInputBlockBankSwitchCollection.ItemByBlock": {
+      "address": "0xd004c0",
+      "instruction_count": 35,
+      "sha256": "54bd8819a0b36d3f69c52bcc9d6d025a23bc09fdce17acc6080707ffef22dbaf"
+    },
+    "CIS_TCBusMultisensorUnit.TInputKeyOccupancy.GetAnyMovement": {
+      "address": "0xd007cc",
+      "instruction_count": 14,
+      "sha256": "c4eb3915c9ad57ea9358f72774ded276d158a0515a8c7c5105f6b15f83aa0e2a"
+    },
+    "CIS_TCBusMultisensorUnit.TInputKeyOccupancy.GetDarkAndMovement": {
+      "address": "0xd007f0",
+      "instruction_count": 14,
+      "sha256": "5aeac87d5e89cde295b17e9c009ed11ce83f83826a29e75d9d4a21b89cdc5749"
+    },
+    "CIS_TCBusMultisensorUnit.TInputKeyOccupancy.GetInputKey": {
+      "address": "0xd007a8",
+      "instruction_count": 15,
+      "sha256": "813ee0b691951e6481cf1ae992ccfc616facb528d9a4c0b09c3e37e5f457ec89"
+    },
+    "CIS_TCBusMultisensorUnit.TInputKeyOccupancy.GetLightAndMovement": {
+      "address": "0xd00814",
+      "instruction_count": 14,
+      "sha256": "482cb6c05f8c19d0673a49e168eb7a7d12a48223f0ada5e261cdd0707dc26035"
+    },
+    "CIS_TCBusMultisensorUnit.TInputKeyOccupancy.GetSunset": {
+      "address": "0xd00838",
+      "instruction_count": 14,
+      "sha256": "98dbf97922fa831fa44f56a5c3eba348719e14803fe71ccfa9da7eb69d462cdf"
+    },
+    "CIS_TCBusMultisensorUnit.TInputKeyOccupancy.RefreshBlockBankSwitchFromEventFlags": {
+      "address": "0xd0120c",
+      "instruction_count": 188,
+      "sha256": "f95617190fc519ec2980fd3e08c88a0d36ef80a11170422a92fd504ce5133ed5"
+    },
+    "CIS_TCBusST7SensorUnit.TCBusST7MultisensorUnit.GetLuxFormula": {
+      "address": "0xcfb404",
+      "instruction_count": 10,
+      "sha256": "d527e24595b31634d21aa3d3a1951c76c1ac7634ec009305c7298d4b1e75cd40"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TCBusSurfaceMountMultisensorUnit.RefreshLightLevelBankCollection": {
+      "address": "0xca46cc",
+      "instruction_count": 49,
+      "sha256": "dcbbec2e2cec682effdc03024a8615631fc194697220698839ac7f3171b8cf94"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TInputBlockSurfaceMountBankSwitch.InternalCreate": {
+      "address": "0xca4d5c",
+      "instruction_count": 34,
+      "sha256": "8c323f6159febb43bfe074f486b7cf7f01f4f2f71e82ddf4d11b204946c16f3d"
+    },
+    "CIS_TCBusSurfaceMountSensorUnit.TInputBlockSurfaceMountBankSwitchCollection.Add": {
+      "address": "0xca4ed4",
+      "instruction_count": 26,
+      "sha256": "b64a2b4f1dd770d11ca9ed867bd2bab27c6120386f048119914cf71a19961fb2"
+    },
+    "CIS_TCustomFlashObject.TAttributeManager.BeginUpdate": {
+      "address": "0x7e7e10",
+      "instruction_count": 17,
+      "sha256": "e2dc560bd6d6af1a5e027ce8feab28b9bc85e6bcb9b191338b707ea08aa91ffd"
+    },
+    "CIS_TCustomFlashObject.TAttributeManager.EndUpdate": {
+      "address": "0x7e7e78",
+      "instruction_count": 17,
+      "sha256": "4bb2c13a0e0579f16406129064d37d8a43266fe93a5571ebd691265c03805ad7"
+    },
+    "CIS_TCustomFlashObject.TCISAttribute.BeginUpdate": {
+      "address": "0x7ece44",
+      "instruction_count": 17,
+      "sha256": "6de4a0d04b15908b765af24d99a5cdaa4f545e0cde28b76eb0fc08a2df0a1e3a"
+    },
+    "CIS_TCustomFlashObject.TCISAttribute.Changed": {
+      "address": "0x7eca04",
+      "instruction_count": 26,
+      "sha256": "a0555ce79dbca9a348f621ea0b8240717b93c20f1a34e388916991d999fe52a6"
+    },
+    "CIS_TCustomFlashObject.TCISAttribute.EndUpdate": {
+      "address": "0x7ece6c",
+      "instruction_count": 17,
+      "sha256": "8b9f2118995f3e08987dc82ff018726b4666e63088daf4cc184c0bffd4d87209"
+    },
+    "CIS_TCustomFlashObject.TFlashAttribute.Create": {
+      "address": "0x7ec504",
+      "instruction_count": 68,
+      "sha256": "16586b827e44dc711a2f4c0a707d68161215272b525b1a787c2c3e5c8857961f"
+    },
+    "CIS_TCustomFlashObject.TFlashObject.InternalCreate": {
+      "address": "0x7ef7f4",
+      "instruction_count": 16,
+      "sha256": "a8de65e36b107ad2bfe976cc2169ce1ee4ff1e81206e34293bed9430625a97f1"
+    },
+    "CIS_TFlashObjectExpressionLink.TFlashObjectExpressionLink.SetActive": {
+      "address": "0xca0b60",
+      "instruction_count": 15,
+      "sha256": "2a30e4459ec73951c6c3fcb65add225dd459a9556d4ee131ca2915fd9bf45e87"
+    },
+    "CIS_TInputKey.TInputBlock.SetLightStoredLevel1": {
+      "address": "0xd0f284",
+      "instruction_count": 40,
+      "sha256": "6e75fe20f71afad147d22496586d33a97cb44458a836aef6528393f000815151"
+    },
+    "CIS_TInputKey.TInputBlock.SetLightStoredLevel2": {
+      "address": "0xd0f2e4",
+      "instruction_count": 40,
+      "sha256": "2ceb8cccc80682bcb06664373cfd5776c49bde78cedb7b9034077c041b2c5534"
+    },
+    "CIS_TInputKey.TInputBlockReferenceCollection.GetItem": {
+      "address": "0xd0fc70",
+      "instruction_count": 14,
+      "sha256": "ab20bdee4ff79831fa68bb07d269ec87f2459dde2435e399eca50c333a402bb7"
+    },
+    "CIS_TInputKey.TInputKey.HasBlock": {
+      "address": "0xd13450",
+      "instruction_count": 16,
+      "sha256": "ec7d942a0699decf80649be419e702cc0e5dbf3cf372656a8ea5ad62063947e2"
+    },
+    "CIS_TIntegerAttribute.TIntegerAttribute.InternalCreate": {
+      "address": "0x850798",
+      "instruction_count": 15,
+      "sha256": "eac209442b102a4f5a5479124dfbc3a787aaa3bcd4097f2d318ab4da1ac09ea9"
+    },
+    "CIS_TIntegerAttribute.TIntegerAttribute.SetAsInteger": {
+      "address": "0x8508d0",
+      "instruction_count": 117,
+      "sha256": "fe86a3242886bc6a02237e6e6d2c8ea087831da5e62a03f622a6243d3b427ba9"
+    },
+    "CIS_TManagedFlashObject.TManagedFlashObject.ResolveChange": {
+      "address": "0x76a444",
+      "instruction_count": 13,
+      "sha256": "39e4a7b9c1144e35249a662a8c4840a11de4943afaa9f1d8ca989093c9cf6f7b"
+    },
+    "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.GetFlashObject": {
+      "address": "0x7dda60",
+      "instruction_count": 16,
+      "sha256": "cdb226eb2d648c9ad545517953de1fd5f5f4fb017d04a87dab1d248fb0a4042c"
+    },
+    "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.SetFlashObject": {
+      "address": "0x7ddbf4",
+      "instruction_count": 66,
+      "sha256": "913604d6225e746aa93b92f5d35fe62e5ff619e0fdec33baab261c92ccd8a0bb"
+    },
+    "Math.Ceil": {
+      "address": "0x613040",
+      "instruction_count": 24,
+      "sha256": "36758be09efbbbd26fcd35c3da0004e6c69198657d550f237f84e8cdfab26023"
+    }
+  },
+  "native_integer_attribute_domain": [
+    -2147483648,
+    2147483647
+  ],
+  "notification_contract": {
+    "attribute_parent_depth_during_dedicated": 1,
+    "bank_end": "same current Block pointer suppresses a deferred callback",
+    "live_kernel_block_hook": "observes only; actual tracked subscriber already delivered",
+    "occupancy_flags": "One actual BooleanAttribute getter per native short-circuit operand; detached current_occupancy_flags inspection does not rearm other flags.",
+    "occupancy_input_key": "Actual ObjectReference getter before Count and each item, including publication rearm. Current stable constructor-bound adapter refuses arbitrary InputKey rebind.",
+    "owned_store_block_publication": "bank updating suppresses its tracked Block callback",
+    "root_binding": "SetBlock reference setter precedes expression activation",
+    "use_group_attributes": "nil dedicated callbacks; real direct subscribers remain available"
+  },
+  "ordered_callbacks": {
+    "block_change": [
+      "bank own-counter/state guard",
+      "aggregate CURRENT maintenance and keys",
+      "SetAllowed",
+      "capture CURRENT Store1",
+      "capture CURRENT Store2",
+      "SetHigh if unequal",
+      "SetLow if unequal"
+    ],
+    "flag_getter_orders": {
+      "aggregate": [
+        "Dark",
+        "Light",
+        "Any",
+        "Sunset"
+      ],
+      "event_before_active": [
+        "Light",
+        "Dark",
+        "Any",
+        "Sunset"
+      ],
+      "event_before_allowed": [
+        "Light",
+        "Any",
+        "Dark",
+        "Sunset"
+      ]
+    },
+    "high_or_low": [
+      "bank Begin",
+      "CURRENT Block Begin",
+      "CURRENT lux converter then CURRENT Block store setter",
+      "CURRENT Block End finally",
+      "bank End finally",
+      "CURRENT Active and opposite-lux clamp"
+    ],
+    "occupancy": [
+      "CURRENT occupancy.InputKey getter before captured reference Count",
+      "CURRENT occupancy.InputKey getter before each CURRENT reference ordinal",
+      "first CURRENT bank Block-identity match",
+      "CURRENT flags then Active=false if any",
+      "reread CURRENT flags and CURRENT maintenance",
+      "SetAllowed"
+    ]
+  },
+  "post_block_activation": {
+    "HighLevelLux": 0,
+    "LowLevelLux": 0,
+    "SwitchAllowed": true
+  },
+  "scope": "Internal formula3 shared-bank stage on initialized nondestroying source constructor bank/block objects. Arbitrary external destruction/state transitions, original form bindings, metadata callbacks and complete unit save remain owning boundaries."
+}

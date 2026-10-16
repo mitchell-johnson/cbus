@@ -1,0 +1,153 @@
+{
+  "boundaries": {
+    "complete_unit_save_implemented": false,
+    "full_suite_run": false,
+    "global_parity_complete": false,
+    "installed_wheel_release": false,
+    "native_runtime_acceptance": false,
+    "original_gui_execution": false,
+    "original_instruction_execution": false,
+    "owning_loader_implemented": false,
+    "physical_acceptance": false,
+    "post_validation_annotations": [
+      "source check receipt",
+      "component guides",
+      "implementation status"
+    ],
+    "public_cli_save_added": false,
+    "source_component_check_only": true
+  },
+  "candidate": {
+    "input_scope": "all tracked repository files",
+    "inputs_unchanged": true,
+    "snapshots": [
+      {
+        "bytes": 571281,
+        "identity": "inputs-before.json",
+        "sha256": "c7ce319eb818dfb24202659ad3517c55af8ed4ffbbf05e70bdefd541273a641e"
+      },
+      {
+        "bytes": 571281,
+        "identity": "inputs-terminal.json",
+        "sha256": "c7ce319eb818dfb24202659ad3517c55af8ed4ffbbf05e70bdefd541273a641e"
+      }
+    ],
+    "source_input_count": 4062,
+    "tested_head": "8ae5c6fea43b432e967b153d7a16e0dbb32e3b99"
+  },
+  "date": "2026-10-04",
+  "errors": 0,
+  "evidence": [
+    {
+      "bytes": 44613,
+      "identity": "source.xml",
+      "sha256": "9c0173cf3d7e1c8724eb271fce378a917c6d54069375efa15a93b782118c7620"
+    },
+    {
+      "bytes": 501362,
+      "identity": "source-trace.json",
+      "sha256": "c58b0dbe43014588ab2ef1ad86f0d7c4bdd4f6504d57c674e161439d983750ea"
+    },
+    {
+      "bytes": 587766,
+      "identity": "source-results.json",
+      "sha256": "12a7fb5f4650420a343ba02f315f1d7f09e0fd784061519101de5b6b1e5f40de"
+    }
+  ],
+  "failures": 0,
+  "format": "cbus-senlla-form-input-source-check-v1",
+  "independent_source_review": {
+    "inputs": "93 effective layouts independently matched; canonical provider accepted synthetic values",
+    "light_level": "58 exact method pins and component clear",
+    "scene_composition_source": "45 exact method pins and qualified timeline clear; no owner engine",
+    "surface_banks": "60 unique exact method pins and component clear"
+  },
+  "models": [
+    {
+      "bytes": 4303,
+      "identity": "src/cbus_toolkit/senlla_banks.py",
+      "sha256": "d4e2bfbec17850aad860ef39259f722f2d7da4160baa637d9f85005164cffe0e"
+    },
+    {
+      "bytes": 7002,
+      "identity": "src/cbus_toolkit/senlla_ordinary_keys.py",
+      "sha256": "f4d6218c5cf2b3838120dd240b3825fe555b1eb58b3ba5a95c3d45c1422f8ac5"
+    },
+    {
+      "bytes": 13161,
+      "identity": "src/cbus_toolkit/senlla_surface.py",
+      "sha256": "ca951132af46a2cc359fd6e9797e115318ba762e32132f45da1a6a00189db7c2"
+    },
+    {
+      "bytes": 3086,
+      "identity": "src/cbus_toolkit/senlla_st7_save.py",
+      "sha256": "eaccfb05d68bcb577d3a87757b9673e6c05f3f8523b3cd23ae8427c2c80f6b95"
+    },
+    {
+      "bytes": 9185,
+      "identity": "src/cbus_toolkit/senlla_key_references.py",
+      "sha256": "6c0030577cfafaa103559484bfd96949a2f2be9515455bdb9d1a621c7faa710b"
+    },
+    {
+      "bytes": 8883,
+      "identity": "src/cbus_toolkit/senlla_occupancy.py",
+      "sha256": "1801ebb924b948d30980b0c2d2ea1d5df94e56728685e9ac4bfc3bca013f3bd9"
+    },
+    {
+      "bytes": 3992,
+      "identity": "src/cbus_toolkit/senlla_light_level.py",
+      "sha256": "ecb76375358b01e81985a66f249b98d8f7bbe5719b9abaff3605fb22fb8d1dd6"
+    },
+    {
+      "bytes": 4729,
+      "identity": "src/cbus_toolkit/senlla_surface_banks.py",
+      "sha256": "38704983bcd3764994accf0c921ac432b6757b54247c609c6d1d4dc92d2c352c"
+    },
+    {
+      "bytes": 9659,
+      "identity": "src/cbus_toolkit/senlla_inputs.py",
+      "sha256": "333c08b84038716d7bc29d36d594f7a9d7d4e92861bda83b810524a2a17c2f13"
+    }
+  ],
+  "parent_passed": 133,
+  "selection": [
+    "tests/test_senlla_banks.py",
+    "tests/test_senlla_ordinary_keys.py",
+    "tests/test_senlla_surface.py",
+    "tests/test_senlla_st7_save.py",
+    "tests/test_senlla_key_references.py",
+    "tests/test_senlla_occupancy.py",
+    "tests/test_senlla_light_level.py",
+    "tests/test_senlla_surface_banks.py",
+    "tests/test_senlla_inputs.py"
+  ],
+  "separate_subtests_passed": 2860,
+  "skipped": 0,
+  "static_sources": [
+    {
+      "bytes": 32135,
+      "identity": "research/fixtures/senlla-inherited-scalars-source.json",
+      "sha256": "ec6d63e0c70f4e01c22dd0b4fe9d5c68440870a7c780b24a464e68d159896f69"
+    },
+    {
+      "bytes": 15726,
+      "identity": "research/fixtures/senlla-fresh-light-level-source.json",
+      "sha256": "b29a45d6a8b2bec31f7a3a5c4945ee3a7ab561664fcb7113bbdc97305b24eac1"
+    },
+    {
+      "bytes": 38706,
+      "identity": "research/fixtures/senlla-surface-bank-source.json",
+      "sha256": "f9143559fc422c555dd178b0ab8fdb0d8689ba3d94cfeee80871f16315ae7bf5"
+    },
+    {
+      "bytes": 36482,
+      "identity": "research/fixtures/senlla-scene-composition-source.json",
+      "sha256": "4bcf82fbe3043f0e17f84f2e4068a06218db8ab850e93dabad021e5c8b4ef7e2"
+    },
+    {
+      "bytes": 884,
+      "identity": "research/fixtures/senlla-inputs-provider-probe-20261004.json",
+      "sha256": "6cbcfe9bea87993440a683f8e8d16dda265fe607cb0104fced8eefb691e0c494"
+    }
+  ]
+}

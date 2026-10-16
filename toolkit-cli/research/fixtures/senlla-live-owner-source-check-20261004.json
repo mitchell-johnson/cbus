@@ -1,0 +1,190 @@
+{
+  "boundaries": {
+    "causal_scene_control_group_level_component_included": true,
+    "complete_fresh_director_show_apply_save": false,
+    "current_parameter_getters_included": true,
+    "fresh_save_agent_cache_component_included": true,
+    "full_suite_run": false,
+    "global_parity_complete": false,
+    "inherited_owned_project_bridge_included": true,
+    "installed_wheel_release": false,
+    "late_unit_and_manual_light_handlers_included": true,
+    "live_bank_adapter_included": true,
+    "native_managed_occupancy_flag_adapter": false,
+    "native_runtime_acceptance": false,
+    "original_gui_execution": false,
+    "original_instruction_execution": false,
+    "persistent_no_hwnd_control_primitives_included": true,
+    "physical_acceptance": false,
+    "post_validation_annotations": [
+      "toolkit-cli/research/fixtures/senlla-live-owner-source-check-20261004.json",
+      "toolkit-cli/docs/implementation-status.md"
+    ],
+    "public_cli_save_added": false,
+    "source_check_only": true
+  },
+  "candidate": {
+    "input_scope": "all tracked repository files in the frozen checkout",
+    "inputs_unchanged": true,
+    "snapshots": [
+      {
+        "bytes": 579837,
+        "identity": "inputs-before.json",
+        "sha256": "77ff79baadd9b96f1ce3bcbff78ea462fb37ac93b5df1596859588802f736e71"
+      },
+      {
+        "bytes": 579837,
+        "identity": "inputs-terminal.json",
+        "sha256": "77ff79baadd9b96f1ce3bcbff78ea462fb37ac93b5df1596859588802f736e71"
+      }
+    ],
+    "source_input_count": 4129,
+    "tested_head": "8d6b9b67660fda09941f1654fb77ad6b2976e7d5"
+  },
+  "date": "2026-10-04",
+  "errors": 0,
+  "evidence": [
+    {
+      "bytes": 105327,
+      "identity": "source.xml",
+      "sha256": "6df2f093c205b6219af63e3a1a8d0763cd5493ae5f89af0f8cb1a1b53268e8a0"
+    },
+    {
+      "bytes": 185236,
+      "identity": "source-trace.json",
+      "sha256": "86e0f7bf4dd1a5e016d164d4079ad942d3a488a7cdc70df35a0342df05c070c9"
+    },
+    {
+      "bytes": 250801,
+      "identity": "source-results.json",
+      "sha256": "cefbc864d0c25eaef3564755837ec169ae5657fb46c905100db8894f33d10eba"
+    },
+    {
+      "bytes": 270973,
+      "identity": "metadata-results.json",
+      "sha256": "50c67d04a4f8c98317efe3e4a69cfd6e9e3a3362d00b2439804fec6a27fe559a"
+    }
+  ],
+  "failures": 0,
+  "format": "cbus-senlla-live-owner-source-check-v1",
+  "independent_source_review": {
+    "review_receipts": [
+      {
+        "bytes": 1622,
+        "identity": "senlla-inherited-current-read-independent-review-derived.json",
+        "sha256": "cf0ef12c13ec4829c1ac5af407abd690eb5477f5f0e0c0895e89f1a2024ccde5"
+      },
+      {
+        "bytes": 1613,
+        "identity": "senlla-inherited-scoped-groups-independent-review-derived.json",
+        "sha256": "15d58a8880a7f99393be77104ca21ade04b2a9a6158279c13b88c6d1ff200ad7"
+      },
+      {
+        "bytes": 1764,
+        "identity": "senlla-live-banks-final-independent-review-derived.json",
+        "sha256": "8836496b09cbf1c0e9dd6cfbed537404192a90157a461820e85b5f5d59fba49e"
+      },
+      {
+        "bytes": 2155,
+        "identity": "senlla-late-unit-independent-review-derived.json",
+        "sha256": "aa82e31ffc7834988a6462f98b081e72130014e4951c3e8584fd51cf213c39a9"
+      },
+      {
+        "bytes": 1319,
+        "identity": "senlla-control-primitives-final-independent-review-derived.json",
+        "sha256": "1db38749632990a3c7e6f56c27c56584b2b45dce12c3e00bf63f72f708606550"
+      },
+      {
+        "bytes": 47772,
+        "identity": "senlla-late-forms-final-independent-review-derived.json",
+        "sha256": "f1f80831b6ceb69b198ef29c6217b32160d8f52208d7bb9ef6e22cbcbe2f428d"
+      },
+      {
+        "bytes": 23043,
+        "identity": "senlla-save-journal-final-independent-review-derived.json",
+        "sha256": "3c0685a7c1400100a8357870d72ecc577ad8b83a6e0b17aa09feda520fa1faf8"
+      },
+      {
+        "bytes": 2967,
+        "identity": "senlla-owner-current-load-independent-review-derived.json",
+        "sha256": "986f7377da9f378ec6ae7f3195ba7a82aa9050ae3bd3e640a1ebb91d9852eb34"
+      }
+    ],
+    "reviewed_input_hashes": {
+      "toolkit-cli/docs/senlla-control-primitives.md": "3f443d37bdefb9d6687e369426a61e2747e767d77a5d4388bb9e7ec3c58ad5b8",
+      "toolkit-cli/docs/senlla-inherited-owner.md": "a797361631643cbf0f018a825f1b7489ade116bce6f6c92d6aec3ec46d52ac13",
+      "toolkit-cli/docs/senlla-late-forms.md": "3b93e3aa56c50233910b3ec4dbe8ed1fa0810062aa2aa9cbce21bc7a2e280f95",
+      "toolkit-cli/docs/senlla-late-unit.md": "22b794cb00750efb61c54c05277a6a7e15296d368d333236376074999d5b32ca",
+      "toolkit-cli/docs/senlla-live-banks.md": "f1ed6d25d2d4e222507259917b980fc2c6bc906accb4ae54675dd8f05a92d135",
+      "toolkit-cli/docs/senlla-owner-load.md": "065e71ed3bcdbed86c1b14d31dcd4596889cdbf2796c29c0b8cfc1c2fe4cc8e3",
+      "toolkit-cli/research/fixtures/senlla-control-primitives-source.json": "8db647d0b18d720c7b9cfbefeb71ec6d761ed3a078aa696216fcefa7ac73181b",
+      "toolkit-cli/research/fixtures/senlla-inherited-owner-source.json": "2b25916df7dbb0f8f88a0efcbf865b8ea079a097e42bf5dbc6da34663a1fd24a",
+      "toolkit-cli/research/fixtures/senlla-late-forms-source.json": "d25430e8c29875f75dcc032227e302fadf92254453d6226f43085b8c47a20999",
+      "toolkit-cli/research/fixtures/senlla-late-unit-source.json": "4a9a7ada8b3532ff3fdda8916ce0d4f4a6662dcf6f8aad1a31b1d91946017947",
+      "toolkit-cli/research/fixtures/senlla-live-banks-source.json": "8f20cd69dd646d840d79754c20c0bd2b3fe257373e31441b9a8c06b087196107",
+      "toolkit-cli/research/fixtures/senlla-owner-load-source.json": "75142db962cbd45f82ec7dc6e3e303b958c1403ef055787038c7506132f4c02a",
+      "toolkit-cli/src/cbus_toolkit/senlla_block_values.py": "2e856ef37d899f6b72bcbff5db469a7d1d24880fa6e6fed79088ada6a62bcfd5",
+      "toolkit-cli/src/cbus_toolkit/senlla_control_primitives.py": "387a7843eb582bd82c3b2551917fb558ccde990c07d2e4c4bf06f982bd16ff80",
+      "toolkit-cli/src/cbus_toolkit/senlla_inherited_owner.py": "7bd051e129e18a9655b921fd83878087a27d82eab95def0c364af15880776285",
+      "toolkit-cli/src/cbus_toolkit/senlla_key_events.py": "9c92f70cf2e9d7aa88a4865fa884227839aecfcb4c06453f950d5613c409b76d",
+      "toolkit-cli/src/cbus_toolkit/senlla_late_forms.py": "f4e75ae19d289ed6258b6dc78fdbd80b320c59d08b06009be557b8209c9c2e6c",
+      "toolkit-cli/src/cbus_toolkit/senlla_late_unit.py": "135b17a7135b5d7ac8c55cae6a72efce23f469a581496153322f56386c4928ee",
+      "toolkit-cli/src/cbus_toolkit/senlla_live_banks.py": "c37e6092caed4240f5831b4595def03ed2200613e9d8c61ba527b1f07d043455",
+      "toolkit-cli/src/cbus_toolkit/senlla_owner.py": "f0fd3f4fbf14d4876ca7cee41d06e37663b6f21cab87f1563d198cd912d72dac",
+      "toolkit-cli/src/cbus_toolkit/senlla_prekey.py": "e3e3ec07144daf7a5d248aef88da47298f96bc13c003dd2e8121a07f5478449e",
+      "toolkit-cli/src/cbus_toolkit/senlla_project_bridge.py": "45fb9b8adec4983ffd238e74ad0422f1e41c1ea66aab96322a7f890ef50000b3",
+      "toolkit-cli/tests/test_senlla_block_values.py": "6b8948d02db60029a8afd2cfa4554a1ec6977c4a590d8afcfa94dc46c6177d1f",
+      "toolkit-cli/tests/test_senlla_control_primitives.py": "2828ccba93fd5d6b70d19fcffbf28dccf9bf750ebf08c2d16541187417a4e320",
+      "toolkit-cli/tests/test_senlla_inherited_owner.py": "34677d976befd70b5849db73d96cc22d1e129efd90f2383f3addb278b07e5736",
+      "toolkit-cli/tests/test_senlla_key_event_sources.py": "a5b8e09ec717529e670d09022e1e2b3fa79970042516cf056828bb7a65cda730",
+      "toolkit-cli/tests/test_senlla_late_forms.py": "bb86849c12c343e126bf8f869e24fb14d70a540a484bc14504150f71028e0cd1",
+      "toolkit-cli/tests/test_senlla_late_unit.py": "611e19e6e39472c4c53a5e14c695313a1224fc6ac8ba86adfd46bd5c47bc2cab",
+      "toolkit-cli/tests/test_senlla_live_banks.py": "8605a4f3f4f9d5623439419d5e9c22be8d54c1c5d248cf37257c6c515d9dd20f",
+      "toolkit-cli/tests/test_senlla_owner.py": "ebff5543569dbd3215daf821e69d37ffc778eec5c030f433e74c6556cc02a67c",
+      "toolkit-cli/tests/test_senlla_prekey.py": "499370c8e3711ef7092da4b2a4f7161aff6619fc31de87c7394e458c6c1748de",
+      "toolkit-cli/tests/test_senlla_project_bridge.py": "9da913b79226fa4c20da0c3de20bf11a774b549b8b0791f55fef57bcdfcdbaf9"
+    }
+  },
+  "metadata_checks": {
+    "census": {
+      "modules_with_skip_sites": 317,
+      "native_modules": {
+        "all": 140,
+        "none": 157,
+        "partial": 20
+      },
+      "native_runnable_tests": 259,
+      "native_selected_required_tests": 259,
+      "test_modules": 759
+    },
+    "coverage_require_complete_exit": 1,
+    "global_complete": false,
+    "inventory_current": true,
+    "register": {
+      "census_complete": false,
+      "evidence_records": 3,
+      "obligations": 487,
+      "scope_items": 22103,
+      "status": "current"
+    }
+  },
+  "parent_passed": 294,
+  "selection": [
+    "tests/test_senlla_lifecycle.py",
+    "tests/test_senlla_fresh_forms.py",
+    "tests/test_senlla_block_values.py",
+    "tests/test_senlla_prekey.py",
+    "tests/test_senlla_key_events.py",
+    "tests/test_senlla_key_event_sources.py",
+    "tests/test_senlla_key_controls.py",
+    "tests/test_senlla_inherited_owner.py",
+    "tests/test_senlla_project_bridge.py",
+    "tests/test_senlla_owner.py",
+    "tests/test_senlla_late_unit.py",
+    "tests/test_senlla_live_banks.py",
+    "tests/test_senlla_control_primitives.py",
+    "tests/test_senlla_late_forms.py"
+  ],
+  "separate_subtests_passed": 346,
+  "skipped": 0
+}
