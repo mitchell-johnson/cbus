@@ -3282,11 +3282,13 @@ impl Server {
     }
 
     fn materialize_loaded_nested_level_tags(&mut self, project: &str) {
-        let mut oids = self
+        let nested = self
             .nested_level_oids(project)
             .into_iter()
             .collect::<HashSet<_>>();
+        let mut oids = nested.clone();
         let mut associated_empty = HashSet::new();
+        let mut plain_candidates = HashSet::new();
         // SAFE associated copies are plain typed Levels, not pending mirrors.
         // Their copied deferred marker must retain LOAD timing without changing
         // the existing typed NULL getter or creating another owner record.
@@ -3308,6 +3310,7 @@ impl Server {
                     .is_some_and(|extras| extras.saved_level_tags_pending)
             {
                 oids.insert(level.oid.clone());
+                plain_candidates.insert(level.oid.clone());
                 if self
                     .db_xml_extras
                     .get(&Self::unit_document_key(project, &level.oid))
@@ -3323,6 +3326,17 @@ impl Server {
                 .get_mut(&Self::unit_document_key(project, &oid))
             {
                 if extras.saved_level_tags_pending {
+                    // Gate only the new plain-Level sweep with the strict
+                    // retained-XML classifier. Unsupported PI/comment/
+                    // namespaced/BOM/attributed/nonempty payloads keep their
+                    // exact extras and deferred marker atomically; the older
+                    // nested policy stays on its existing timing.
+                    if plain_candidates.contains(&oid)
+                        && !nested.contains(&oid)
+                        && !associated_empty.contains(&oid)
+                    {
+                        continue;
+                    }
                     extras.saved_level_tags_pending = false;
                     // Only the proved associated empty subset receives
                     // semantic deduplication. Preserve source whitespace and
