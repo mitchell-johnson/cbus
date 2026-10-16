@@ -1,0 +1,1490 @@
+{
+  "actual_wheel": {
+    "artifacts": {
+      "package-before.json": {
+        "bytes": 57593,
+        "sha256": "08553b01ed46d70f3c1c229b270a5f0f358cb4511960162575493a3e9ee3c0b0"
+      },
+      "selections.json": {
+        "bytes": 438489,
+        "sha256": "1e97d06bba240ac2995daee25c956a2886c98d4fa8726b301582b01a15271e5f"
+      },
+      "source-after.json": {
+        "bytes": 742122,
+        "sha256": "e6539cf6852e421d3148eeac5b6ed6f4ee005b72b1d8bfcf706d8f0a41816bb6"
+      },
+      "source-before.json": {
+        "bytes": 742122,
+        "sha256": "e6539cf6852e421d3148eeac5b6ed6f4ee005b72b1d8bfcf706d8f0a41816bb6"
+      },
+      "summary.json": {
+        "bytes": 612475,
+        "sha256": "9ee5a6f1b472bcf4761594822854d6d631908600df64cffe16d040d366c5142c"
+      }
+    },
+    "backends": {
+      "daemon": {
+        "actual_parent_counts": {
+          "passed": 8
+        },
+        "artifact_pins": {
+          "collection_trace": {
+            "bytes": 1199,
+            "sha256": "6b42da5373783d6f30d59d77358bdc0e9a6d779aa117f7f15d57058f016f4986"
+          },
+          "junit": {
+            "bytes": 3160,
+            "sha256": "771bad86dd6091a56a55b81cc0686a84a5f86559367b16871b4b624428ccc8a7"
+          },
+          "maintained_audit": {
+            "bytes": 5860,
+            "sha256": "50eb8e34ba75be16dddfc6d15a1c1a23304d418fd554912ae6d133bb4a4a7577"
+          },
+          "trace": {
+            "bytes": 3681,
+            "sha256": "c02872570d7063c6066b3602257169d4bf2538f00b4b13a152f44e0528be413c"
+          }
+        },
+        "collection_origins": {
+          "origin_records": 45,
+          "owned_rust_children": 0,
+          "owned_rust_reaped": 0,
+          "product_import_events": 43,
+          "pytest_pid": 67528,
+          "python_processes": 1,
+          "scope": "guarded Python launches and observed product module loads",
+          "violations": 0
+        },
+        "execution_origins": {
+          "origin_records": 3445,
+          "owned_rust_children": 8,
+          "owned_rust_reaped": 8,
+          "product_import_events": 3403,
+          "pytest_pid": 67529,
+          "python_processes": 21,
+          "scope": "guarded Python launches and observed product module loads",
+          "violations": 0
+        },
+        "issued_ids": [
+          "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_chained_saves[pc_tsa-daemon]",
+          "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_chained_saves[pc_tsa5-daemon]",
+          "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_chained_saves[pc_tsb-daemon]",
+          "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_chained_saves[pc_tsb5-daemon]",
+          "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-pp-save-pc_tsa-daemon]",
+          "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-project-save-pc_tsa-daemon]",
+          "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[raw-set-rewritten-pc_tsa-daemon]",
+          "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[unsigned-overflow-pc_tsa-daemon]"
+        ],
+        "raw_guard_data_pins": {
+          "collect-origins/origins-67528.jsonl": {
+            "bytes": 34273,
+            "sha256": "b338e817fa710c7e00d1f432a8e3ae08d22206865cdd2470e92118b0fbda11fa"
+          },
+          "origins/launches-67529.jsonl": {
+            "bytes": 43688,
+            "sha256": "480719e2a2990ba2261c9a4751ebe3d99da97e538786ac611a7d06749857e93d"
+          },
+          "origins/origins-67529.jsonl": {
+            "bytes": 34273,
+            "sha256": "c1942a8688c15b2eb0034ccd916131485e6d03f11f0389f044b9c21efe9d9c87"
+          },
+          "origins/origins-67537.jsonl": {
+            "bytes": 132695,
+            "sha256": "62013c07529cf2736f3b1fce9db37b8ebf718355bc9f775f0ca6f2a48d5d3405"
+          },
+          "origins/origins-67540.jsonl": {
+            "bytes": 132695,
+            "sha256": "857e719a138a5629b1fa86995dac8361e43a0e818f0877ceef8489e78da5d104"
+          },
+          "origins/origins-67543.jsonl": {
+            "bytes": 132695,
+            "sha256": "2a9aa87f879c9d066f0468ec7a7af7c5ea6d8a8096c61ad38c8013327b5af569"
+          },
+          "origins/origins-67544.jsonl": {
+            "bytes": 132695,
+            "sha256": "089eae523dfbddff82771c8e224a7c3d39d0c4f5bfc13a1d010e01e1b690094d"
+          },
+          "origins/origins-67552.jsonl": {
+            "bytes": 132695,
+            "sha256": "5644af4ce0a17e33378c43fc118b025989832969d7ffaf5a8ab376ec1b22ef3b"
+          },
+          "origins/origins-67553.jsonl": {
+            "bytes": 132695,
+            "sha256": "a55e1bb1e8a202bb6bf7e30c99b45bfb5af35512f8d8e05c7e544371e843120e"
+          },
+          "origins/origins-67555.jsonl": {
+            "bytes": 132695,
+            "sha256": "ad718989e0df28e0cdb11bc83edf8b15cf416f7182311713e4b625bc41914929"
+          },
+          "origins/origins-67556.jsonl": {
+            "bytes": 132695,
+            "sha256": "e01f287bffa35b5610cf31852a091cc75959321f7c6fead744eb1b6945376c87"
+          },
+          "origins/origins-67577.jsonl": {
+            "bytes": 132695,
+            "sha256": "abcbba72a3a1c23525ea025bd04b69023fe600caa5e99f22fdfd843def56f991"
+          },
+          "origins/origins-67579.jsonl": {
+            "bytes": 132695,
+            "sha256": "dd8d53ecc390047a5fbc07f46f2742c1c63d09147601893fc6ade5fb6668f0c4"
+          },
+          "origins/origins-67581.jsonl": {
+            "bytes": 132695,
+            "sha256": "7d81ae578601aa883136fbd7105be5f17873ab15e41febb542b3efe43b97e5bf"
+          },
+          "origins/origins-67582.jsonl": {
+            "bytes": 132695,
+            "sha256": "9eb5d90357a3a5099da156964bc797ee5d0b38057fce28caf28e5e7312e4e5dc"
+          },
+          "origins/origins-67589.jsonl": {
+            "bytes": 132695,
+            "sha256": "d5c0b8ee47207bcd847b98df2b1abac209eaf89123ec61b7c41c0f1ce9f18502"
+          },
+          "origins/origins-67590.jsonl": {
+            "bytes": 132695,
+            "sha256": "07db528f87d37ec9b8d6338a6415c92c877d9ab84890d94da088337a55cebcac"
+          },
+          "origins/origins-67591.jsonl": {
+            "bytes": 132695,
+            "sha256": "581291cc4ffa8caf7f6b6e8836f0b14a76f9924d96ef2200f51bae5a7c14a3e6"
+          },
+          "origins/origins-67598.jsonl": {
+            "bytes": 132695,
+            "sha256": "f6e1178dc16f6f104665c9794b4f6c522989cbf35d2d5610513bc041bbbec40f"
+          },
+          "origins/origins-67608.jsonl": {
+            "bytes": 132695,
+            "sha256": "960b561ecca6a9fab17c10e5c7339d4e0796b1b4a058102153ba850b32ddc6c4"
+          },
+          "origins/origins-67619.jsonl": {
+            "bytes": 132695,
+            "sha256": "5321c7ab5859f1345052298424f21d9fef84c1e770fdce1e06fb599442383a99"
+          },
+          "origins/origins-67627.jsonl": {
+            "bytes": 132695,
+            "sha256": "bb1481dec6f713b749c17bef1c50d2163d5764739943cdfa761eb591ab6263a5"
+          },
+          "origins/origins-67632.jsonl": {
+            "bytes": 132695,
+            "sha256": "987e854b9133ce4c17bfe1a9d33d899b7110d7d2350b8d00bd73ab6bf204e2cc"
+          }
+        },
+        "unitemized_subtests": {
+          "errors": 0,
+          "failures": 0,
+          "passed": 0,
+          "reported": 0,
+          "skipped": 0
+        }
+      },
+      "mock": {
+        "actual_parent_counts": {
+          "passed": 8
+        },
+        "artifact_pins": {
+          "collection_trace": {
+            "bytes": 1183,
+            "sha256": "bfce76f4cb27c311948914fc285133aa21823b18c3fcc32936cf77af0e4e57f7"
+          },
+          "junit": {
+            "bytes": 3128,
+            "sha256": "d173d66099c1d32a4f61f7999957155490493c968adf81637c7c093728ab5e9a"
+          },
+          "maintained_audit": {
+            "bytes": 5796,
+            "sha256": "edd0a1921e11ccd2a976e63261f2a302ec70ee2b7370bce5fce705c6074dd774"
+          },
+          "trace": {
+            "bytes": 3633,
+            "sha256": "939284199536804af3080c68400fd26b668a382dbfefd47dbf4602da8a9c8c14"
+          }
+        },
+        "collection_origins": {
+          "origin_records": 45,
+          "owned_rust_children": 0,
+          "owned_rust_reaped": 0,
+          "product_import_events": 43,
+          "pytest_pid": 67307,
+          "python_processes": 1,
+          "scope": "guarded Python launches and observed product module loads",
+          "violations": 0
+        },
+        "execution_origins": {
+          "origin_records": 3445,
+          "owned_rust_children": 8,
+          "owned_rust_reaped": 8,
+          "product_import_events": 3403,
+          "pytest_pid": 67321,
+          "python_processes": 21,
+          "scope": "guarded Python launches and observed product module loads",
+          "violations": 0
+        },
+        "issued_ids": [
+          "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_chained_saves[pc_tsa-mock]",
+          "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_chained_saves[pc_tsa5-mock]",
+          "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_chained_saves[pc_tsb-mock]",
+          "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_chained_saves[pc_tsb5-mock]",
+          "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-pp-save-pc_tsa-mock]",
+          "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-project-save-pc_tsa-mock]",
+          "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[raw-set-rewritten-pc_tsa-mock]",
+          "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[unsigned-overflow-pc_tsa-mock]"
+        ],
+        "raw_guard_data_pins": {
+          "collect-origins/origins-67307.jsonl": {
+            "bytes": 34273,
+            "sha256": "b3fc5cc82321aecb6277b321df75de4021d4a0f6ea38ebc052c6ef0604b9a0db"
+          },
+          "origins/launches-67321.jsonl": {
+            "bytes": 35720,
+            "sha256": "b7cbb24543bca71f4d1a5dd207038274581a1ece4b940e4c90652cc30456abe3"
+          },
+          "origins/origins-67321.jsonl": {
+            "bytes": 34273,
+            "sha256": "adb8fe1a7c3dd5a2c2a007b61988dfd1fd34cd03e0a77d53d9aea9f54d929a18"
+          },
+          "origins/origins-67343.jsonl": {
+            "bytes": 132695,
+            "sha256": "8ba68e41c92642a7586209e0173e882aec7e02947ae4ffa2f4e97fd76d43906e"
+          },
+          "origins/origins-67352.jsonl": {
+            "bytes": 132695,
+            "sha256": "2bcf4ae4e104d74cebb065ff4626178380b169d28f15ae8cbf3d535a900ae333"
+          },
+          "origins/origins-67359.jsonl": {
+            "bytes": 132695,
+            "sha256": "deef65f0b9391da8ee9c247eb01892e30d13719dff88a8d1982569e4096c4809"
+          },
+          "origins/origins-67364.jsonl": {
+            "bytes": 132695,
+            "sha256": "6c3043040304b7840dd48c987a88dcd7ba94329cb80acb3e3891515561047f92"
+          },
+          "origins/origins-67377.jsonl": {
+            "bytes": 132695,
+            "sha256": "9f6bfd39303cd6bf536464cb2ae3eb8e9d42126e397e928772fe956cf0d4d8dd"
+          },
+          "origins/origins-67386.jsonl": {
+            "bytes": 132695,
+            "sha256": "a309910b68714f9164e8e9070e6abe847b9bf4655e511dd268811c31e06380d2"
+          },
+          "origins/origins-67389.jsonl": {
+            "bytes": 132695,
+            "sha256": "1539b7762761e38ccb1e5e2b6a640bffc23ebc769c3370e2fc6b4300036bd172"
+          },
+          "origins/origins-67395.jsonl": {
+            "bytes": 132695,
+            "sha256": "1cd5595c27b4d6fca43ee6dee50a2c2bfd6102e68abcdab39d2d4de322e3d888"
+          },
+          "origins/origins-67404.jsonl": {
+            "bytes": 132695,
+            "sha256": "2e01b47078a99f34b8bae7db53319ff7fc9cac34c8de05f8c7ab133c8cf215c1"
+          },
+          "origins/origins-67406.jsonl": {
+            "bytes": 132695,
+            "sha256": "2759a0cd916ff1a8dda11d0a1cb9574c1602e4b51d3132aff8f7d89cf198e5a4"
+          },
+          "origins/origins-67407.jsonl": {
+            "bytes": 132695,
+            "sha256": "32510b51d6c1282cfe54844ff5812ff0d930ea093a30e5b746bf05976281a172"
+          },
+          "origins/origins-67413.jsonl": {
+            "bytes": 132695,
+            "sha256": "9cafc38f4205e7b8b80a2f7657075ff4482274cb6be62628b5dc06e5c174e7d7"
+          },
+          "origins/origins-67426.jsonl": {
+            "bytes": 132695,
+            "sha256": "e183c9e22e893b074bd8357bb050cd79f131d22ff58ac195f48f2c93fb38721c"
+          },
+          "origins/origins-67431.jsonl": {
+            "bytes": 132695,
+            "sha256": "6a2e2bb36e619ac48bfd433edb73e9bf1431e334d1895840e45b64bc28141bd1"
+          },
+          "origins/origins-67456.jsonl": {
+            "bytes": 132695,
+            "sha256": "1f2c86e15875f425d5a2cbea2d3e47ea067444c78438138353c0280426dbf781"
+          },
+          "origins/origins-67474.jsonl": {
+            "bytes": 132695,
+            "sha256": "30f2d118d3d99f2f2172882b051d6c307944903f808b69d4e0597fbd33a8772a"
+          },
+          "origins/origins-67504.jsonl": {
+            "bytes": 132695,
+            "sha256": "414ed74fe8fc822444457a6971844c46452a7be999904da6e724a7833210ed7a"
+          },
+          "origins/origins-67510.jsonl": {
+            "bytes": 132695,
+            "sha256": "58523b8a9b010cb771c833313a098d56739b39f688e06b4f232db015b8ad955a"
+          },
+          "origins/origins-67514.jsonl": {
+            "bytes": 132695,
+            "sha256": "98080b27b22b3ea946acd1cca34517c15a3f84bb4da0a653ed2d143511499a37"
+          },
+          "origins/origins-67522.jsonl": {
+            "bytes": 132695,
+            "sha256": "e981f001c807603d62ae3560070cfde513ba4e969358b6159ee87a206b63a85c"
+          }
+        },
+        "unitemized_subtests": {
+          "errors": 0,
+          "failures": 0,
+          "passed": 0,
+          "reported": 0,
+          "skipped": 0
+        }
+      }
+    },
+    "binaries_quiet": true,
+    "binary_pins": {
+      "daemon": {
+        "bytes": 54860840,
+        "sha256": "657a04a65691f321d3431d6d1a86648caad9eaeb2995741a150a16ef8710b956"
+      },
+      "mock": {
+        "bytes": 18075640,
+        "sha256": "0cbc6c40377cb75a1b83679c8293ffd3a9026df801a7e5c87397f07dd7bc28e5"
+      }
+    },
+    "commands": [
+      {
+        "exit": 0,
+        "group_cleanup": "already-empty",
+        "log_pin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "name": "create-builder",
+        "pid": 67216,
+        "seconds": 1.2319018750022224,
+        "timed_out": false
+      },
+      {
+        "exit": 0,
+        "group_cleanup": "already-empty",
+        "log_pin": {
+          "bytes": 1139,
+          "sha256": "9f4a3de707637723828d0d2468f86462e31d5666101771b2e67ffa351a057258"
+        },
+        "name": "build-wheel",
+        "pid": 67238,
+        "seconds": 1.7435255409982346,
+        "timed_out": false
+      },
+      {
+        "exit": 0,
+        "group_cleanup": "already-empty",
+        "log_pin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "name": "create-installed",
+        "pid": 67260,
+        "seconds": 1.107446957998036,
+        "timed_out": false
+      },
+      {
+        "exit": 0,
+        "group_cleanup": "already-empty",
+        "log_pin": {
+          "bytes": 4320,
+          "sha256": "01e0d0032264ddc8f206d5f3fb7582b0a990618cb33b46baec7df8553829b573"
+        },
+        "name": "install-wheel",
+        "pid": 67283,
+        "seconds": 1.597100834002049,
+        "timed_out": false
+      },
+      {
+        "exit": 0,
+        "group_cleanup": "already-empty",
+        "log_pin": {
+          "bytes": 1007,
+          "sha256": "a4984ae83b7a34e5046f00683c3ee31f219bd75e78c3852b556e8d174ba5edfa"
+        },
+        "name": "mock-collect",
+        "pid": 67307,
+        "seconds": 0.8447903750020487,
+        "timed_out": false
+      },
+      {
+        "exit": 0,
+        "group_cleanup": "already-empty",
+        "log_pin": {
+          "bytes": 99,
+          "sha256": "16f33c7e63029464fcf0aed25c997b61eb304e1d55ed8268413e65b69fb99982"
+        },
+        "name": "mock-pytest",
+        "pid": 67321,
+        "seconds": 26.879026583002997,
+        "timed_out": false
+      },
+      {
+        "exit": 0,
+        "group_cleanup": "already-empty",
+        "log_pin": {
+          "bytes": 1023,
+          "sha256": "904a1b75ecbab19a51ef7527ec35d3f4694bb2fc82400af732c59b155efd40f4"
+        },
+        "name": "daemon-collect",
+        "pid": 67528,
+        "seconds": 0.8598618329997407,
+        "timed_out": false
+      },
+      {
+        "exit": 0,
+        "group_cleanup": "already-empty",
+        "log_pin": {
+          "bytes": 99,
+          "sha256": "e303469f7c7092d4d93750509f81303c42fd2696b5b7b24257a52c680b498f85"
+        },
+        "name": "daemon-pytest",
+        "pid": 67529,
+        "seconds": 48.14460175000204,
+        "timed_out": false
+      },
+      {
+        "exit": 0,
+        "group_cleanup": "already-empty",
+        "log_pin": {
+          "bytes": 8643,
+          "sha256": "e53f5290aad06d1641b35ef39d45f77f63969386f6777d71f0fccb7513d91b6e"
+        },
+        "name": "installed-console-help",
+        "pid": 67641,
+        "seconds": 1.3601080830012506,
+        "timed_out": false
+      }
+    ],
+    "console": {
+      "exit": 0,
+      "origins": {
+        "origin_records": 168,
+        "owned_rust_children": 0,
+        "owned_rust_reaped": 0,
+        "product_import_events": 166,
+        "pytest_pid": 67641,
+        "python_processes": 1,
+        "scope": "guarded Python launches and observed product module loads",
+        "violations": 0
+      }
+    },
+    "epoch": "wheel3",
+    "extras": [
+      "test",
+      "research",
+      "serial",
+      "usb",
+      "firmware",
+      "network"
+    ],
+    "installed_record": {
+      "entries": 406,
+      "record": {
+        "bytes": 38563,
+        "sha256": "97d1be084e7c95df50d70f7a88420871d9cf78e0ee2b39e42fc0ea6cfb096217"
+      }
+    },
+    "limits": [
+      "Owned Rust servers and installed Python only; no original/native/hardware acceptance",
+      "Focused acceptance does not execute the full configured CI declaration",
+      "Guard checks recognized direct Python/console launches, source-loader imports and terminal loaded modules",
+      "No universal adversarial executed-code or arbitrary non-Python descendant attestation"
+    ],
+    "package_before_after_equal": true,
+    "package_file_count": 395,
+    "raw_interop_readback": {
+      "cli_calls": 40,
+      "cli_exit_counts": {
+        "0": 32,
+        "expected_1": 8
+      },
+      "closed_graph_trap_contacts": 0,
+      "connections": 40,
+      "later_hardware_traffic": 0,
+      "missing_client_save_acknowledgments": 4,
+      "owned_service_cleanup_exit0": 16,
+      "parents_passed": 16,
+      "qualification": [
+        "Source-derived 101/109-parameter and graph/backup/reopen expectations reparsed for selected profiles.",
+        "Reader authored fixture expectations; this is not independent semantic approval of its own oracle.",
+        "A second refusal graph/PP snapshot was not separately serialized; no-mutation is supported by passing assertions and wire evidence.",
+        "This is data-only readback of the selected16 actual records; no process replay, full991, native or hardware credit."
+      ],
+      "reader_pin": {
+        "bytes": 27663,
+        "sha256": "2f023ee652d880b47e8fe4def8aa48ceb547ca3ddbb107ceda79f76da4ea0baa"
+      },
+      "retained_upstream_successes_dropped": {
+        "pp_save": 2,
+        "target_save": 2
+      },
+      "save_replay_or_rollback_after_loss": false,
+      "synthetic_startup_pci_frames": 64,
+      "tagged_commands": 2450
+    },
+    "reference_quiet": true,
+    "regular_build_reference": {
+      "distinct_inodes": true,
+      "files": 399,
+      "mode": "regular internal reference copy"
+    },
+    "regular_reference": {
+      "distinct_inodes": true,
+      "files": 4167,
+      "permitted_extra": "inert .git pointer for revision lookup only"
+    },
+    "seconds": 89.2375306670001,
+    "source_input_count": 4167,
+    "source_map_quiet": true,
+    "wheel": {
+      "bytes": 3013546,
+      "sha256": "2541edc9fa5a0411a86a3b0f1d37fcad3bf44566c66742e96f7804a44a8cd0ba"
+    }
+  },
+  "date": "2026-10-04",
+  "declared_full_selection": {
+    "daemon": {
+      "explicit_ids": 500,
+      "whole_modules": [
+        "tests/test_cmqtt_interop.py",
+        "tests/test_cmqtt_programming_methods_interop.py",
+        "tests/test_cmqtt_dali_commissioning_interop.py",
+        "tests/test_cmqtt_network_new_cli.py",
+        "tests/test_cmqtt_network_save_db_cli.py",
+        "tests/test_cgate_file_upload.py"
+      ]
+    },
+    "mock": {
+      "explicit_ids": 491,
+      "whole_modules": [
+        "tests/test_rust_cgate_interop.py"
+      ]
+    }
+  },
+  "format": "cbus-installed-rust-interop-release-v1",
+  "issue": 121,
+  "metadata_predecessor_epoch": {
+    "actual_parents": 50,
+    "artifacts": {
+      "audit.json": {
+        "bytes": 34651,
+        "sha256": "ebae45264f137ab68c47e78d1f18d6293bebed6e9e386f4d5d42a13efb1d9b9b"
+      },
+      "junit.xml": {
+        "bytes": 17529,
+        "sha256": "1235a50e4e9a67953604c3a37149be28596d2abd049bd0c3d4b3aa9cb77a231b"
+      },
+      "summary.json": {
+        "bytes": 1779,
+        "sha256": "ba4a5ee84c2453279d13182de8e4c905520340b375c424f7e080f1ae7b3f41f2"
+      },
+      "trace.json": {
+        "bytes": 24006,
+        "sha256": "86a8244a8bab0e2d19f42530a97194d0f66bb5e4b9848696bf83a57a8600329f"
+      }
+    },
+    "counts_including_unitemized_subtests": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 69,
+      "skipped": 0,
+      "tests": 69
+    },
+    "passed": true,
+    "unitemized_subtests": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 19,
+      "reported": 19,
+      "skipped": 0
+    }
+  },
+  "overlay_reader_pin": {
+    "bytes": 6351,
+    "sha256": "d8e23fe3211a17e674223e015f3fc678c3566adf7bcfcdad6d6c26e0affe0b7b"
+  },
+  "passed": true,
+  "post_terminal_annotation_exceptions": [
+    "toolkit-cli/docs/feature-batch-2026-10-04-installed-rust-interop.md",
+    "toolkit-cli/docs/implementation-status.md",
+    "toolkit-cli/research/fixtures/installed-rust-interop-release-20261004.json"
+  ],
+  "predecessor_actual_wheel2": {
+    "artifacts": {
+      "package-before.json": {
+        "bytes": 57593,
+        "sha256": "2512e8fe1fe46f7742664f6ca90edb3aad5cb6bc2d94fdcc47a51222f0b81375"
+      },
+      "selections.json": {
+        "bytes": 438489,
+        "sha256": "1e97d06bba240ac2995daee25c956a2886c98d4fa8726b301582b01a15271e5f"
+      },
+      "source-after.json": {
+        "bytes": 741754,
+        "sha256": "b07c53fae160c611124ce028f8f1f5d42f60f66fb0c23177f20a94711ca6efce"
+      },
+      "source-before.json": {
+        "bytes": 741754,
+        "sha256": "b07c53fae160c611124ce028f8f1f5d42f60f66fb0c23177f20a94711ca6efce"
+      },
+      "summary.json": {
+        "bytes": 612469,
+        "sha256": "65331d16d0e3c7eb96eb69cc26935674ebd698f73e5ad539358235471f08d5ad"
+      }
+    },
+    "backends": {
+      "daemon": {
+        "actual_parent_counts": {
+          "passed": 8
+        },
+        "artifact_pins": {
+          "collection_trace": {
+            "bytes": 1199,
+            "sha256": "6b42da5373783d6f30d59d77358bdc0e9a6d779aa117f7f15d57058f016f4986"
+          },
+          "junit": {
+            "bytes": 3160,
+            "sha256": "7e33d97c34d0ed2a461b1348398d4554efad4101757d54c289470c4de0b9af7a"
+          },
+          "maintained_audit": {
+            "bytes": 5860,
+            "sha256": "8fbe56abf376060f42233ac7b561eb4ae18b6bdf603ecfa900c93a7d1c54e8ce"
+          },
+          "trace": {
+            "bytes": 3681,
+            "sha256": "c02872570d7063c6066b3602257169d4bf2538f00b4b13a152f44e0528be413c"
+          }
+        },
+        "collection_origins": {
+          "origin_records": 45,
+          "owned_rust_children": 0,
+          "owned_rust_reaped": 0,
+          "product_import_events": 43,
+          "pytest_pid": 65829,
+          "python_processes": 1,
+          "scope": "guarded Python launches and observed product module loads",
+          "violations": 0
+        },
+        "execution_origins": {
+          "origin_records": 3445,
+          "owned_rust_children": 8,
+          "owned_rust_reaped": 8,
+          "product_import_events": 3403,
+          "pytest_pid": 65831,
+          "python_processes": 21,
+          "scope": "guarded Python launches and observed product module loads",
+          "violations": 0
+        },
+        "issued_ids": [
+          "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_chained_saves[pc_tsa-daemon]",
+          "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_chained_saves[pc_tsa5-daemon]",
+          "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_chained_saves[pc_tsb-daemon]",
+          "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_chained_saves[pc_tsb5-daemon]",
+          "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-pp-save-pc_tsa-daemon]",
+          "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-project-save-pc_tsa-daemon]",
+          "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[raw-set-rewritten-pc_tsa-daemon]",
+          "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[unsigned-overflow-pc_tsa-daemon]"
+        ],
+        "raw_guard_data_pins": {
+          "collect-origins/origins-65829.jsonl": {
+            "bytes": 34273,
+            "sha256": "60e374e95bd9c53247336ef7f2eb359da8ba8259e6a35852a189bbd056d90a7a"
+          },
+          "origins/launches-65831.jsonl": {
+            "bytes": 43688,
+            "sha256": "4b3b400c7397b1ee65af7e0ffd3f3e0ff52d0c0e57ae7da74ea71bddd9ded213"
+          },
+          "origins/origins-65831.jsonl": {
+            "bytes": 34273,
+            "sha256": "bc687bc7eb8a959db131d7e1d717ebdb5e9433a157d5c10885f4851c704f17a9"
+          },
+          "origins/origins-65837.jsonl": {
+            "bytes": 132695,
+            "sha256": "178afe72c6f6e62859ec526301d1b4d1b1bb6d540d3ea2e804ed14f5d1eb86cf"
+          },
+          "origins/origins-65843.jsonl": {
+            "bytes": 132695,
+            "sha256": "14c782cdaa46c301116baea14809f99ec0a5f62655686f395d0b77ce57eddc1e"
+          },
+          "origins/origins-65849.jsonl": {
+            "bytes": 132695,
+            "sha256": "9aca75d6489f86147191ece281ceccda91cf86d43a8b3cfcbd5de4031856824d"
+          },
+          "origins/origins-65853.jsonl": {
+            "bytes": 132695,
+            "sha256": "426b286d7c98581058e3ccea0509b7fdb902b02be6b9426b0bde961d0e36d30b"
+          },
+          "origins/origins-65867.jsonl": {
+            "bytes": 132695,
+            "sha256": "4f6461aeb914b290695f9a58731943f0a1df47d4a13511de0e4990c305a05227"
+          },
+          "origins/origins-65869.jsonl": {
+            "bytes": 132695,
+            "sha256": "cac77c42125bc9f663b707ca660fa32e881626b046464638f2995e6d6c4bf946"
+          },
+          "origins/origins-65873.jsonl": {
+            "bytes": 132695,
+            "sha256": "00aca5a764e4c26ff13d66a6cbf2cf85ef6f9d7083f874e3b6ba320496977b1e"
+          },
+          "origins/origins-65876.jsonl": {
+            "bytes": 132695,
+            "sha256": "e9b6e53702f3460d008493c44e3a1acdde6a36b0aa1ccc6eada1c114cd451a54"
+          },
+          "origins/origins-65899.jsonl": {
+            "bytes": 132695,
+            "sha256": "2a38fb3fba1196ae7b426af5e3342cccd11c4c1c126b11a1b6a0775f916f851f"
+          },
+          "origins/origins-65905.jsonl": {
+            "bytes": 132695,
+            "sha256": "0a5d4f31dfa40b414b1ebfbe6fa545acde41cc7921c90a13bca8e9155e6ae1b5"
+          },
+          "origins/origins-65910.jsonl": {
+            "bytes": 132695,
+            "sha256": "570e26d457565dd85d38a75d16712a1106f8a989687afc9c087cb7ced1f659fa"
+          },
+          "origins/origins-65911.jsonl": {
+            "bytes": 132695,
+            "sha256": "f95edcf7d50faea26284a5c03e6d40a15d930f4a6ed25b628789ccc31cb3dfb5"
+          },
+          "origins/origins-65920.jsonl": {
+            "bytes": 132695,
+            "sha256": "1c93161b4dd10166d19e01a0cc2861c7aa2ee2e2e3441f5858fded68d3daa9d3"
+          },
+          "origins/origins-65921.jsonl": {
+            "bytes": 132695,
+            "sha256": "1a84eba14ff130cbde5031f18f344f381113e4afa98b636d790df6a27eb4c39e"
+          },
+          "origins/origins-65923.jsonl": {
+            "bytes": 132695,
+            "sha256": "54562c7cc5ee69952a501e32e7002c5cb14baf858a561f526428728a6a174030"
+          },
+          "origins/origins-65928.jsonl": {
+            "bytes": 132695,
+            "sha256": "a49d7a48e42d8de6ecd04888c1c41ca559e8f91c0a8cb001b63cdfbe0ca71952"
+          },
+          "origins/origins-65941.jsonl": {
+            "bytes": 132695,
+            "sha256": "7d89bea788f3784f9333242466c0fdf9ed1e2568cafdcd920964b48c454db96c"
+          },
+          "origins/origins-65946.jsonl": {
+            "bytes": 132695,
+            "sha256": "788144042b0074c1038ea960baef931b4c0fefd0871a3cbd6088091dc9966958"
+          },
+          "origins/origins-65951.jsonl": {
+            "bytes": 132695,
+            "sha256": "d1cd353d7f13be0b92aef0a4f6a2d28c1333fe0ffdda73d57fe51be05d2d5b10"
+          },
+          "origins/origins-65960.jsonl": {
+            "bytes": 132695,
+            "sha256": "c7e038af7e2d617a24fee520119cd7791dc0935d49055751ca1cb79fd02c2fef"
+          }
+        },
+        "unitemized_subtests": {
+          "errors": 0,
+          "failures": 0,
+          "passed": 0,
+          "reported": 0,
+          "skipped": 0
+        }
+      },
+      "mock": {
+        "actual_parent_counts": {
+          "passed": 8
+        },
+        "artifact_pins": {
+          "collection_trace": {
+            "bytes": 1183,
+            "sha256": "bfce76f4cb27c311948914fc285133aa21823b18c3fcc32936cf77af0e4e57f7"
+          },
+          "junit": {
+            "bytes": 3128,
+            "sha256": "44de7f3ad2179e8801dc52bfba5da439aa103bb882a594de45d03e61aaa30e2f"
+          },
+          "maintained_audit": {
+            "bytes": 5796,
+            "sha256": "e7682c07293d4ff53ba9bf9537f927ca6c0b085b5ed169e981098634fbbe9e30"
+          },
+          "trace": {
+            "bytes": 3633,
+            "sha256": "939284199536804af3080c68400fd26b668a382dbfefd47dbf4602da8a9c8c14"
+          }
+        },
+        "collection_origins": {
+          "origin_records": 45,
+          "owned_rust_children": 0,
+          "owned_rust_reaped": 0,
+          "product_import_events": 43,
+          "pytest_pid": 65663,
+          "python_processes": 1,
+          "scope": "guarded Python launches and observed product module loads",
+          "violations": 0
+        },
+        "execution_origins": {
+          "origin_records": 3445,
+          "owned_rust_children": 8,
+          "owned_rust_reaped": 8,
+          "product_import_events": 3403,
+          "pytest_pid": 65668,
+          "python_processes": 21,
+          "scope": "guarded Python launches and observed product module loads",
+          "violations": 0
+        },
+        "issued_ids": [
+          "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_chained_saves[pc_tsa-mock]",
+          "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_chained_saves[pc_tsa5-mock]",
+          "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_chained_saves[pc_tsb-mock]",
+          "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_chained_saves[pc_tsb5-mock]",
+          "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-pp-save-pc_tsa-mock]",
+          "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_lost_successful_save[lost-project-save-pc_tsa-mock]",
+          "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[raw-set-rewritten-pc_tsa-mock]",
+          "tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[unsigned-overflow-pc_tsa-mock]"
+        ],
+        "raw_guard_data_pins": {
+          "collect-origins/origins-65663.jsonl": {
+            "bytes": 34273,
+            "sha256": "41647af4e03e94a58607970876a9d950dca8ead3209f88d5157870f89fa318ec"
+          },
+          "origins/launches-65668.jsonl": {
+            "bytes": 35720,
+            "sha256": "41365e151bb8fbe7f990dfdce3a731bf8ebe617a069d13323b4a51cb58619fdb"
+          },
+          "origins/origins-65668.jsonl": {
+            "bytes": 34273,
+            "sha256": "899bf551220ff61d9d783b5fa1bf40418df63f7d9a60c834224a80530d1aa76e"
+          },
+          "origins/origins-65680.jsonl": {
+            "bytes": 132695,
+            "sha256": "6f71927838fffa7a392751dc828298ff5fcf8d0268d7bfe52f0729f247f1ff90"
+          },
+          "origins/origins-65687.jsonl": {
+            "bytes": 132695,
+            "sha256": "4c1e717e615ea5d9468081ea3da5556c1ba25df0590ae5cbcfd5af30cf677567"
+          },
+          "origins/origins-65693.jsonl": {
+            "bytes": 132695,
+            "sha256": "5752b6bf26d94338148e675f3a2dd7dfca74acdd40a450a23dede56d2d5312ed"
+          },
+          "origins/origins-65706.jsonl": {
+            "bytes": 132695,
+            "sha256": "426303b1fa4e57a308bfb3ad09fc3f17a12ca24bda76605c15cf41798e841e80"
+          },
+          "origins/origins-65725.jsonl": {
+            "bytes": 132695,
+            "sha256": "164ad453b59cd7d9e5b76f279ecc8b01c2405d201b963975390370571871ebc2"
+          },
+          "origins/origins-65728.jsonl": {
+            "bytes": 132695,
+            "sha256": "2793f17b429bd267ad086db9577dd5af53b0a972bda62d748274945cbe84da4c"
+          },
+          "origins/origins-65734.jsonl": {
+            "bytes": 132695,
+            "sha256": "ba6d2e7d8030b43093a2df12f0805fec22cc0232ced92b1e125ea91ea44ef2d9"
+          },
+          "origins/origins-65738.jsonl": {
+            "bytes": 132695,
+            "sha256": "e0f877a0c0dbe5e4c6dd8761a3c9fde33e6a4286d3919cb4fc81a87bb0f609f7"
+          },
+          "origins/origins-65745.jsonl": {
+            "bytes": 132695,
+            "sha256": "25b9e7e475e7e1e2745f6d1858d6af35ed4eacc1b02787f9b117231d17c1f528"
+          },
+          "origins/origins-65747.jsonl": {
+            "bytes": 132695,
+            "sha256": "87b81bf9837825b6d6b37d71ffea4ca75fc85874373c8da2a4ed8bb2979ec6a8"
+          },
+          "origins/origins-65756.jsonl": {
+            "bytes": 132695,
+            "sha256": "ba156b6ebea2616fbec2ea48eeae7eb3ddeef10e12963a305fd172f9158e46a9"
+          },
+          "origins/origins-65764.jsonl": {
+            "bytes": 132695,
+            "sha256": "e020345908afb0ab52294b5d942cf0fbe0ba3e85105b79c7a76bffc8b16bdc63"
+          },
+          "origins/origins-65772.jsonl": {
+            "bytes": 132695,
+            "sha256": "9a390e95c9a1fd3feb1bfef1930b870cb31a61a2c2b33276aa8ff140731e73d3"
+          },
+          "origins/origins-65775.jsonl": {
+            "bytes": 132695,
+            "sha256": "903813fbf12e75b052f7336112b2dba38a6b957ece9fa918b56f8784ef8c0ab3"
+          },
+          "origins/origins-65780.jsonl": {
+            "bytes": 132695,
+            "sha256": "8e25650d3a8723366418a64e658ac2c9c9f249e5184cbad8950925c7ab3215d2"
+          },
+          "origins/origins-65792.jsonl": {
+            "bytes": 132695,
+            "sha256": "b823755ae23594f154d0144d087ffa75d5ee6e86fde04ae9d7e05a0e1fd50c96"
+          },
+          "origins/origins-65802.jsonl": {
+            "bytes": 132695,
+            "sha256": "ada66fa9e3c10745adb9e967760301b87c987215afab1ef51c692be4e031e035"
+          },
+          "origins/origins-65809.jsonl": {
+            "bytes": 132695,
+            "sha256": "e8aff423e566d0766ab17a5f3dc2c7cf2d71adde944c43ebb90fa376cabed79c"
+          },
+          "origins/origins-65821.jsonl": {
+            "bytes": 132695,
+            "sha256": "ad34860044e8a47490303c027e87c06fcbc318b9f0d56b9b51d006fd22e0538a"
+          },
+          "origins/origins-65825.jsonl": {
+            "bytes": 132695,
+            "sha256": "fffb44a02330a348bffc885b3790de3c5bf6bbf2e8eb139ec985569ee680ba58"
+          }
+        },
+        "unitemized_subtests": {
+          "errors": 0,
+          "failures": 0,
+          "passed": 0,
+          "reported": 0,
+          "skipped": 0
+        }
+      }
+    },
+    "binaries_quiet": true,
+    "binary_pins": {
+      "daemon": {
+        "bytes": 54860840,
+        "sha256": "657a04a65691f321d3431d6d1a86648caad9eaeb2995741a150a16ef8710b956"
+      },
+      "mock": {
+        "bytes": 18075640,
+        "sha256": "0cbc6c40377cb75a1b83679c8293ffd3a9026df801a7e5c87397f07dd7bc28e5"
+      }
+    },
+    "commands": [
+      {
+        "exit": 0,
+        "group_cleanup": "already-empty",
+        "log_pin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "name": "create-builder",
+        "pid": 65545,
+        "seconds": 1.235192583000753,
+        "timed_out": false
+      },
+      {
+        "exit": 0,
+        "group_cleanup": "already-empty",
+        "log_pin": {
+          "bytes": 1139,
+          "sha256": "ef505f2ac80b95234e6781c8dd69c99aad9369894f8c88a178fa5dc49205cb15"
+        },
+        "name": "build-wheel",
+        "pid": 65568,
+        "seconds": 2.243163042003289,
+        "timed_out": false
+      },
+      {
+        "exit": 0,
+        "group_cleanup": "already-empty",
+        "log_pin": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "name": "create-installed",
+        "pid": 65610,
+        "seconds": 1.1482137500024692,
+        "timed_out": false
+      },
+      {
+        "exit": 0,
+        "group_cleanup": "already-empty",
+        "log_pin": {
+          "bytes": 5060,
+          "sha256": "8199b83d0ba6886acef9ce0278b2caacbd2a2bb42e17b60cb7e8a0ef9a267f91"
+        },
+        "name": "install-wheel",
+        "pid": 65628,
+        "seconds": 3.25430116699863,
+        "timed_out": false
+      },
+      {
+        "exit": 0,
+        "group_cleanup": "already-empty",
+        "log_pin": {
+          "bytes": 1007,
+          "sha256": "a1a6bef7cc144f2b5c6c3041ef5aac75d6a6ab15c216152c037cbefb4fb6789d"
+        },
+        "name": "mock-collect",
+        "pid": 65663,
+        "seconds": 0.8381786669997382,
+        "timed_out": false
+      },
+      {
+        "exit": 0,
+        "group_cleanup": "already-empty",
+        "log_pin": {
+          "bytes": 99,
+          "sha256": "00d15992086a11237ad281def7abef01c074c138165b5adeeceb0312d6899a23"
+        },
+        "name": "mock-pytest",
+        "pid": 65668,
+        "seconds": 27.18739424999876,
+        "timed_out": false
+      },
+      {
+        "exit": 0,
+        "group_cleanup": "already-empty",
+        "log_pin": {
+          "bytes": 1023,
+          "sha256": "904a1b75ecbab19a51ef7527ec35d3f4694bb2fc82400af732c59b155efd40f4"
+        },
+        "name": "daemon-collect",
+        "pid": 65829,
+        "seconds": 0.836153625001316,
+        "timed_out": false
+      },
+      {
+        "exit": 0,
+        "group_cleanup": "already-empty",
+        "log_pin": {
+          "bytes": 99,
+          "sha256": "28fccad74d5d5691e267aa0a09433dec77028255456f155246f185732b5dbf4b"
+        },
+        "name": "daemon-pytest",
+        "pid": 65831,
+        "seconds": 47.77077920800002,
+        "timed_out": false
+      },
+      {
+        "exit": 0,
+        "group_cleanup": "already-empty",
+        "log_pin": {
+          "bytes": 8643,
+          "sha256": "e53f5290aad06d1641b35ef39d45f77f63969386f6777d71f0fccb7513d91b6e"
+        },
+        "name": "installed-console-help",
+        "pid": 65962,
+        "seconds": 1.3619807909999508,
+        "timed_out": false
+      }
+    ],
+    "console": {
+      "exit": 0,
+      "origins": {
+        "origin_records": 168,
+        "owned_rust_children": 0,
+        "owned_rust_reaped": 0,
+        "product_import_events": 166,
+        "pytest_pid": 65962,
+        "python_processes": 1,
+        "scope": "guarded Python launches and observed product module loads",
+        "violations": 0
+      }
+    },
+    "extras": [
+      "test",
+      "research",
+      "serial",
+      "usb",
+      "firmware",
+      "network"
+    ],
+    "installed_record": {
+      "entries": 406,
+      "record": {
+        "bytes": 38563,
+        "sha256": "7a7b70717ef33c8935067670ed439d0e1dcb5c4be15878142b7824a5f9f05392"
+      }
+    },
+    "limits": [
+      "Owned Rust servers and installed Python only; no original/native/hardware acceptance",
+      "Focused acceptance does not execute the full configured CI declaration",
+      "Guard checks recognized direct Python/console launches, source-loader imports and terminal loaded modules",
+      "No universal adversarial executed-code or arbitrary non-Python descendant attestation"
+    ],
+    "package_before_after_equal": true,
+    "package_file_count": 395,
+    "raw_interop_readback": {
+      "cli_calls": 40,
+      "cli_exit_counts": {
+        "0": 32,
+        "expected_1": 8
+      },
+      "closed_graph_trap_contacts": 0,
+      "connections": 40,
+      "later_hardware_traffic": 0,
+      "missing_client_save_acknowledgments": 4,
+      "owned_service_cleanup_exit0": 16,
+      "parents_passed": 16,
+      "qualification": [
+        "Source-derived 101/109-parameter and graph/backup/reopen expectations reparsed for selected profiles.",
+        "Reader authored fixture expectations; this is not independent semantic approval of its own oracle.",
+        "A second refusal graph/PP snapshot was not separately serialized; no-mutation is supported by passing assertions and wire evidence.",
+        "This is data-only readback of the selected16 actual records; no process replay, full991, native or hardware credit."
+      ],
+      "reader_pin": {
+        "bytes": 27474,
+        "sha256": "d35bda561103b606fcd55c53efc8ddc5403d160d25d6faa7578347d360ac4ce1"
+      },
+      "retained_upstream_successes_dropped": {
+        "pp_save": 2,
+        "target_save": 2
+      },
+      "save_replay_or_rollback_after_loss": false,
+      "synthetic_startup_pci_frames": 64,
+      "tagged_commands": 2450
+    },
+    "reference_quiet": true,
+    "regular_build_reference": {
+      "distinct_inodes": true,
+      "files": 399,
+      "mode": "regular internal reference copy"
+    },
+    "regular_reference": {
+      "distinct_inodes": true,
+      "files": 4165,
+      "permitted_extra": "inert .git pointer for revision lookup only"
+    },
+    "seconds": 91.92362404199957,
+    "source_input_count": 4165,
+    "source_map_quiet": true,
+    "wheel": {
+      "bytes": 3013553,
+      "sha256": "225bd738a0a64903b495a7e3d3cff39ccf5177dd866ae8067bb870e54b9281f6"
+    }
+  },
+  "qualification": [
+    "Source2 is the current 94-case helper scope, not full product acceptance. Source1 is a historical 85-case helper scope.",
+    "Metadata1 is a separate predecessor epoch:50 identified parents and19 passing unitemized subtests; it is not summed with any other run.",
+    "Metadata predecessor closure reuses the actual earlier wheel1 source-before map and its later metadata-after map; no dedicated fresh metadata-before capture is claimed.",
+    "Private Git inputs, bytecode caches and Git metadata are excluded from the 4167-file Git input map. Regular source pyc/pyo under __pycache__ are ignored, never staged; installed/archive/import caches remain refused.",
+    "The runner observes recognized direct Python/console launches, source-loader imports and terminal loaded modules; it does not attest arbitrary native descendants or adversarial executed code.",
+    "Documentation and this public derivative were appended after terminal acceptance; no whole final-documentation input freeze is claimed.",
+    "The complete991 explicit IDs plus7 module expansions are configured for hosted CI, not executed locally.",
+    "No Rust source code changed; existing debug binaries were pinned. Producer receipts are owned-loopback evidence. No new Cargo gate or original/native/hardware/house acceptance is credited.",
+    "No completeness promotion:18/42 category ledger;487 obligations;22103 scope items;zero fully accepted;incomplete census.",
+    "Wheel2 is a separate successful predecessor using the earlier CI upload configuration and earlier generated parity JSON.",
+    "The final CI option include-hidden-files:true is present in wheel3 tested inputs; actual hosted upload execution is still pending.",
+    "Metadata2 has dedicated actual source-before/after maps, unlike predecessor metadata1; its 4167 input map equals wheel3 and stayed exact.",
+    "Source2 current runner/guard/helper bytes are unchanged; its five-input freeze used the predecessor CI wiring and is not promoted to final CI acceptance.",
+    "Two producer2 wrapper startup attempts failed due a missing research module path before services started; actual corrected tagged2/unit2 executions are separate passing results."
+  ],
+  "retained_failed_wheel1": {
+    "error": "Product bytecode cache is not admitted",
+    "passed": false,
+    "scope": "setup only: create-builder exit0; no wheel build/install/backend execution",
+    "seconds": 3.932076875000348,
+    "summary": {
+      "bytes": 441732,
+      "sha256": "0ded912ec412dd9c53e25971f56adcd14023c05112db513ab63ddf7bd45128c5"
+    }
+  },
+  "retained_wrapper_startup_failures": {
+    "bytes": 557,
+    "sha256": "69362039639fb4af090dafa63c5eb689b28f48318b03845ff5d9c408639ef1b3"
+  },
+  "reviews": [
+    {
+      "artifact": {
+        "bytes": 19522,
+        "sha256": "167976a199bff61d05b4273124c73735fa402a867c97b77d42b8a3d2ecddc38d"
+      },
+      "role": "runtime-author data-only artifact reader; independent static review is separate"
+    },
+    {
+      "artifact": {
+        "bytes": 27663,
+        "sha256": "2f023ee652d880b47e8fe4def8aa48ceb547ca3ddbb107ceda79f76da4ea0baa"
+      },
+      "role": "fixture-author actual raw case data reader; own-oracle semantics excluded"
+    },
+    {
+      "artifact": {
+        "bytes": 6351,
+        "sha256": "d8e23fe3211a17e674223e015f3fc678c3566adf7bcfcdad6d6c26e0affe0b7b"
+      },
+      "role": "independent complete baseline Git-blob overlay reader"
+    }
+  ],
+  "scope": "focused-explicit-subset",
+  "source_helper_predecessor": {
+    "actual_parents": 85,
+    "artifacts": {
+      "audit.json": {
+        "bytes": 47758,
+        "sha256": "964bbc206188b1172093779d13f61c61f4293ab9ed7bd914fd89a0beb3ca1bb6"
+      },
+      "junit.xml": {
+        "bytes": 27552,
+        "sha256": "3935a75688f1bb12dc4fdd728ec10017f0090d41c4c91eeb77ffbd6acdb856c2"
+      },
+      "summary.json": {
+        "bytes": 971,
+        "sha256": "92a8d7288ecd5338d371bd05bae1e0c9269d2a22c06a6df6e48164841f4efc98"
+      },
+      "trace.json": {
+        "bytes": 32107,
+        "sha256": "b8e7d593b7fbb6df7afe0fb9ef751a15fe5a9d0793c79c39d4a21a6b206786d4"
+      }
+    },
+    "counts_including_unitemized_subtests": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 85,
+      "skipped": 0,
+      "tests": 85
+    },
+    "passed": true,
+    "unitemized_subtests": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 0,
+      "reported": 0,
+      "skipped": 0
+    }
+  },
+  "source_helper_successor": {
+    "actual_parents": 94,
+    "artifacts": {
+      "audit.json": {
+        "bytes": 52827,
+        "sha256": "ed6c2a76929e3363649365a4f6cefdf352f990d2697006180b1a230beadc034d"
+      },
+      "junit.xml": {
+        "bytes": 30492,
+        "sha256": "33c49c4f4b89476686f10644d519535ed5200a5402b6ccb23b609844d25773b9"
+      },
+      "summary.json": {
+        "bytes": 970,
+        "sha256": "42619aec6604d644f4ab50bf4c55cbc5caca3f73d2e1e1e0ace1a176c7465101"
+      },
+      "trace.json": {
+        "bytes": 35563,
+        "sha256": "4c10e90c5505c7f526369a9c7d557652139e98548eb9df96f15458de7527c2c1"
+      }
+    },
+    "counts_including_unitemized_subtests": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 94,
+      "skipped": 0,
+      "tests": 94
+    },
+    "passed": true,
+    "unitemized_subtests": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 0,
+      "reported": 0,
+      "skipped": 0
+    }
+  },
+  "source_metadata_final_epoch": {
+    "actual_parents": 50,
+    "artifacts": {
+      "audit.json": {
+        "bytes": 34657,
+        "sha256": "337e9a88d35c60317b1724544e632468be97d5be53f71334a1fc9515715f7817"
+      },
+      "inputs-after.json": {
+        "bytes": 742122,
+        "sha256": "e6539cf6852e421d3148eeac5b6ed6f4ee005b72b1d8bfcf706d8f0a41816bb6"
+      },
+      "inputs-before.json": {
+        "bytes": 742122,
+        "sha256": "e6539cf6852e421d3148eeac5b6ed6f4ee005b72b1d8bfcf706d8f0a41816bb6"
+      },
+      "junit.xml": {
+        "bytes": 17529,
+        "sha256": "29414296e0a5a97ad518a592d872ffa4ec9993901e2bcab5b71987a4b9459a5e"
+      },
+      "summary.json": {
+        "bytes": 1826,
+        "sha256": "e0065326a4c6c452fdc4550aa1b3b713d928c6b2ab4418fd3835ad0d0c2d1f44"
+      },
+      "trace.json": {
+        "bytes": 24006,
+        "sha256": "86a8244a8bab0e2d19f42530a97194d0f66bb5e4b9848696bf83a57a8600329f"
+      }
+    },
+    "counts_including_unitemized_subtests": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 69,
+      "skipped": 0,
+      "tests": 69
+    },
+    "map_matches_actual_wheel3": true,
+    "passed": true,
+    "seconds": 10.033832875000371,
+    "source_input_count": 4167,
+    "source_map_quiet": true,
+    "unitemized_subtests": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 19,
+      "reported": 19,
+      "skipped": 0
+    }
+  },
+  "tested_baseline": "ef677d19a0d9e9e282fb00f5d65b8ab682e7f6b8",
+  "tested_input_overlay": {
+    ".agents/skills/cbus-cli/references/workflows.md": {
+      "baseline_blob": {
+        "bytes": 10778,
+        "sha256": "d49575d1e773441556f36f38256fd817d9412c96040d58a77b5be97f3a2d5544"
+      },
+      "tested": {
+        "bytes": 11527,
+        "sha256": "10cc69600b57c4cac7fe57a5acafc241f0e352e3a0a126da34ee2cf70eae2d04"
+      }
+    },
+    ".github/workflows/ci.yml": {
+      "baseline_blob": {
+        "bytes": 28781,
+        "sha256": "5c81648a7b8358e1021c491505a80c5a5824e778fa9e5d736f3d7b09c5400872"
+      },
+      "tested": {
+        "bytes": 29954,
+        "sha256": "aca35b2a13516cba15a1f2f776312402309e8dc8b4dabe73135d78be854eb4b8"
+      }
+    },
+    "docs/testing.md": {
+      "baseline_blob": {
+        "bytes": 27296,
+        "sha256": "814a3f6a3b9d975792abb51ac6c335f9c3f459189b44893f15f92bb4d81e23bf"
+      },
+      "tested": {
+        "bytes": 28045,
+        "sha256": "4acaebd58a4230926c2f21ee79b894bf3ef51a572fed1fdb792e103955c2dbcb"
+      }
+    },
+    "toolkit-cli/Makefile": {
+      "baseline_blob": {
+        "bytes": 147647,
+        "sha256": "d005b6538eb520774e4279f1a17f53b4148f05dc8388dfeeb77b5f367888b9af"
+      },
+      "tested": {
+        "bytes": 148158,
+        "sha256": "fcb03065dbdcfaae7364d12041afb80d02fd528cd777dfbb402b58b303bc6cb9"
+      }
+    },
+    "toolkit-cli/docs/feature-batch-2026-10-04-installed-rust-interop.md": {
+      "baseline_blob": null,
+      "tested": {
+        "bytes": 7093,
+        "sha256": "7393bc2f092a278d8cbc037642f3885fb197ae30e2364eddf9df573a4436be95"
+      }
+    },
+    "toolkit-cli/docs/implementation-status.md": {
+      "baseline_blob": {
+        "bytes": 155047,
+        "sha256": "782a1855af796bde8df1e209710060a73fc154513f32b7e16979d35c94d298f1"
+      },
+      "tested": {
+        "bytes": 155700,
+        "sha256": "232948a78c9bac41f1648e8619d1a0cd8dd4e4fa0855add1ea6e9a90482fc190"
+      }
+    },
+    "toolkit-cli/docs/installed-rust-interop.md": {
+      "baseline_blob": null,
+      "tested": {
+        "bytes": 5150,
+        "sha256": "fea5484753f30c57f3a7fd39710845c23e42d91edfff44ff58b5e212bc459f21"
+      }
+    },
+    "toolkit-cli/research/fixtures/cgate-dbsetxml-unit-differential-cmqttd.json": {
+      "baseline_blob": {
+        "bytes": 63582,
+        "sha256": "e27b0b42b75d2eee5ccca7186b920478a3689d845223bf8928f2a9608d558ae6"
+      },
+      "tested": {
+        "bytes": 63582,
+        "sha256": "09a09b626b65de754b0ddda19f3fbf56a976775d9c8b3bf97ea60921154d855c"
+      }
+    },
+    "toolkit-cli/research/fixtures/cgate-dbsetxml-unit-differential-mock.json": {
+      "baseline_blob": {
+        "bytes": 61677,
+        "sha256": "b14f3a9288c53db298f6772d1b4b3bf5279db970cff1a2aef1a83a099cb9b75d"
+      },
+      "tested": {
+        "bytes": 61677,
+        "sha256": "91e1941c6a2ea8005d6202e3d614694ef827590f5dc624e82cd0db6e7a3a5471"
+      }
+    },
+    "toolkit-cli/research/fixtures/cgate-tagged-session-differential-cgate-mock.json": {
+      "baseline_blob": {
+        "bytes": 32858,
+        "sha256": "d4284f1f4e0954a9c6c5b81e0a927ea7278d6c32bd9f8146271ad9aa7c0b2a5d"
+      },
+      "tested": {
+        "bytes": 32858,
+        "sha256": "fbc2ecaa9ab3ace36439afc12271b2f51b75eae5feb9223a0f270109a7d3f2c0"
+      }
+    },
+    "toolkit-cli/research/fixtures/cgate-tagged-session-differential-cmqttd.json": {
+      "baseline_blob": {
+        "bytes": 34983,
+        "sha256": "70a64fe6e701e5099915fdd6379c4eefaf509011c16397373aedfc3aa3bcb16a"
+      },
+      "tested": {
+        "bytes": 34983,
+        "sha256": "74f801c49a00bba319176acba6c8795a56e9760926c19a22f3c032c0cd527dc2"
+      }
+    },
+    "toolkit-cli/research/fixtures/installed-rust-interop-release-20261004.json": {
+      "baseline_blob": null,
+      "tested": {
+        "bytes": 27594,
+        "sha256": "6303ab70bd45afb1648e0e43b339e992c72daa973089108f7ad31d57631074e6"
+      }
+    },
+    "toolkit-cli/research/installed_interop_guard.py": {
+      "baseline_blob": null,
+      "tested": {
+        "bytes": 8878,
+        "sha256": "e959fa88677881570d324862f783841ceef470b97d0e42dfe371655b6950755f"
+      }
+    },
+    "toolkit-cli/research/installed_rust_interop.py": {
+      "baseline_blob": null,
+      "tested": {
+        "bytes": 38365,
+        "sha256": "ab963a8fb4797bbd99cc5a8f8579d58dac8ed8f1ee44de04ccf654609cefe002"
+      }
+    },
+    "toolkit-cli/research/release-gates/skip-census.json": {
+      "baseline_blob": {
+        "bytes": 392365,
+        "sha256": "630025a7f852a4f6d69faa6da2db1182c77a264f9ea67aa35c3265f446f9551c"
+      },
+      "tested": {
+        "bytes": 392365,
+        "sha256": "0fa4716da586657df3b6e10b67823a16792f26a419e2dbd5a50fb92567b246d5"
+      }
+    },
+    "toolkit-cli/src/cbus_toolkit/parity-evidence.json": {
+      "baseline_blob": {
+        "bytes": 33071,
+        "sha256": "261e43f11d03984f5df3960c0162f641b5bc35159020761cf8548d33312b55e4"
+      },
+      "tested": {
+        "bytes": 33071,
+        "sha256": "b30ae7171eb2d282924e5fd12e5b0a5aa028c03cd7cb4a42c5f32261d439a4fa"
+      }
+    },
+    "toolkit-cli/src/cbus_toolkit/parity-obligations.json": {
+      "baseline_blob": {
+        "bytes": 12931091,
+        "sha256": "6b1ac6600d21ae2ff39aa984c9a5c62effc42ff4e2bd521e55266149e9dfdc5f"
+      },
+      "tested": {
+        "bytes": 12931091,
+        "sha256": "54bcff52dd4f9d5158274b2b8b276b0d2817ef044148322a38c2cee1614b994b"
+      }
+    },
+    "toolkit-cli/tests/test_installed_rust_interop.py": {
+      "baseline_blob": null,
+      "tested": {
+        "bytes": 43214,
+        "sha256": "dfdf4e4bff20b5eb2af7e9cfa8873b044450d79732aebc23369e0fa22f0538af"
+      }
+    }
+  },
+  "tested_input_overlay_complete": true,
+  "tested_input_overlay_count": 18
+}

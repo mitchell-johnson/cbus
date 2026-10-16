@@ -218,6 +218,7 @@
   "observations": 80,
   "mqtt_commands": 8,
   "nvm_pci_loss_receipt": "[5] 502 Physical PP Save-to-NVM failed after 1 confirmed write(s): PCI disconnected",
+  "nvm_pci_active_reply_loss_receipt": "[5] 502 Physical PP Save-to-NVM failed after 1 confirmed write(s): PCI response stream lost",
   "slow_client": {
     "broadcasts": 32,
     "payload_bytes": 65536,

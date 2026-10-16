@@ -1390,6 +1390,8 @@ def build_parser():
     parser.add_argument("--version", action="version", version=__version__)
     parser.add_argument("--compact", action="store_true", help="Emit single-line JSON")
     commands = parser.add_subparsers(dest="area", required=True)
+    from .offline_workflows.cli import options as offline_workflow_options
+    offline_workflow_options(commands)
     from .edlt_templates_cli import options as edlt_template_options
     edlt_template_options(commands)
     from .toolkit_preferences_cli import options as preference_options
@@ -2454,6 +2456,8 @@ def build_parser():
     iope_offline_options(commands)
     from .iope_workflow_cli import options as iope_workflow_options
     iope_workflow_options(commands)
+    from .iope_output_display import options as iope_output_display_options
+    iope_output_display_options(commands)
     from .dlt_cli import options as dlt_options
     dlt_options(commands)
     from .wireless_cli import options as wireless_options
@@ -4353,6 +4357,9 @@ def run(args):
         from .wireless_cli import offline as wireless_offline
         return wireless_offline(args)
     if args.area == "iope-workflow":
+        if args.family == "output" and args.action in ("restrike-delay-time", "restrike-delay-choices"):
+            from .iope_output_display import run as iope_output_display_run
+            return iope_output_display_run(args)
         from .iope_workflow_cli import run as iope_workflow_run
         return iope_workflow_run(args)
     if args.area == "iope-settings":
@@ -4583,6 +4590,14 @@ def run(args):
 
 
 def main(argv=None):
+    argv = list(sys.argv[1:] if argv is None else argv)
+    prefix = 0
+    while prefix < len(argv) and argv[prefix] == "--compact":
+        prefix += 1
+    if argv[prefix:prefix + 1] == ["offline-workflows"]:
+        from .offline_workflows.cli import main as offline_workflow_main
+        offline_args = (["--compact"] if prefix else []) + argv[prefix + 1:]
+        return offline_workflow_main(offline_args, prog="cbus-toolkit offline-workflows")
     args = build_parser().parse_args(argv)
     from .edlt_global_cli import error_payload as global_error_payload
     from .edlt_scene_live_cli import error_payload as live_error_payload

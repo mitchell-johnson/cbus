@@ -54,6 +54,17 @@ input set and owned binary hashes are unchanged. CI still runs the full gates.
 
 ## Toolkit CLI checks
 
+The automatic installed-wheel Rust job runs a fresh noneditable wheel against both
+owned services, separately from the offline wheel job. It requires the complete
+maintained Make selections: 991 explicit selectors (including the historical
+985 quoted cohort and six daemon guards) plus seven whole-module expansions.
+Package equality, actual pytest/CLI import origins, cleanup and JUnit/trace
+identities are audited. Only two exact census-bound private UnitSpec cases may
+skip; explicit selected IDs always require passing bodies. See the
+[runner guide](../toolkit-cli/docs/installed-rust-interop.md) for full/focused
+commands and retained failure evidence. A focused local pass does not establish
+a full hosted pass or native/hardware acceptance.
+
 Install Python 3.13 or newer and the development extras from the repository root:
 
 ```sh

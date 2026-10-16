@@ -119,11 +119,32 @@ For example, `cgate database add //LAB/CustomA application 56 Lighting
 --project LAB` creates an Application in an existing independent named Network.
 Use its returned OID for subsequent Group/NetVar/Level edits. cmqttd preserves
 these ordered children, fresh copy identities and incomplete raw objects through
-explicit save/reload and internal JSON restart. A Level requires Value before
-project save; typed creation/copy initializes it to the requested address.
+explicit save/reload and internal JSON restart. For typed Level-specific
+`database add` and `database copy`, the CLI initializes Value to the requested
+address before a later project save. That initializer does not traverse an
+Application copy. A complete admitted whole-Application copy preserves NULL
+Levels in the owned Rust model; see its
+[copied NULL SAVE/LOAD profile](docs/application-database-safe.md#null-levels-and-copied-load-metadata).
+Exact native NULL Application-copy/save acceptance remains open.
 The [named workflow report](docs/feature-batch-2026-10-01-named-database-workflows.md)
 records software and bounded original-server checks. Full Project-OID operations,
 mixed payload copies and broader original/physical acceptance remain open.
+
+The [Application database guide](docs/application-database-safe.md) covers
+complete admitted Application SAFE copies with fresh descendant OIDs and staged
+Address/TagName edits that preserve identities, data and recorded creation order.
+Use `--project` on the operation's connection, read back the complete graph and
+save the changed project explicitly. Never replay an uncertain write. The
+bounded owned source and installed checks are separate from exact native
+acceptance in issues 124/125. The separate [ordinary numeric Level Value
+fix](docs/ordinary-level-value.md) has isolated library/source/wheel/Rust proofs
+and separate adopted-branch source 12 and fresh installed mock 6/daemon 6
+acceptance. A separate [five-case resilience checkpoint](docs/acceptance/2026-10-05-ordinary-level-resilience/report.md)
+passed source five and fresh installed mock two/daemon three cases for public
+NetVar edits, lost successful receipts and disk-backed restart. Owned policy is
+source-backed; issue 131 remains open pending merge/required CI at that
+checkpoint. Full configured execution and exact native equivalence remain
+separate.
 
 `cgate file-upload SERVER_PATH LOCAL_FILE [--project NAME]` sends a bounded binary
 snapshot through the server FILE protocol. cmqttd stores it in its virtual
@@ -1809,6 +1830,18 @@ packing, capacity, CRCs, native raw bytes and CLI save/reload are tested.
 
 ## Thermostat temperature conversions
 
+The [15-field temperature owner](docs/thermostat-temperature-model.md) keeps raw PP bytes, loaded/live model integers and final saved bytes distinct in the bounded quick-zone settings transaction. See its [focused acceptance report](docs/feature-batch-2026-10-04-thermostat-temperature-owner.md) and `make check-thermostat-temperature-owner` for validation.
+
+The bounded [fresh quick-zone settings owner](docs/thermostat-quick-zone-controls.md)
+adds explicit checkbox Include/Exclude/refresh, source-offered plant selection
+and same-owner message delivery to ordered output/damper histories. It requires
+the documented Celsius/settled profile and preserves the loaded role through
+the separate Basic and Programmable save rules. The [release report](docs/feature-batch-2026-10-04-thermostat-quick-zone-controls.md) records separate source epochs of
+157 pure-model tests plus five passing subtest events and 42 backend tests,
+and a single fresh installed-wheel epoch of 199 tests plus five passing subtest
+events, all with no skips or failures. Native control timing, application
+migration and complete issue 42 remain open.
+
 Thermostat settings now include disabled remote save defaults. Saved-project documentation also admits bounded Neo/DLT/NeoClassic, sensor and specialized-output bodies. Their [batch provenance](docs/feature-batch-2026-09-30-dlt-thermostat-documentors.md) separates retained component evidence, native database persistence and unresolved complete GUI/hardware acceptance.
 
 Fourteen original integer temperature conversions are available offline, with an
@@ -2411,6 +2444,12 @@ importer adds missing applications, groups and levels, preserving existing
 names. Networks must already exist and be routable. A skipped network produces
 a nonzero exit status and the native import summary. Export refuses to replace
 an existing file.
+
+Both Rust services preserve recorded Application creation order across database
+edits, save/load, copies and cmqttd restart. Older repositories and foreign
+archives have an explicitly unknown historical prefix; Group/Level native
+chronology remains unverified. Read [CGL order and recovery](docs/cgl-application-order.md)
+for the exact boundary and uncertain-import handling.
 
 ## Rust C-Gate model
 

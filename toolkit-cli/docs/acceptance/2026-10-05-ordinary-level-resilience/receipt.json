@@ -1,0 +1,516 @@
+{
+  "schema": "cbus-ordinary-level-resilience-owned-release-v1",
+  "checkpoint": "LOCAL_SOURCE_AND_INSTALLED_PROOFS_ACCEPTED_ISSUE131_OPEN_PENDING_MERGE_AND_REQUIRED_CI",
+  "issue": "https://github.com/mitchell-johnson/cbus/issues/131",
+  "guide": "toolkit-cli/docs/ordinary-level-value.md",
+  "report": "toolkit-cli/docs/acceptance/2026-10-05-ordinary-level-resilience/report.md",
+  "selection": {
+    "unique_semantic_cases": 5,
+    "selected_packet": {
+      "path": "toolkit-cli/docs/acceptance/2026-10-05-ordinary-level-resilience/selected-nodeids.json",
+      "sha256": "f460ba3c63a5f6b30637052ab9168643e1a5c62718d1658533af0cad8254187e",
+      "bytes": 635
+    },
+    "literal_selection": [
+      "tests/test_ordinary_level_value_followon_backends.py::test_public_numeric_level_lost_success_is_not_replayed[mock-value]",
+      "tests/test_ordinary_level_value_followon_backends.py::test_public_numeric_level_lost_success_is_not_replayed[mock-save]",
+      "tests/test_ordinary_level_value_followon_backends.py::test_public_numeric_level_lost_success_is_not_replayed[daemon-value]",
+      "tests/test_ordinary_level_value_followon_backends.py::test_public_numeric_level_lost_success_is_not_replayed[daemon-save]",
+      "tests/test_ordinary_level_value_followon_backends.py::test_public_numeric_group_and_netvar_levels_survive_cmqttd_restart"
+    ]
+  },
+  "modules": {
+    "new_followon": {
+      "path": "toolkit-cli/tests/test_ordinary_level_value_followon_backends.py",
+      "sha256": "6b449f48ae94ae26c9de2745665e8b34fdc22f87c203a5a14b841e4af6be3354",
+      "bytes": 13205
+    },
+    "unchanged_historical_twelve": {
+      "path": "toolkit-cli/tests/test_ordinary_level_value_backends.py",
+      "sha256": "594df9fab4311e6de1af794d6435d9b17a4c333fc7fab34759bf2e770c20771b",
+      "bytes": 21778
+    }
+  },
+  "execution_provenance": {
+    "tested_HEAD": "c02c4f8c7f34f93cfe773ca0765ea2cae9c005cf",
+    "uncommitted_followon_overlay": true,
+    "actual_source_inputs": 4201,
+    "source_freeze": {
+      "bytes": 748085,
+      "sha256": "3c9fb2979ebbabe39635b5a25daa26372e91beb165fbfc517bf7936693b97730"
+    },
+    "Rust_inputs_unchanged": 484,
+    "package_files": 395,
+    "record_entries": 406,
+    "source_collection_and_pytest_commands": 2,
+    "maintained_auditor": "library validation; not a third source command",
+    "maintained_wheel_commands": 9,
+    "source_driver_seconds": 45.12269974999799,
+    "wheel_driver_seconds": 241.17070379200595
+  },
+  "later_publication": {
+    "physical_code_overlay_later_committed_as": "b487b4f1f05f6f38f80b68f86b6fddffef9fa7c9",
+    "six_test_and_registration_changes": 6,
+    "actual_refreshed_output_changes": 10,
+    "documentation_after_proofs": true,
+    "eight_documentation_paths_outside_six_capture_maps_and_package": true,
+    "new_execution_at_publication_commit": false
+  },
+  "actual_epochs": {
+    "source5": {
+      "actual_parent_count": 5,
+      "actual_outcomes": {
+        "passed": 5
+      },
+      "actual_totals": {
+        "actual_PP315_responses": 66,
+        "actual_dropped_upstream200": 4,
+        "actual_restart_contexts": 2,
+        "actual_unrelated_PP_checkpoints": 22,
+        "cli_calls": 199,
+        "cli_commands": 389,
+        "cli_exit_counts": {
+          "0": 195,
+          "1": 4
+        },
+        "connections": 205,
+        "direct_commands": 130,
+        "documents": 10,
+        "explicit_traps_zero": 5,
+        "later_PCI": 0,
+        "owned_processes": 6,
+        "owned_processes_by_backend": {
+          "cgate-mock": 2,
+          "cmqttd": 4
+        },
+        "startup_PCI": 32,
+        "status_counts": {
+          "200": 247,
+          "301": 20,
+          "315": 66,
+          "342": 129,
+          "344": 53,
+          "missing": 4
+        },
+        "tagged_commands": 519,
+        "whole_graph_checkpoints": 22
+      },
+      "actual_group_Value_writes": 5,
+      "actual_NetVar_child_Value_writes": 5,
+      "loss_phases": {
+        "value": 2,
+        "save": 2
+      },
+      "strict_installed": null
+    },
+    "wheel_mock2": {
+      "actual_parent_count": 2,
+      "actual_outcomes": {
+        "passed": 2
+      },
+      "actual_totals": {
+        "actual_PP315_responses": 24,
+        "actual_dropped_upstream200": 2,
+        "actual_restart_contexts": 0,
+        "actual_unrelated_PP_checkpoints": 8,
+        "cli_calls": 73,
+        "cli_commands": 143,
+        "cli_exit_counts": {
+          "0": 71,
+          "1": 2
+        },
+        "connections": 75,
+        "direct_commands": 48,
+        "documents": 4,
+        "explicit_traps_zero": 2,
+        "later_PCI": 0,
+        "owned_processes": 2,
+        "owned_processes_by_backend": {
+          "cgate-mock": 2
+        },
+        "startup_PCI": 0,
+        "status_counts": {
+          "200": 91,
+          "301": 8,
+          "315": 24,
+          "342": 46,
+          "344": 20,
+          "missing": 2
+        },
+        "tagged_commands": 191,
+        "whole_graph_checkpoints": 8
+      },
+      "actual_group_Value_writes": 2,
+      "actual_NetVar_child_Value_writes": 2,
+      "loss_phases": {
+        "value": 1,
+        "save": 1
+      },
+      "strict_installed": {
+        "package": {
+          "file_count": 395,
+          "record": {
+            "entries": 406,
+            "record": {
+              "bytes": 38563,
+              "sha256": "a386d32858795d65cd0cb1c54fb1544e308d904ffe4060f47fe699a075131ee9"
+            }
+          },
+          "wheel": {
+            "bytes": 3014282,
+            "sha256": "b5c2c51463a54bfd55beec3e5268113a9c05b60630819939c3e8f74f17c7b299"
+          }
+        },
+        "full_source_reference_build_ZIP_install_RECORD_equal": true,
+        "origin_counts": {
+          "collection": {
+            "python_processes": 1,
+            "origin_records": 22,
+            "product_import_events": 20,
+            "owned_rust_children": 0,
+            "owned_rust_reaped": 0,
+            "violations": 0
+          },
+          "pytest": {
+            "python_processes": 74,
+            "origin_records": 13308,
+            "product_import_events": 13160,
+            "owned_rust_children": 2,
+            "owned_rust_reaped": 2,
+            "violations": 0
+          }
+        }
+      }
+    },
+    "wheel_daemon3": {
+      "actual_parent_count": 3,
+      "actual_outcomes": {
+        "passed": 3
+      },
+      "actual_totals": {
+        "actual_PP315_responses": 42,
+        "actual_dropped_upstream200": 2,
+        "actual_restart_contexts": 2,
+        "actual_unrelated_PP_checkpoints": 14,
+        "cli_calls": 126,
+        "cli_commands": 246,
+        "cli_exit_counts": {
+          "0": 124,
+          "1": 2
+        },
+        "connections": 130,
+        "direct_commands": 82,
+        "documents": 6,
+        "explicit_traps_zero": 3,
+        "later_PCI": 0,
+        "owned_processes": 4,
+        "owned_processes_by_backend": {
+          "cmqttd": 4
+        },
+        "startup_PCI": 32,
+        "status_counts": {
+          "200": 156,
+          "301": 12,
+          "315": 42,
+          "342": 83,
+          "344": 33,
+          "missing": 2
+        },
+        "tagged_commands": 328,
+        "whole_graph_checkpoints": 14
+      },
+      "actual_group_Value_writes": 3,
+      "actual_NetVar_child_Value_writes": 3,
+      "loss_phases": {
+        "value": 1,
+        "save": 1
+      },
+      "strict_installed": {
+        "package": {
+          "file_count": 395,
+          "record": {
+            "entries": 406,
+            "record": {
+              "bytes": 38563,
+              "sha256": "a386d32858795d65cd0cb1c54fb1544e308d904ffe4060f47fe699a075131ee9"
+            }
+          },
+          "wheel": {
+            "bytes": 3014282,
+            "sha256": "b5c2c51463a54bfd55beec3e5268113a9c05b60630819939c3e8f74f17c7b299"
+          }
+        },
+        "full_source_reference_build_ZIP_install_RECORD_equal": true,
+        "origin_counts": {
+          "collection": {
+            "python_processes": 1,
+            "origin_records": 22,
+            "product_import_events": 20,
+            "owned_rust_children": 0,
+            "owned_rust_reaped": 0,
+            "violations": 0
+          },
+          "pytest": {
+            "python_processes": 127,
+            "origin_records": 22954,
+            "product_import_events": 22700,
+            "owned_rust_children": 4,
+            "owned_rust_reaped": 4,
+            "violations": 0
+          }
+        }
+      }
+    }
+  },
+  "actual_artifact_descriptors": {
+    "source/summary.json": {
+      "sha256": "7bbebd1c3647e871a3bc7860e05f4f4af64383625f5416d0a19abea1f059d9ef",
+      "bytes": 6032
+    },
+    "source/audit.json": {
+      "sha256": "e3a8ffc10049866688e71c143f6478caf3d5d3c5b5356e6ff150df2260784b1e",
+      "bytes": 3883
+    },
+    "source/junit.xml": {
+      "sha256": "926b6ca5b969e897706e81dfc77e0cb449df82bb1186f6a85a2828212dcca748",
+      "bytes": 2038
+    },
+    "source/trace.json": {
+      "sha256": "dfa9c8aa3d2c7f22eed12060659347014a6803ae5c92bef8139db5fed5db740c",
+      "bytes": 2313
+    },
+    "source/collection-trace.json": {
+      "sha256": "d6e2d130246b1bbf4f3ad8ab56e188fc8b942a2e8b9629ac3643dc96e2d039f5",
+      "bytes": 790
+    },
+    "source/source-before.json": {
+      "sha256": "3c9fb2979ebbabe39635b5a25daa26372e91beb165fbfc517bf7936693b97730",
+      "bytes": 748085
+    },
+    "source/source-after.json": {
+      "sha256": "3c9fb2979ebbabe39635b5a25daa26372e91beb165fbfc517bf7936693b97730",
+      "bytes": 748085
+    },
+    "source/package-before.json": {
+      "sha256": "f1b443d401cb22ef30866f5f143bfffc99f24378d1269441e51ba78b33d7a937",
+      "bytes": 54108
+    },
+    "source/package-after.json": {
+      "sha256": "f1b443d401cb22ef30866f5f143bfffc99f24378d1269441e51ba78b33d7a937",
+      "bytes": 54108
+    },
+    "wheel/summary.json": {
+      "sha256": "4151c7b3b61eddc2a884e12bcd5443cffff97360dac7025882523c07fcdd2f45",
+      "bytes": 652981
+    },
+    "wheel/source-before.json": {
+      "sha256": "3c9fb2979ebbabe39635b5a25daa26372e91beb165fbfc517bf7936693b97730",
+      "bytes": 748085
+    },
+    "wheel/source-after.json": {
+      "sha256": "3c9fb2979ebbabe39635b5a25daa26372e91beb165fbfc517bf7936693b97730",
+      "bytes": 748085
+    },
+    "wrapper/summary.json": {
+      "sha256": "90a88ecaf43282494bfca03c7ad435adcd372aa71d7449b0df4b98e69b1bcbf5",
+      "bytes": 5106
+    },
+    "wrapper/invocation.json": {
+      "sha256": "efad14221ee49e47aa82a881c91cf8358259e37cf1d442fd5e2487256b581aa6",
+      "bytes": 2647
+    },
+    "wrapper/source-before.json": {
+      "sha256": "3c9fb2979ebbabe39635b5a25daa26372e91beb165fbfc517bf7936693b97730",
+      "bytes": 748085
+    },
+    "wrapper/source-after.json": {
+      "sha256": "3c9fb2979ebbabe39635b5a25daa26372e91beb165fbfc517bf7936693b97730",
+      "bytes": 748085
+    },
+    "wrapper/package-before.json": {
+      "sha256": "f1b443d401cb22ef30866f5f143bfffc99f24378d1269441e51ba78b33d7a937",
+      "bytes": 54108
+    },
+    "wrapper/package-after.json": {
+      "sha256": "f1b443d401cb22ef30866f5f143bfffc99f24378d1269441e51ba78b33d7a937",
+      "bytes": 54108
+    },
+    "wheel/mock/audit-receipt.json": {
+      "sha256": "1e706da0564760b4801eb18feee1becefcee8d8814ace972925c87101f0752e3",
+      "bytes": 1993
+    },
+    "wheel/mock/junit.xml": {
+      "sha256": "968eb35c0f2989a2cb533bc9b1c5230b84df4b67fb3ed6cf00b385a75498001f",
+      "bytes": 958
+    },
+    "wheel/mock/trace.json": {
+      "sha256": "98d042afa60304fed76f57bb1134db82dd3d9e2e937ac839f391eaa3b3f37910",
+      "bytes": 1011
+    },
+    "wheel/mock/collection-trace.json": {
+      "sha256": "9a0ff26f995c33cea1893b10af51a681246222798d1e6a3b747ba70b10ce0df5",
+      "bytes": 403
+    },
+    "wheel/daemon/audit-receipt.json": {
+      "sha256": "6fa3ab75c5de77fd13d164eae6769b780e2174e7ae850a9893809b7be2f2168d",
+      "bytes": 2635
+    },
+    "wheel/daemon/junit.xml": {
+      "sha256": "9f1d7fcca53f6ab4697276188cd5690ea44bac59d43c10617424412b44d3f96f",
+      "bytes": 1326
+    },
+    "wheel/daemon/trace.json": {
+      "sha256": "5af5797fff60f48ed5016777b320dad9634311acb2edb5fb5625ac89c56b8392",
+      "bytes": 1454
+    },
+    "wheel/daemon/collection-trace.json": {
+      "sha256": "756453830bea7a9eafacae7685d3a52823fbf21bf461f79574af5870c9571fd0",
+      "bytes": 535
+    }
+  },
+  "binaries": {
+    "cgate-mock": {
+      "bytes": 18892104,
+      "sha256": "323c88858096ae2f1ffdcd02b1b16ea3ba7360bb8355d5f6d551ae49c7d78ed8"
+    },
+    "cmqttd": {
+      "bytes": 55361368,
+      "sha256": "9837c9a7eacda88d4562a54836c22f4a948faafe1fd6d1c4685d1e122cf7b756"
+    }
+  },
+  "qualified_reviews": {
+    "descriptors": {
+      "B/public-safe-projection": {
+        "sha256": "a1f816a298ee0a2bef9024ed73ee7e7f64fd0c16302b0c2a9f008dd8faab7c02",
+        "bytes": 11253
+      },
+      "B/author-terminal-handoff": {
+        "sha256": "8dd326e8187dba421cef3e1ef225ad1beee48ffb917eae4056825c917c22e5f3",
+        "bytes": 2471
+      },
+      "C/terminal-safe-projection": {
+        "sha256": "c3ab0c40cd4e55230e6ccb2ebe419ca76000b2d19e734dbeb59601c29484fdf9",
+        "bytes": 7067
+      },
+      "C/terminal-handoff": {
+        "sha256": "22029092554a2f866d3afac4353f60c657f93a8a29a756a0ac72b12c8a5ea1a6",
+        "bytes": 4030
+      },
+      "C/physical-closure": {
+        "sha256": "d926441d4dd21d11b4c3240e40d0ed8ae142885c686543a6f56cebf27627f3f9",
+        "bytes": 34545
+      },
+      "C/cross-terminal": {
+        "sha256": "d3eb5b8ec615932c26584df92cf0001d43aad324b4e45cc93f8db7e5d54297d8",
+        "bytes": 7924
+      },
+      "A/independent-semantics": {
+        "sha256": "734d20fd2d012333701474b94682b0f3389618fd1801a0769cd1cb2695a12458",
+        "bytes": 14027
+      },
+      "A/refresh-audit": {
+        "sha256": "8cc01d3ff5f0e69d10291d99c7ad35e2209887795581853eda35e91431e8a630",
+        "bytes": 17917
+      }
+    },
+    "B": "Public oracle author; raw readback is qualified author credit, not independent native oracle approval.",
+    "C": "Implementation/library author; physical/origin and cross-terminal artifact checks are qualified separately.",
+    "A": "Independent literal graph and semantic outcome review; content-based wire joins and retained cleanup records, not new historical process/timing observation."
+  },
+  "owned_policy_and_effects": {
+    "source_or_original_criterion_satisfied_by": "maintained source",
+    "new_native_execution_required_for_owned_closure": false,
+    "netvar_child_level": {
+      "before": 66,
+      "after": 42
+    },
+    "group_child_level": {
+      "before": 77,
+      "after": 99
+    },
+    "netvar_root_is_byte_owner": false,
+    "whole_ordered_graph_oid_labels_sibling_and_three_pp_preserved": true,
+    "actual_upstream_200_drops": {
+      "Value": 2,
+      "PROJECT_SAVE": 2
+    },
+    "one_target_request_per_loss": true,
+    "automatic_retry_inverse_cleanup_after_loss_database_write_or_save_count": 0,
+    "explicit_CLOSE_LOAD_after_lost_save_is_separate": true,
+    "disk_restart_contexts": 2,
+    "same_explicit_state_file": true,
+    "first_reaped_before_second": true,
+    "second_reseed_write_or_save_count": 0,
+    "earlier_state_hash_recorded_but_earlier_file_image_not_separately_retained": true,
+    "cleanup_scope": "Retained process/listener/PCI/trap records plus passed ordered body assertions; not a new historical OS probe."
+  },
+  "metadata_registration_epoch": {
+    "summary": {
+      "sha256": "4fd5a7247d9430816c0818062fee1750ad89e5f6e7dd1377c9b973aeb3e37f7b",
+      "bytes": 242927
+    },
+    "actual_commands": 2,
+    "all_commands_exit_zero": true,
+    "passing_parents": 197,
+    "unitemized_passing_subevents": 550,
+    "aggregate": 747,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "source_inputs": 4201,
+    "source_index_and_pairs_quiet": true,
+    "distinct_from_historical_191_and_five_guard_epochs": true
+  },
+  "maintained_refresh_epoch": {
+    "summary": {
+      "bytes": 19375,
+      "sha256": "92c14e403a70b0af7ed631e6010733c14fbd47ac5ab01a1c8a8c66b6e477d383"
+    },
+    "audit": {
+      "sha256": "8cc01d3ff5f0e69d10291d99c7ad35e2209887795581853eda35e91431e8a630",
+      "bytes": 17917
+    },
+    "commands": 18,
+    "all_exits_zero": true,
+    "allowed_outputs": 11,
+    "actual_changed_outputs": 10,
+    "unchanged_inventory": "toolkit-cli/src/cbus_toolkit/cgate-contract-inventory.json",
+    "protected_native_original_pre_fix_inputs": 8,
+    "six_source_closure_maps_exact": true,
+    "all_484_Rust_and_binaries_quiet": true,
+    "sanitizer_whole_payload_allowed_coordinate_deltas_only": true,
+    "new_five_case_acceptance_from_captures": false
+  },
+  "historical_reports_receipts_unchanged": {
+    "toolkit-cli/docs/acceptance/2026-10-05-application-database-safe/report.md": {
+      "sha256": "dc28f540a45c55cc6c472db34d15322805b488e8a8ff25bab66b25c4e15142fe",
+      "bytes": 9670
+    },
+    "toolkit-cli/docs/acceptance/2026-10-05-application-database-safe/receipt.json": {
+      "sha256": "1d3ed835156d80ae7fc8829e93b3d6b006614ce5717fdf71e681aba5ff4c8a85",
+      "bytes": 39645
+    },
+    "toolkit-cli/docs/acceptance/2026-10-05-ordinary-level-value/report.md": {
+      "sha256": "4bb88b417ba0294a9d2a0c9b073aab56fed4c915659a6cd09021dbadd7b7d17c",
+      "bytes": 10682
+    },
+    "toolkit-cli/docs/acceptance/2026-10-05-ordinary-level-value/receipt.json": {
+      "sha256": "7c8fc4064b9a6a88f2779a5ebc397739c685a340153fb036dffe8f74cf8ab3c2",
+      "bytes": 40143
+    }
+  },
+  "limits": [
+    "B authored public semantic oracles; these byte/artifact reconstructions are not self-approval of expectations.",
+    "Separate source5 and fresh installed mock2/daemon3; no manufactured combined trace or JUnit.",
+    "Exactly four actual dropped200 receipts per source/wheel union, not a statement that uncertain callers received acknowledgements.",
+    "The final disk state file is independently pinned; the earlier reported state pin lacks a separately retained earlier state image.",
+    "Context-order/cleanup assertions and raw terminal journals are evidence, not new live listener/reap probes.",
+    "All source4201 quiet claims refer to the frozen proof epochs; later publication annotations are outside that claim.",
+    "Historical12 acceptance remains separate; no full1067+7, new fullMake/Cargo, native repository/mutation, hardware or HomeKit claim.",
+    "The same five cases were run from source and as separate wheel mock two/daemon three phases; not ten unique cases.",
+    "Configured 1067 explicit identities plus seven whole modules are registration, not full execution here.",
+    "No new Cargo/full-Make, native, physical, global parity or functional percentage credit.",
+    "All quiet assertions belong to the recorded pre-documentation proof/readback epochs, not later documentation commits.",
+    "Source-backed owned policy is accepted; exact native mutation/raw/NULL/lexical/error equivalence remains separate."
+  ]
+}

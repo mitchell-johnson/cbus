@@ -1,0 +1,39 @@
+{
+  "cache_slots_by_zone": [
+    "0x168",
+    "0x160",
+    "0x164",
+    "0x16c"
+  ],
+  "cases": 67,
+  "format": "cbus-thermostat-damper-independent-literal-provenance-v2",
+  "framework_executed": false,
+  "independent_expected_values": true,
+  "literal_sha256": "9f72a76b780a36a3b57214ee8f3754ec0c5408076b477684e2242e556df5026d",
+  "ordered_installed_bits": [
+    2,
+    4,
+    8,
+    16
+  ],
+  "original_instructions_executed": false,
+  "predecessor": {
+    "oracle_correction": "Current GroupByAddress creation records transient Group N, then separate source ChangeTagName. Final live creation names retained unchanged.",
+    "sha256": "c9119086d0aa4b65022c742f45b69f4495fe7dba366002cfe1a0c3df6a8115cf"
+  },
+  "producer_imports": false,
+  "source_original_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "source_original_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "source_readiness": {
+    "bytes": 18776,
+    "sha256": "e4309dcd3e1aa797705b884d49a07fc823bfeb6a28756d6aab476d0d56d6f08f"
+  },
+  "source_transcriptions": [
+    "UpdateDamperGroups four separate blocks",
+    "FormShow/Setup/HandleAfterShow/cmbGroupChange/Click",
+    "IsInternalRelayGroup class and pointer guards",
+    "TZones.SetZones five Boolean setters and unchanged suppression",
+    "Source save master/InstalledZones and modulation factors"
+  ],
+  "workflow_acceptance": false
+}

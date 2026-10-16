@@ -1,0 +1,23 @@
+{
+  "schema": "cbus-owned-level-oid-tag-name-v1",
+  "evidence": "Owned regression for issue #90; not a new original C-Gate execution",
+  "parents": [
+    {"application": 56, "application_name": "Lighting", "element": "Group"},
+    {"application": 203, "application_name": "Enable Control", "element": "NetVar"}
+  ],
+  "level": {"Address": "7", "Value": "31", "initial_tag": "Level 7"},
+  "renames": [
+    {
+      "command": "DBSETSAFE !%OID%/TagName Setbk Enable Zones 1, 2",
+      "final": "200 OK",
+      "read_final": "342 !%OID%/TagName=Setbk Enable Zones 1, 2",
+      "TagName": "Setbk Enable Zones 1, 2"
+    },
+    {
+      "command": "DBSETSAFE !%OID%/TagName Sched Enable Zone 4 & 5",
+      "final": "200 OK",
+      "read_final": "342 !%OID%/TagName=Sched Enable Zone 4 & 5",
+      "TagName": "Sched Enable Zone 4 & 5"
+    }
+  ]
+}

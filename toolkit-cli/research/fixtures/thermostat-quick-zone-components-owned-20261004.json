@@ -1,0 +1,93 @@
+{
+  "schema": "cbus.thermostat-components-owned-release.v1",
+  "scope": "direct plant/group model and owned explicit plant-message delivery",
+  "tracking_issue": 42,
+  "new_settings_cli_operations": false,
+  "source_tests": {
+    "parents_passed": 76,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "subtests": 0,
+    "pytest_exit": 0,
+    "audit_exit": 0
+  },
+  "fresh_installed_wheel_tests": {
+    "parents_passed": 76,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "subtests": 0,
+    "pytest_exit": 0,
+    "audit_exit": 0
+  },
+  "required_modules": [
+    "tests/test_thermostat_plant_types.py",
+    "tests/test_thermostat_posted_changes.py"
+  ],
+  "frozen_toolkit_inputs_including_four_new_files": 3628,
+  "terminal_input_changes": 0,
+  "source_zip_installed_package_files": 392,
+  "source_zip_installed_exact": true,
+  "terminal_product_module_origins_per_lane": 26,
+  "continuous_import_tracing_claimed": false,
+  "metadata_check_exit": 0,
+  "artifacts": {
+    "source_results_sha256": "f0d0c85c06851cff27368b624afd08d4fc61a34d4b97835a35338834f59e46a1",
+    "source_junit_sha256": "e163b3ece35a3d993533ab16c860205b98d0dcc6a2233c9216c7848b962fd0ea",
+    "source_trace_sha256": "67b8e1ce4ef8520fcccfc5a2661fafb882d54597199cf9a4f3c23c843aaf8756",
+    "source_terminal_origins_sha256": "dc85b52ff2b613b28ec862ed98dea17a887fdb51b9228bb2fb12b5f941cb299e",
+    "wheel_sha256": "db4d4fcaf5025a9fda49c5a96d5a925f4402bfd60c45140339ae64ed25af2798",
+    "wheel_results_sha256": "ee72c3344e0863b45a6808001febfeb0a6acdfbe29e310f87cf8d7ae8216356f",
+    "wheel_junit_sha256": "8e0ace65635a5a3b0bebc2c00971c90f1140986559d1a06dfb1b99074943af1a",
+    "wheel_trace_sha256": "67b8e1ce4ef8520fcccfc5a2661fafb882d54597199cf9a4f3c23c843aaf8756",
+    "wheel_terminal_origins_sha256": "ff941a9676eb0c27df06d48ff74dc00b81d0af80faac7d18e1bca789d17313e7",
+    "terminal_readback_sha256": "5727f5bb2a6eb42851134b657919425ced14e50aa7dfc9fd69460e3cd74ba60b",
+    "author_handoff_sha256": "c78b7a4c625dec94aee32db1c9c80109fd5ab0eeb3e363e2fb9c3f88a1270cac",
+    "fresh_callback_contract_sha256": "b1173927c76e80121c4edecc00b48cb14aa6dc3a700c6f04d90fa42954c6cbb8",
+    "next_owner_callback_source_contract_sha256": "86efd107516c94612bae2d7703053306bd1daa641e3c645accf3e779b5a9fbd7",
+    "lookup_order_source_contract_sha256": "2e732479e967923b106f0985029c5ac2d0c8b195c44b089fab04f46611798c7b"
+  },
+  "historical_author_source_epoch": {
+    "passed": 62,
+    "failed": 1,
+    "cause": "test expectation invented setter interleaving",
+    "audit_exit": 2,
+    "audit_cause": "missing selection argument"
+  },
+  "corrected_author_source_epoch": {
+    "passed": 63,
+    "failed": 0,
+    "skipped": 0,
+    "pytest_exit": 0,
+    "audit_exit": 0
+  },
+  "retained_root_preparation_failures": [
+    "missing checkout virtual environment",
+    "denied default UV cache initialization",
+    "dependent missing-environment install attempt",
+    "wheel audit working directory outside Git repository"
+  ],
+  "acceptance": {
+    "cli": false,
+    "backend": false,
+    "original_software": false,
+    "native_cgate": false,
+    "physical_hardware": false,
+    "complete_quick_zone_lifecycle": false,
+    "full_parity": false
+  },
+  "documentation_added_after_terminal_runtime_readback": true,
+  "next_owner_source_descriptor": {
+    "unique_method_spans": 574,
+    "prepare_sites": 83,
+    "full_owner_product_execution": false,
+    "native_control_message_generation": false
+  },
+  "post_test_documentation": {
+    "existing_input_changed": "toolkit-cli/docs/implementation-status.md",
+    "runtime_and_tests_changed": false,
+    "added_report": "toolkit-cli/docs/thermostat-quick-zone-components.md",
+    "added_receipt": "toolkit-cli/research/fixtures/thermostat-quick-zone-components-owned-20261004.json"
+  }
+}
