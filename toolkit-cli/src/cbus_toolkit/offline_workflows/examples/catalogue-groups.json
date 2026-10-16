@@ -1,0 +1,81 @@
+{
+  "format": "cbus-offline-catalogue-groups-input-v1",
+  "catalogue_hex": "3c43427573556e6974733e3c556e6974733e3c556e69743e3c436174616c6f674e756d6265723e53594e5448455449432d4b45593c2f436174616c6f674e756d6265723e3c416c7465726e6174697665436174616c6f674e756d626572733e414c542d4b45593c2f416c7465726e6174697665436174616c6f674e756d626572733e3c556e69745469746c653e46616d696c793d57697265643b43617465676f72793d496e7075743b48696465496e436174616c6f673d66616c73653c2f556e69745469746c653e3c49734164647265737361626c653e747275653c2f49734164647265737361626c653e3c4669726d776172655265766973696f6e733e3c5265766973696f6e3e3c556e6974547970653e4b4559544553543c2f556e6974547970653e3c4d696e56657273696f6e3e312e303c2f4d696e56657273696f6e3e3c4d617856657273696f6e3e322e393c2f4d617856657273696f6e3e3c497344656661756c743e747275653c2f497344656661756c743e3c556e6974537065634e616d653e73796e7468657469632e786d6c3c2f556e6974537065634e616d653e3c2f5265766973696f6e3e3c2f4669726d776172655265766973696f6e733e3c2f556e69743e3c2f556e6974733e3c2f43427573556e6974733e",
+  "selection": {
+    "mode": "default",
+    "profile": "proposed-offline-catalogue-v1",
+    "unit_id": "27baa3acb354b52da51c2c416f6db33e223985a53d00babb24fb30f7cce5fbfd:/CBusUnits/Units[1]/Unit[1]"
+  },
+  "groups": {
+    "rows": [
+      {
+        "row_id": "pantry",
+        "address": 1,
+        "tag_name": "Pantry"
+      },
+      {
+        "row_id": "hall",
+        "address": 2,
+        "tag_name": "Hall"
+      },
+      {
+        "row_id": "discard",
+        "address": 3,
+        "tag_name": "Discarded local row"
+      }
+    ],
+    "operations": [
+      {
+        "op": "edit",
+        "row_id": "hall",
+        "address": 4,
+        "tag_name": "Landing"
+      },
+      {
+        "op": "delete",
+        "row_id": "discard"
+      },
+      {
+        "op": "add",
+        "row": {
+          "row_id": "entry",
+          "address": 5,
+          "tag_name": "Entry"
+        }
+      }
+    ],
+    "existing_groups": [
+      {
+        "row_id": "baseline-garage",
+        "address": 8,
+        "tag_name": "Garage"
+      }
+    ],
+    "policy": {
+      "profile": "proposed-offline-groups-v1",
+      "allowed_addresses": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "capacity": 16,
+      "duplicate_names": "reject-exact",
+      "max_tag_name_chars": 64
+    },
+    "target_identity": "//SYNTH/254/56",
+    "baseline_sha256": "ddd79cfb25b5c4f4b2e40bd5c341999c0dabcfc284dba638054fe535200741b8"
+  }
+}

@@ -1,0 +1,115 @@
+{
+  "format": "cbus-offline-discovery-session-input-v1",
+  "profile": "offline-discovery-session-safety-v1",
+  "surface": "discover_project_com_scan",
+  "context": {
+    "flow_id": "synthetic-com-cancel-flow",
+    "form_instance": "synthetic-discover-project",
+    "endpoint": "fake://client",
+    "connection_generation": 0,
+    "selection_generation": 0,
+    "project": null,
+    "object_identity": null,
+    "model_generation": 0,
+    "form_generation": 0
+  },
+  "rows": [
+    {
+      "row_id": "serial-1",
+      "endpoint": "fake://serial-1",
+      "project": null,
+      "object_identity": null,
+      "window_seconds": 2
+    },
+    {
+      "row_id": "serial-2",
+      "endpoint": "fake://serial-2",
+      "project": null,
+      "object_identity": null,
+      "window_seconds": 2
+    },
+    {
+      "row_id": "serial-3",
+      "endpoint": "fake://serial-3",
+      "project": null,
+      "object_identity": null,
+      "window_seconds": 2
+    }
+  ],
+  "journal_limit": 16,
+  "actions": [
+    {
+      "kind": "dispatch",
+      "issue_id": "probe-1",
+      "row_ids": [
+        "serial-1"
+      ]
+    },
+    {
+      "kind": "callback",
+      "issue_id": "probe-1",
+      "token": {
+        "context": {
+          "flow_id": "synthetic-com-cancel-flow",
+          "form_instance": "synthetic-discover-project",
+          "endpoint": "fake://serial-1",
+          "connection_generation": 0,
+          "selection_generation": 0,
+          "project": null,
+          "object_identity": null,
+          "model_generation": 0,
+          "form_generation": 0
+        },
+        "surface": "discover_project_com_scan",
+        "operation_id": "serial-1:1",
+        "row_id": "serial-1",
+        "attempt": 1
+      },
+      "outcome": {
+        "kind": "present",
+        "detail": "Synthetic completed observation",
+        "terminal": true,
+        "independent": false,
+        "code": null
+      }
+    },
+    {
+      "kind": "dispatch",
+      "issue_id": "probe-2",
+      "row_ids": [
+        "serial-2"
+      ]
+    },
+    {
+      "kind": "com_cancel"
+    },
+    {
+      "kind": "callback",
+      "issue_id": "probe-2",
+      "token": {
+        "context": {
+          "flow_id": "synthetic-com-cancel-flow",
+          "form_instance": "synthetic-discover-project",
+          "endpoint": "fake://serial-2",
+          "connection_generation": 0,
+          "selection_generation": 0,
+          "project": null,
+          "object_identity": null,
+          "model_generation": 0,
+          "form_generation": 0
+        },
+        "surface": "discover_project_com_scan",
+        "operation_id": "serial-2:1",
+        "row_id": "serial-2",
+        "attempt": 1
+      },
+      "outcome": {
+        "kind": "present",
+        "detail": "Synthetic late observation after COM Cancel",
+        "terminal": true,
+        "independent": false,
+        "code": null
+      }
+    }
+  ]
+}

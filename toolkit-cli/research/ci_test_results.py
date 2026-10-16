@@ -11,7 +11,9 @@ import argparse
 from collections import Counter
 import hashlib
 import json
+import os
 from pathlib import Path
+import re
 import subprocess
 import xml.etree.ElementTree as ET
 
@@ -50,6 +52,10 @@ def pytest_configure(config) -> None:
     config._cbus_ci_deselected = []
     config._cbus_ci_started = []
     config._cbus_ci_call_events = []
+    config._cbus_ci_installed_offline = {
+        "target_declared": bool(os.environ.get("CBUS_OFFLINE_INSTALLED_TARGET")),
+        "console_declared": bool(os.environ.get("CBUS_OFFLINE_INSTALLED_CONSOLE")),
+    }
 
 
 def pytest_deselected(items) -> None:
@@ -93,6 +99,7 @@ def pytest_sessionfinish(session, exitstatus) -> None:
         "started": session.config._cbus_ci_started,
         "call_events": session.config._cbus_ci_call_events,
         "session_exitstatus": int(exitstatus),
+        "installed_offline_configuration": session.config._cbus_ci_installed_offline,
     }
     path.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n")
 
@@ -143,7 +150,17 @@ def _junit(path: Path) -> tuple[dict[str, int], list[dict[str, str]]]:
     return {"counts": counts, "unitemized_subtests": subtests}, cases
 
 
-def audit(junit_path: Path, trace_path: Path, required_modules: list[str]) -> dict:
+def _required_module_path(module: str) -> None:
+    parts = module.split("/")
+    _require(len(parts) >= 2 and parts[0] == "tests"
+             and all(re.fullmatch(r"[A-Za-z0-9_]+", part) for part in parts[1:-1])
+             and re.fullmatch(r"test_[A-Za-z0-9_]+\.py", parts[-1]) is not None,
+             "Invalid required CI module")
+
+
+def audit(junit_path: Path, trace_path: Path, required_modules: list[str], *,
+          required_passing_prefixes: dict[str, int] | None = None,
+          require_installed_configuration: bool = False) -> dict:
     junit, cases = _junit(junit_path)
     trace = json.loads(trace_path.read_text())
     _require(isinstance(trace, dict) and trace.get("format") == TRACE_FORMAT,
@@ -178,14 +195,41 @@ def audit(junit_path: Path, trace_path: Path, required_modules: list[str]) -> di
              "Invalid pytest exit status in CI trace")
     missing_modules = []
     for module in required_modules:
-        _require(module.startswith("tests/test_") and module.endswith(".py")
-                 and ".." not in Path(module).parts,
-                 "Invalid required CI module")
+        _required_module_path(module)
         if not any(case["id"].startswith(module + "::")
                    and any(event["id"] == case["id"] and event["outcome"] == "passed"
                            for event in calls)
                    and case["outcome"] == "passed" for case in cases):
             missing_modules.append(module)
+    if require_installed_configuration:
+        configuration = trace.get("installed_offline_configuration")
+        _require(isinstance(configuration, dict)
+                 and configuration.get("target_declared") is True
+                 and configuration.get("console_declared") is True,
+                 "Installed CI selection lacks configured target and console")
+    required_prefix_results = []
+    missing_prefixes = []
+    for prefix, expected in (required_passing_prefixes or {}).items():
+        _require(isinstance(prefix, str) and "::" in prefix
+                 and "\n" not in prefix and "\r" not in prefix,
+                 "Invalid required CI passing prefix")
+        _required_module_path(prefix.split("::", 1)[0])
+        _require(type(expected) is int and expected > 0,
+                 "Invalid required CI passing case count")
+        passing = [case["id"] for case in cases
+                   if case["id"].startswith(prefix) and case["outcome"] == "passed"
+                   and any(event["id"] == case["id"] and event["outcome"] == "passed"
+                           for event in calls)]
+        nonpassing_calls = sum(event["id"].startswith(prefix)
+                               and event["outcome"] != "passed" for event in calls)
+        nonpassing_cases = sum(case["id"].startswith(prefix)
+                               and case["outcome"] != "passed" for case in cases)
+        required_prefix_results.append({"prefix": prefix, "expected": expected,
+                                        "passed": len(passing),
+                                        "nonpassing_calls": nonpassing_calls,
+                                        "nonpassing_cases": nonpassing_cases})
+        if len(passing) != expected or nonpassing_calls or nonpassing_cases:
+            missing_prefixes.append(prefix)
     counts = junit["counts"]
     if trace["session_exitstatus"] == 0 and counts["failures"] == counts["errors"] == 0:
         _require(not any(event["outcome"] == "failed" for event in calls),
@@ -199,7 +243,7 @@ def audit(junit_path: Path, trace_path: Path, required_modules: list[str]) -> di
     passed = (trace["session_exitstatus"] == 0
               and counts["failures"] == counts["errors"] == 0
               and counts["passed"] > 0
-              and not missing_modules)
+              and not missing_modules and not missing_prefixes)
     ordinals = Counter()
     call_events = []
     for event in calls:
@@ -215,6 +259,9 @@ def audit(junit_path: Path, trace_path: Path, required_modules: list[str]) -> di
         "call_events": call_events, "cases": cases,
         "required_modules": required_modules,
         "missing_required_modules": missing_modules,
+        "required_passing_prefixes": required_prefix_results,
+        "missing_required_passing_prefixes": missing_prefixes,
+        "installed_offline_configuration": trace.get("installed_offline_configuration"),
         "pytest_exit": trace["session_exitstatus"],
     }
 
@@ -226,10 +273,18 @@ def main() -> int:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--selection", required=True)
     parser.add_argument("--require-module", action="append", default=[])
+    parser.add_argument("--require-passing-prefix", action="append", nargs=2,
+                        metavar=("PREFIX", "COUNT"), default=[])
+    parser.add_argument("--require-installed-configuration", action="store_true")
     parser.add_argument("--summary", type=Path)
     args = parser.parse_args()
     try:
-        receipt = audit(args.junit, args.trace, args.require_module)
+        prefixes = {prefix: int(count) for prefix, count in args.require_passing_prefix}
+        _require(len(prefixes) == len(args.require_passing_prefix),
+                 "Duplicate required CI passing prefix")
+        receipt = audit(args.junit, args.trace, args.require_module,
+                        required_passing_prefixes=prefixes,
+                        require_installed_configuration=args.require_installed_configuration)
     except AuditError as error:
         receipt = {"format": FORMAT, "passed": False, "error": str(error)}
     except (OSError, ValueError, KeyError, TypeError, ET.ParseError,
@@ -242,7 +297,8 @@ def main() -> int:
     counts = receipt.get("counts", {})
     print(json.dumps({"selection": args.selection, "passed": receipt["passed"],
                       "counts": counts, "error": receipt.get("error"),
-                      "missing_required_modules": receipt.get("missing_required_modules", [])},
+                      "missing_required_modules": receipt.get("missing_required_modules", []),
+                      "missing_required_passing_prefixes": receipt.get("missing_required_passing_prefixes", [])},
                      sort_keys=True))
     if args.summary:
         with args.summary.open("a") as summary:
