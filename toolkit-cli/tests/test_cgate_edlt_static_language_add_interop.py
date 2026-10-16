@@ -5,13 +5,11 @@ import hashlib
 import json
 from pathlib import Path
 import re
-import subprocess
-import sys
 import uuid
 from xml.etree import ElementTree as ET
 import pytest
 import test_cgate_edlt_parent_add_dialog_interop as parent
-from test_cgate_barcode_database_interop import FaultGate, cli, graph, parse_wire
+from test_cgate_barcode_database_interop import FaultGate, cli, graph
 from test_cgate_edlt_scene_add_dialog_interop import snapshot
 
 VECTOR=Path(__file__).resolve().parents[2]/'rust/testdata/vectors/cgate_edlt_static_language_add_wire.json'
@@ -54,26 +52,14 @@ def invoke(relay,evidence,specs,tmp_path,case,*,dry_run=False,expected=0,complet
     operations=tmp_path/'operations.json';operations.write_text(json.dumps([*case['ops'],parent.widget()]))
     preferences=tmp_path/'preferences.json';preferences.write_text(json.dumps({
         'format':'cbus-edlt-display-preferences-v1','registry_key_present':True,'values':{}}))
-    argv=[sys.executable,'-m','cbus_toolkit','cgate','--host',relay.endpoint[0],
-          '--port',str(relay.endpoint[1]),'--timeout','3','unit','--lock-address','//TEST/254',
+    argv=['unit','--lock-address','//TEST/254',
           '--source','/db//TEST/254/p/20']
     if dry_run:argv.append('--dry-run')
     argv.extend(['edlt-parent-transaction','--spec-dir',str(specs),'--auto-metadata',
                  '--exclusive-project','--operations',str(operations),'--display-preferences',str(preferences)])
     if not dry_run:argv.extend(['--backup-project','PABACKUP'])
-    start=len(relay.rows);process=subprocess.run(argv,text=True,capture_output=True,timeout=20)
-    call={'argv':argv,'exit':process.returncode,'stdout':process.stdout,'stderr':process.stderr}
-    evidence['calls'].append(call);value=json.loads(process.stdout or process.stderr);call['result']=value
-    assert process.returncode==expected,call
-    assert len(relay.rows)==start+connections,call
-    if connections==0:
-        call.update(commands=[],tags=[],documents=[],statuses=[],terminals=[],reply_lines=[])
-        return value,call
-    wire=relay.rows[start];assert wire['done'].wait(5)
-    if wire['request_hex']:call.update(parse_wire(wire,complete=complete))
-    else:call.update(commands=[],tags=[],documents=[],statuses=[],terminals=[],reply_lines=[])
-    call['wire_index']=start
-    return value,call
+    return cli(relay,evidence['calls'],*argv,expected=expected,complete=complete,
+               connections=connections,process_timeout=90)
 
 
 def inspect(before,after,case,call):
