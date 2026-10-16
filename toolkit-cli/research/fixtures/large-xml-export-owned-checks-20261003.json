@@ -1,0 +1,474 @@
+{
+  "format": "cbus-large-xml-export-owned-checks-v1",
+  "date": "2026-10-03",
+  "source_base": "1cc79977ddcc7b4912e9329706d9cd94e8f99b5f",
+  "scoped_inputs": {
+    ".agents/skills/cbus-cli/references/cli.md": {
+      "bytes": 40323,
+      "sha256": "391bea565caa50c282ea48549cda9552e4ab68bb4c26dee24cb29d1ad3e7a2fd"
+    },
+    "toolkit-cli/docs/native-database-xml-files.md": {
+      "bytes": 4895,
+      "sha256": "ef8675899cb0a72f0aa83326b005525bf536014cc62267fccdf16d4864f80f9c"
+    },
+    "toolkit-cli/research/release-gates/skip-census.json": {
+      "bytes": 386043,
+      "sha256": "d8654ef22b470351604606606af584c6e94f28a4ac703abfe25bd58ad1c90766"
+    },
+    "toolkit-cli/src/cbus_toolkit/cli.py": {
+      "bytes": 280706,
+      "sha256": "c8fd5852a795b28494c0bce0ef899f2a922b760740c595997b870c1821cfa235"
+    },
+    "toolkit-cli/tests/test_cgate_barcode_database_interop.py": {
+      "bytes": 42782,
+      "sha256": "9d74a815dac98a06c6faf375c15a291bd96c45e40ba6ef1a33120cd86125b56c"
+    },
+    "toolkit-cli/tests/test_cgate_edlt_lighting_images_interop.py": {
+      "bytes": 13584,
+      "sha256": "e5067730cf49714f267651491c60c17b62b5ad54fa3abd23a156db749afb1f0e"
+    },
+    "toolkit-cli/tests/test_cgate_edlt_parent_add_dialog_interop.py": {
+      "bytes": 16171,
+      "sha256": "88b6a159bae93151d75586b444868adbea4afd0464aa5764f1a2fdee0c2db06d"
+    },
+    "toolkit-cli/tests/test_cgate_edlt_scene_controls_language_interop.py": {
+      "bytes": 21124,
+      "sha256": "96d45754897c0b2312390915ce00f516c3436fd4f713a988463ac1a24ee5aca8"
+    },
+    "toolkit-cli/tests/test_cgate_edlt_scene_inventory_interop.py": {
+      "bytes": 33648,
+      "sha256": "3bc05585499bfd07d36995058397a9e452462954ee29ecb92bcd858724ef0060"
+    },
+    "toolkit-cli/tests/test_cgate_edlt_scene_selector_interop.py": {
+      "bytes": 23290,
+      "sha256": "dc1a037dd60d0a987957a9dd1ae86d095896f1e3d88ac28452a04a174e78d3f4"
+    },
+    "toolkit-cli/tests/test_cgate_edlt_static_language_add_interop.py": {
+      "bytes": 13198,
+      "sha256": "5327edccb83d2920a1560a8dace1b08c4e4e982120bef775eec6b99c4fbbc1be"
+    },
+    "toolkit-cli/tests/test_cgate_named_database_interop.py": {
+      "bytes": 72325,
+      "sha256": "299f35d5a3b31e0c61085da6802d5a5f6815331cdb7a942ea08111d1dfb5af3c"
+    },
+    "toolkit-cli/src/cbus_toolkit/large_xml_export.py": {
+      "bytes": 913,
+      "sha256": "45e918bc58f952604f2cc4d791f3944abd4f33ad8366265fe5d96a384aba7a81"
+    },
+    "toolkit-cli/tests/test_large_xml_export.py": {
+      "bytes": 5113,
+      "sha256": "abe99766ab7ffed0520bfbb2eb309d66a1aa675a4353816e319983abd2c503ad"
+    }
+  },
+  "focused": {
+    "source": {
+      "exit": 0,
+      "passed": 71,
+      "skipped": 1,
+      "separate_subtests_passed": 6,
+      "seconds": 55.04,
+      "log": "/tmp/cbus-large-read-source-focused.log",
+      "command": "TMPDIR=/var/tmp PYTHONPATH=src:tests .venv/bin/python -m pytest tests/test_large_xml_export.py tests/test_cgate_database_project_cli.py tests/test_native_cgate_database_xml_file_cli.py -q -p no:cacheprovider -ra",
+      "log_artifact": {
+        "path": "/tmp/cbus-large-read-source-focused.log",
+        "bytes": 419,
+        "sha256": "3b45349ad435d6c3278e717e2ef026188ea0bd0be30ef5913950dc9606fdbc27"
+      }
+    },
+    "wheel": {
+      "exit": 0,
+      "passed": 71,
+      "skipped": 1,
+      "separate_subtests_passed": 6,
+      "seconds": 54.22,
+      "log": "/tmp/cbus-large-read-wheel-focused.log",
+      "command": "TMPDIR=/var/tmp PYTHONPATH=/workspace/cbus-large-read/toolkit-cli/tests /tmp/cbus-large-read-wheel/venv/bin/python -m pytest /workspace/cbus-large-read/toolkit-cli/tests/test_large_xml_export.py /workspace/cbus-large-read/toolkit-cli/tests/test_cgate_database_project_cli.py /workspace/cbus-large-read/toolkit-cli/tests/test_native_cgate_database_xml_file_cli.py -q -p no:cacheprovider -ra",
+      "log_artifact": {
+        "path": "/tmp/cbus-large-read-wheel-focused.log",
+        "bytes": 463,
+        "sha256": "9810a3481496231b040f3b050bfbcca6d30cf42f33f3817ec4e8886eaa64763d"
+      }
+    }
+  },
+  "wheel": {
+    "path": "/tmp/cbus-large-read-wheel/dist/cbus_toolkit_cli-0.1.0-py3-none-any.whl",
+    "installed_import": "/tmp/cbus-large-read-wheel/venv/lib/python3.13/site-packages/cbus_toolkit/__init__.py",
+    "extras": [
+      "test",
+      "research",
+      "serial",
+      "usb"
+    ],
+    "bytes": 2965291,
+    "sha256": "2fa1003a29603ea99404457d86280ad23a0517bc9909a94c5f209f1f8ba11f32",
+    "build_log": {
+      "path": "/tmp/cbus-large-read-wheel-build.log",
+      "bytes": 89911,
+      "sha256": "0e39a5c791e7a0a7869a8a7b731c4462b9edf319bdf08e7aaa34c063461490a8"
+    },
+    "install_log": {
+      "path": "/tmp/cbus-large-read-wheel-install.log",
+      "bytes": 743,
+      "sha256": "01e0b3085d7b361ee62bf14842b500380b5436d39364d29b37b52a72e7a79ef5"
+    },
+    "source_zip_installed_equality": {
+      "package_files": 388,
+      "mismatches": [],
+      "scope": "Every cbus_toolkit package member in the fresh wheel compared byte-for-byte against source and isolated installed package; no test totals added."
+    }
+  },
+  "setup_predecessor": {
+    "uv_build_default_cache": {
+      "exit": 2,
+      "reason": "default /home/agent/.cache/uv is read-only; final build uses UV_CACHE_DIR=/tmp/cbus-large-read-uv"
+    }
+  },
+  "source_epoch": {
+    "status": "passed-with-provisioning-skips",
+    "exit": 0,
+    "passed": 10027,
+    "skipped": 1410,
+    "separate_subtests_passed": 44477,
+    "seconds": 4778.08,
+    "command": "TMPDIR=/var/tmp make check",
+    "backend_binary_environment": null,
+    "log": "/tmp/cbus-large-read-check-final-stable.log",
+    "log_artifact": {
+      "bytes": 80179,
+      "sha256": "d7a52f74fd391179251bd0cc1e0d39251a70a09a78ce7586cd2c8ea0d107f856"
+    }
+  },
+  "interop_epoch": {
+    "status": "failed-and-interrupted",
+    "exit": 2,
+    "failed": 1,
+    "passed": 339,
+    "skipped": 1,
+    "separate_subtests_passed": 158,
+    "seconds": 3847.35,
+    "log": "/tmp/cbus-large-read-interop-final-stable.log",
+    "interruption": "Root requested SIGINT after retained failure; remaining selections not completed",
+    "failure": "test_cgate_edlt_global_images_interop.py::test_public_global_lost_first_target_save_stops_without_replay[mock]",
+    "observed": "fault.matches was 0 before first PP SAVE_TO_SOURCE; cleanup reported BrokenPipeError",
+    "log_artifact": {
+      "bytes": 56859,
+      "sha256": "a0e69e35d49b141ff9afa10ce56e0c1360a03e92592e31b4ed19834c1cb0af86"
+    }
+  },
+  "scoped_input_quietness_after_source": true,
+  "status": "owned-scopes-completed-with-provisioning-skips",
+  "scope": "Explicit read-only database get-xml export byte budget; defaults and production package unchanged after original source epoch. Later relay and external SQLite/TMPDIR successors preserve the frozen runtime inputs; complete mock and daemon selections passed in separate retained epochs.",
+  "provisioning_skip": "Pinned Java11/vendor original C-Gate CLI acceptance is not provisioned; no original software or physical hardware acceptance.",
+  "counts_policy": "Parent cases and separate subtests are never summed; focused scopes overlap broader source tests and are not added to broad totals.",
+  "scope_limits": {
+    "max_xml_bytes": 134217728,
+    "framing_allowance_bytes": 65536,
+    "event_queue_entries": 1,
+    "response_lines": 100000,
+    "owned_rust_single_output_budget_bytes": 33554432,
+    "acceptance_peer": "Explicitly owned Python loopback wire peer; successful payload exceeds 17 MiB including XML tags",
+    "native_or_hardware_executed": false,
+    "full_toolkit_parity_claimed": false
+  },
+  "interrupted_predecessors": [
+    {
+      "status": "interrupted-not-complete-acceptance",
+      "exit": 2,
+      "reason": "Source epoch interrupted before shared harness corrections; frozen predecessor binaries only in this historical epoch.",
+      "retained_summaries": [
+        "111 passed, 17 skipped, 148 subtests passed in 29.82s"
+      ],
+      "log_artifact": {
+        "path": "/tmp/cbus-large-read-check-invalidated-pre-harness.log",
+        "bytes": 3334,
+        "sha256": "454421221c3602c931af393d095b46c919f18bebdc50fe255151464d5ccdd365"
+      }
+    },
+    {
+      "status": "interrupted-not-complete-acceptance",
+      "exit": 2,
+      "reason": "Source epoch interrupted before static-language helper successor.",
+      "retained_summaries": [
+        "610 passed, 769 skipped, 579 subtests passed in 201.57s (0:03:21)"
+      ],
+      "log_artifact": {
+        "path": "/tmp/cbus-large-read-check-invalidated-before-static-language-helper.log",
+        "bytes": 12488,
+        "sha256": "4d2e62f5d00a99c78284a4435e5a8b13059574d9c100fd487f4b06132cbe360f"
+      }
+    },
+    {
+      "status": "interrupted-not-complete-acceptance",
+      "exit": 2,
+      "reason": "Source epoch interrupted while shared harness integration remained incomplete.",
+      "retained_summaries": [
+        "3067 passed, 1032 skipped, 4693 subtests passed in 1564.22s (0:26:04)"
+      ],
+      "log_artifact": {
+        "path": "/tmp/cbus-large-read-check-invalidated-incomplete-harness.log",
+        "bytes": 33430,
+        "sha256": "868ee70a1fb8edbdac5a229fbf6eda318e666e1bdef4871607acdd0896d1dcd3"
+      }
+    },
+    {
+      "status": "interrupted-not-complete-acceptance",
+      "exit": 2,
+      "reason": "Incomplete-harness interop epoch interrupted; partial passes do not establish complete gate success.",
+      "retained_summaries": [
+        "2 passed in 0.56s",
+        "210 passed, 1 skipped, 158 subtests passed in 1437.25s (0:23:57)"
+      ],
+      "log_artifact": {
+        "path": "/tmp/cbus-large-read-interop-invalidated-incomplete-harness.log",
+        "bytes": 57520,
+        "sha256": "714da808cc2b59f014478c0bfc74178421c794fc9ca8c4af15322e5a77efaf7c"
+      }
+    }
+  ],
+  "relay_successor": {
+    "status": "complete-mock-and-daemon-scopes-after-external-environment-repair",
+    "inputs": {
+      ".agents/skills/cbus-cli/references/cli.md": {
+        "bytes": 40323,
+        "sha256": "391bea565caa50c282ea48549cda9552e4ab68bb4c26dee24cb29d1ad3e7a2fd"
+      },
+      "toolkit-cli/docs/native-database-xml-files.md": {
+        "bytes": 4895,
+        "sha256": "ef8675899cb0a72f0aa83326b005525bf536014cc62267fccdf16d4864f80f9c"
+      },
+      "toolkit-cli/research/release-gates/skip-census.json": {
+        "bytes": 386043,
+        "sha256": "89d9a0144a473c5a4cf321cc4f8e7d8808ae68c9d2876b60337475d4ef1320ca"
+      },
+      "toolkit-cli/src/cbus_toolkit/cli.py": {
+        "bytes": 280706,
+        "sha256": "c8fd5852a795b28494c0bce0ef899f2a922b760740c595997b870c1821cfa235"
+      },
+      "toolkit-cli/tests/test_cgate_barcode_database_interop.py": {
+        "bytes": 43607,
+        "sha256": "59ab4afc17990b33f335e82305b48f5b2532aa02e8381e250dbe9ec9cc1fa7e3"
+      },
+      "toolkit-cli/tests/test_cgate_edlt_global_images_interop.py": {
+        "bytes": 19040,
+        "sha256": "ad91388ae9c4a7f2fe7bb9c14029574a233e095962a75e2d0eb95c94b296f75e"
+      },
+      "toolkit-cli/tests/test_cgate_edlt_lighting_images_interop.py": {
+        "bytes": 13584,
+        "sha256": "e5067730cf49714f267651491c60c17b62b5ad54fa3abd23a156db749afb1f0e"
+      },
+      "toolkit-cli/tests/test_cgate_edlt_parent_add_dialog_interop.py": {
+        "bytes": 16171,
+        "sha256": "88b6a159bae93151d75586b444868adbea4afd0464aa5764f1a2fdee0c2db06d"
+      },
+      "toolkit-cli/tests/test_cgate_edlt_scene_controls_language_interop.py": {
+        "bytes": 21124,
+        "sha256": "96d45754897c0b2312390915ce00f516c3436fd4f713a988463ac1a24ee5aca8"
+      },
+      "toolkit-cli/tests/test_cgate_edlt_scene_inventory_interop.py": {
+        "bytes": 33648,
+        "sha256": "3bc05585499bfd07d36995058397a9e452462954ee29ecb92bcd858724ef0060"
+      },
+      "toolkit-cli/tests/test_cgate_edlt_scene_selector_interop.py": {
+        "bytes": 23290,
+        "sha256": "dc1a037dd60d0a987957a9dd1ae86d095896f1e3d88ac28452a04a174e78d3f4"
+      },
+      "toolkit-cli/tests/test_cgate_edlt_static_language_add_interop.py": {
+        "bytes": 13198,
+        "sha256": "5327edccb83d2920a1560a8dace1b08c4e4e982120bef775eec6b99c4fbbc1be"
+      },
+      "toolkit-cli/tests/test_cgate_named_database_interop.py": {
+        "bytes": 72325,
+        "sha256": "299f35d5a3b31e0c61085da6802d5a5f6815331cdb7a942ea08111d1dfb5af3c"
+      },
+      "toolkit-cli/src/cbus_toolkit/large_xml_export.py": {
+        "bytes": 913,
+        "sha256": "45e918bc58f952604f2cc4d791f3944abd4f33ad8366265fe5d96a384aba7a81"
+      },
+      "toolkit-cli/tests/test_fault_gate_relay.py": {
+        "bytes": 4859,
+        "sha256": "37af43a788b34c28f041f15a006d42733e539d7e0077366f70eb56897e9ea350"
+      },
+      "toolkit-cli/tests/test_large_xml_export.py": {
+        "bytes": 5113,
+        "sha256": "abe99766ab7ffed0520bfbb2eb309d66a1aa675a4353816e319983abd2c503ad"
+      }
+    },
+    "source_epoch_relationship": "These 16 inputs are not all bound to the earlier complete source run. Later relay helper, Global receipt-finalization test, new regression module and regenerated census are separate successors; production export files remain byte-identical.",
+    "focused": {
+      "exit": 0,
+      "passed": 10,
+      "deselected": 9,
+      "seconds": 0.72,
+      "log_artifact": {
+        "path": "/tmp/cbus-large-read-relay-focused.log",
+        "bytes": 113,
+        "sha256": "ff68e5de07e4ab8d76724bf1ac33fa83c09328df5be8cfcfaffa3eafd7afc222"
+      }
+    },
+    "skip_census": {
+      "exit": 0,
+      "test_modules": 752,
+      "native_selected_required_tests": 259,
+      "log_artifact": {
+        "path": "/tmp/cbus-large-read-relay-census.log",
+        "bytes": 183,
+        "sha256": "da29d3ee12cd0601efaf865e11526dae8d9615aaccba186b40fa72efec4934ec"
+      }
+    },
+    "root_owned_global_recheck": {
+      "exit": 0,
+      "passed": 2,
+      "seconds": 53.03,
+      "scope": "Original failing Global fault node against separately owned root mock/daemon; component scope, not full interop",
+      "log_artifact": {
+        "path": "/tmp/cbus-current-global-relay-recheck.log",
+        "bytes": 99,
+        "sha256": "913fead5742599bea644e6b7d266b0fdc2fb698269961fc8fd2623087231e634"
+      }
+    },
+    "complete_interop": {
+      "status": "failed-and-interrupted",
+      "session": 1375,
+      "log": "/tmp/cbus-large-read-interop-relay-successor.log",
+      "command": "PATH=/workspace/cbus-toolchain/rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin:$PATH CARGO_HOME=/workspace/cbus-toolchain/cargo RUSTUP_HOME=/workspace/cbus-toolchain/rustup CARGO_TARGET_DIR=/workspace/cbus-large-read-target TMPDIR=/var/tmp make check-interop CGATE_MOCK_BIN=/workspace/cbus-large-read-target/debug/cgate-mock CMQTTD_BIN=/workspace/cbus-large-read-target/debug/cmqttd",
+      "completed_mock_selection": {
+        "passed": 390,
+        "skipped": 1,
+        "separate_subtests_passed": 158,
+        "seconds": 4255.0,
+        "status": "passed-with-vendor-spec-provisioning-skip"
+      },
+      "exit": 2,
+      "daemon_selection": {
+        "passed": 226,
+        "failed": 1,
+        "skipped": 1,
+        "separate_subtests_passed": 69,
+        "seconds": 1199.98,
+        "failure": "test_cmqtt_network_save_db_cli.py::OwnedNetworkSaveDBCLITests::test_public_cli_materializes_complete_rows_and_preserves_explicit_persistence_boundaries",
+        "failed_public_call": {
+          "sequence": 108,
+          "label": "portable-XML_TO_SQL",
+          "exit": 1,
+          "error": "C-Gate error: 408 Operation failed: Transform failed: Read-only file system (os error 30)",
+          "type": "CGateError"
+        },
+        "wire_totals": null,
+        "wire_totals_limit": "TemporaryDirectory cleanup removed raw artifacts; stdout traceback retains failed call identifier and error, not a complete wire census"
+      },
+      "interruption": "Root requested SIGINT of own daemon pytest only after cwd verification; exact Make exit 2",
+      "log_artifact": {
+        "path": "/tmp/cbus-large-read-interop-relay-successor.log",
+        "bytes": 111086,
+        "sha256": "b7d5ed0863ea3cca3a5f5be22dd09c48980462e42dc5f3a0f16e0f47899e3a40"
+      }
+    },
+    "root_owned_wheel_relay_recheck": {
+      "exit": 0,
+      "passed": 10,
+      "deselected": 9,
+      "seconds": 0.54,
+      "scope": "Separate root installed-wheel harness scope, not the large-export wheel scope or full source",
+      "log_artifact": {
+        "path": "/tmp/cbus-current-wheel-relay-focused-final.log",
+        "bytes": 113,
+        "sha256": "16f1b956339d1af6cf87bd5871eae0be537d06714c815ac243c79515bc5abbac"
+      }
+    },
+    "root_sqlite_target_recheck": {
+      "exit": 0,
+      "passed": 1,
+      "seconds": 59.51,
+      "scope": "Separately owned root exact failed Network SAVE DB node with SQLite PATH and TMPDIR=/tmp; not the large-read complete daemon scope",
+      "log_artifact": {
+        "path": "/tmp/cbus-current-sqlite-provision-recheck.log",
+        "bytes": 99,
+        "sha256": "8700988ce63ea29e45115b6c3c8cb6546199bd7ac43c4ebd9978bc44d01be94e"
+      }
+    },
+    "daemon_environment_successor": {
+      "status": "passed-with-specification-provisioning-skip",
+      "command": "PATH=/workspace/cbus-toolchain/sqlite/extracted/usr/bin:/workspace/cbus-toolchain/rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin:$PATH TMPDIR=/tmp make check-cmqtt-interop CMQTTD_BIN=/workspace/cbus-large-read-target/debug/cmqttd",
+      "log": "/tmp/cbus-large-read-cmqtt-sqlite-successor.log",
+      "monolithic_check_interop_exit_zero_claimed": false,
+      "inputs_unchanged_from_16_file_relay_epoch": true,
+      "exit": 0,
+      "passed": 531,
+      "skipped": 1,
+      "separate_subtests_passed": 69,
+      "seconds": 5817.23,
+      "session": 53154,
+      "log_artifact": {
+        "path": "/tmp/cbus-large-read-cmqtt-sqlite-successor.log",
+        "bytes": 53430,
+        "sha256": "99a2a44b6247806a95b7fc2ceaeeac07ee9d8f91e5d776713cf106ba5dc03764"
+      },
+      "all_16_scoped_inputs_unchanged": true
+    },
+    "input_quietness_after_complete_daemon": {
+      "input_count": 16,
+      "changed": []
+    }
+  },
+  "interop_binaries": {
+    "cgate-mock": {
+      "path": "/workspace/cbus-large-read-target/debug/cgate-mock",
+      "bytes": 135509104,
+      "sha256": "41477905f8e179767b3762fe8c311a3855f83d885053157fa7d92b508ff4e7d8"
+    },
+    "cmqttd": {
+      "path": "/workspace/cbus-large-read-target/debug/cmqttd",
+      "bytes": 229775016,
+      "sha256": "e008a7edb03a9a37d897278624b8af83c5945dc5559c29e34d171f43b196844b"
+    }
+  },
+  "original_source_interop_provisioning": "No CBUS_CGATE_MOCK_BIN/CBUS_CMQTTD_BIN overrides and no worktree rust/target binaries; full source intentionally records backend provisioning skips. Separate Make interop supplies explicit binaries.",
+  "external_sqlite_provision": {
+    "version": "3.46.1",
+    "cli": {
+      "path": "/workspace/cbus-toolchain/sqlite/extracted/usr/bin/sqlite3",
+      "bytes": 344264,
+      "sha256": "01e2610becea4b6e85b14e905a05ccfaf418f4b715f3c7641fc2fd5fc9df5da9"
+    },
+    "official_debian_package": {
+      "path": "/workspace/cbus-toolchain/sqlite/sqlite3_3.46.1-7+deb13u2_amd64.deb",
+      "bytes": 384144,
+      "sha256": "877b00bd5ab6a3792fdffebd4aeebe0b8178df3c21f0e06f6a3c5186f7a799d9"
+    },
+    "scope": "Workspace-only external CLI provision. No production, test or census source changes. Corrected TMPDIR=/tmp stays inside writable execution roots."
+  },
+  "monolithic_check_interop_exit_zero_claimed": false,
+  "remaining_limits": [
+    "No original C-Gate or physical hardware acceptance",
+    "No server delivery claim at the 128 MiB client ceiling",
+    "Historical monolithic Make check-interop epochs retained with actual exit 2; complete backend scopes passed in separate epochs",
+    "Original full source epoch predates relay-only successor; no large-read final full-source repeat is claimed",
+    "Repository mutation-memory scaling, original workload comparison and broader durability remain open in issue 77"
+  ],
+  "final_checks": {
+    "generation": {
+      "command": "make check-parity-register",
+      "exit": 0,
+      "log_artifact": {
+        "path": "/tmp/cbus-large-read-final-generation.log",
+        "bytes": 861,
+        "sha256": "bac6b9e3537b3240eeb7729898d6667ca51bf050f9786c6e95ffe0cd8200c685"
+      }
+    },
+    "native_skip_census": {
+      "command": "PYTHONPATH=src:tests .venv/bin/python research/skip_census.py --check",
+      "exit": 0,
+      "test_modules": 752,
+      "native_selected_required_tests": 259,
+      "log_artifact": {
+        "path": "/tmp/cbus-large-read-final-census.log",
+        "bytes": 183,
+        "sha256": "da29d3ee12cd0601efaf865e11526dae8d9615aaccba186b40fa72efec4934ec"
+      }
+    },
+    "git_diff_check": {
+      "command": "git diff --check",
+      "exit": 0
+    }
+  }
+}

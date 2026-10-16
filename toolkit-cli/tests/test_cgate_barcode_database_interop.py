@@ -245,12 +245,23 @@ def parse_wire(row, *, complete=True):
             "reply_lines": [payloads[tag] for tag in tags]}
 
 
-def cli(relay, calls, *arguments, expected=0, connections=1, complete=True):
+def cli(relay, calls, *arguments, expected=0, connections=1, complete=True, process_timeout=20):
     before = len(relay.rows)
     argv = [sys.executable, "-m", "cbus_toolkit", "cgate", "--host", relay.endpoint[0],
             "--port", str(relay.endpoint[1]), "--timeout", "3", *map(str, arguments)]
-    result = subprocess.run(argv, text=True, capture_output=True, timeout=20)
-    call = {"argv": argv, "exit": result.returncode, "stdout": result.stdout, "stderr": result.stderr}
+    try:
+        result = subprocess.run(argv, text=True, capture_output=True, timeout=process_timeout)
+    except subprocess.TimeoutExpired as failure:
+        def partial_text(value):
+            return value.decode("utf-8", errors="replace") if isinstance(value, bytes) else value or ""
+        calls.append({"argv": argv, "exit": None, "process_timeout_seconds": process_timeout,
+                      "timed_out": True, "stdout": partial_text(failure.stdout),
+                      "stderr": partial_text(failure.stderr), "wire_index": before,
+                      "wires": [{key: value for key, value in row.items() if key != "done"}
+                                for row in relay.rows[before:]]})
+        raise
+    call = {"argv": argv, "exit": result.returncode, "stdout": result.stdout, "stderr": result.stderr,
+            "process_timeout_seconds": process_timeout, "timed_out": False}
     calls.append(call)
     try:
         value = json.loads(result.stdout or result.stderr)
@@ -262,10 +273,13 @@ def cli(relay, calls, *arguments, expected=0, connections=1, complete=True):
     if connections:
         row = relay.rows[before]
         assert row["done"].wait(5), "CLI connection did not close"
-        call.update(parse_wire(row, complete=complete))
+        if row["request_hex"]:
+            call.update(parse_wire(row, complete=complete))
+        else:
+            call.update(commands=[], tags=[], statuses=[], terminals=[], documents=[], reply_lines=[])
         call["wire_index"] = before
     else:
-        call.update(commands=[], statuses=[], terminals=[], documents=[], reply_lines=[])
+        call.update(commands=[], tags=[], statuses=[], terminals=[], documents=[], reply_lines=[])
     return value, call
 
 
@@ -274,6 +288,52 @@ def barcode(relay, calls, catalog, *arguments, project="LAB", scan=CONFIG,
     return cli(relay, calls, "database", "barcode-add", network or "//" + project + "/CustomA",
                "--project", project, "--barcode", scan, "--catalog", catalog,
                *arguments, **expected)
+
+
+@pytest.mark.parametrize("budget", [20, 90])
+def test_cli_process_timeout_retains_partial_attempt(monkeypatch, budget):
+    from types import SimpleNamespace
+    row = {"done": None, "request_hex": "6162", "response_hex": "6364", "closed": False}
+    relay = SimpleNamespace(endpoint=("127.0.0.1", 1), rows=[])
+    calls = []
+
+    def timed_out(argv, **options):
+        assert options["timeout"] == budget
+        assert argv[argv.index("--timeout") + 1] == "3"
+        relay.rows.append(row)
+        raise subprocess.TimeoutExpired(argv, budget, output=b"partial stdout", stderr=b"partial stderr")
+
+    monkeypatch.setattr(subprocess, "run", timed_out)
+    options = {} if budget == 20 else {"process_timeout": budget}
+    with pytest.raises(subprocess.TimeoutExpired):
+        cli(relay, calls, "NOOP", **options)
+    assert len(calls) == 1
+    assert calls[0]["process_timeout_seconds"] == budget
+    assert calls[0]["timed_out"] is True and calls[0]["exit"] is None
+    assert calls[0]["stdout"] == "partial stdout" and calls[0]["stderr"] == "partial stderr"
+    assert calls[0]["wire_index"] == 0
+    assert calls[0]["wires"] == [{key: value for key, value in row.items() if key != "done"}]
+
+
+@pytest.mark.parametrize("connections", [0, 1])
+def test_cli_empty_wire_preserves_call_inventory(monkeypatch, connections):
+    from types import SimpleNamespace
+    relay = SimpleNamespace(endpoint=("127.0.0.1", 1), rows=[])
+    calls = []
+
+    def completed(argv, **options):
+        assert options["timeout"] == 20
+        if connections:
+            relay.rows.append({"request_hex": "", "response_hex": "",
+                               "done": SimpleNamespace(wait=lambda timeout: True)})
+        return SimpleNamespace(returncode=0, stdout="{}", stderr="")
+
+    monkeypatch.setattr(subprocess, "run", completed)
+    value, call = cli(relay, calls, "NOOP", connections=connections)
+    assert value == {} and calls == [call]
+    for field in ("commands", "tags", "statuses", "terminals", "documents", "reply_lines"):
+        assert call[field] == []
+    assert ("wire_index" in call) is bool(connections)
 
 
 def no_mutation(call):
@@ -375,6 +435,10 @@ class FaultGate(RecordedGate):
             with peer, socket.create_connection(self.target, timeout=5) as remote:
                 peer.settimeout(5)
                 remote.settimeout(5)
+                # Commands and fault boundaries are short writes; avoid Nagle
+                # delaying them while bulk ordinary replies are batched below.
+                peer.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+                remote.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
                 buffers = {peer: b"", remote: b""}
                 while not self.stop.is_set():
                     readable, _, _ = select.select([peer, remote], [], [], .05)
@@ -382,9 +446,12 @@ class FaultGate(RecordedGate):
                         data = source.recv(65536)
                         if not data:
                             return
-                        buffers[source] += data
-                        while b"\n" in buffers[source]:
-                            line, buffers[source] = buffers[source].split(b"\n", 1)
+                        parts = (buffers[source] + data).split(b"\n")
+                        buffers[source] = parts.pop()
+                        if source is remote and parts:
+                            row["backend_response_hex"] += (b"\n".join(parts) + b"\n").hex()
+                        pending = bytearray()
+                        for line in parts:
                             wire = line + b"\n"
                             text = line.rstrip(b"\r").decode("utf-8")
                             if source is peer:
@@ -410,9 +477,13 @@ class FaultGate(RecordedGate):
                                 row["forwarded_request_hex"] += wire.hex()
                                 remote.sendall(wire)
                             else:
-                                row["backend_response_hex"] += wire.hex()
                                 terminal = re.fullmatch(r"\[([^]]+)\] \d{3} .*", text)
                                 if terminal and terminal[1] == target_tag:
+                                    # Deliver preceding continuation bytes before
+                                    # dropping the terminal or running a callback.
+                                    if pending:
+                                        send_reply(pending)
+                                        pending.clear()
                                     if self.mode == "drop":
                                         row["lost_backend_terminal_hex"] = wire.hex()
                                         return
@@ -420,7 +491,9 @@ class FaultGate(RecordedGate):
                                         assert self.callback is not None
                                         self.callback()
                                         row["controlled_change_completed"] = True
-                                send_reply(wire)
+                                pending.extend(wire)
+                        if pending:
+                            send_reply(pending)
         except (OSError, ValueError) as error:
             self.errors.append(type(error).__name__)
         finally:

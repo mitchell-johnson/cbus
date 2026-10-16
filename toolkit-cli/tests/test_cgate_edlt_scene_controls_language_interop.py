@@ -179,7 +179,7 @@ def journey(backend, variable, profile, tmp_path):
 
 def invoke(relay, evidence, specs, tmp_path, profile, **options):
     return inventory.invoke(relay, evidence, specs, tmp_path,
-        profile['scene_operations'], parent_operations=profile['parent_operations'], **options)
+        profile['scene_operations'], parent_operations=profile['parent_operations'], process_timeout=90, **options)
 
 
 def inspect_views(result, profile):

@@ -53,8 +53,8 @@ For ST7 SENLL 2.0.01..2.4.99, `sensors light-level-plan` and
 and `--status-report-interval 3..255` seconds. They apply the complete recovered
 forced save, including a loaded broadcast minimum of 10 and power-up encoding
 before the maintenance polarity reset. Report the selected and reloaded power-up
-states separately. A stored Global interval below 3 requires an explicit valid
-selection. Repeat `--on-off-control application=primary|secondary` or
+states separately. Fresh Global initialization changes stored0..2 to3 before
+an explicit valid selection; the raw value remains part of stale-state guards. Repeat `--on-off-control application=primary|secondary` or
 `group=N|none` for an explicit ordered application/group history, including
 the source-owned eight-block load and collision callbacks. The admitted SENLL
 class has zero runtime InputKeys; its history never changes BlockAllocation.
@@ -76,6 +76,16 @@ normalization to seek a fixed point. V1 targeted plans retain their previous
 semantics. Database PP and project saves remain separate; this does not prove
 complete original form or physical output behavior. Read
 `toolkit-cli/docs/din-output-settings.md` before applying.
+
+For ordered DIN Min/Max, Turn On and recovery-delay controls, use
+`--controls FILE` with the documented JSON operation array. Both Synchronise
+checkboxes start off, assignments to unchanged displayed positions preserve
+their raw bytes, and coupled slider notifications retain source order.
+Stagger steps use dialog channel order and the original delay conversion.
+Direct edit flags cannot be mixed into a history; optional `--toolkit-save`
+performs one final save projection. Inspect `control_history` and the nested
+`settings_plan`; imported histories replay before staging. Recovery-level
+sharing, group creation and implicit initial form notifications remain open.
 
 
 `project repair SOURCE.xml --dry-run` previews the bounded local repair and
@@ -671,7 +681,7 @@ verification is not unnamed-bit persistence. Display edits and label edits
 require separate invocations. Read `toolkit-cli/docs/classic-dlt-display.md` for
 source/native evidence and the remaining physical delivery/rendering limits.
 
-Classic `dlt icon-dialog show|plan|apply` is a language-202 predefined-icon transaction with IDs 1..91 and whole selected-language finalization. `dlt unit-delivery plan|assess` takes explicit resolved key/language state and caller outcomes; it performs no device operation or recovery. Thermostat settings project disabled remote defaults but do not resolve enabled references or create their application graph. Saved-project documentors add bounded Neo/DLT/NeoClassic, PIR, temperature, scene-controller and specialized-output profiles; consumed dependency completeness and firmware admission remain explicit. Read `toolkit-cli/docs/feature-batch-2026-09-30-dlt-thermostat-documentors.md` for retained evidence, native opt-ins and the original-replay exclusion.
+Classic `dlt icon-dialog show|plan|apply` is a language-202 predefined-icon transaction with IDs 1..91 and whole selected-language finalization. `dlt unit-delivery plan|assess` takes explicit resolved key/language state and caller outcomes; it performs no device operation or recovery. Thermostat settings compose scalar/fan/temperature form-save rules with enabled remote references and their ordered application/group creation. The whole-project snapshot binds one owning transaction; graph-only changes use no PP save and one final project save. Saved-project documentors add bounded Neo/DLT/NeoClassic, PIR, temperature, scene-controller and specialized-output profiles; consumed dependency completeness and firmware admission remain explicit. Read `toolkit-cli/docs/feature-batch-2026-09-30-dlt-thermostat-documentors.md` for retained evidence, native opt-ins and the original-replay exclusion.
 
 Thermostat settings apply one recovered form save, including dependent scalar,
 fan, slave-plant and relay-drive normalization. The result can differ on a later
@@ -681,6 +691,24 @@ Quick-zone and dialog helpers remain bounded pure-model functions, separate
 from complete GUI lifecycle and physical acceptance. The explicit process
 `--temperature-preference celsius|fahrenheit` adds 15 recovered field-specific
 load/save pairs; it is independent of the device TemperatureUnits setting.
+The remote path admits source 1 through the existing scalar ApplicationNumber
+(Lighting 48–95 or 203) and source 2 through Enable Control 203. Schedule enable
+is derived from program flags. Inspect planned creations and resolved identities:
+one unused setback role is allowed, every enabled schedule role must be non-unused,
+and all selected non-unused objects must be distinct. Optional level additions default to decline; `--setback-levels accept` and
+`--schedule-levels accept` create missing addresses 1–31 for enabled non-unused
+roles. Existing Level Value metadata stays opaque and is preserved; new Values
+require exact canonical bytes. Ordered `--output-group` selections and typed
+`--output-operation` Select/Add/Edit records, including direct cancellation,
+compose the 23 output roles with the same owning transaction. Edit binds the
+currently selected identity: pass `op: "edit-output-group"`, `parameter`,
+`outcome: "accept"` and optional `name`; cancellation admits no name/address.
+Address/OID are immutable, shared renames remain causal, existing Level Values
+stay opaque and uncertain writes are never replayed. Read
+`toolkit-cli/docs/thermostat-output-add.md` and
+`toolkit-cli/docs/thermostat-output-edit.md`. Missing actual ASCII output/damper defaults also admit unrelated Unicode group inventory; comparison folds ASCII letters only and duplicate generated-name matches still refuse. Read `toolkit-cli/docs/thermostat-default-names.md` and its current focused acceptance report. Do not infer application migration, arbitrary Unicode defaults or original/hardware acceptance. The fresh quick-zone owner composes `quick-zone-view`, `quick-zone-refresh`, `quick-zone-click`, `select-plant-type` and explicit `dispatch-plant-type-change` records in the same `--output-operation` history. Require explicit `--temperature-preference celsius` and the guide's settled source profile; schema and preference refuse before connection, while changed ControlledZones refusal compares the authoritative readonly snapshot. The owner retains the loaded master role, Basic save tail, final Programmable schedule state and live reference identities. Pending owner-issued messages refuse save; diagnostic JSON is not a continuation. Read `toolkit-cli/docs/thermostat-quick-zone-controls.md`. The bounded source/installed-wheel/backend acceptance is recorded in `toolkit-cli/docs/feature-batch-2026-10-04-thermostat-quick-zone-controls.md`; native/Windows control timing and complete issue 42 remain open. Omit --set for a bounded load/save of the current snapshot. Keep
+all project networks closed, own project editing exclusively and review uncertain
+creation/save outcomes without automatic replay. Original GUI callbacks remain open.
 Template 9 group allocation requires the documented initially empty application
 and explicit `--group-sort address-ascending`; other manager orders remain refused. Read `toolkit-cli/docs/thermostat-settings.md` and
 `toolkit-cli/docs/thermostat-templates.md`.
@@ -1006,3 +1034,114 @@ using Pro blocks/scenes. Read
 `toolkit-cli/docs/project-documentation-neo-profiles.md`. A document generated
 from saved XML or one fresh database snapshot is not original GUI/print or
 physical acceptance.
+
+
+For explicit retained Time/Date callbacks, read
+`toolkit-cli/docs/edlt-time-date-controls.md`. Add `time_date_controls` inside
+the owning ordered `time-date` operation, with exact current source-issued
+ordinal/identity/value for offered writes. Binding reads preserve raw display
+255. Type writes admit only10/11 despite exposing the complete source choice
+lists. Changed10→11 claims its actual next record and available Restore0;
+same11 and11→10 preserve the neighbor. Keep full PP/global/LevelBarStyle,
+static-label, causal Reset and terminal ownership guards. JSON receipts or
+copied/rebound bindings cannot issue continuation authority. Assignment and
+notification intents do not prove raw-token equality, initialization mode,
+implicit WinForms dispatch or rendering. Use one owning PP SAVE plus a separate
+project SAVE and never replay uncertainty. If cmqttd returns the exact applied
+repository500, the transport closes and automatic parent/SceneManager inverse
+recovery is suppressed; fresh read-only inspection remains explicit.
+
+## Per-unit Neo indicator panel
+
+Use `keys neo-indicator-editor-show|neo-indicator-editor-plan` with a decoded
+schema and PP snapshot; the plan takes an ordered `--controls` JSON array.
+The existing-database `cgate unit ... neo-indicator-editor` command accepts
+`--controls` or a reviewed `--plan`, with `--dry-run` for PP staging only.
+This is separate from the Unit Magic bulk options/styles. Thirty ordinary
+profiles at firmware 2.5.00 support physical LED style/on-colour edits,
+read-only derived off-colours, global indicator callbacks and all-eight-slot
+load/save normalization. KEYE remapping and whole-parent form histories remain
+outside this lane. Consult `toolkit-cli/docs/neo-indicator-editor.md` for exact
+control eligibility, catalogue labels, hidden-field normalization and source
+versus runtime acceptance boundaries.
+
+## Explicit thermostat damper histories
+
+Use `thermostat settings preview|apply --output-operation JSON` for the seven
+records in `toolkit-cli/docs/thermostat-damper-controls.md`. FormShow precedes
+after-show/group-change/modulation callbacks. InstalledZones assignment and
+zone update are separate records; do not invent automatic notification delivery.
+Cache identities belong to this fresh owner, not an imported receipt. Binding
+changes the model; warning Click observes checked state. Inspect final factor
+serialization, ControlledZones, graph creations and whole PP preservation.
+No-op writes nothing; graph-only mutation has no PP save. Use one settings
+transaction and never replay an uncertain save. Native GUI, subscriber
+multiplicity outside the separate fixed fresh-owner profile and hardware acceptance stay open.
+The new `toolkit-cli/docs/thermostat-quick-zone-controls.md` describes that
+bounded explicit owner integration; its accepted source/wheel scope is recorded in `toolkit-cli/docs/feature-batch-2026-10-04-thermostat-quick-zone-controls.md`.
+The batch report separates failed 22-module predecessors from the corrected
+78-case source/installed-wheel follow-ups; do not combine their test counts.
+
+## Application SAFE database workflow
+
+For complete admitted Application database copy or Address/TagName edits, read
+`toolkit-cli/docs/application-database-safe.md` first. `cgate database copy`
+reads the source and sends one `DBCOPYSAFE`; `cgate database set` sends one
+`DBSETSAFE`. Supply `--project` on that same operation connection, check fresh
+issued identities and the complete graph, then explicitly save the project that
+changed. Address moves retain subtree identities and recorded order; copied
+descendants receive fresh OIDs. Incomplete sibling reservations and unsupported
+source metadata refuse before commit. Never retry an uncertain mutation or save.
+Existing Unit/shared-OID and raw owners remain unchanged.
+
+Application scalar acceptance does not prove numeric Level Value mutation.
+The separate now-adopted consistency fix is described in
+`toolkit-cli/docs/ordinary-level-value.md`. Its adopted branch separately passed
+exact source 12 and fresh installed mock 6/daemon 6 cases with the current
+runner. The separate resilience report at
+`toolkit-cli/docs/acceptance/2026-10-05-ordinary-level-resilience/report.md` records
+source five and fresh installed mock two/daemon three cases for public NetVar
+edits, lost successful Value/save receipts and disk-backed restart. Owned policy
+is source-backed; issue 131 remains open pending merge/required CI at that
+checkpoint. Prior proofs remain distinct. These focused proofs do not execute
+the full configured 1,067 explicit identities plus seven whole modules. In a build with
+the fix, use canonical numeric coordinates, `--project` on the same connection
+and a complete coherent typed byte owner. Require fresh numeric/OID/whole-XML
+readback. A coherent presently loaded foreign owner can explain an exact global
+OID-cache byte; it does not prove which historical writer created that cache.
+A cache alone is not owner authority. Unsafe, Unit/shared-OID and existing
+associated raw owners remain separate. Target 3.4 HELP*
+documents the copy/set business rules but not the missing exact mutation,
+error/no-op/case/whitespace receipts of issues 124/125. Those native boundaries,
+native/hardware acceptance and the general parity ledger remain open.
+
+The original full source Make interop checkpoint passed all 1,050 required IDs
+and seven whole core modules, with two optional UnitSpec skips. The fresh
+installed 28/31 focused phases are separate. Later matrix/serial/metadata
+composition and issue 131 adoption are outside that original acceptance.
+
+
+## Conversion XML and prepared thermostat zone controls
+
+Conversion creation, replacement and read-only recovery use a conversion-only
+semantic XML comparator. Inherited `xml:space="preserve"`, mixed-content
+separators, CDATA and whitespace-only leaves are significant; only default-scope
+element-container formatting indentation is ignored. Detached Units retain
+actual ancestor scope and namespace context. Invalid directives refuse locally.
+Read `toolkit-cli/docs/conversion-xml-preservation.md`; preserve stopped journals,
+never replay uncertain sends, and never promote legacy journal observations to
+new semantic persistence proof. Across cmqttd restart, retain the same state file
+and journal endpoint; distinguish the current durable tree from the saved image
+and keep lost-SAVE journals uncertain even when both match. Mock storage is
+process-local. This does not widen native XML schema admission.
+
+Use `{"op":"zone-checkbox-binding","binding":"MeasuredZones.Zone2","checked":true}`
+in the existing ordered `--output-operation` history for one of the 34 prepared
+thermostat Boolean bindings. Require the current fresh owner and explicit
+`--temperature-preference celsius`; equality guards, synchronous callbacks,
+shared damper/output references and one sealed family save apply. Read
+`toolkit-cli/docs/thermostat-zone-controls.md` for the exact closed roster,
+profile and Basic/Programmable consequences. JSON diagnostics are observations,
+not resumable owner state. Unknown bindings, non-Booleans and caller callbacks
+refuse before connection. Native GUI admission/dispatch, Application migration,
+Delete, unrecovered temperature/time controls and hardware remain separate work.

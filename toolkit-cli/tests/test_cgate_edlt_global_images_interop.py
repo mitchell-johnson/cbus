@@ -169,11 +169,7 @@ def journey(backend, variable, tmp_path):
         for name, value in parameter.fields.items():
             ET.SubElement(node, name).text = value
     spec_path = specs / 'KEYGL5.xml'; spec_path.write_bytes(ET.tostring(root))
-    launcher = work / 'owned-global-images-backend'
     flag = '--unitspec' if backend == 'cgate-mock' else '--cgate-unitspec'
-    launcher.write_text('#!' + sys.executable + '\nimport os,sys\nos.execv(' + repr(str(binary))
-        + ', [' + repr(str(binary)) + ', *sys.argv[1:], ' + repr(flag) + ', ' + repr(str(specs)) + '])\n')
-    launcher.chmod(0o700)
     image_path = tmp_path / 'images.json'
     image_path.write_bytes(source['project_images_raw'].encode())
     assert hashlib.sha256(image_path.read_bytes()).hexdigest() == source['project_images_sha256']
@@ -185,7 +181,7 @@ def journey(backend, variable, tmp_path):
                 'original_execution': False, 'physical_acceptance': False}
     relay = None
     try:
-        with no_contact_trap() as trap, owned_backend(backend, launcher, work) as (endpoint, record):
+        with no_contact_trap() as trap, owned_backend(backend, binary, work, extra_args=(flag, specs)) as (endpoint, record):
             evidence['processes'].append(record)
             with CGateClient(*endpoint, timeout=15) as owner, RecordedGate(endpoint) as relay:
                 document = ET.fromstring(source['project_xml'])
@@ -307,8 +303,13 @@ def test_public_global_lost_first_target_save_stops_without_replay(backend, vari
     with journey(backend, variable, tmp_path) as (owner, _relay, evidence, argv, source, vectors, endpoint):
         before = snapshot(owner, source['project'])
         with FaultGate(endpoint, 'PP SAVE_TO_SOURCE', 'drop') as fault:
-            result, call = invoke(fault, evidence, [*argv, '--category', 'general', '--backup-project', 'GLOST'],
-                                  expected=1, complete=False)
+            try:
+                result, call = invoke(fault, evidence, [*argv, '--category', 'general', '--backup-project', 'GLOST'],
+                                      expected=1, complete=False)
+            finally:
+                # Preserve backend-versus-forwarded bytes even if pre-save
+                # transport fails before the selected fault is reached.
+                evidence['lost_save_wires'] = fault.evidence()
             assert fault.matches == 1
             assert_lost_successful_save(fault)
             assert sum(command.startswith('PP SAVE_TO_SOURCE ') for command in call['commands']) == 1
@@ -317,7 +318,6 @@ def test_public_global_lost_first_target_save_stops_without_replay(backend, vari
                                                'PROJECT CLOSE ', 'DBSET', 'DBDELETE'))
                            for command in call['commands'][saved + 1:])
             assert result['edlt_global_programming_evidence']['automatic_retries'] == 0
-            evidence['lost_save_wires'] = fault.evidence()
         after = snapshot(owner, source['project'])
         general = next(case for case in vectors['masks'] if case['categories'] == ['general'])
         preservation(before, after, (source['targets'][0]['path'],), dict(general['ordered_payload']))

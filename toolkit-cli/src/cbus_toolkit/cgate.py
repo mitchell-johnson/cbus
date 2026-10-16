@@ -42,11 +42,17 @@ class CGateResponse:
 
 
 class CGateError(RuntimeError):
-    """A complete server error reply; the connection remains synchronized."""
+    """A complete server error reply, including explicit commit uncertainty."""
 
     def __init__(self, response: CGateResponse):
         self.response = response
         super().__init__(f"C-Gate error: {response.final}")
+
+    @property
+    def repository_commit_uncertain(self) -> bool:
+        """cmqttd's exact applied-but-unsynced boundary, not a generic 500."""
+        return (self.response.status == 500 and self.response.final ==
+                "500 Database commit applied; durability unconfirmed; do not retry")
 
 
 class CGateClient:
@@ -293,7 +299,12 @@ class CGateClient:
                 self._close_preserving(exc)
                 raise
             if 400 <= response.status < 600:
-                raise CGateError(response)
+                error = CGateError(response)
+                if error.repository_commit_uncertain:
+                    # Stop automatic cleanup/inverse writes on this client.
+                    # Explicit reconnect is required for read-only recovery.
+                    self._close_preserving(error)
+                raise error
             return response
 
     def read_event(self) -> str:

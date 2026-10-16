@@ -1522,7 +1522,7 @@ def plan_native_parent_metadata(text, unit_path, values, editor, operations,
     if (any(row['op'] in parent_add_kinds for row in operations)
             or native_scene_inventory
             or any(row.get('label_controls') or row.get('scene_controls')
-                   or row.get('mra_controls') or row.get('dual_key_controls') for row in operations)
+                   or row.get('mra_controls') or row.get('dual_key_controls') or row.get('time_date_controls') for row in operations)
             or any(row['op'] == 'parent-language-binding' for row in operations)
             or (requires_retained_names(operations)
                 and any(row['op'] == 'scene-manager' for row in operations))
@@ -1656,7 +1656,7 @@ def _plan_unordered(text, unit_path, supplied, editor, operations, snapshot,
                     cache_projector=None, initial_missing=(), dialog_contexts=(), parent_input=None,
                     dependency_values=None, lighting_label_bindings=(),
                     app_group_label_bindings=(), scene_widget_bindings=(), mra_control_bindings=(),
-                    dual_key_control_bindings=()):
+                    dual_key_control_bindings=(), time_date_control_bindings=()):
     dialog_rows = {(row.application, row.address): row for row in dialogs}
     required_apps = {row['application'] for row in requirements['applications']}
     required_apps.update(row.application for row in dialogs)
@@ -1761,7 +1761,8 @@ def _plan_unordered(text, unit_path, supplied, editor, operations, snapshot,
                          _app_group_label_bindings=app_group_label_bindings,
                          _scene_widget_bindings=scene_widget_bindings,
                          _mra_control_bindings=mra_control_bindings,
-                         _dual_key_control_bindings=dual_key_control_bindings)
+                         _dual_key_control_bindings=dual_key_control_bindings,
+                         _time_date_control_bindings=time_date_control_bindings)
     return NativeEdltParentPlan(
         unit_path, text, snapshot, tuple(networks),
         operations if source_operations is None else source_operations,
@@ -1791,7 +1792,7 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
     mra_context = None
     widget_control_history = any(
         'label_controls' in row or 'scene_controls' in row or 'mra_controls' in row
-        or 'dual_key_controls' in row
+        or 'dual_key_controls' in row or 'time_date_controls' in row
         for row in operations)
     scene_initialization = None
     scene_initialization_values = supplied
@@ -1853,6 +1854,7 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
     scene_widget_bindings = []
     mra_control_bindings = []
     dual_key_control_bindings = []
+    time_date_control_bindings = []
     seed_groups = {app: dict(rows) for app, rows in existing.items()}
     seed_levels = {key: dict(rows) for key, rows in levels.items()}
     if supplied['ProximityMode'][0] in (2, 3) and supplied['ProximityGroup'][0] != 255:
@@ -2025,7 +2027,11 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
                 scene_controls = options.pop('scene_controls', None)
                 mra_controls = options.pop('mra_controls', None)
                 dual_key_controls = options.pop('dual_key_controls', None)
-                if dual_key_controls is not None:
+                time_date_controls = options.pop('time_date_controls', None)
+                if time_date_controls is not None:
+                    from .edlt_time_date_parent_controls import plan_control_base
+                    widget_plan, _base_receipt = plan_control_base(widget_editor, state, options=options)
+                elif dual_key_controls is not None:
                     from .edlt_dual_key_parent_controls import plan_control_base
                     widget_plan, _base_receipt = plan_control_base(
                         widget_editor, state, kind=kind, options=options)
@@ -2144,6 +2150,15 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
                         default_initialized=_base_receipt['converted'],
                         project_sha256=_digest(language_text), provider_sha256=_digest(_json(provider)))
                     dual_key_control_bindings.append(issued)
+                    widget_plan, _receipt = project_owned_controls(editor, issued, row, projected, widget_plan)
+                    projected = {**widget_plan.expected, **widget_plan.changes}
+                if time_date_controls is not None:
+                    from .edlt_time_date_controls import issue_time_date_control_binding
+                    from .edlt_time_date_parent_controls import project_owned_controls
+                    issued = issue_time_date_control_binding(owner=editor, operation=row,
+                        values=projected, widget=widget_plan.widget, operation_number=index + 1,
+                        project_sha256=_digest(language_text), provider_sha256=None)
+                    time_date_control_bindings.append(issued)
                     widget_plan, _receipt = project_owned_controls(editor, issued, row, projected, widget_plan)
                     projected = {**widget_plan.expected, **widget_plan.changes}
                 slots = {widget_plan.widget: widget_plan.record}
@@ -2390,7 +2405,8 @@ def _plan_parent_add_dialogs(text, unit_path, supplied, editor, operations,
         app_group_label_bindings=tuple(app_group_label_bindings),
         scene_widget_bindings=tuple(scene_widget_bindings),
         mra_control_bindings=tuple(mra_control_bindings),
-        dual_key_control_bindings=tuple(dual_key_control_bindings))
+        dual_key_control_bindings=tuple(dual_key_control_bindings),
+        time_date_control_bindings=tuple(time_date_control_bindings))
     return replace(result, add_dialogs=receipts,
                    scene_metadata=scene_results[0] if scene_results else None)
 
@@ -2470,7 +2486,23 @@ class NativeEdltParentTransaction:
         self.last_result = NativeEdltParentResult(_json(self._evidence))
         return self.last_result
 
+    @staticmethod
+    def _repository_commit_uncertain(error):
+        from .cgate import CGateError
+        seen = set()
+        for _ in range(8):
+            if id(error) in seen:
+                break
+            seen.add(id(error))
+            if isinstance(error, CGateError) and error.repository_commit_uncertain:
+                return True
+            error = getattr(error, 'cause', None)
+            if error is None:
+                break
+        return False
+
     def _fail(self, error):
+        repository_uncertain = self._repository_commit_uncertain(error)
         backup_save_uncertain = (
             self._evidence['backup_source_save_attempted']
             and not self._evidence['backup_source_save_confirmed'])
@@ -2494,7 +2526,7 @@ class NativeEdltParentTransaction:
         database_uncertain = (
             backup_save_uncertain or backup_copy_uncertain
             or pp_save_uncertain or project_save_uncertain
-            or rollback_uncertain)
+            or rollback_uncertain or repository_uncertain)
         partial = (self._evidence['backup_created']
                    or self._evidence['pp_save_attempted']
                    or self._evidence['target_project_save_attempted']
@@ -2516,6 +2548,7 @@ class NativeEdltParentTransaction:
             saved=False, database_persistence=persistence,
             pp_state_uncertain=pp_uncertain,
             database_state_uncertain=database_uncertain,
+            repository_commit_uncertain=repository_uncertain,
             rollback_attempted=rollback_attempted,
             rollback_verified=rollback_verified,
             rollback_errors=rollback_errors,
@@ -3004,7 +3037,8 @@ class NativeEdltParentTransaction:
             )
             return self._finish()
         except BaseException as error:
-            if (not pp_save_attempted
+            if (not self._repository_commit_uncertain(error)
+                    and not pp_save_attempted
                     and not self._evidence.get('target_project_save_attempted')
                     and self._evidence.get('backup_created')
                     and (self._evidence.get('metadata_mutation_attempted')

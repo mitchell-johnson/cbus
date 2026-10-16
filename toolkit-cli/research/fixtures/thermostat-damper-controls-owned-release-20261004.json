@@ -1,0 +1,569 @@
+{
+  "CI_green_claim": false,
+  "Rust": {
+    "byte_exact_accepted_pair": true,
+    "new_Rust_validation": false,
+    "reused_source_files": 473
+  },
+  "accounting": "Earlier22-module epochs remain RED. The corrected 78-case one-module source/fresh-wheel follow-ups are independently green; overlap is not summed and no unified green 22-module or 186-body epoch is claimed.",
+  "artifact_pins": {
+    "freeze2-inputs": {
+      "bytes": 736123,
+      "sha256": "c62b1cfca2940d46702879c86210e4dd5980014c6e2bfe2f86bb32f1965f5555"
+    },
+    "freeze3-inputs": {
+      "bytes": 736123,
+      "sha256": "8fd14ef4a3ebd9815f5c5401fc31f01bb03e38044160b6be253d50e1687ea05e"
+    },
+    "freeze3-package": {
+      "bytes": 43030,
+      "sha256": "73128f9d1a4ab475dc3cd512d9a1099d3c501388549d8faa1d46bfdb750e7f7d"
+    },
+    "freeze3-rust": {
+      "bytes": 76352,
+      "sha256": "251c3938ab500040b66af29e766e06a88d6b97a9e3357564bad2003f6e460e90"
+    },
+    "independent-loss-test-successor": {
+      "bytes": 3071,
+      "sha256": "97fadd171c09c47b9b8d4b8a10cd613f01ad74c6c8cece92062e5abfa3feaba5"
+    },
+    "independent-public-source-adaptation": {
+      "bytes": 4370,
+      "sha256": "92c4fcabf2af3134a27e283f0f13da3128aa2e9875d4494a5d2c820ebdb95cf6"
+    },
+    "installed-coverage-stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "installed-coverage-stdout": {
+      "bytes": 267129,
+      "sha256": "aa61caeceaf0e746a32daadbc4d48a0c9fd7e2a390dda9f138bc28b73aaae5c1"
+    },
+    "installed-default-coverage": {
+      "bytes": 5257,
+      "sha256": "f18c5929286262de3436004e3fdf65c3248a9e57ac752979aba61198fbf460e9"
+    },
+    "metadata-register-check-only-successor": {
+      "bytes": 5137,
+      "sha256": "9445f82565454176989db4a4019bb89973060f7ce6abb083aecaf4b84dafb43e"
+    },
+    "registration-guide-review": {
+      "bytes": 12775,
+      "sha256": "55b0e76513f889f1015c3ec6e29edff1ed5189d3c406ce4fcee0387ef04414e7"
+    },
+    "source-final1-audit-command.json": {
+      "bytes": 2559,
+      "sha256": "c6e08066ba08899637508df3aa6c9c6442205b1916536b6d725a3c5dab2d6f52"
+    },
+    "source-final1-audit-receipt.json": {
+      "bytes": 456510,
+      "sha256": "84489c787ac44cb9b91a383cdbc94e2c2e5a0a4533f03d96480ce1388c1e43e9"
+    },
+    "source-final1-focused-result": {
+      "bytes": 96797,
+      "sha256": "09c52354ccef8ff94b8c40fddce4a30e257e1034d2c58ba8a811a45b436b200e"
+    },
+    "source-final1-junit.xml": {
+      "bytes": 148128,
+      "sha256": "391a264ae0b6edbe34333fdcf2d451905514261af266f63f94314eb221966272"
+    },
+    "source-final1-summary.json": {
+      "bytes": 660,
+      "sha256": "e1470ea1b34feba6878e43e615029e5c41150fe476421a1e21a19fa526dedbfd"
+    },
+    "source-final1-terminal-harness-review-v1.json": {
+      "bytes": 72223,
+      "sha256": "033ce76f5f36439e7d0e60c043aeeaff2fb609b5fceb12dff198300a471ca5a3"
+    },
+    "source-final1-trace.json": {
+      "bytes": 359817,
+      "sha256": "f77edd712a80ff28b769d39afc04adc395fbd45ac03be541cef024158b8e47ea"
+    },
+    "source-final2-audit-command.json": {
+      "bytes": 971,
+      "sha256": "fda11a1659a52ae54449e9532942dcaed575184b347cad140e1e24c46c568649"
+    },
+    "source-final2-audit-receipt.json": {
+      "bytes": 51367,
+      "sha256": "d78d566c9e96a24fb43d1da8f5b8a5fe0d4bc2844117286ca10c9a6aded144e5"
+    },
+    "source-final2-current-raw-review": {
+      "bytes": 41053,
+      "sha256": "426b5569d2bd5f54e3804c021afde15c1182af8390fe7de778f8f9201aa035ae"
+    },
+    "source-final2-focused-result": {
+      "bytes": 46115,
+      "sha256": "faa08c881370ba3b61572b034b74b968881511a58a54143aa1bf2efb80898ac4"
+    },
+    "source-final2-junit.xml": {
+      "bytes": 29040,
+      "sha256": "b3fb9d3f6b92ffdd7983494c2be9e8190a2fd48be9c0f88ffec5f4c15b56c127"
+    },
+    "source-final2-summary.json": {
+      "bytes": 627,
+      "sha256": "315016eabb4fef3eacb5894af7dca6b9380e1bac7d5e7b0e0dac10d5caea47da"
+    },
+    "source-final2-terminal-harness-review-v2.json": {
+      "bytes": 15815,
+      "sha256": "71e9bec1d23a9d73181c3485be0799f226a97ef529901558c42d9bc955d78d5b"
+    },
+    "source-final2-trace.json": {
+      "bytes": 35078,
+      "sha256": "ef50723b4ee95edef86ffde4968684116be5bbaede46fe181ec3ab7df525b268"
+    },
+    "static-source-check": {
+      "bytes": 1551,
+      "sha256": "c1181fd3884f64fccf6258aaf3caa362f8e68fd2e0e17b9bd0322073688654fd"
+    },
+    "wheel-final1-audit-command.json": {
+      "bytes": 3033,
+      "sha256": "17b8829ac29b19a8ee3d1afb0f9fb78ed5deb0fc62bbe6657e319010cae9285d"
+    },
+    "wheel-final1-audit-receipt.json": {
+      "bytes": 456507,
+      "sha256": "3e4ccafcfcc98525976c276275a4163e855beaae2a45cf27921161d4622e2a11"
+    },
+    "wheel-final1-focused-result": {
+      "bytes": 108466,
+      "sha256": "20e0a0d74f7555a360bd70c3dc7b36804325985970ab9eafbaa111243ea785c9"
+    },
+    "wheel-final1-junit.xml": {
+      "bytes": 148181,
+      "sha256": "d4b2098b0b7be498f63d001c531da83356f727635ffec32ad78a145cab0b0bd9"
+    },
+    "wheel-final1-summary.json": {
+      "bytes": 696,
+      "sha256": "4854b8bdc3a91c67f79ff6e51933f5e8482c1051f373416f9f86d00358197159"
+    },
+    "wheel-final1-terminal-harness-review-v1.json": {
+      "bytes": 72573,
+      "sha256": "b01619d3bc83f0f53f5ef538000f5ab85f230f71dc9d98f2ea7cbea84ff114bd"
+    },
+    "wheel-final1-trace.json": {
+      "bytes": 359817,
+      "sha256": "f77edd712a80ff28b769d39afc04adc395fbd45ac03be541cef024158b8e47ea"
+    },
+    "wheel-final2-audit-command.json": {
+      "bytes": 1444,
+      "sha256": "bf1170e529a6206deeb1a699d002eb0cd92cd8733f8d65d2c8a8a206bf7db315"
+    },
+    "wheel-final2-audit-receipt.json": {
+      "bytes": 51364,
+      "sha256": "950ec1a8dd9cf4c41fe11c32149fcc721b2e81827ab19a56c954254dae0dc7ff"
+    },
+    "wheel-final2-current-raw-review": {
+      "bytes": 41052,
+      "sha256": "e49b9c123d49557382d32a6183fe23c7c361a82db3022f626fa9eb883793a123"
+    },
+    "wheel-final2-focused-result": {
+      "bytes": 54853,
+      "sha256": "39fe41b7eed3af68cfe74a0f9608aa1ff3a74d50f95b125d4722328b45789be3"
+    },
+    "wheel-final2-junit.xml": {
+      "bytes": 29040,
+      "sha256": "cffac2363b5adfaacc10f5743e1cb8d98e24d5ef08fe75a88faa96d9dbaa646a"
+    },
+    "wheel-final2-summary.json": {
+      "bytes": 664,
+      "sha256": "963ebd010d98a6d382436e2b120f92c693cc3a366526fb92a729ca6217091844"
+    },
+    "wheel-final2-terminal-harness-review-v2.json": {
+      "bytes": 16115,
+      "sha256": "09a2a4d304ecce450f469dc40ee3d3c260dc1fa0412ef8b0e59626973546aca8"
+    },
+    "wheel-final2-trace.json": {
+      "bytes": 35078,
+      "sha256": "ef50723b4ee95edef86ffde4968684116be5bbaede46fe181ec3ab7df525b268"
+    }
+  },
+  "base_head": "63a16fe65686b338b2de759c09b127db65b3b249",
+  "base_head_is_not_complete_executed_input_identity": true,
+  "current_executed_backend_ids": [
+    "tests/test_thermostat_damper_controls_backends.py::test_public_damper_history_refuses_before_backup[group-callback-requires-form-show-daemon]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_damper_history_refuses_before_backup[group-callback-requires-form-show-mock]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_damper_lost_successful_save_never_replays[PP SAVE_TO_SOURCE-binding-save-factor-6-daemon]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_damper_lost_successful_save_never_replays[PP SAVE_TO_SOURCE-binding-save-factor-6-mock]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_damper_lost_successful_save_never_replays[PROJECT SAVE-binding-save-factor-6-daemon]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_damper_lost_successful_save_never_replays[PROJECT SAVE-binding-save-factor-6-mock]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_damper_opaque_level_stale_refuses_before_backup[daemon]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_damper_opaque_level_stale_refuses_before_backup[mock]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSA-relay-warnings-master-independent-daemon]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSA-relay-warnings-master-independent-mock]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSA-show-daemon]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSA-show-mock]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSA5-relay-warnings-master-independent-daemon]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSA5-relay-warnings-master-independent-mock]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSA5-show-daemon]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSA5-show-mock]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSB-relay-warnings-master-independent-daemon]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSB-relay-warnings-master-independent-mock]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSB-show-daemon]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSB-show-mock]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSB5-relay-warnings-master-independent-daemon]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSB5-relay-warnings-master-independent-mock]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSB5-show-daemon]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[PC_TSB5-show-mock]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[after-show-help-only-daemon]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[after-show-help-only-mock]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-and-click-separate-daemon]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-and-click-separate-mock]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-mask-only-no-inferred-update-daemon]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-mask-only-no-inferred-update-mock]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-save-factor-0-daemon]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-save-factor-0-mock]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-save-factor-1-daemon]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-save-factor-1-mock]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-save-factor-10-daemon]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-save-factor-10-mock]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-save-factor-2-daemon]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-save-factor-2-mock]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-save-factor-3-daemon]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-save-factor-3-mock]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-save-factor-6-daemon]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[binding-save-factor-6-mock]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[bit-zero-not-a-damper-daemon]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[bit-zero-not-a-damper-mock]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[click-false-no-alert-daemon]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[click-false-no-alert-mock]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[click-true-alert-without-model-write-daemon]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[click-true-alert-without-model-write-mock]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[expansion-shrink-reexpand-daemon]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[expansion-shrink-reexpand-mock]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[first-free-not-old-source-byte-daemon]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[first-free-not-old-source-byte-mock]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[four-first-free-source-order-daemon]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[four-first-free-source-order-mock]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[generated-tag-at-unused-no-create-daemon]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[generated-tag-at-unused-no-create-mock]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[graph-only-created-zones-retained-without-pp-change-daemon]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[graph-only-created-zones-retained-without-pp-change-mock]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[inactive-caches-before-unused-daemon]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[inactive-caches-before-unused-mock]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[only-zone-1-daemon]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[only-zone-1-mock]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[only-zone-2-daemon]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[only-zone-2-mock]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[only-zone-3-daemon]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[only-zone-3-mock]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[only-zone-4-daemon]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[only-zone-4-mock]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[reopen-does-not-clear-cache-daemon]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[reopen-does-not-clear-cache-mock]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[same-generated-tag-existing-reuse-daemon]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[same-generated-tag-existing-reuse-mock]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[setup-checked-does-not-click-daemon]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[setup-checked-does-not-click-mock]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[slave-existing-stays-model-bound-daemon]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[slave-existing-stays-model-bound-mock]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[slave-missing-remains-nil-daemon]",
+    "tests/test_thermostat_damper_controls_backends.py::test_public_explicit_damper_zone_history[slave-missing-remains-nil-mock]"
+  ],
+  "current_source_freeze": {
+    "input_count": 4133,
+    "inputs": {
+      "bytes": 736123,
+      "sha256": "8fd14ef4a3ebd9815f5c5401fc31f01bb03e38044160b6be253d50e1687ea05e"
+    },
+    "package": {
+      "bytes": 43030,
+      "sha256": "73128f9d1a4ab475dc3cd512d9a1099d3c501388549d8faa1d46bfdb750e7f7d"
+    },
+    "package_file_count": 390,
+    "rust": {
+      "bytes": 76352,
+      "sha256": "251c3938ab500040b66af29e766e06a88d6b97a9e3357564bad2003f6e460e90"
+    },
+    "rust_input_count": 473
+  },
+  "earlier_optional_source_skip_ids": [
+    "tests/test_thermostat_damper_controls.py::DamperControlTests::test_fresh_source_data_matches_annex",
+    "tests/test_thermostat_output_add.py::OutputAddTests::test_optional_static_source",
+    "tests/test_thermostat_output_default_ascii_static.py::ASCIIDefaultSourceTests::test_fresh_pinned_source_data_matches_published_facts",
+    "tests/test_thermostat_output_edit.py::OutputEditTests::test_optional_static_source",
+    "tests/test_thermostat_output_groups.py::OutputGroupTests::test_optional_static_source",
+    "tests/test_thermostat_remote_levels.py::RemoteLevelTests::test_optional_static_source",
+    "tests/test_thermostat_remote_references.py::RemoteReferenceTests::test_optional_static_source"
+  ],
+  "execution_epochs": {
+    "source-final1": {
+      "auditor_exit": 1,
+      "closure": {
+        "binaries_quiet": true,
+        "freeze_artifacts_quiet": true,
+        "git_head_quiet": true,
+        "package_quiet": true,
+        "rust_quiet": true,
+        "source_quiet": true
+      },
+      "failed_backend_parent_count": 4,
+      "origin_scope": "Loaded-module startup/terminal snapshots, not continuous import events.",
+      "parent_outcomes": {
+        "failure": 4,
+        "passed": 349,
+        "skipped": 7
+      },
+      "passing_backend_parent_count": 182,
+      "pytest_exit": 1,
+      "selected_modules": [
+        "tests/test_thermostat_remote_references.py",
+        "tests/test_thermostat_remote_levels.py",
+        "tests/test_thermostat_output_groups.py",
+        "tests/test_thermostat_output_add.py",
+        "tests/test_thermostat_output_add_native.py",
+        "tests/test_thermostat_post_load.py",
+        "tests/test_thermostat_settings.py",
+        "tests/test_thermostat_settings_temperature_vectors.py",
+        "tests/test_thermostat_output_edit.py",
+        "tests/test_thermostat_output_edit_native.py",
+        "tests/test_thermostat_output_edit_opaque_values.py",
+        "tests/test_thermostat_remote_references_backends.py",
+        "tests/test_thermostat_remote_levels_backends.py",
+        "tests/test_thermostat_output_groups_backends.py",
+        "tests/test_thermostat_output_add_backends.py",
+        "tests/test_thermostat_output_edit_backends.py",
+        "tests/test_thermostat_output_default_unicode.py",
+        "tests/test_thermostat_output_default_unicode_backends.py",
+        "tests/test_thermostat_output_default_ascii_static.py",
+        "tests/test_thermostat_damper_controls.py",
+        "tests/test_cli_thermostat_damper_controls.py",
+        "tests/test_thermostat_damper_controls_backends.py"
+      ],
+      "separate_subtests": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 1060,
+        "reported": 1060,
+        "skipped": 0
+      },
+      "started_backend_parent_count": 186,
+      "status": "RED_RETAINED_PREDECESSOR"
+    },
+    "source-final2": {
+      "auditor_exit": 0,
+      "closure": {
+        "binaries_quiet": true,
+        "freeze_artifacts_quiet": true,
+        "git_head_quiet": true,
+        "package_quiet": true,
+        "rust_quiet": true,
+        "source_quiet": true
+      },
+      "failed_backend_parent_count": 0,
+      "origin_scope": "Loaded-module startup/terminal snapshots, not continuous import events.",
+      "parent_outcomes": {
+        "passed": 78
+      },
+      "passing_backend_parent_count": 78,
+      "pytest_exit": 0,
+      "selected_modules": [
+        "tests/test_thermostat_damper_controls_backends.py"
+      ],
+      "separate_subtests": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 0,
+        "reported": 0,
+        "skipped": 0
+      },
+      "started_backend_parent_count": 78,
+      "status": "PASS_CURRENT_CORRECTED_78_ONLY"
+    },
+    "wheel-final1": {
+      "auditor_exit": 1,
+      "closure": {
+        "Rust473_quiet": true,
+        "binary_quiet": true,
+        "copied_reference_quiet": true,
+        "freeze_quiet": true,
+        "head_quiet": true,
+        "package_quiet": true,
+        "prior_proof_pins_quiet": true,
+        "source_quiet": true
+      },
+      "failed_backend_parent_count": 4,
+      "origin_scope": "Loaded-module startup/terminal snapshots, not continuous import events.",
+      "parent_outcomes": {
+        "failure": 4,
+        "passed": 349,
+        "skipped": 7
+      },
+      "passing_backend_parent_count": 182,
+      "pytest_exit": 1,
+      "selected_modules": [
+        "tests/test_thermostat_remote_references.py",
+        "tests/test_thermostat_remote_levels.py",
+        "tests/test_thermostat_output_groups.py",
+        "tests/test_thermostat_output_add.py",
+        "tests/test_thermostat_output_add_native.py",
+        "tests/test_thermostat_post_load.py",
+        "tests/test_thermostat_settings.py",
+        "tests/test_thermostat_settings_temperature_vectors.py",
+        "tests/test_thermostat_output_edit.py",
+        "tests/test_thermostat_output_edit_native.py",
+        "tests/test_thermostat_output_edit_opaque_values.py",
+        "tests/test_thermostat_remote_references_backends.py",
+        "tests/test_thermostat_remote_levels_backends.py",
+        "tests/test_thermostat_output_groups_backends.py",
+        "tests/test_thermostat_output_add_backends.py",
+        "tests/test_thermostat_output_edit_backends.py",
+        "tests/test_thermostat_output_default_unicode.py",
+        "tests/test_thermostat_output_default_unicode_backends.py",
+        "tests/test_thermostat_output_default_ascii_static.py",
+        "tests/test_thermostat_damper_controls.py",
+        "tests/test_cli_thermostat_damper_controls.py",
+        "tests/test_thermostat_damper_controls_backends.py"
+      ],
+      "separate_subtests": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 1060,
+        "reported": 1060,
+        "skipped": 0
+      },
+      "started_backend_parent_count": 186,
+      "status": "RED_RETAINED_PREDECESSOR"
+    },
+    "wheel-final2": {
+      "auditor_exit": 0,
+      "closure": {
+        "Rust473_quiet": true,
+        "binary_quiet": true,
+        "copied_reference_quiet": true,
+        "freeze_quiet": true,
+        "head_quiet": true,
+        "package_quiet": true,
+        "prior_proof_pins_quiet": true,
+        "source_quiet": true
+      },
+      "failed_backend_parent_count": 0,
+      "origin_scope": "Loaded-module startup/terminal snapshots, not continuous import events.",
+      "parent_outcomes": {
+        "passed": 78
+      },
+      "passing_backend_parent_count": 78,
+      "pytest_exit": 0,
+      "selected_modules": [
+        "tests/test_thermostat_damper_controls_backends.py"
+      ],
+      "separate_subtests": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 0,
+        "reported": 0,
+        "skipped": 0
+      },
+      "started_backend_parent_count": 78,
+      "status": "PASS_CURRENT_CORRECTED_78_ONLY"
+    }
+  },
+  "format": "cbus-thermostat-damper-controls-owned-release-v2",
+  "fresh_installed_wheel": {
+    "epoch": "wheel-final2",
+    "fresh_build_install": true,
+    "internal_copied_reference_quiet": true,
+    "origin_scope": "Actual pytest and CLI loaded-module startup/terminal snapshots, not continuous imports.",
+    "package_files": 390,
+    "source_zip_installed_equality": true
+  },
+  "full_Toolkit_parity": false,
+  "initialized_original_form_acceptance": false,
+  "installed_default_completeness": {
+    "accepted_obligations": 0,
+    "census_complete": false,
+    "complete": false,
+    "copied_root_diagnostic_observed": false,
+    "defined_obligations": 3,
+    "denominator_ready": false,
+    "evidence_artifacts_verified": false,
+    "evidence_fingerprints_verified": false,
+    "exit": 1,
+    "feature_categories": {
+      "functionality_estimate": false,
+      "implemented": 18,
+      "implemented_percent": 42.86,
+      "in_progress": 22,
+      "pending": 2,
+      "total": 42
+    },
+    "obligation_total": 487,
+    "provisional_obligations": 484,
+    "trusted_evidence_root_supplied": false
+  },
+  "limits": [
+    "Explicit fresh-model callback slice only; no imported receipt continuation.",
+    "Complete quick-zone Include/Exclude, automatic subscriber multiplicity, queued delivery, application migration and complete form lifecycle remain open.",
+    "Warning/grid rendering, native-server and physical thermostat acceptance are separate.",
+    "Earlier and successor cohorts overlap and are not additive. Seven earlier source-data skips remain disclosed.",
+    "Saved native wire references retain only their declared wire-contract scope. Static inspection executes no original instructions."
+  ],
+  "main_merge_claim": false,
+  "metadata_successor": {
+    "all_exits": 0,
+    "changed_outputs": 0,
+    "check_only_commands": 3,
+    "commands": 5,
+    "metadata_step_did_not_rerun_captures_services_or_tests": true,
+    "other_inputs_quiet": true
+  },
+  "native_server_acceptance": false,
+  "physical_hardware_acceptance": false,
+  "raw_current78_counts": {
+    "source-final2": {
+      "actual_lost_200": 4,
+      "calls": 148,
+      "cleaned_processes": 78,
+      "commands": 8820,
+      "connections": 148,
+      "graph_only": 2,
+      "loss": 4,
+      "positive": 70,
+      "refusal": 2,
+      "stale": 2,
+      "startup_frames": 312
+    },
+    "wheel-final2": {
+      "actual_lost_200": 4,
+      "calls": 148,
+      "cleaned_processes": 78,
+      "commands": 8820,
+      "connections": 148,
+      "graph_only": 2,
+      "loss": 4,
+      "positive": 70,
+      "refusal": 2,
+      "stale": 2,
+      "startup_frames": 312
+    }
+  },
+  "raw_qualification": "Artifact-only scoped raw review; producer-authored semantics are excluded from independent self-credit, and no raw-to-nodeid association is invented beyond the reader declared evidence.",
+  "registered_roster": {
+    "Make_selectors": 907,
+    "damper_backend_registered_ids": 78,
+    "inherited745_sha256": "1c530f89c4780322fffe47f24ef9aa6943ce387d58b5829ea181c31c741928d8",
+    "inherited_thermostat_registered_ids": 108,
+    "prior829_sha256": "23ed7add09cabc63c5068070e69b44d7f9004a155a822305cec3287a10975afb",
+    "registration_is_not_current_execution_count": true,
+    "thermostat_backend_registered_ids": 186
+  },
+  "static_source": {
+    "bindings": 5,
+    "method_spans": 92,
+    "original_instructions_executed": false,
+    "structural_checks": 33
+  },
+  "test_only_successor": {
+    "after": {
+      "bytes": 21645,
+      "sha256": "5733e1f2f2dd79262a72ecbbae5723cf78cd7f8519a5bc8af3f1f1c41b86d868"
+    },
+    "before": {
+      "bytes": 21589,
+      "sha256": "b51a7cf4dc0f46723be3db83685f5310a51b7642b6cbb2b1ab304ce2fecc88d5"
+    },
+    "changed_path": "toolkit-cli/tests/test_thermostat_damper_controls_backends.py",
+    "correction": "Match the actual tagged successful reply without a terminal period; record fault wires before assertions. All 17 lost-save assertions retained.",
+    "other_frozen_inputs_unchanged": 4132,
+    "package_files_unchanged": 390,
+    "production_change": false
+  }
+}

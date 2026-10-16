@@ -1,0 +1,9 @@
+{
+  "format": "cmqttd-repository-commit-uncertainty-v1",
+  "scope": "local cmqttd JSON repository; synthetic post-rename directory-sync fault",
+  "status": 500,
+  "final": "500 Database commit applied; durability unconfirmed; do not retry",
+  "wire": "[fault] 500 Database commit applied; durability unconfirmed; do not retry\r\n",
+  "original_server_evidence": false,
+  "physical_acceptance": false
+}

@@ -1,0 +1,59 @@
+{
+  "artifacts": [
+    {
+      "bytes": 23072,
+      "path": "toolkit-cli/research/edlt_time_date_control_static.py",
+      "sha256": "c0c82e2cb82a10c961484118cf1a23a6f1ef489abbb3c5c0401fa0f3dc2f9b50"
+    },
+    {
+      "bytes": 1083666,
+      "path": "toolkit-cli/research/fixtures/edlt-time-date-control-source-annex.json",
+      "sha256": "3e319f735db16fb66c7346d05d0a5012e8c7a73f4b315cd3c58797a215c006b7"
+    },
+    {
+      "bytes": 503672,
+      "path": "toolkit-cli/research/fixtures/edlt-time-date-control-literal-vectors.json",
+      "sha256": "7606e2dec523cc010a8ae4c6cb089d4788a328bdd76da7c50ccdc8b6de9612ad"
+    },
+    {
+      "bytes": 14621,
+      "path": "toolkit-cli/tests/test_edlt_time_date_control_static.py",
+      "sha256": "bd7a76305a18f312bf31d901ea3d10aeb6102d045c2ef0399c08951aa44d18ea"
+    }
+  ],
+  "format": "cbus-edlt-time-date-control-provenance-v1",
+  "framework_executed": false,
+  "full_parity": false,
+  "hardware_executed": false,
+  "literal_authoring": {
+    "method": "Independent static source transcription with complete synthetic32B selected/adjacent records and separately qualified source-only properties",
+    "producer_imported": false,
+    "producer_readback_used_as_expected": false
+  },
+  "literal_profiles": {
+    "boundary_cases": 14,
+    "control_cases": 150,
+    "offered_choice_cases": 24,
+    "parent_layout_cases": 5,
+    "property_cases": 113,
+    "raw_token_notification_cases": 32,
+    "source_transition_only_cases": 2
+  },
+  "original_executed": false,
+  "service_executed": false,
+  "source_limits": [
+    "Source-only direct property setters differ from offered controls",
+    "Adjacent standby Restore fields absent; Blank default inheritedRestore0 cannot create persisted fields",
+    "Physical0x119bit7 is namedLevelBarStyle; no unnamed-reserved-bit claim",
+    "Full source widget choices include unrelated model types which this adapter explicitly refuses",
+    "Exact raw-token event facts require token/init-mode profile and do not assert subscriber/host delivery",
+    "Covered/duplicate layout acceptance belongs owning parent service, not isolated callback profiles"
+  ],
+  "source_profile": {
+    "decompiled_declarations": 29,
+    "managed_method_spans": 71,
+    "original_input_pins": 15,
+    "panel_bindings": 5,
+    "static_checks": 41
+  }
+}

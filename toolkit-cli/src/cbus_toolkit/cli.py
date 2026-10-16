@@ -235,6 +235,8 @@ def _din_options(parser):
     parser.add_argument("--logic-level-store", choices=onoff)
     parser.add_argument("--toolkit-save", action="store_true", default=None,
                         help="Include the admitted Toolkit agent-save normalization for every channel")
+    parser.add_argument("--controls", dest="din_controls", type=Path,
+                        help="JSON array of ordered DIN slider, Synchronise and Stagger controls")
 
 
 def _din_settings(args):
@@ -263,6 +265,16 @@ def _din_editor(args, unit_type):
     if unit_type not in PROFILES:
         check_profile(unit_type, None)
     return DinOutputEditor(UnitSpecStore(args.spec_dir).load(PROFILES[unit_type].spec_filename), unit_type)
+
+
+def _din_control_plan(editor, args, current, *, identity=None):
+    from .edlt_global_cli import read_json
+    edits = {k: v for k, v in _din_settings(args).items() if v is not None}
+    if set(edits) - {"toolkit_save"}:
+        raise ValueError("--controls cannot be combined with direct edit options; put ordered edits in the control history")
+    operations = read_json(args.din_controls, limit=1024 * 1024)
+    return editor.control_plan(current, operations, identity=identity,
+                               toolkit_save=bool(args.toolkit_save))
 
 
 def _edlt_database_profile(unit_type, firmware, catalog_number):
@@ -1221,6 +1233,9 @@ def _write_unit_template(path, template):
 
 
 def _firmware(args):
+    if args.action == "ncc-transcript":
+        from .firmware_ncc_cli import run as run_ncc_transcript
+        return run_ncc_transcript(args)
     if args.action.startswith("usb-dfu-"):
         from .dfu import MAX_IMAGE_SIZE
         from .dfu_transport import parse_descriptors
@@ -1375,6 +1390,8 @@ def build_parser():
     parser.add_argument("--version", action="version", version=__version__)
     parser.add_argument("--compact", action="store_true", help="Emit single-line JSON")
     commands = parser.add_subparsers(dest="area", required=True)
+    from .offline_workflows.cli import options as offline_workflow_options
+    offline_workflow_options(commands)
     from .edlt_templates_cli import options as edlt_template_options
     edlt_template_options(commands)
     from .toolkit_preferences_cli import options as preference_options
@@ -1855,6 +1872,8 @@ def build_parser():
             p.add_argument("--project", help=_DATABASE_PROJECT_HELP)
         if action == "get-xml":
             p.add_argument("--output", type=Path, help="Write raw native XML to a new local file")
+            p.add_argument("--max-xml-bytes", type=int,
+                           help="Explicit export byte bound, 1..134217728; requires --output; server limits still apply")
         if action == "set":
             p.add_argument("value")
         if action == "add":
@@ -2437,6 +2456,8 @@ def build_parser():
     iope_offline_options(commands)
     from .iope_workflow_cli import options as iope_workflow_options
     iope_workflow_options(commands)
+    from .iope_output_display import options as iope_output_display_options
+    iope_output_display_options(commands)
     from .dlt_cli import options as dlt_options
     dlt_options(commands)
     from .wireless_cli import options as wireless_options
@@ -2560,6 +2581,8 @@ def build_parser():
     p.add_argument("--profile", choices=("KEY1", "KEY2", "KEY4"), default="KEY4")
     firmware = commands.add_parser("firmware", help="eDLT diagnostics, offline firmware inspection and explicitly selected USB DFU operations")
     fwops = firmware.add_subparsers(dest="action", required=True)
+    from .firmware_ncc_cli import options as ncc_transcript_options
+    ncc_transcript_options(fwops)
     p = fwops.add_parser("usb-list", help="List cached metadata for eDLT USB candidates without reading strings or claiming interfaces")
     p.add_argument("--max-devices", type=_number, default=64, help="Maximum enumeration size before reporting an incomplete result")
     p = fwops.add_parser("usb-inspect", help="Read only standard USB descriptors/configuration for an explicitly selected eDLT")
@@ -2900,6 +2923,10 @@ def _cgate(args):
     database_xml_document = None
     database_xml_sha256 = None
     database_project = None
+    export_connection_limits = {}
+    if args.action == "database" and args.remote_action == "get-xml":
+        from .large_xml_export import limits as xml_export_limits
+        export_connection_limits = xml_export_limits(args)
     file_upload_plan = None
     barcode_plan = None
     tweaker_plan = None
@@ -2961,6 +2988,7 @@ def _cgate(args):
                  or (args.action == "network" and args.remote_action == "diagnose"))
     connection_limits = {"max_line_bytes": 4 * 1024 * 1024 + 4096} if args.action in ("edlt-labels", "edlt-project-images") or large_xml else {}
     connection_limits.update(wireless_limits)
+    connection_limits.update(export_connection_limits)
     with tweaker_lifecycle_guard, tweaker_connection_guard(args), barcode_connection_guard(args), connection_guard(args), CGateClient(args.host, args.port or (20123 if args.tls else 20023),
                      timeout=timeout, ssl_context=context, **connection_limits) as client:
         if args.action == "file-upload":
@@ -3058,6 +3086,8 @@ def _cgate(args):
                 result = db.get(args.path, xml=args.remote_action == "get-xml")
                 if args.remote_action == "get-xml" and args.output is not None:
                     raw = xml_text(result).encode("utf-8")
+                    from .large_xml_export import verify_size
+                    verify_size(raw, getattr(args, "max_xml_bytes", None))
                     _write_cgate_xml_export(args.output, raw)
                     result = {"format": "cbus-cgate-dbgetxml-export-v1", "path": args.path,
                               "file": str(args.output), "bytes": len(raw),
@@ -3675,6 +3705,11 @@ def _programming(args, client):
     from .sensor_dialog_cli import NATIVE_ACTIONS as sensor_dialog_actions
     mutable = mutable or args.remote_action in sensor_dialog_actions
     destination = args.destination or args.source
+    if args.remote_action == "neo-indicator-editor":
+        if not args.source or not args.source.lower().startswith("/db//"):
+            raise ValueError("The Neo indicator editor requires an existing database --source")
+        if args.destination is not None and args.destination != args.source:
+            raise ValueError("The Neo indicator editor saves only to its selected database source")
     if mutable and not args.dry_run and not destination:
         raise ValueError("Edits need --source or --destination, or --dry-run")
     if args.remote_action in ("edlt-lighting", "edlt-enable", "edlt-shutter", "edlt-timer", "edlt-fan", "edlt-multilevel", "edlt-room-courtesy", "edlt-measurement", "edlt-parent-form", "edlt-parent-transaction", "edlt-time-date", "edlt-hvac", "edlt-display", "edlt-mra", "edlt-mra-globals", "edlt-general", "edlt-standby", "edlt-colours", "edlt-navigation", "edlt-quick-status", "edlt-activation", "edlt-page-control", "edlt-lifecycle", "edlt-restore-levels", "edlt-applications", "edlt-corridor", "edlt-blank", "edlt-reset-controls", "edlt-scene-manager", "edlt-scene-capture", "edlt-scene", "edlt-scenes") and destination and not destination.lower().startswith("/db//"):
@@ -3917,18 +3952,24 @@ def _programming(args, client):
             din_editor._verify_profile(session)
             edits = {k: v for k, v in _din_settings(args).items() if v is not None}
             if args.show:
-                if edits or args.din_plan is not None:
-                    raise ValueError("--show cannot be combined with edits or --plan")
+                if edits or args.din_plan is not None or args.din_controls is not None:
+                    raise ValueError("--show cannot be combined with edits, --controls or --plan")
                 return din_editor.show(session.values())
             if args.din_plan is not None:
                 from .din_output_settings import DinPlan
+                from .din_output_controls import DinControlPlan, CONTROL_PLAN_FORMAT
                 from .edlt_global_cli import read_json
-                if edits:
-                    raise ValueError("--plan cannot be combined with edit options")
-                result = din_editor.apply(session, DinPlan.from_dict(read_json(args.din_plan, limit=1024 * 1024)))
+                if edits or args.din_controls is not None:
+                    raise ValueError("--plan cannot be combined with edit options or --controls")
+                data = read_json(args.din_plan, limit=1024 * 1024)
+                plan_type = (DinControlPlan if isinstance(data, dict)
+                             and data.get("format") == CONTROL_PLAN_FORMAT else DinPlan)
+                result = din_editor.apply(session, plan_type.from_dict(data))
+            elif args.din_controls is not None:
+                result = din_editor.apply(session, _din_control_plan(din_editor, args, session.values()))
             else:
                 if not edits:
-                    raise ValueError("Supply DIN edit options, --plan or --show")
+                    raise ValueError("Supply DIN edit options, --controls, --plan or --show")
                 result = din_editor.configure(session, **edits)
             values = session.values()
         elif args.remote_action == "sensor-occupancy":
@@ -4316,6 +4357,9 @@ def run(args):
         from .wireless_cli import offline as wireless_offline
         return wireless_offline(args)
     if args.area == "iope-workflow":
+        if args.family == "output" and args.action in ("restrike-delay-time", "restrike-delay-choices"):
+            from .iope_output_display import run as iope_output_display_run
+            return iope_output_display_run(args)
         from .iope_workflow_cli import run as iope_workflow_run
         return iope_workflow_run(args)
     if args.area == "iope-settings":
@@ -4331,6 +4375,8 @@ def run(args):
         editor = _din_editor(args, unit_type)
         if args.action == "show":
             return editor.show(values), 0
+        if args.din_controls is not None:
+            return _din_control_plan(editor, args, values, identity=tuple(identity) or None).as_dict(), 0
         edits = {k: v for k, v in _din_settings(args).items() if v is not None}
         return editor.plan(values, identity=tuple(identity) or None, **edits).as_dict(), 0
     if args.area == "sensors":
@@ -4544,6 +4590,14 @@ def run(args):
 
 
 def main(argv=None):
+    argv = list(sys.argv[1:] if argv is None else argv)
+    prefix = 0
+    while prefix < len(argv) and argv[prefix] == "--compact":
+        prefix += 1
+    if argv[prefix:prefix + 1] == ["offline-workflows"]:
+        from .offline_workflows.cli import main as offline_workflow_main
+        offline_args = (["--compact"] if prefix else []) + argv[prefix + 1:]
+        return offline_workflow_main(offline_args, prog="cbus-toolkit offline-workflows")
     args = build_parser().parse_args(argv)
     from .edlt_global_cli import error_payload as global_error_payload
     from .edlt_scene_live_cli import error_payload as live_error_payload

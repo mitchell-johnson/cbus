@@ -14,6 +14,7 @@ import re
 from uuid import uuid4
 
 from .addressing import NetworkAddressing, _container
+from .cgate import CGateError
 from .edlt import EdltError
 from .edlt_application_cache import (
     ApplicationCache, CachedDisplay, CachedGroupList,
@@ -1260,6 +1261,8 @@ class NativeSceneMetadataTransaction:
         uncertain = (backup_save_uncertain or backup_copy_uncertain
                      or pp_save_uncertain or project_save_uncertain
                      or rollback_uncertain
+                     or (isinstance(error, CGateError)
+                         and error.repository_commit_uncertain)
                      or (crossed_save_boundary and not rollback_verified
                          and not self._evidence['persistence_verified']))
         if rollback_verified:
@@ -1724,7 +1727,9 @@ class NativeSceneMetadataTransaction:
             )
             return self._finish()
         except BaseException as error:
-            if (not pp_save_attempted
+            if (not (isinstance(error, CGateError)
+                     and error.repository_commit_uncertain)
+                    and not pp_save_attempted
                     and not self._evidence.get('target_project_save_attempted')
                     and self._evidence.get('backup_created')
                     and self._evidence.get('metadata_mutation_attempted')):

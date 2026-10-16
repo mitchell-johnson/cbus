@@ -14,6 +14,78 @@ use std::{
 };
 
 pub(super) const MAX_BYTES: u64 = 256 * 1024 * 1024;
+pub(super) const UNCERTAIN_REPLY: &str =
+    "500 Database commit applied; durability unconfirmed; do not retry";
+
+/// The destination already contains the new image. Restoring only the model
+/// would diverge from disk; neither rollback nor a retry is safe here.
+#[derive(Debug)]
+struct AppliedCommitError(io::Error);
+
+impl std::fmt::Display for AppliedCommitError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "repository replacement applied but directory sync failed: {}",
+            self.0
+        )
+    }
+}
+
+impl std::error::Error for AppliedCommitError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        Some(&self.0)
+    }
+}
+
+pub(super) fn commit_applied(error: &io::Error) -> bool {
+    error
+        .get_ref()
+        .is_some_and(|cause| cause.is::<AppliedCommitError>())
+}
+
+#[cfg(test)]
+thread_local! {
+    static FAIL_DIRECTORY_SYNC: std::cell::RefCell<Option<std::path::PathBuf>> =
+        const { std::cell::RefCell::new(None) };
+}
+
+#[cfg(test)]
+pub(super) struct DirectorySyncFault(Option<std::path::PathBuf>);
+
+#[cfg(test)]
+impl Drop for DirectorySyncFault {
+    fn drop(&mut self) {
+        FAIL_DIRECTORY_SYNC.with(|fault| *fault.borrow_mut() = self.0.take());
+    }
+}
+
+/// Test-only, one-shot, exact-path fault: no production switch or OS damage.
+#[cfg(test)]
+pub(super) fn fail_next_directory_sync(path: &Path) -> DirectorySyncFault {
+    DirectorySyncFault(FAIL_DIRECTORY_SYNC.with(|fault| fault.replace(Some(path.to_owned()))))
+}
+
+fn sync_directory_after_rename(path: &Path, #[cfg(unix)] directory: &File) -> io::Result<()> {
+    #[cfg(test)]
+    if FAIL_DIRECTORY_SYNC.with(|fault| {
+        let mut fault = fault.borrow_mut();
+        if fault.as_deref() == Some(path) {
+            fault.take();
+            true
+        } else {
+            false
+        }
+    }) {
+        return Err(io::Error::other(
+            "injected directory sync failure after rename",
+        ));
+    }
+    let _ = path;
+    #[cfg(unix)]
+    directory.sync_all()?;
+    Ok(())
+}
 
 fn capacity_error(limit: u64) -> io::Error {
     io::Error::other(format!("C-Gate database exceeds {limit} bytes"))
@@ -119,14 +191,16 @@ fn save_with_limit<T: Serialize>(path: &Path, value: &T, limit: u64) -> io::Resu
         serde_json::to_writer(&mut writer, value).map_err(io::Error::other)?;
         writer.flush()?;
         writer.get_ref().inner.sync_all()?;
-        // Opening the directory before rename makes an invalid parent fail
-        // before replacing the image. A post-rename sync error, as previously,
-        // is an uncertain durability boundary and is not safe to replay.
+        // Invalid directory handles still fail before replacing the image.
         #[cfg(unix)]
         let directory = File::open(parent)?;
         std::fs::rename(&temp, path)?;
-        #[cfg(unix)]
-        directory.sync_all()?;
+        sync_directory_after_rename(
+            path,
+            #[cfg(unix)]
+            &directory,
+        )
+        .map_err(|error| io::Error::other(AppliedCommitError(error)))?;
         Ok(())
     })();
     if result.is_err() && created {

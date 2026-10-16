@@ -1,0 +1,2814 @@
+{
+  "authors": {
+    "parent_docs_ci": {
+      "handoff": {
+        "bytes": 7407,
+        "identity": "docs-ci-handoff-final.json",
+        "sha256": "ce59c4976605c8d1753cb797a3415e0f6b476112900d26890136d2e7c0009f64"
+      },
+      "role": "Component scope; overlapping scopes are never summed with integrated release counts. Root adds the exact repository uncertainty module to both CI audit selections after this handoff and before the final freeze. The batch report receives outcome annotations only after execution."
+    },
+    "parent_public": {
+      "handoff": {
+        "bytes": 27413,
+        "identity": "author-handoff-final.json",
+        "sha256": "c0f763cd519089799043861662ed51340bd50053c9ba002176a708bc4c0b7e26"
+      },
+      "role": "Component scope; overlapping scopes are never summed with integrated release counts."
+    },
+    "time_date_pure": {
+      "handoff": {
+        "bytes": 19253,
+        "identity": "author-handoff-final.json",
+        "sha256": "2320396204d798fd3ff77a92f6917a21049210ce9915fb801fe2a94b32c71fdb"
+      },
+      "role": "Component scope; overlapping scopes are never summed with integrated release counts."
+    },
+    "time_date_static": {
+      "handoff": {
+        "bytes": 12265,
+        "identity": "author-handoff-final.json",
+        "sha256": "8e33117ee2b78e146057d4751cbe0d26709b7d3519929585022b5fef9a676ed1"
+      },
+      "role": "Component scope; overlapping scopes are never summed with integrated release counts."
+    }
+  },
+  "coverage": {
+    "artifact": {
+      "bytes": 256702,
+      "identity": "coverage-require-complete.json",
+      "sha256": "1eb0c2f634631c5c9aad6a5cd8787fad8b9f0634693fa5d283bb69bcbec78984"
+    },
+    "census_complete": false,
+    "complete": false,
+    "exit": 1,
+    "functional_percent_available": false
+  },
+  "date": "2026-10-03",
+  "format": "cbus-time-date-recovery-owned-release-v1",
+  "historical_publication_ci": {
+    "completed_wheel_job": "https://github.com/mitchell-johnson/cbus/actions/runs/37111216961/job/111169343662",
+    "counts": {
+      "failed": 3,
+      "passed": 9761,
+      "separate_subtests_passed": 42999,
+      "skipped": 1232
+    },
+    "current_39_module_selection_covers_these_modules": false,
+    "current_publication_ci_inferred": false,
+    "failures": [
+      "IOPE native receipt old implementation binding",
+      "obsolete Neo documentor refusal assertion",
+      "current documentor supporting-module receipt mismatch"
+    ],
+    "filtered_failure_summary": {
+      "bytes": 1125,
+      "identity": "pr81-wheel-ci-summary.log",
+      "sha256": "8bef8b4f2bce81568165a250a0c3c95f7d29834deb7b5b19a5dcde845b695e76"
+    },
+    "full_run_conclusion_observed": false,
+    "run": "https://github.com/mitchell-johnson/cbus/actions/runs/37111216961",
+    "wheel_conclusion": "FAILURE"
+  },
+  "independent_reviews": {
+    "final_package_acceptance": {
+      "bytes": 46827,
+      "identity": "independent-acceptance-final1.json",
+      "sha256": "8ab1f780b1a3486d9409cbc6f59b7021824f6a3155d81cfe6d9565ee1f78acf3"
+    },
+    "final_public_and_docs": {
+      "bytes": 37002,
+      "identity": "independent-public-docs-final1.json",
+      "sha256": "c1dcd21c934207cc0f5fe6d89d5ea9c3c54f6640109fffe20488a8d5d8a763fd"
+    },
+    "metadata_refresh_register": {
+      "bytes": 18313,
+      "identity": "independent-metadata-final1.json",
+      "sha256": "9b9251168ad2ccf4fb0029df07df47973e5acd0998d0c247b26bfc10e5382b49"
+    },
+    "parent": {
+      "bytes": 8056,
+      "identity": "review-final1.json",
+      "sha256": "9da394a56e118c5985422533c73d5245f54f76e11f320d06572b7f4c21ed93d5"
+    },
+    "repository_recovery_source": {
+      "bytes": 13278,
+      "identity": "review-final-source-v2.json",
+      "sha256": "f95dab58e51912063b0f8bd762c74375e6893782dc9847431665edb4558c7df4"
+    },
+    "time_date_static_semantics": {
+      "bytes": 13679,
+      "identity": "review-final.json",
+      "sha256": "4b89af92fe8d308234e550d309dd0b689f5f3334958e62544cff617c34b86c88"
+    }
+  },
+  "native_test_launch_profile": {
+    "CA_environment_overrides_present": false,
+    "all_original_and_executed_hashes_quiet": true,
+    "executed_records": 95,
+    "execution_records": {
+      "bytes": 83637,
+      "identity": "test-runner-records.jsonl",
+      "sha256": "5bb18656363901240a056ffcff889e5849f2b8d8bfdc8300bef87849819c421f"
+    },
+    "fixed_copy_targeted_predecessor": {
+      "bytes": 1011,
+      "identity": "summary.json",
+      "sha256": "4820817e793382d5bdd1480df4ea9f28646fa79b285c55a06b917d9cf05dc9ca"
+    },
+    "independent_diagnosis": {
+      "bytes": 11314,
+      "identity": "review-v1.json",
+      "sha256": "f7e268fa9e49407b44dd06dfbaa4b8c1d97db0d17fffbd8dc2ecf2d748e6f37e"
+    },
+    "launch_profile": "Byte-identical read-only internal temporary copies; only owned copies removed after exit.",
+    "native_store_case_passed_in_workspace": true,
+    "overlapping_scopes_added": false,
+    "precise_OS_cause_established": false,
+    "retained_failed_workspace": {
+      "counts": {
+        "failed": 1,
+        "ignored": 1,
+        "passed": 8558,
+        "rows": [
+          [
+            "585",
+            "0",
+            "1"
+          ],
+          [
+            "11",
+            "0",
+            "0"
+          ],
+          [
+            "3",
+            "0",
+            "0"
+          ],
+          [
+            "31",
+            "0",
+            "0"
+          ],
+          [
+            "1",
+            "0",
+            "0"
+          ],
+          [
+            "1",
+            "0",
+            "0"
+          ],
+          [
+            "1",
+            "0",
+            "0"
+          ],
+          [
+            "2",
+            "0",
+            "0"
+          ],
+          [
+            "1",
+            "0",
+            "0"
+          ],
+          [
+            "1",
+            "0",
+            "0"
+          ],
+          [
+            "3",
+            "0",
+            "0"
+          ],
+          [
+            "3",
+            "0",
+            "0"
+          ],
+          [
+            "1",
+            "0",
+            "0"
+          ],
+          [
+            "2",
+            "0",
+            "0"
+          ],
+          [
+            "67",
+            "0",
+            "0"
+          ],
+          [
+            "2",
+            "0",
+            "0"
+          ],
+          [
+            "18",
+            "0",
+            "0"
+          ],
+          [
+            "7",
+            "0",
+            "0"
+          ],
+          [
+            "9",
+            "0",
+            "0"
+          ],
+          [
+            "1",
+            "0",
+            "0"
+          ],
+          [
+            "0",
+            "0",
+            "0"
+          ],
+          [
+            "3409",
+            "0",
+            "0"
+          ],
+          [
+            "3618",
+            "0",
+            "0"
+          ],
+          [
+            "17",
+            "0",
+            "0"
+          ],
+          [
+            "24",
+            "0",
+            "0"
+          ],
+          [
+            "6",
+            "0",
+            "0"
+          ],
+          [
+            "11",
+            "0",
+            "0"
+          ],
+          [
+            "66",
+            "0",
+            "0"
+          ],
+          [
+            "12",
+            "0",
+            "0"
+          ],
+          [
+            "86",
+            "0",
+            "0"
+          ],
+          [
+            "12",
+            "0",
+            "0"
+          ],
+          [
+            "44",
+            "0",
+            "0"
+          ],
+          [
+            "22",
+            "0",
+            "0"
+          ],
+          [
+            "19",
+            "0",
+            "0"
+          ],
+          [
+            "1",
+            "0",
+            "0"
+          ],
+          [
+            "5",
+            "0",
+            "0"
+          ],
+          [
+            "1",
+            "0",
+            "0"
+          ],
+          [
+            "5",
+            "0",
+            "0"
+          ],
+          [
+            "14",
+            "0",
+            "0"
+          ],
+          [
+            "0",
+            "0",
+            "0"
+          ],
+          [
+            "3",
+            "0",
+            "0"
+          ],
+          [
+            "2",
+            "0",
+            "0"
+          ],
+          [
+            "31",
+            "0",
+            "0"
+          ],
+          [
+            "32",
+            "0",
+            "0"
+          ],
+          [
+            "237",
+            "0",
+            "0"
+          ],
+          [
+            "12",
+            "0",
+            "0"
+          ],
+          [
+            "12",
+            "0",
+            "0"
+          ],
+          [
+            "6",
+            "0",
+            "0"
+          ],
+          [
+            "10",
+            "0",
+            "0"
+          ],
+          [
+            "2",
+            "0",
+            "0"
+          ],
+          [
+            "23",
+            "0",
+            "0"
+          ],
+          [
+            "2",
+            "0",
+            "0"
+          ],
+          [
+            "23",
+            "0",
+            "0"
+          ],
+          [
+            "6",
+            "0",
+            "0"
+          ],
+          [
+            "6",
+            "0",
+            "0"
+          ],
+          [
+            "29",
+            "1",
+            "0"
+          ]
+        ],
+        "summary_rows": 56
+      },
+      "failure": "setup::tests::system_trust_store_loads: cannot load system trust store: I/O error.",
+      "full_release_succeeded": false,
+      "summary": {
+        "bytes": 3384,
+        "identity": "summary.json",
+        "sha256": "22788c54e8d09428fd2105d346eddbe10179de9291186c4e1ee8c04b3532ea99"
+      }
+    },
+    "runner": {
+      "bytes": 2325,
+      "path": "rust/scripts/local_test_runner.py",
+      "sha256": "8ab8c6a375db150728560610fd620b737e5577c0e6ccce42ac64c8261df91bc9"
+    },
+    "test_arguments_unchanged": true,
+    "trust_policy_changed": false
+  },
+  "new_public_profile": {
+    "backends": [
+      "cgate-mock",
+      "cmqttd"
+    ],
+    "graph_profile": "Ordered parsed elements/comments/PIs and leaf text, sorted attributes; whitespace-only parent text/tails excluded; xml:space not interpreted.",
+    "lost_save_cases_followup_close_load": false,
+    "per_environment_parent_cases": 28,
+    "positive": 22,
+    "positive_cases_fresh_close_load": true,
+    "preconnection_refusals": 4,
+    "record_bytes": 32,
+    "save_replay": false,
+    "static_rows": 64,
+    "stored_pp_count": 844,
+    "successful_upstream_save_reply_losses": 2,
+    "whole_graph_preservation": true
+  },
+  "outcome_annotations": "Report/status/receipt annotations follow frozen epochs; runtime/test/Make/CI inputs remain exact.",
+  "owned_metadata": {
+    "binaries_quiet": true,
+    "derivatives": {
+      "cgate-dbsetxml-unit-differential-cmqttd.json": {
+        "archive": {
+          "bytes": 62618,
+          "sha256": "979cc85913f3c10452fdee0eae3c6c6f1c22afa1bfff9a6f623506e0382f3d66"
+        },
+        "case_count": 12,
+        "combined_network_checks": [
+          {
+            "after_current_tag": "816",
+            "expected_mapper_result": "<Network><OID>00000000-0000-0000-0000-000000000003</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>00000000-0000-0000-0000-000000000004</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>",
+            "mapped_original_wire": [
+              "[716] 343-Begin XML snippet\r\n",
+              "[716] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+              "[716] 347-<Network><OID>00000000-0000-0000-0000-000000000003</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>00000000-0000-0000-0000-000000000004</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+              "[716] 344 End XML snippet\r\n"
+            ],
+            "mapper_equal": true,
+            "original_request": "[909] DBGETXML //XVM24/254\r\n",
+            "original_set_tag": "908",
+            "original_tag": "909",
+            "original_wire": [
+              "[909] 343-Begin XML snippet\r\n",
+              "[909] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+              "[909] 347-<Network><OID>a30e4af0-9cc3-103f-9dbf-a55f288515de</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>33333333-3333-4333-8333-333333333333</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+              "[909] 344 End XML snippet\r\n"
+            ],
+            "rust_mapper_result": "<Network><OID>00000000-0000-0000-0000-000000000003</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>00000000-0000-0000-0000-000000000004</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>",
+            "rust_request": "[716] DBGETXML //XUNIT/254\r\n",
+            "rust_tag": "716",
+            "rust_wire": [
+              "[716] 343-Begin XML snippet\r\n",
+              "[716] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+              "[716] 347-<Network><OID>00000000-0000-0000-0000-000000000003</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>00000000-0000-0000-0000-000000000004</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+              "[716] 344 End XML snippet\r\n"
+            ],
+            "unsolicited_events": [],
+            "wire_equal": true
+          },
+          {
+            "after_current_tag": "818",
+            "expected_mapper_result": "<Network><OID>00000000-0000-0000-0000-000000000003</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>00000000-0000-0000-0000-000000000004</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>",
+            "mapped_original_wire": [
+              "[718] 343-Begin XML snippet\r\n",
+              "[718] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+              "[718] 347-<Network><OID>00000000-0000-0000-0000-000000000003</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>00000000-0000-0000-0000-000000000004</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+              "[718] 344 End XML snippet\r\n"
+            ],
+            "mapper_equal": true,
+            "original_request": "[911] DBGETXML //XVM24/254\r\n",
+            "original_set_tag": "910",
+            "original_tag": "911",
+            "original_wire": [
+              "[911] 343-Begin XML snippet\r\n",
+              "[911] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+              "[911] 347-<Network><OID>a30e4af0-9cc3-103f-9dbf-a55f288515de</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>33333333-3333-4333-8333-333333333333</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+              "[911] 344 End XML snippet\r\n"
+            ],
+            "rust_mapper_result": "<Network><OID>00000000-0000-0000-0000-000000000003</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>00000000-0000-0000-0000-000000000004</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>",
+            "rust_request": "[718] DBGETXML //XUNIT/254\r\n",
+            "rust_tag": "718",
+            "rust_wire": [
+              "[718] 343-Begin XML snippet\r\n",
+              "[718] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+              "[718] 347-<Network><OID>00000000-0000-0000-0000-000000000003</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>00000000-0000-0000-0000-000000000004</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+              "[718] 344 End XML snippet\r\n"
+            ],
+            "unsolicited_events": [],
+            "wire_equal": true
+          }
+        ],
+        "combined_network_passed": 2,
+        "counts": {
+          "errors": null,
+          "executed": null,
+          "failed": 0,
+          "passed": 12,
+          "skipped": null
+        },
+        "derivative": {
+          "bytes": 63329,
+          "sha256": "33eb308799b3244666d176dc42d88d007993c192bc5998aad8fee3a0a732428d"
+        },
+        "direct_and_decoded_coordinate_fields": 0,
+        "field_mapping": [
+          {
+            "action": "omit",
+            "artifact_name_pointer": "/binary/name",
+            "json_pointer": "/binary/path",
+            "roles": [
+              "local_rust_binary_coordinate"
+            ]
+          },
+          {
+            "action": "role_template",
+            "json_pointer": "/command",
+            "roles": [
+              "cgate_mock_binary",
+              "cmqttd_binary",
+              "python_interpreter",
+              "report_output_directory"
+            ]
+          }
+        ],
+        "full_noncoordinate_payload_equal": true,
+        "hex_strings_decoded": 215,
+        "original_execution": false,
+        "raw": {
+          "bytes": 62618,
+          "sha256": "979cc85913f3c10452fdee0eae3c6c6f1c22afa1bfff9a6f623506e0382f3d66"
+        }
+      },
+      "cgate-dbsetxml-unit-differential-mock.json": {
+        "archive": {
+          "bytes": 60713,
+          "sha256": "c45eaba4e68f215827ae898b8ac54043943cbcca9bfe424616b605324631e03c"
+        },
+        "case_count": 12,
+        "combined_network_checks": [
+          {
+            "after_current_tag": "816",
+            "expected_mapper_result": "<Network><OID>00000000-0000-0000-0000-000000000001</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>00000000-0000-0000-0000-000000000002</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>",
+            "mapped_original_wire": [
+              "[716] 343-Begin XML snippet\r\n",
+              "[716] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+              "[716] 347-<Network><OID>00000000-0000-0000-0000-000000000001</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>00000000-0000-0000-0000-000000000002</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+              "[716] 344 End XML snippet\r\n"
+            ],
+            "mapper_equal": true,
+            "original_request": "[909] DBGETXML //XVM24/254\r\n",
+            "original_set_tag": "908",
+            "original_tag": "909",
+            "original_wire": [
+              "[909] 343-Begin XML snippet\r\n",
+              "[909] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+              "[909] 347-<Network><OID>a30e4af0-9cc3-103f-9dbf-a55f288515de</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>33333333-3333-4333-8333-333333333333</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+              "[909] 344 End XML snippet\r\n"
+            ],
+            "rust_mapper_result": "<Network><OID>00000000-0000-0000-0000-000000000001</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>00000000-0000-0000-0000-000000000002</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>",
+            "rust_request": "[716] DBGETXML //XUNIT/254\r\n",
+            "rust_tag": "716",
+            "rust_wire": [
+              "[716] 343-Begin XML snippet\r\n",
+              "[716] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+              "[716] 347-<Network><OID>00000000-0000-0000-0000-000000000001</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>00000000-0000-0000-0000-000000000002</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+              "[716] 344 End XML snippet\r\n"
+            ],
+            "unsolicited_events": [],
+            "wire_equal": true
+          },
+          {
+            "after_current_tag": "818",
+            "expected_mapper_result": "<Network><OID>00000000-0000-0000-0000-000000000001</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>00000000-0000-0000-0000-000000000002</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>",
+            "mapped_original_wire": [
+              "[718] 343-Begin XML snippet\r\n",
+              "[718] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+              "[718] 347-<Network><OID>00000000-0000-0000-0000-000000000001</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>00000000-0000-0000-0000-000000000002</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+              "[718] 344 End XML snippet\r\n"
+            ],
+            "mapper_equal": true,
+            "original_request": "[911] DBGETXML //XVM24/254\r\n",
+            "original_set_tag": "910",
+            "original_tag": "911",
+            "original_wire": [
+              "[911] 343-Begin XML snippet\r\n",
+              "[911] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+              "[911] 347-<Network><OID>a30e4af0-9cc3-103f-9dbf-a55f288515de</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>33333333-3333-4333-8333-333333333333</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+              "[911] 344 End XML snippet\r\n"
+            ],
+            "rust_mapper_result": "<Network><OID>00000000-0000-0000-0000-000000000001</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>00000000-0000-0000-0000-000000000002</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>",
+            "rust_request": "[718] DBGETXML //XUNIT/254\r\n",
+            "rust_tag": "718",
+            "rust_wire": [
+              "[718] 343-Begin XML snippet\r\n",
+              "[718] 347-<?xml version=\"1.0\" encoding=\"utf-8\"?>\n",
+              "[718] 347-<Network><OID>00000000-0000-0000-0000-000000000001</OID><TagName>Local</TagName><Address>254</Address><NetworkNumber>254</NetworkNumber><Interface><OID>00000000-0000-0000-0000-000000000002</OID><InterfaceType>Cni</InterfaceType><InterfaceAddress>127.0.0.1:1</InterfaceAddress></Interface><Application><OID>22222222-2222-4222-8222-222222222222</OID><TagName>Lighting</TagName><Address>56</Address></Application><Unit><OID>11111111-1111-4111-8111-111111111111</OID><TagName>Bedroom</TagName><Address>20</Address><UnitType>KEYE1</UnitType><UnitName>Room</UnitName><FirmwareVersion>1.2.67</FirmwareVersion></Unit></Network>\r\n",
+              "[718] 344 End XML snippet\r\n"
+            ],
+            "unsolicited_events": [],
+            "wire_equal": true
+          }
+        ],
+        "combined_network_passed": 2,
+        "counts": {
+          "errors": null,
+          "executed": null,
+          "failed": 0,
+          "passed": 12,
+          "skipped": null
+        },
+        "derivative": {
+          "bytes": 61424,
+          "sha256": "11bb62e5fcd4e06af690bf2f1bb305da637b10b6b289c8d879a4083e2e91420a"
+        },
+        "direct_and_decoded_coordinate_fields": 0,
+        "field_mapping": [
+          {
+            "action": "omit",
+            "artifact_name_pointer": "/binary/name",
+            "json_pointer": "/binary/path",
+            "roles": [
+              "local_rust_binary_coordinate"
+            ]
+          },
+          {
+            "action": "role_template",
+            "json_pointer": "/command",
+            "roles": [
+              "cgate_mock_binary",
+              "cmqttd_binary",
+              "python_interpreter",
+              "report_output_directory"
+            ]
+          }
+        ],
+        "full_noncoordinate_payload_equal": true,
+        "hex_strings_decoded": 196,
+        "original_execution": false,
+        "raw": {
+          "bytes": 60713,
+          "sha256": "c45eaba4e68f215827ae898b8ac54043943cbcca9bfe424616b605324631e03c"
+        }
+      },
+      "cgate-session-differential-cmqttd.json": {
+        "archive": {
+          "bytes": 34816,
+          "sha256": "9a1a5a2e1dc79183e1898b77a4a5ebe91f35c47346bd4db7bbe1841a27c02301"
+        },
+        "case_count": 9,
+        "combined_network_checks": null,
+        "combined_network_passed": null,
+        "counts": {
+          "errors": [],
+          "executed": 9,
+          "failed": 0,
+          "passed": 9,
+          "skipped": 0
+        },
+        "derivative": {
+          "bytes": 35544,
+          "sha256": "5d4bcd37bd95b3d89852ad1e92db3287f2eb5fc4095d9460ebfe85efa80164b4"
+        },
+        "direct_and_decoded_coordinate_fields": 0,
+        "field_mapping": [
+          {
+            "action": "omit",
+            "artifact_name_pointer": "/rust_artifact/name",
+            "json_pointer": "/rust_artifact/path",
+            "roles": [
+              "local_rust_binary_coordinate"
+            ]
+          },
+          {
+            "action": "role_template",
+            "json_pointer": "/command",
+            "roles": [
+              "cmqttd_binary",
+              "python_interpreter",
+              "report_output_file"
+            ]
+          }
+        ],
+        "full_noncoordinate_payload_equal": true,
+        "hex_strings_decoded": 208,
+        "original_execution": false,
+        "raw": {
+          "bytes": 34816,
+          "sha256": "9a1a5a2e1dc79183e1898b77a4a5ebe91f35c47346bd4db7bbe1841a27c02301"
+        }
+      },
+      "cgate-session-differential-fixed.json": {
+        "archive": {
+          "bytes": 32417,
+          "sha256": "f4798cf301080405614e6482c392ffc4fdb071547e7ead275ce220791a22aea1"
+        },
+        "case_count": 9,
+        "combined_network_checks": null,
+        "combined_network_passed": null,
+        "counts": {
+          "errors": [],
+          "executed": 9,
+          "failed": 0,
+          "passed": 9,
+          "skipped": 0
+        },
+        "derivative": {
+          "bytes": 33149,
+          "sha256": "49e014200d4cb960775aa7fc003c9db599ffad5c5032631317342f9297263137"
+        },
+        "direct_and_decoded_coordinate_fields": 0,
+        "field_mapping": [
+          {
+            "action": "omit",
+            "artifact_name_pointer": "/rust_artifact/name",
+            "json_pointer": "/rust_artifact/path",
+            "roles": [
+              "local_rust_binary_coordinate"
+            ]
+          },
+          {
+            "action": "role_template",
+            "json_pointer": "/command",
+            "roles": [
+              "cgate_mock_binary",
+              "python_interpreter",
+              "report_output_file"
+            ]
+          }
+        ],
+        "full_noncoordinate_payload_equal": true,
+        "hex_strings_decoded": 188,
+        "original_execution": false,
+        "raw": {
+          "bytes": 32417,
+          "sha256": "f4798cf301080405614e6482c392ffc4fdb071547e7ead275ce220791a22aea1"
+        }
+      },
+      "cgate-tagged-session-differential-cgate-mock.json": {
+        "archive": {
+          "bytes": 31880,
+          "sha256": "5726b53d05ef88ad9a73ec272802c559111b04f47ff21fafd88c475fb43e586e"
+        },
+        "case_count": 11,
+        "combined_network_checks": null,
+        "combined_network_passed": null,
+        "counts": {
+          "errors": [],
+          "executed": 11,
+          "failed": 0,
+          "passed": 11,
+          "skipped": 0
+        },
+        "derivative": {
+          "bytes": 32605,
+          "sha256": "e28f8d29bce4fecb3be649df50e14708a4a547eac69fb95a3358038f15098469"
+        },
+        "direct_and_decoded_coordinate_fields": 0,
+        "field_mapping": [
+          {
+            "action": "omit",
+            "artifact_name_pointer": "/rust_artifact/name",
+            "json_pointer": "/rust_artifact/path",
+            "roles": [
+              "local_rust_binary_coordinate"
+            ]
+          },
+          {
+            "action": "role_template",
+            "json_pointer": "/command",
+            "roles": [
+              "cgate_mock_binary",
+              "cmqttd_binary",
+              "python_interpreter",
+              "report_output_directory"
+            ]
+          }
+        ],
+        "full_noncoordinate_payload_equal": true,
+        "hex_strings_decoded": 189,
+        "original_execution": false,
+        "raw": {
+          "bytes": 31880,
+          "sha256": "5726b53d05ef88ad9a73ec272802c559111b04f47ff21fafd88c475fb43e586e"
+        }
+      },
+      "cgate-tagged-session-differential-cmqttd.json": {
+        "archive": {
+          "bytes": 34005,
+          "sha256": "c321f6ee34fee428681ab84df1b6269f56b5f16927c0c14c72fa3a06ea0c3230"
+        },
+        "case_count": 11,
+        "combined_network_checks": null,
+        "combined_network_passed": null,
+        "counts": {
+          "errors": [],
+          "executed": 11,
+          "failed": 0,
+          "passed": 11,
+          "skipped": 0
+        },
+        "derivative": {
+          "bytes": 34730,
+          "sha256": "e0c934f1e56b557b146ffbf9072b21274a92dd9dcdc97cdd67430379087fd448"
+        },
+        "direct_and_decoded_coordinate_fields": 0,
+        "field_mapping": [
+          {
+            "action": "omit",
+            "artifact_name_pointer": "/rust_artifact/name",
+            "json_pointer": "/rust_artifact/path",
+            "roles": [
+              "local_rust_binary_coordinate"
+            ]
+          },
+          {
+            "action": "role_template",
+            "json_pointer": "/command",
+            "roles": [
+              "cgate_mock_binary",
+              "cmqttd_binary",
+              "python_interpreter",
+              "report_output_directory"
+            ]
+          }
+        ],
+        "full_noncoordinate_payload_equal": true,
+        "hex_strings_decoded": 209,
+        "original_execution": false,
+        "raw": {
+          "bytes": 34005,
+          "sha256": "c321f6ee34fee428681ab84df1b6269f56b5f16927c0c14c72fa3a06ea0c3230"
+        }
+      }
+    },
+    "native_saved_oracle_read_only": true,
+    "original_instructions_executed": false,
+    "physical_hardware_executed": false,
+    "pre_fix_receipt_unchanged": true,
+    "refresh": {
+      "bytes": 41875,
+      "identity": "summary.json",
+      "sha256": "15aba996ceb989af6785d15cf26f57dac3a65602137bb3fbef9f345159e32990"
+    },
+    "register_census": {
+      "bytes": 4985,
+      "identity": "summary.json",
+      "sha256": "7af8affdb25ac498993f0e98c1ecf67d1f4bacded5ae569cd868f8a39856c69a"
+    },
+    "source_fingerprints_quiet": true
+  },
+  "phases": {
+    "fresh_installed_wheel": {
+      "all_required_module_bodies_present": true,
+      "auditor_counts_include_separate_subtests": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 2130,
+        "skipped": 15,
+        "tests": 2145
+      },
+      "command_exits": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "executed_parent_head": "2b46f35a4c1c3644ce11f3a29718e0fed54498ac",
+      "frozen_binaries_quiet": true,
+      "full_python_suite": false,
+      "input_count": 4012,
+      "new_public_time_date_parent_cases": [
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[retained-raw-readonly-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[retained-raw-readonly-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[functional-all-bindings-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[functional-all-bindings-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[standby-one-grow-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[standby-one-grow-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[standby-four-grow-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[standby-four-grow-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[standby-same-double-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[standby-same-double-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[standby-shrink-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[standby-shrink-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[standby-already-blank-neighbor-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[standby-already-blank-neighbor-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[ordinary-conversion-then-display-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[ordinary-conversion-then-display-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[scalar-grow-callback-shrink-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[scalar-grow-callback-shrink-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[source-setup-explicit-read-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[source-setup-explicit-read-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[two-controls-same-global-value-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[two-controls-same-global-value-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_preconnection_refusals[caller-state-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_preconnection_refusals[caller-state-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_preconnection_refusals[wrong-ordinal-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_preconnection_refusals[wrong-ordinal-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_lost_successful_save_is_not_replayed[mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_lost_successful_save_is_not_replayed[daemon]",
+          "outcome": "passed"
+        }
+      ],
+      "package": {
+        "actual_pytest_startup_terminal_checked": true,
+        "all_bytes_equal_at_terminal": true,
+        "files": {
+          "cbus_toolkit/__init__.py": "a39021e17c28b8e97c4b6ad7b20ffe35ce621332c0f4d006162f77c0703b5fed",
+          "cbus_toolkit/__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
+          "cbus_toolkit/_toolkit_update_registry_conditions.py": "50d35a214de2bb0a3660acb05fb2d032b13356179c72bab29e14a811ef1b28ff",
+          "cbus_toolkit/_windows_condition_registry_worker.py": "4df70deaa78d746306a406ec018733041fd12e7a3141d143f16420e359942fe2",
+          "cbus_toolkit/_windows_process_token.py": "1cbb897b4fa891dc6b3f1c1e43b4826df70e344ee9390889063a03659e712fae",
+          "cbus_toolkit/addressing.py": "0e0d23f0f0587fd90278f8c734a071966adf299ee0b257fae481e062f873f926",
+          "cbus_toolkit/applications.py": "3471b6ecad4b31ead84e5370a709a68962f930340383eb9aff8333bc61c9bd13",
+          "cbus_toolkit/barcode_cli.py": "c9a62b804d350f8fea503f8c3f8e549e466aa29a5b11c9785891bb72c771bf82",
+          "cbus_toolkit/barcode_database.py": "ca07c6d2d83b1fca50b57b1d15706cadb837b7e8e51d328b0bf4ee083e9ebb6e",
+          "cbus_toolkit/barcode_scanner.py": "e0ee1cc2b20c073c1dcf83431829800fa461070caeacef0ca511328b34537c89",
+          "cbus_toolkit/calculator.py": "41507b751d0e6f341d2116b2c8e787e88abc24456837553060071f72ddfa2ec5",
+          "cbus_toolkit/capabilities.json": "3591768be2e3ac7f9ee539c8d1ba539643e046547a83b67c75296cff29cb538c",
+          "cbus_toolkit/cgate-contract-inventory.json": "1846d78efe46c202064e7cf2e67c4afd414dd2ed801078840eb6dd0aa1c077f8",
+          "cbus_toolkit/cgate.py": "f394cf5675f006ec652d98338e3c1bd843b018f7047bab1b67ede697657bf670",
+          "cbus_toolkit/cgl.py": "52e2f1fc09303c148221ff255eee673d7d3bf3b163e238af7076f2c1f79035fd",
+          "cbus_toolkit/cgl_differential.py": "4c3e2905d8483b5a37128855c0f74539b0fdd367ad3e1743f2d900b20f4c4067",
+          "cbus_toolkit/classic_replacement.py": "4be1118513549ffb65c45d4c1ee3fc142f46da59bf21aa249bc9be3808e54b62",
+          "cbus_toolkit/cli.py": "f04a126a5bcf8f38025dd7e8a878bb8823d96cb8c74789ee6a26242e6f3f7d35",
+          "cbus_toolkit/clocks.py": "26f4418494e603684f57ca0fd136191ad614bce81638ad7bfa1f7cc881eaf151",
+          "cbus_toolkit/cmqtt.py": "5a5ea0efae8e027e063b70d9dc613d1bbba355944220bcf7e01bfb73d7b589bb",
+          "cbus_toolkit/cni_discovery.py": "eca9df92c0c01d53f9a639344dcb9d02d57aa9d57f62226c7ab3e0fc225cbc88",
+          "cbus_toolkit/commissioning_lease.py": "9cee9a5f401914bcdc1c8c8aa7978f8ded917fc3342a03743149535e3476c95b",
+          "cbus_toolkit/commissioning_route.py": "58a4ad901f1031fdcc0492ea8bd5962a670fbd3caea418b0239c50455518251a",
+          "cbus_toolkit/conversion.py": "824ef5e6d9c3c076ead6efed7dbbf715ed131c3eb8ef9fe65f24fea612113d2c",
+          "cbus_toolkit/conversion_guard.py": "cda6eb34b301165f9d43b4881a56b90d47994562dd80dbb5cc95c42bb8c1c71b",
+          "cbus_toolkit/conversion_mapping.py": "5bf59e4c0317a8c88fb79b09c6f4cc090951cbf9256a6a886a037d092a6dbf09",
+          "cbus_toolkit/conversion_workflow.py": "d92c2cffa79dbedfba2db3633ee7980be37fd2cde7b4e8de265a1b4a5da5cfec",
+          "cbus_toolkit/conversion_workflow_cli.py": "713a920f095e94523f13c73b040b7e1f6d3368d3e030d44d2f9d04288c97ea5d",
+          "cbus_toolkit/dali_commissioning.py": "ba025c212ac399f67becd7a9891b3d7737949f328b49686e6e2010c37d1e99e4",
+          "cbus_toolkit/dali_commissioning_cli.py": "e567b41f7d87f55a0d7672daeaef83b9f8276cf91a06aecb1411d5de0fd9f89c",
+          "cbus_toolkit/dali_extended_proxy.py": "f0798690855f0acffaccf1d6cede59e80302ce72d8b1d9cdec5e0404a4bc4678",
+          "cbus_toolkit/device_dialogs.py": "e8080bf0f9ff2852d66724e8703ed5131d69085dc2a9e93d7c9e9f54eaf48c4e",
+          "cbus_toolkit/device_scenes.py": "81b0a2fd8b73bd1e22e33c2e9b83e79b7f6fdef8511d138b44865af0175894cc",
+          "cbus_toolkit/dfu.py": "09f425f84f818ee3b1d89cc524cacd9d77265d1aebdb314adc64f3ff712462c8",
+          "cbus_toolkit/dfu_simulator.py": "3c2c0c0a695f0a8052032ffefe0819c2d0d412f54437fd429b93e56bbd9d35c6",
+          "cbus_toolkit/dfu_transport.py": "3fabc25cb866ee44a78b3e0e6eaee814c1c13bcca78b7cde24ba8245990ca081",
+          "cbus_toolkit/differential.py": "3f4c529e99195e58ffcb90ad46e1c2e8654514a09d11f6183c2d2e35d35cb39b",
+          "cbus_toolkit/din_output_settings.py": "a0e105391b3dd8863f9934e6dd39b5bd1f66138de66ec5768cd58e77d956c07a",
+          "cbus_toolkit/dlt_broadcast.py": "704deded0ccb1d6dc23a4976fc9ed09bbde10c7dd77e8d93b59f39f5251eb46f",
+          "cbus_toolkit/dlt_broadcast_cli.py": "c5fdbebcb941fd97584f4588f818cf503d3362d29b7f0040b792b83883f35778",
+          "cbus_toolkit/dlt_cli.py": "a3114754e94363e46281adf1f126fba84efa1ac816d1f5b874dc684b01e09faa",
+          "cbus_toolkit/dlt_controls.py": "7c099a5593cd2049276703d757b5563eab843489f1858c6291eaa1b5d4a51c2d",
+          "cbus_toolkit/dlt_display.py": "b96157e25b1d0503f2358bfd761f7ba7523d513467efabca710d83ad946d4c74",
+          "cbus_toolkit/dlt_icon_dialog.py": "fc334fc3b12a1218b83bc4717642282ac7ed52b0d7b2f10d67309f28ecad9ec3",
+          "cbus_toolkit/dlt_icon_dialog_cli.py": "a056a993e553e85e790a16eb457a81125d2f6b08ef3ea587ac172606514622a0",
+          "cbus_toolkit/dlt_indicators.py": "3aee9c5a3ac6c7b8c4461ace0b0b0dc101097a109a877618217b0f2c61d0b08c",
+          "cbus_toolkit/dlt_labels.py": "3cd9b13b62f955984511bb2f94195a210242bfee56abe5f49e292b7038adb004",
+          "cbus_toolkit/dlt_language_dialog.py": "eeb2e0351f489a0316337590abf9a9dd4d11e103a339b6d931470b1f116b164a",
+          "cbus_toolkit/dlt_language_dialog_cli.py": "aacf2dc9a1ec7467e5818752b102e074d27e0738e725ac617e9e2ca9945a7afa",
+          "cbus_toolkit/dlt_physical_programming.py": "ca74aae60c4052b45976ca08c9de5d6c01b0e44fcb2fd8abb882e36801bf242a",
+          "cbus_toolkit/dlt_profiles.py": "fa91d46f25b6fda3fb536aa9c2cce220beb053f03ad1cfb079a5adb51102312d",
+          "cbus_toolkit/dlt_project_cli.py": "3ccd372c3b2ab24f49eb1d09a38233134f87be6a2812ee2cfd13db332dbce9e8",
+          "cbus_toolkit/dlt_project_labels.py": "28b6d2fb8f818bb4bb5b05eebf3140251e2505794d7e5e2816fa2bce582da919",
+          "cbus_toolkit/dlt_unit_delivery.py": "8d89923849f5828e399841fd101e5a43c1dfb217fe68d601fa15cadfacba7735",
+          "cbus_toolkit/dlt_unit_delivery_cli.py": "27c7ea1d04a75366a4fe326a4be486b14e3b6b0201a76fc57e3e618c5127f614",
+          "cbus_toolkit/duplicate_resolution.py": "00e40abbee576b35ce517fdd19b10955749b8ba7f320061470a71e016392f814",
+          "cbus_toolkit/edlt.py": "c7f20a67c015144a2b62bda64c2fa634e9b30430e308ba877d4a1a9e89dca958",
+          "cbus_toolkit/edlt_activation.py": "d9ef076dfbf71d39cbdce0ff2b5ae27fc29be8f2a547fd4507a51a36dfe34cd0",
+          "cbus_toolkit/edlt_add_dialog.py": "c772e0c978847d2e8bba41ec67c985a8a985ff9f88afb6d37e9c3829adb6a6d3",
+          "cbus_toolkit/edlt_app_group_label_controls.py": "4f2d2fadef3e4b0db0d2dba75016920821646412af5a0b62664e3838ccdeefe1",
+          "cbus_toolkit/edlt_app_group_label_properties.py": "b98b7207b0645c23fdbab9310354c916ad0b61f81fdcf28a93c45e49bf785ae1",
+          "cbus_toolkit/edlt_application_add_dialog.py": "cc33e5c86fac7a5fcb8937ae6d5816c5a56bbd15efa225fee96abb5e5be54920",
+          "cbus_toolkit/edlt_application_cache.py": "c7dc8c133fd08f3b5c974c6429add4a82f7dda2d69154165c05935b02ecd6bd4",
+          "cbus_toolkit/edlt_applications.py": "5c06e2a0ec30ef42c17cd4d13924db5eeb1634830b5ab5bd7556f34ba64ce881",
+          "cbus_toolkit/edlt_blank.py": "d111b6afee5b37f304aeec64b717bfecfe8b89b80d0b55a649cd29efc4e5ed6f",
+          "cbus_toolkit/edlt_colours.py": "48f248040581a3d6b542800bc8c828814ecfcf58b10531c8394eaf92bcb24dc0",
+          "cbus_toolkit/edlt_control_cli.py": "90807283d24976e753835a191f982f538187be2c2b5347492f34d15207e19a48",
+          "cbus_toolkit/edlt_corridor.py": "a00e918af4ddba1a31ce804c396f927c29c5378589d066fd33a7c01597aca0a9",
+          "cbus_toolkit/edlt_display.py": "4903078af7c5dfb59baafa68177cb49e3d4a7bdea60a41db4de082f70d1e1087",
+          "cbus_toolkit/edlt_display_model.py": "4a56bb503c5c82391021a8a14dcf516825243c05a5ea0b4ab9027596f91641d2",
+          "cbus_toolkit/edlt_dltp_index.py": "b569af2fb13a01c61d5bf60772a592b36b7e452d66c0c7d2514d3aa724109036",
+          "cbus_toolkit/edlt_dual_key_control_properties.py": "0d02ff67a149a93ad6485c3eedd6d4eb07036d6058b96a995b2f2987a0c0fe02",
+          "cbus_toolkit/edlt_dual_key_controls.py": "7250a5c6d7fc01d897b51ba6df1982da8f723e90380c3fae95f1e0324efb2ce9",
+          "cbus_toolkit/edlt_dual_key_parent_controls.py": "fe05a106a59b69bbc6cb1e9e8d549ebdffcc3ac42c21f3e95b95fa37ccf81e5e",
+          "cbus_toolkit/edlt_dynamic_label_control.py": "7e2ee51983ccbd254f7ded33c43655d5ca70ba9c041d21c4cef064f35bc858a6",
+          "cbus_toolkit/edlt_enable.py": "95e1360da4f43b051c4f23d66cb956d37e28c3e2457e373eef2e533902de25c0",
+          "cbus_toolkit/edlt_factory_default.py": "d75faf780589599fe91b61592f614d69eae168d0baede7c8252075c2435a0073",
+          "cbus_toolkit/edlt_fan.py": "bf0f1b6cbf89527af2fb378e81d937dafcfe68f68ee1f7fc8a8fac8b32924aec",
+          "cbus_toolkit/edlt_first_open.py": "02709d77c7b3a851288a9ddd753e0da8645c024657a515e903a8761539f63119",
+          "cbus_toolkit/edlt_general.py": "6ce6abeaa55dfe36401645a8c432eb40490d350adcf1e46e5ce005b0430e0420",
+          "cbus_toolkit/edlt_global_cli.py": "f24bd528722e28abe39a4352a893792710f0d36fd6d0953cdf9824fc74b332de",
+          "cbus_toolkit/edlt_global_image_context.py": "f0c3352044b4a95bf4d7589ffc5f9ab2efd040d02a18e4f87a28b3629aa12731",
+          "cbus_toolkit/edlt_global_preparation.py": "efcdc8957e06c6f6bdfac5c3480d68731ddfa8e4f5b51e3d3499f08fe23344e4",
+          "cbus_toolkit/edlt_global_programming.py": "06e1879222ef35dd76d0e7ecc75b818e5e103eca3f61cf3fc82ac30305647105",
+          "cbus_toolkit/edlt_hvac.py": "1425551576911a14cebdfbbfda303d42a0bf71cd1d6582aa47f29a1c7a572e34",
+          "cbus_toolkit/edlt_label_audit.py": "9c449c57768a14e9ff6cab272da2c7063ded68f28b6e84b2d1dfdf2cbf06d252",
+          "cbus_toolkit/edlt_label_clear.py": "875fa93eb6add9ea65e679ecca62d1f6a59e70cf1eac2d0231393e79e759ad36",
+          "cbus_toolkit/edlt_label_type_control.py": "4c1976c67fda1dfa68eaf8c7aaa32b5f421dfed4e0e62897b0edca7896b75569",
+          "cbus_toolkit/edlt_language_add_dialog.py": "32b938a193ef0ae660a264170a16542c6ea120fdf025df6944fe7a949edad2da",
+          "cbus_toolkit/edlt_lifecycle.py": "ab5f8d1c3b1c12d1223ebc3e53b263aa0ebd5f3a626bb16f09c095f3ffeda0fc",
+          "cbus_toolkit/edlt_lighting_label_controls.py": "08106f4d28075dfafdf30ed53060756c75681a5e8474f18476de74cfec5c30ce",
+          "cbus_toolkit/edlt_measurement.py": "f2bf45c3328deb883f79f4047e462b9aef2a4f2fa624c31f16b2b6310d020f53",
+          "cbus_toolkit/edlt_mra.py": "700371d34cb362773df8829cbf73097ec939038022ff9236048be8e68fa6ea04",
+          "cbus_toolkit/edlt_mra_control_properties.py": "5ace1ef4b27986fef6812dd8e437c379ab954049e69050b0e27c3f7f6c11efdc",
+          "cbus_toolkit/edlt_mra_controls.py": "6b786b544d7e901ac7974f1b76d6bde177eb127c9238861b863c420d11b6d489",
+          "cbus_toolkit/edlt_mra_parent_controls.py": "b85288b5ac0aafd28527b6e73fd4aa0c6ffb56c3a19d016a32eea65dcde7fa60",
+          "cbus_toolkit/edlt_multilevel.py": "1481fdf1546347e51b76c3d08ab54eab429bdffa3e368698744a71a45309fa82",
+          "cbus_toolkit/edlt_navigation.py": "3a0cf8903c3c0413ed9393dfa7ff0ae23a248938bdc26e1f8d0be575cd8f1775",
+          "cbus_toolkit/edlt_page_control.py": "0321a5cc12a0894bdae1668d38f2bd932b2fc5e810b2ea58c3d05dd7f3e026ee",
+          "cbus_toolkit/edlt_parent_add_dialog.py": "be740e532d9c930347e775c4d3e32279af1a14d5f5b2c7a17e52ee156f916ab4",
+          "cbus_toolkit/edlt_parent_form.py": "0428d405ae903204f90ba4d50874b39d1200dce566855a5876e9b249de22f20c",
+          "cbus_toolkit/edlt_parent_label_bindings.py": "c7d5a2cd1c22dbc0025da93beb44daab3fcbd67b10be086a0147a66bdd065a00",
+          "cbus_toolkit/edlt_parent_metadata.py": "346471897529002c394861dcee6c0ef40c3f95060bcaa01d11689b98b1ba48da",
+          "cbus_toolkit/edlt_parent_transaction.py": "ec009971f032078c03a9d3c71cd8e907272a72337d5ec014505be6b7a89498f1",
+          "cbus_toolkit/edlt_parent_transaction_cli.py": "bc913a7914d8d07eece0c15c2d5593999903d766f05cafe6cf852bb8187a9102",
+          "cbus_toolkit/edlt_percentage.py": "5c076ea7f4e3a9a3985087f4a65ccc33d553fb41d4cb36b3eaf9ececcc0123e9",
+          "cbus_toolkit/edlt_project_images_cli.py": "5a8301da7943ff04c7e2f4378e164a927669b17ebd570b966a14bbda2d6d29c9",
+          "cbus_toolkit/edlt_project_labels.py": "da9f1b3d962323cf859167541256fac47e0a0c64548feab08030aa1d54d2ab13",
+          "cbus_toolkit/edlt_quick_status.py": "df19a640a4aacd8559fd3adbe34f16f1bbf2ffdf86638168c88de71c8902d359",
+          "cbus_toolkit/edlt_reset.py": "9867423a87ae4e4d5390287b1d086df48ad59e1eada8370c78d9311ab9a49605",
+          "cbus_toolkit/edlt_reset_cli.py": "6e661865721c04d43af9244f0b3d38ab2e91000934e9927e55304d0ded0244f0",
+          "cbus_toolkit/edlt_restore_levels.py": "2ae1cba7de13161959ee4c1cf76db29a9dbd2897a1f425c300d595739b18aa9b",
+          "cbus_toolkit/edlt_room_courtesy.py": "24d886f38e4612a83c81c8284951f886c4e7702ab7b1aeec517c0feb78b57713",
+          "cbus_toolkit/edlt_scene.py": "abf70fce4416aed9fba9d0d734b0d9ba9c563382d38e1a2b1ba3d520bf52b7b3",
+          "cbus_toolkit/edlt_scene_add_dialog.py": "c85bd9b34cec6d9b9bc310e27f620ce6f1e1f5d5f306376beb04d59cd560b1cd",
+          "cbus_toolkit/edlt_scene_button_control.py": "041d116ba57ea5f11443adb19f315ebc41e8f7757739658b2d12ff0c607402fb",
+          "cbus_toolkit/edlt_scene_inventory_timeline.py": "7e1ddea602b671378591d1348aaaa46a1741f787a5f57e1e975db475037e5004",
+          "cbus_toolkit/edlt_scene_label_images.py": "4216d545d779619d977dc80f2baa8fdf3aaef2c4aee5c00b4618176e4a295c2f",
+          "cbus_toolkit/edlt_scene_language_initializer.py": "53f27d9b0982b4de6a6443900ac978a1e16541ad5e3234ec4cb2a46337a4bdbe",
+          "cbus_toolkit/edlt_scene_live.py": "60b4018263dc28406e2b52e1f9fe8179c32d8ca7b57f0886bedb23984a8e8a0c",
+          "cbus_toolkit/edlt_scene_live_cli.py": "9e231455c8c00d470a7e5e769866374ceb0395afbf65ed259feae4b34e5abcca",
+          "cbus_toolkit/edlt_scene_manager.py": "a5dd034ec13ae6dae0749ae397b4443ff3a99d9b8f57beaef38d5fd6e0371b30",
+          "cbus_toolkit/edlt_scene_manager_cli.py": "8366c490d73f1c26a0764a75c10fd1690a9260588d116ac6b996c6dbfdc9d0d0",
+          "cbus_toolkit/edlt_scene_metadata.py": "902009f19bd21e67bff8bfd2131a142064971e53155cb890f3b834a25d77356c",
+          "cbus_toolkit/edlt_scene_name_control.py": "a5d40fe662239d7b4f8b4b5e9b1aaeb9e26ff3820f3a6c26fa9491b5e72d6a5e",
+          "cbus_toolkit/edlt_scene_names.py": "a6e689d4f30b89586a15f78579751f54c750a9fee74e7b73fa43c39ed7b70d93",
+          "cbus_toolkit/edlt_scene_selector_control.py": "1dc1c2fa9d0809174fafe71e78b0bc70977017f0e3a22be2919cfb7510bced6b",
+          "cbus_toolkit/edlt_scene_selector_views.py": "e00ce55ccf1079f95d1a507144674661742c29bae6b38ab7ac5ff63758432316",
+          "cbus_toolkit/edlt_scene_trigger.py": "59cdac1d8ea97f9daf6726ecadc3afd91570594759395e5424b9cbbe62c51fd2",
+          "cbus_toolkit/edlt_scene_widget_controls.py": "a873684ac3a98180f8ca3701a49ad53cba05163946efe5de5dd6738e85c493a4",
+          "cbus_toolkit/edlt_scene_widget_properties.py": "a856d17eee70ff5130ce95a873db9f80a40c91dabcca2bd5e02c2c10752dc8c3",
+          "cbus_toolkit/edlt_scenes.py": "c1255531d8417e1ad85050a1d19578b6bbeeac963ce7145d2d7b96a12edaca68",
+          "cbus_toolkit/edlt_shutter.py": "3e26601332080d17a6d4638f7337405906138be54788ee81ab06f63ea64e92c9",
+          "cbus_toolkit/edlt_standby.py": "e78b2c2cd4d3c29239eb06c3b3c2f1e677ebe2e363a58aef515f7ef1f8c15a1f",
+          "cbus_toolkit/edlt_static_grid.py": "2d8f1e065c31ee12713bad70e1c6eb52fd3060faf650aa35bda37ffa351b2b60",
+          "cbus_toolkit/edlt_static_text_dialog.py": "b0cf4bfcac0a7f2fb0765148cb4df881e29def84f9f816bd3b2d8641998db646",
+          "cbus_toolkit/edlt_template_lifecycle_stage.py": "311f52b196e6db81601a0a4e61feb98f7b4d3ffa4161ea8193f99e369360e15a",
+          "cbus_toolkit/edlt_template_model_stage.py": "dc4d5ae8f027a99b513a8ffabd84518dee4adcd90bcb9d51147a5842b4f6874f",
+          "cbus_toolkit/edlt_template_reset_prelude.py": "9c01873ab25de3d83d3d7f3b47bc98491676e60b0624a624dab8fa959d67be85",
+          "cbus_toolkit/edlt_template_save_predicates.py": "79c5903ffe3e44b41be9e57d13cbca3646dcf956abf085fc81e052205cd7e00c",
+          "cbus_toolkit/edlt_template_save_validation.py": "6bd1336e59384e8ed9bdd8012935742a9b212ee7f1d9675ab5c7667f74b76882",
+          "cbus_toolkit/edlt_template_staging.py": "1a3e5e5f78cc473daf96efe4fd1eafb67325b7682e4da209af35391793de5017",
+          "cbus_toolkit/edlt_template_terminal_stage.py": "0371ab7c8dc37c808d8a509ef55250a8cc89aaae959a2893abfb353949d348be",
+          "cbus_toolkit/edlt_templates.py": "80ebcbece133e0df5adce7c56cd951ba1720807af4eaef91e50764325487c129",
+          "cbus_toolkit/edlt_templates_cli.py": "c01e60ba6d56f5e400ef6411f4403491a30611c30e68ceec7ed072edc1b7b0b7",
+          "cbus_toolkit/edlt_time_date.py": "35e3117cccdc5592cca2fed8d9fb4e9eff367faff397d33ebe652515769577d7",
+          "cbus_toolkit/edlt_time_date_control_properties.py": "f5e04796aa82460832bae9944f69b5ee536c71b6b24ec10382ef19639807c45f",
+          "cbus_toolkit/edlt_time_date_controls.py": "97351f2de6a22db7880f3adfc80fe6cadc7708988520488290d751293c0d4dcf",
+          "cbus_toolkit/edlt_time_date_parent_controls.py": "348c53294c74ab6e6ebe50ccd6fff2f9ac584241ac233af31f5ea4ca58d96827",
+          "cbus_toolkit/edlt_timer.py": "33172d6acea2456fa499020bfbe160ebdba05d6088361fc5535adab65a64ee89",
+          "cbus_toolkit/edlt_widget_groups.py": "4dd7c0b581d6d9590b47ff4d7fc6a735604ee801722438fc9119f561636d97c1",
+          "cbus_toolkit/enable.py": "0d6fcca3354179a72e26e777dea35b70e34896057cf7bfcbe88441e0e9aa4b99",
+          "cbus_toolkit/event_stream.py": "6ca9bbe8557180042d196b34d0f33a96ba4ccd6e5d8d988834358f42b5a5916e",
+          "cbus_toolkit/events.py": "45d28ebac2215475e6fe4dc70a2be744b5992a67a9f27a3388f083874172626e",
+          "cbus_toolkit/evidence_audit.py": "4c64c91b6622696b1dc4276947d5181852e51e5d1da9f4001c8c5461f4b05bfe",
+          "cbus_toolkit/extended_macros.py": "1b95067d373321de9889c431144056b074fc2707cda7233947e506ef2f92bd7b",
+          "cbus_toolkit/file_transfer.py": "c02f4be2536204c9a28739ac2fb848fad6a98651a3ffb813f2eee315dc72db22",
+          "cbus_toolkit/firmware_diagnostics.py": "cd636476392679df8e971bfb61427a2b5c2e3375bc0725d82cf2305990425c24",
+          "cbus_toolkit/firmware_ncc.py": "8fc702c72f00b581b9c898ee21e3bea8ec4445a99228f452d9522e856494ef7e",
+          "cbus_toolkit/firmware_payload.py": "746f8822f4935ee2f404eb34f9a740b68c2bc1d6d4b6903ebb7a37958bedd7cf",
+          "cbus_toolkit/firmware_update_cli.py": "db1f36ff8ca7d8c9ed2809a9164e09d105c15fa2299aed69e066dbf8622698c0",
+          "cbus_toolkit/firmware_update_plan.py": "6075cfac67d79105b35735dd04e3f018bda59f41ac0a7078a1969f30a733a289",
+          "cbus_toolkit/firmware_update_run.py": "9c718b654b076eebb28495b38e5675ab95f78f4f3e7ca601b93fc93bd2e766bc",
+          "cbus_toolkit/firmware_usb.py": "1c82e6847b425aaf5b7854a71be91e894e43ed04764307c0e3b0c29e7d675a5a",
+          "cbus_toolkit/form_save_order.py": "797c40d5ed446fdb93fa81eaad44daa05068f95b8ee413fbb3f4f24b30fe88fe",
+          "cbus_toolkit/input_power_up.py": "795b27c9d9a59bf04024049c38348fc76b14de7ee641803a2fbc2969ddf59791",
+          "cbus_toolkit/inventory.py": "5bdc91682cd5cd66d9ccff0bd7e93b80cec556f52190f1f7693bc5d122cea1f6",
+          "cbus_toolkit/iope_block_timer.py": "7a787511857ce91a6aa4ff7f1f1bbc0b4b8e99e3de27bd7cbd821511cc6056d9",
+          "cbus_toolkit/iope_cli.py": "e5b900f7920c5b2821b5c4f917aa12ff6d4f9a5a429311fc93bd6a783786983d",
+          "cbus_toolkit/iope_environment.py": "0df69e68d59dbabf0493b244dff84c7b3f26612f9579545fe3150c7016ce1375",
+          "cbus_toolkit/iope_join_groups.py": "5fccafaadb52943e6fb3b38f6a31ff9ad81a099f5f9e4183713a5c3e0fb65a58",
+          "cbus_toolkit/iope_join_recovery.py": "e9d3d6a20a8044bb0ce034a0d44a41b4c6fd0876ed0ab7b8e8bee189343b7c3c",
+          "cbus_toolkit/iope_logic.py": "541c2bdf76d5ee33d59d7be7627ad111c5767aa95f9e3674d0e67c38b6c76905",
+          "cbus_toolkit/iope_output_settings.py": "cfab9a376a007618baa3024d11ce0058b5ab0f742aaea692f59a4df9011490c9",
+          "cbus_toolkit/iope_scene_levels.py": "deae0560cf158bc0c7f8b52ce8e95fbf49dc566e6e595d9abe8342ec8bbcf6d8",
+          "cbus_toolkit/iope_scene_selectors.py": "f18ef118b55448ad9c2be0fb1d9766e091e0a665e338d81a93b2229f027c172a",
+          "cbus_toolkit/iope_settings.py": "c9b03046c3a19ade6b1d31f2e146fcf62526ad7d2bf4957d9cd2bf2d2e15230b",
+          "cbus_toolkit/iope_workflow_cli.py": "febcfcbcc0ec973af2f386be8b69ba2378dbb56bf96464f4e606f7ebbbb31188",
+          "cbus_toolkit/key_options_cli.py": "cdddcb13945c8a5e0f55b23af0c25b52b3c261ba04fac51fcaa1963d6bd8671c",
+          "cbus_toolkit/label_transfer_plan.py": "4fbc90f02aa7ee5de26444ec029d1693d95bd0c7644ddea1a94edef5d6643ec2",
+          "cbus_toolkit/labels.py": "b24f212d60652ca258347d06128c4744718db01099bb0a5bb3496f47ca7e14ec",
+          "cbus_toolkit/light_level_sensors.py": "d6d33ebd0d91161022e162ceed2acc956afdc67bc359d402cb880981a3d07319",
+          "cbus_toolkit/lighting_state.py": "b5c62265aa98883e42d9d24767d7b97be11371d833ea2b943ba27d9c7bec8fff",
+          "cbus_toolkit/macros.py": "9db99b787d510d3c3d6902e69a1a4eb03ff320564bf605970c2e0844cd57cc53",
+          "cbus_toolkit/memory.py": "372cbc3a79710b743d23aa6690a8b56b1780de091ffe8a1d0a543e4cfa9c1f31",
+          "cbus_toolkit/native.py": "285c574c8d7a1714d8f40742d92c469316f0a1b9ff9741a8644356d82fecb241",
+          "cbus_toolkit/native_global_programming.py": "b81fafccd0519fd3f403d3f824d5b1e9ebe06b862df878be93aa81f153753ae2",
+          "cbus_toolkit/native_project_documentation.py": "e6bd2130f3a9311212e635bdb5dbfdb291987f6a8ade8795248d6941f9a89eed",
+          "cbus_toolkit/native_thermostat_schedule.py": "c1cefaa53d0012dae24967e6288305fc33fed7ee12bb74ff5a22e5b8d0b86186",
+          "cbus_toolkit/native_thermostat_scheduling.py": "a0eebf9a06f7eb95264bddc78ebce9e3c92f84c11771202cbc8a46a16b7409d2",
+          "cbus_toolkit/neo_indicators.py": "b214db9f2b83a9834136136e03e9a9ddc6802da2b56f2312ca99a9569b726ca0",
+          "cbus_toolkit/network_definitions.py": "b34be9d9fb1d78035a0f64575194d07c45f391c7e115bd651ed8cfac3f8a335e",
+          "cbus_toolkit/networks.py": "4c80c54931ea7f233a2fb8451580e9afbe0d68066fb63c1e542daaf8d20f7cc8",
+          "cbus_toolkit/offline_conversion.py": "dce62b0374fa3104b93c7a92e4d8ce79aea4f1095f6becb0f362c9bdf58a6fbd",
+          "cbus_toolkit/parity-evidence.json": "e79f48be4850fc20cecef82888d00f5311b7ee801abc4aae55a7e83e9f5065c1",
+          "cbus_toolkit/parity-obligations.json": "ae898ed03a4613bbfd0886013383640374bfbbae5c0a176eab6254ac29c95a8d",
+          "cbus_toolkit/parity.py": "6ec8fb6b143e55720de3118028305adc6323bb1184e003bd026d95a77e2093c2",
+          "cbus_toolkit/pci.py": "fc7e0176c23e99125ca5bd611089cfe7e4152dd6c10f378dd263e27849c7a0a4",
+          "cbus_toolkit/pci_full_inventory.py": "12187135060ee714ee8e956019864e16038aadf58f2aec190a48cae47f974615",
+          "cbus_toolkit/pci_inventory.py": "bf0a9f17a55b5c7bf4110abc7a030d899595375741a47dc78028182634f0c504",
+          "cbus_toolkit/pci_local_options.py": "a0d8dcc948cc9b5bd8392e899ce369203b1d2e58aa018649c6e745303b15423d",
+          "cbus_toolkit/pci_routed_identify.py": "bd4e45f7a8f6a6e6774be8355d504c22c321c4e59cc83e64786896367891c706",
+          "cbus_toolkit/pci_routed_identify_cli.py": "e55639c4fe1a01470d256baeba0ca9c9e9ae5d8e97e071e722efa345c433838f",
+          "cbus_toolkit/pci_routed_read_topology.py": "acc7e54d4cd76efa3999fc742c5a8b590e1b83183d0b9cdcbaf32eef4d33d448",
+          "cbus_toolkit/pci_routed_recall.py": "e3e90d732dfe586399a4f5837639918c6bcd92e03dbf3961848b1b81b6776c67",
+          "cbus_toolkit/pci_routed_recall_cli.py": "7fbf2e6ad640d54f3ccc394f58f4a37c108575cb476003f72fc606134157c556",
+          "cbus_toolkit/pci_routed_write.py": "a0806121f943b63ccf8797717dacdf522ebaa1d68825873e7e24c60a05769ecc",
+          "cbus_toolkit/pci_routed_write_cli.py": "d82cf122ef2f59fce00fa51be1c3b9ca50bfaa5577ef114e1d60522aba02430f",
+          "cbus_toolkit/pci_routing.py": "1eda04dd3201db4db8937f3d81e4dfc51b94a04ab3b66c5bd8e8302cdceee639",
+          "cbus_toolkit/pci_routing_cli.py": "c1805f5c99ade56614b1ab406dc103c7f34037c574ca4613ebd77fd780952762",
+          "cbus_toolkit/pci_selected_serial.py": "83d528dfbb325a6ed00f37e4757de78e448dde7d21d6a37eb9c11cfb15c3664b",
+          "cbus_toolkit/pci_serial_address.py": "535dce05bda4e6981913b4b17a98a529a97692bcfc7de1bf9452a28ebadb8af5",
+          "cbus_toolkit/pci_serial_address_transport.py": "f44fe5da1857c2d894396ce177c869320943f4e0b3c669196acdfea529da3d4b",
+          "cbus_toolkit/pci_serial_probe.py": "bf91e199f155f0f955ebe5e59293130c00081014d0cf52e9069aa64514b0ec84",
+          "cbus_toolkit/pci_serials.py": "1ded73cb747c9a85ca0340dc05f92a6506cfd9f5272ccba8b16dafad449fd066",
+          "cbus_toolkit/physical_addressing.py": "2ee599d69602b45c1cce94b473ce3230d186c1ed67fa0291bf60346bc472d867",
+          "cbus_toolkit/physical_pp_journal.py": "b3440866747a0bc9b3f7b7ccd1ec3fe1cf1186f7de172bfa3e5ba2c5fbc2b0d8",
+          "cbus_toolkit/physical_programming.py": "bc0d3dda1dce2143eafdc8c2ce0f69c6c63e4568706146f70236969c30594530",
+          "cbus_toolkit/physical_programming_cli.py": "d4e98fca8aeb25c3176ba8d804174b09a1904a33ea6d8c160a37ad940a8874da",
+          "cbus_toolkit/pir_sensors.py": "f4c7723f055daedd4a9363a4c95eba88f4b24286307af18d7103463003ea7adf",
+          "cbus_toolkit/pp_editor.py": "dcf5993d9096f58d17f9ba06d73debc82fdf249975284bb572e3b6739f93b785",
+          "cbus_toolkit/programming.py": "7a09752990d138afee36d49710db6f9af26a88aae899d5d1a65da19514e626e7",
+          "cbus_toolkit/project.py": "491f948dd391a2b29014f10393dd1c74227345b8c181a84a0557ebcf8cb3a7fc",
+          "cbus_toolkit/project_documentation.py": "25917cb1473d96235d269e9726e35f45906a842beec7055679b68bcc2cbfd212",
+          "cbus_toolkit/project_documentation_architectural.py": "6e9f43e484313b826367eaab09d871eed66084e9ed0bf934c83b6a86bbcbab60",
+          "cbus_toolkit/project_documentation_architectural_loader.py": "384f9c893ad5c9c30d81e3416ad97a780c61a2837a04bbc24a89050161fcbaee",
+          "cbus_toolkit/project_documentation_architectural_usage.py": "453bfd097123c84b99b1db9c6e27136bfcb548690471bff6e9324638e4545d37",
+          "cbus_toolkit/project_documentation_bytecraft.py": "90835ccc41be0590818a722263e99343c7653e0895d9babab9322f3844d31ffa",
+          "cbus_toolkit/project_documentation_bytecraft_loader.py": "7119d54f70b4c3ef9dd7cb9c7fd2f44a2ab4a6a796f01724333019b143914338",
+          "cbus_toolkit/project_documentation_bytecraft_usage.py": "36e6e1ef00471e6948a8cbe2d1a9f4796e59c41d1ba64b691e9b8f9b5a7328e4",
+          "cbus_toolkit/project_documentation_classic_profiles.py": "3411fe362256c68269b59aca2ac67bbf7dfe3aeee9849ee6e5c7ebe98f5b3c37",
+          "cbus_toolkit/project_documentation_devices.py": "b4a1749e75e58da39ac106cf970329b9b8e853fda71da0715540d0f4f456f07d",
+          "cbus_toolkit/project_documentation_dlt.py": "54f9db478cccc7071dc31b57d2190eacfbc38e11a1bfedf8c02752768130898a",
+          "cbus_toolkit/project_documentation_gateways.py": "e134ffbcd6c10f8b0a3ab0be3cc58b875977650d0a5c40c56a0be73567a44dab",
+          "cbus_toolkit/project_documentation_light_level.py": "4ce1858d3fed2b902afcf890ce57d69508248612ea29ae2abd08cfd620c27e0b",
+          "cbus_toolkit/project_documentation_multisensor.py": "f71093b8ce420e5ea02b4ffbb4c8fb3875c674b5c79541acf44646a7379c9641",
+          "cbus_toolkit/project_documentation_native.py": "874178ca95407f57e67fa65ea397916da6458de9bc8729ccba1ab2cc438a2fda",
+          "cbus_toolkit/project_documentation_neo.py": "358ed44bead92d9eddb2d40ef44f21cf4bc2741cf1ec85c6f82efe6e877df074",
+          "cbus_toolkit/project_documentation_neo_profiles.py": "cb6fb2add56d2b5e82600faa0cc0d9ff34b78c8e05e649ee9088bbde60fca117",
+          "cbus_toolkit/project_documentation_neo_usage.py": "83eb8ccf3a2099bfdb487c269bbabcee8d69639748c290a3e966de0422af4678",
+          "cbus_toolkit/project_documentation_neoclassic.py": "5f1da5fa69528526314bbab99182cd0a52562e88273ca8567b49b2d025381836",
+          "cbus_toolkit/project_documentation_neoclassic_modify.py": "e43ffc14941a6233d4e427a2958e95a489013ff986becf4e203cc2ffb61aa720",
+          "cbus_toolkit/project_documentation_neoclassic_usage.py": "3421d62d8610e629f9abad1f6058abb7326b75c4002bf210965b55fc7be066d3",
+          "cbus_toolkit/project_documentation_outputs.py": "39077da7a49e420e5de00ca90e41ff652de9c401f977e3b0f22fd318191c9fa0",
+          "cbus_toolkit/project_documentation_pir.py": "cfc30c10eea73fe1b5af6975265e2b30cf24ead5435cb2a278f3ae3403ac2eb3",
+          "cbus_toolkit/project_documentation_scene_controller.py": "0bee388297b82f475099127aedcae45576a2db9c3c4efbafd817e0014a396871",
+          "cbus_toolkit/project_documentation_special_outputs.py": "f1bc999eed6cf4bcdf28d90048718b90b6f11a55ac31b59e37edb45564b6da58",
+          "cbus_toolkit/project_documentation_st7_light_level.py": "45cc4e26e7dd237321680bee196e03fcbfed3dde60f30a018299685641428106",
+          "cbus_toolkit/project_documentation_status.py": "7798bcabba21bddf20e6c7a9cd465ce11f6e8087e6e58c732338cdfe93b0f235",
+          "cbus_toolkit/project_documentation_temperature.py": "62cfa3fa609ac8ce3751645c533c306ba50eaaf24944bbb3c88f71dfac74772b",
+          "cbus_toolkit/project_documentation_thermostat.py": "2b5fe8d47e695ce27468835bfc3eb1e5de8c773d4e2abf9596b584f1f597d59c",
+          "cbus_toolkit/project_documentation_usage.py": "8e06b28aea9e35fdc6bff8877b0865835698c27e9f2cbe9076f8ae4cd1b4ee45",
+          "cbus_toolkit/project_documentation_wireless.py": "289c8dda04fe4dc8c35b183719677b1ec3aa24be0fe91758915ee27d6ad08c92",
+          "cbus_toolkit/project_documentation_wireless_facts.py": "97251e8c53ee33f2ecc96a81931d555f62680f48881a97c432f3f9ab9817d73e",
+          "cbus_toolkit/project_documentation_wireless_loader.py": "2c148a5292b89b843f55762ab88b129e6efcf9fd212edd31c4516c115ff12279",
+          "cbus_toolkit/project_documentation_wireless_usage.py": "788ab0609d92b185499797a283ea2a37701399dafb0644454f4b1765f3427cfa",
+          "cbus_toolkit/project_legacy_transform.py": "4bbacfccd21d8c6c17b5caa74e1d29739ebd9c7b2ab0ab8684ab2791880e2e65",
+          "cbus_toolkit/project_legacy_transform_cli.py": "b60323254a2e362e1d1c60faba3cff2b0cd41b2a711899b601c8688120cea06e",
+          "cbus_toolkit/project_repair.py": "6ad258ba051f3e9fdeee6909168153e2b01f6293fe19f5bb794ce08e40fd0d66",
+          "cbus_toolkit/project_repair_cli.py": "3e7a323c0eb9c0b0b5264665ab13f4a79245f056466f887f78da328ccd2ab31c",
+          "cbus_toolkit/project_topology.py": "7d4de0c3ee8817e39984fdada3ef4a1e43acef23ba7b4df94f14450258b106af",
+          "cbus_toolkit/recovery_journal.py": "53f4697752dfd6cc833ee1f88bf4629a5da60a73bd435d9f38097f16746b77ef",
+          "cbus_toolkit/repositories.py": "9a4dfa92e099f319e73f4cb354702d2e762ea7f7657e65ba64bc8b9203bc71d2",
+          "cbus_toolkit/repositories_cli.py": "7be3fcabde71d13aba69319c40a6ce24fd1e4cfb3feb35fdd8ef5dfcc8ca1d16",
+          "cbus_toolkit/rust_serial_reconcile.py": "add2b9451ded7cc318e44cd9c1e5d5e554ae76ce4a70c4a91b63bbba5d5fedc2",
+          "cbus_toolkit/scan_topology.py": "90fba7664b4c7c4eb1a065c06828e0e5d4971516da9fc975032e141c03ed763f",
+          "cbus_toolkit/scene_binding_plan.py": "56f62256c5129f01f0d002a70d57b0411969965e1af8dcf1b3437ec578f2a3f7",
+          "cbus_toolkit/scene_sequence.py": "67d05a7cc000ccd607043ed309f94869c86916413c408222f962ba09cec41d38",
+          "cbus_toolkit/scenes.py": "a36f757c1da8d6c769a0b53068c96de062f1e3978e64006df0b947c354268a18",
+          "cbus_toolkit/sensor_dialog_cli.py": "9878126b8672cd223a4ddbff7a9be7b96bd7e39a098e05a9371d23b157292c29",
+          "cbus_toolkit/sensor_threshold_guard.py": "f62ded16f1c29b8cc4e8ab2818cb9b450e468bf3cabc7d5ec7f4a9f086d9bfec",
+          "cbus_toolkit/sensors.py": "ba724a261ac491a01a5d4be50b2a2bed98137900faea72ca0957f5e45020d977",
+          "cbus_toolkit/serial_commissioning.py": "733b44d4d8d3e6171b57b17dc12747e213b342d0f24e876731d0657d40b2c29b",
+          "cbus_toolkit/serial_population.py": "634f115d785455447b2f7e9d85bdea7ae0b1025eab30daae3c686ef6a4e57da7",
+          "cbus_toolkit/serial_reconcile.py": "571030134f03ac3c859e8002547ee6f5550c6b9cd9b39aa37500f4133938fc91",
+          "cbus_toolkit/serials.py": "34afb08690d5c7905aa66596bd187aff4dcf38487cb246ad5f50587484652cbc",
+          "cbus_toolkit/simulator.py": "28cafec8fc4bbd504b5c946c8965d86803761e1f7cbc833e601d7f3276bf04e5",
+          "cbus_toolkit/simulator_addressing.py": "2e5053dfa11dd4ce63b2a4229acb320f8a775c5d22bbff5eafe667eda3482f5a",
+          "cbus_toolkit/simulator_applications.py": "65c45880434ada8b7605cf22bd7c860ca7fd7f170f75c4bfc5a6f0634801760b",
+          "cbus_toolkit/simulator_duplicate_addressing.py": "4993ed9e3086a5e08d7b9953fa4b08c1e50d2669fd314f921d6e9c1940d21337",
+          "cbus_toolkit/simulator_duplicates.py": "d7ecaa6c24cffa0ea4027c15ce7702678c16240a532000f58e80b727d15b8856",
+          "cbus_toolkit/simulator_edlt_labels.py": "d500c59ace847b787d6c6203b381336ae724ee4c52ebec0033ffff57d2a9bf7e",
+          "cbus_toolkit/simulator_enable.py": "2f3bc4c37b3a48122ebdba12a85f609df15995f60a74f48616887e2b6dec78da",
+          "cbus_toolkit/simulator_labels.py": "effa49020aa5d1fbb419ab64940eaf3170f86fd16245459a521c8a8c3d037c2c",
+          "cbus_toolkit/simulator_serial_addressing.py": "aa2d1b3aabc33bba5f51b658b275b96550c44ec967f3be607884fc671e7bd91f",
+          "cbus_toolkit/template_exchange.py": "bad0ad76c22577118bdbab9a5511412c65f141448af065146537d4983fe5fac1",
+          "cbus_toolkit/template_transaction.py": "7c8f41500660a9d4c815dc5e880ac05936c8ecff35e1bc5afe50509b59f628fe",
+          "cbus_toolkit/thermostat_post_load.py": "6ca049e0d97e70cdb0ea9210a47676f9fb92996d46afd6e6c57f8539caac5afd",
+          "cbus_toolkit/thermostat_schedule_cli.py": "3523a5bd4c4a90bc5d6a62e08251dbfbb42a9213fecca33bdf68ca18e5e03332",
+          "cbus_toolkit/thermostat_schedule_levels.py": "aab440e9233d531fa3d59044bfec7f9080873063e080f94faa16e960b8395dc8",
+          "cbus_toolkit/thermostat_scheduling.py": "68ada0ab5d8f279b3c1d83db3e5e1bcebfd6634cda006062d515801af0c5413e",
+          "cbus_toolkit/thermostat_scheduling_cli.py": "39754993520a2df13d58165cb475c7fa32095bd017a518300657b77efd83d4aa",
+          "cbus_toolkit/thermostat_settings.py": "4964e5eee8c8f343720af99530d4a3eea931f097f745005c678c86d0b16957cf",
+          "cbus_toolkit/thermostat_settings_guard.py": "6e2932565c174b5ebcd925c383cc0e18c79b5e4e612606fe2228d9984d864829",
+          "cbus_toolkit/thermostat_temperature.py": "a6db5f7e6a334a2aca7eeacd57d900e353fb6049adbca3497c8647899cac05ae",
+          "cbus_toolkit/thermostat_temperature_cli.py": "6b9142fa8e22fd3bfab7ea2ef7f9d6ce3d8e51c2412ff51c6e5ddae7c6528a0b",
+          "cbus_toolkit/thermostat_templates.py": "2b5492d84d0cb46916059c5e96b126a9b550f8cebaed7d04f84e88ca3a333738",
+          "cbus_toolkit/thermostat_templates_cli.py": "45b6ee299af1766797298feeeeb7219caae1110acbfead9131857d947b89e5b5",
+          "cbus_toolkit/thermostat_unit_load.py": "a8ded5ac86b72f366abd302aaa72504eea7cc1cc0d2522b5409c0fa887a7e677",
+          "cbus_toolkit/timer_duration_guard.py": "01101ae9a1b053b287113b42c68cd326da11e21fa1efc2b1ce9b46dfd117e2d0",
+          "cbus_toolkit/toolkit_about.py": "6fe91432a5f58dcbb9a534f9684d0f2cda50d97d2b97db82098c8dd4e367b4d0",
+          "cbus_toolkit/toolkit_about_cli.py": "e95d8c76471f5fcd82d75ebc0beb9e3760ba6a58533314aac48ceaabad1fde6d",
+          "cbus_toolkit/toolkit_conversion_coupler_to_neo.py": "ed0ce2ae0fe2da2070642f120afd9870a57de5eb4db94f2a3b9c99fbc0bbfb93",
+          "cbus_toolkit/toolkit_conversion_dlt.py": "fb2f734b53a98c075f151e036c95a0a89cd625dc72d8da3074fe1702b6677170",
+          "cbus_toolkit/toolkit_conversion_input_unit.py": "86d4f60a649efd1d9b985097c040afc8209175aea5f64361d0b475b0ca1b5d5d",
+          "cbus_toolkit/toolkit_conversion_key_to_neo.py": "051831486d1aa0d49fd109484de5b9d84f7e983f777105f7b22f12cd134511c9",
+          "cbus_toolkit/toolkit_conversion_reldn.py": "d33c36c2e6218a7cdc83cb3132337ba7a37f1284b739270ed383bc8bf5560591",
+          "cbus_toolkit/toolkit_conversion_remaining.py": "6e4e1151121d1fcf19d6dc2438ced44c2a08bc48c16c538540482b82dfc0f7a9",
+          "cbus_toolkit/toolkit_conversion_tweakers.py": "4596035b463dc56927812d7b98a3b68f4698d98be71d45fa1ec00d4d40ab0c95",
+          "cbus_toolkit/toolkit_database_csv.py": "c3bd9e57f6312f6972e146afb8f228968856775cd57458a007815b4456cd45f2",
+          "cbus_toolkit/toolkit_database_csv_area.py": "80badc60a373d2e488cf4b969ce5a7e63c8e6f73f7056534794b5a20a95b5107",
+          "cbus_toolkit/toolkit_database_csv_cli.py": "333f1921e28720b57802c5aff9697ef5e4eacfbe447a0d422d1e4e87caefb6d6",
+          "cbus_toolkit/toolkit_database_csv_last_profiles.py": "4e0df95648d80418f45b289a812c7a161c91b1c2b65011921c243ed9a263703b",
+          "cbus_toolkit/toolkit_database_csv_native.py": "4339c483cb2e40fbe28afe675ff627663b9ddd0327698441971dabba20af7de4",
+          "cbus_toolkit/toolkit_database_csv_projection.py": "80b4b582f2d62b511771434746c83006880ebb80fde2330f3c7f883b22725b3d",
+          "cbus_toolkit/toolkit_database_csv_registry.py": "8ad7ce569fc7e08d5c304ff5b3588ac7ae4759d0e2fc1033956b3cc9044e63bf",
+          "cbus_toolkit/toolkit_database_csv_selection.py": "95453cbe39e059c687b383919c5297228bd6fb7f889ca2a34ee56452955560fc",
+          "cbus_toolkit/toolkit_live_update_conditions.py": "171f1318be694629ca9734008574a635df5d006167d2ec238cb7c20bbc62f5b1",
+          "cbus_toolkit/toolkit_live_update_conditions_cli.py": "5673c8635b8ad5f3b445529f4cadcf0aab25019e6bcfc1d69e834346262135f6",
+          "cbus_toolkit/toolkit_numeric.py": "10bb51a54321964f80720356fa5b2d09638fe3b0a5108c7379915a22ca0f221b",
+          "cbus_toolkit/toolkit_obligation_reconcile.py": "1ca1ab9e29e72ed7aa54720e73555398ee1384d5ef97596a98529c23a114663f",
+          "cbus_toolkit/toolkit_preferences_cli.py": "c070b5ed37b33310c00ce788b2da8b7729d906c36fdf9222919ddcecaea9b519",
+          "cbus_toolkit/toolkit_preferences_controls.py": "07ca6627405e28764c89ce94942056f7b75c76f5ff57c405bb171f5bc4d9caff",
+          "cbus_toolkit/toolkit_preferences_effects.py": "ca1af0d8086b8fa5ec07e0d6a390a7444b0fc13e20b18120c6eff536ce9f20ec",
+          "cbus_toolkit/toolkit_preferences_initial_state.py": "1669dcc774795f3d5820292a1142ed020cb7d51471f0f284020614335b36f3c5",
+          "cbus_toolkit/toolkit_preferences_preview.py": "79170191c188062a47464c7f00f1653b1a6a52596052302533dcd4a26c7bacf3",
+          "cbus_toolkit/toolkit_preferences_reset.py": "7619bbe9e590eff202ff1a5cbd6c1825817df8ca15fa18dbe240caee5c3ff6c0",
+          "cbus_toolkit/toolkit_preferences_store.py": "833d9d057896cab472b23fdce945d69c01b52849f6a6cd1a146e65d636c00363",
+          "cbus_toolkit/toolkit_tweaker_lifecycle.py": "3cbcd54a2b5f8f7079071e10eb23debe4d770e7decb2caeaa5f4fa8eeed1b45c",
+          "cbus_toolkit/toolkit_tweaker_workflow.py": "bf5a7d349ca9089602ab9dc9e05648c25e77eea7f461647a2610d9e53c18c5ad",
+          "cbus_toolkit/toolkit_update_applicability.py": "d07d814a604c6fd1a98a635ddc05f0a71d6c57b862b47f6917824198bb6be5b7",
+          "cbus_toolkit/toolkit_update_applicability_cli.py": "6c6721b019690db2b88e9b93351fbd3bfc4f2c941a5c15470eccb60414b388f4",
+          "cbus_toolkit/toolkit_update_applicability_cohort_cli.py": "91c591476164cc28384cda20cca7e1dc7c933bc619d7c2d855529fda460cd029",
+          "cbus_toolkit/toolkit_update_bundle.py": "df82c64c0fbe46416243549a592593c7f4377448bf0e556c40ede99842e3f172",
+          "cbus_toolkit/toolkit_update_bundle_cli.py": "ddc73494a66ace2a54fd07ad8d2eb60afa440783d7dde3375e06bb800a110910",
+          "cbus_toolkit/toolkit_update_composite.py": "33d47f86869c75b1db78bbe384acdae6e05d6fd5868dc11cbc79c988c023f2a8",
+          "cbus_toolkit/toolkit_update_composite_cli.py": "035d5cb6ca36cc5a230f240935354d699476dc339e6297cc690aef3e79c0bb1b",
+          "cbus_toolkit/toolkit_update_conditions.py": "07fb9317345f239b339d87ec71de370ee1b869cc1277afc60c2919173cda0dfc",
+          "cbus_toolkit/toolkit_update_conditions_cli.py": "23219d1f687c207ce2010095b6ae7eda856d5630d16a4855d50d48733fb80d2a",
+          "cbus_toolkit/toolkit_update_download.py": "8b87acaf8d995a81c035156670d8b69030cc8f3801b769c1941b02fc5da78473",
+          "cbus_toolkit/toolkit_update_download_cli.py": "7f92fe421e5f074ac10ad209fe7646c19809b6700395f2c773d160bcf23b3529",
+          "cbus_toolkit/toolkit_update_metadata.py": "dcfa5990ca9f1ea8fb88e128edc2089f1045cc1b70c8f35314d84c80b4802b3f",
+          "cbus_toolkit/toolkit_update_metadata_cli.py": "fa497b357818ee678f52cc13e9f7e48ceaa81665c69a2ebbf00456fa5356b1f9",
+          "cbus_toolkit/toolkit_update_package_bundle.py": "4b48f5942dc33608a09a7573b19cf730273d085ee6a01c0b9404d01fe46c57a8",
+          "cbus_toolkit/toolkit_update_package_bundle_cli.py": "f86607373ae76b02c8f4c18ffb030996ebcaffdfb6ecde803394cfd9c3b19e14",
+          "cbus_toolkit/toolkit_update_package_file.py": "5773ffba56c66946c290438777f5c52dc050ab51a4bfd86d2e73e5d70b050cdc",
+          "cbus_toolkit/toolkit_update_package_file_cli.py": "20acdbd0213ab6bd090caafa313469c130bb88aee07d8025fc249368da800c24",
+          "cbus_toolkit/toolkit_update_revocation.py": "575bf1fccb3788ed891028dbf6ec10f1d94f1519d7a6d20341d131d17fc8d389",
+          "cbus_toolkit/toolkit_update_revocation_cli.py": "c724f333d8b8e83a6dfc11347507c50384fd4f456181547dcc85adc875930073",
+          "cbus_toolkit/toolkit_update_rollout.py": "da1e918cf361cfe378f6b27a151a05fce6733529d46d3b622f3379d8f7cbf8a8",
+          "cbus_toolkit/toolkit_update_rollout_cli.py": "a302c76c816651a3261d97b4b79bb500add13975881c1b4a2f3631acaafdc589",
+          "cbus_toolkit/toolkit_update_rollout_current_user_cli.py": "cea693a6f4fa9f9758dc26e4461d57ff43a2d7a0e7c3387504ba0b1465f3cb7e",
+          "cbus_toolkit/toolkit_update_rollout_registry.py": "8e1ef4a70f0b91e6c5560b4a7d6dee2723a1524732a7036e7c76d33ec7c6568c",
+          "cbus_toolkit/toolkit_update_rollout_registry_cli.py": "9dd01858a8c11ba92e8cb2000382d73875f7ecde1cf87e442b43616f1590743c",
+          "cbus_toolkit/toolkit_update_trust.py": "9091994e590970de1544779671073c64948bc84283edfc3cb8ba48d07b5df9d8",
+          "cbus_toolkit/toolkit_update_trust_cli.py": "9f0900ce1ab2477f82f09533ce135bf47eda76b4f708340ac66067112f7272a1",
+          "cbus_toolkit/toolkit_update_version.py": "b7adee52675f2b415253942b16127a9d892520c66945deda07039c380a16cd13",
+          "cbus_toolkit/toolkit_updates.py": "2e60b111a1c4f98fd548f645bad59031bfc1b4de05b621856a4003dd6a558244",
+          "cbus_toolkit/toolkit_updates_cli.py": "60d960a3abcf2e8789e7235d28e5779cd13f4a8fa7e47667caa3e9623b87172d",
+          "cbus_toolkit/trigger_binding_guard.py": "c188684cd823d7a23695e0db9cbbb68cc2c33301932909de04de334d0a2ae319",
+          "cbus_toolkit/unit_diagnostics.py": "8710ef7d1b79481c34ac31be2efd2a4be0b7efe99b993fc850ff4a64be358c39",
+          "cbus_toolkit/unit_templates.py": "f87bb5e348aaba56d58f90a5b1a113834d5b01bdae5cda5ed7ec397080f8498a",
+          "cbus_toolkit/unitspec.py": "f8d9e2f30c0ab431b0897959328781fac6a7c9825a4d9d2bb5ecf348acb66747",
+          "cbus_toolkit/usb_dfu.py": "859a3b377ec680b1c3eb695ce840d3e7b4750bb01a4997f67541f2afc149ebe5",
+          "cbus_toolkit/usb_inspection.py": "dadba114d023bdb0dc755d71e9b804f75f037d4ca73afac6a8a4fa1afefcf7a6",
+          "cbus_toolkit/windows_condition_registry.py": "539a96657fc2152dbc996bb497f67b4bc9ca2b45b8acf5a1b86fb09360dfe379",
+          "cbus_toolkit/windows_csv_encoding.py": "d0d7d171424fb91e974c283bd6a2f34ac6ac901f12f5957c6de180dcfb14ca84",
+          "cbus_toolkit/windows_csv_selection.py": "56a04211e41502ebf589e10b4d53f99a8573056ff8d964c45b9e6e092b8b69d4",
+          "cbus_toolkit/windows_preferences.py": "6a9b9abb6a2945acd11fca52b89ac47a7fcbe26625ce232e58019fceb46a6af6",
+          "cbus_toolkit/windows_preferences_reset.py": "d157d7e19586ec564dcc62feadbea4dbdfc82171fb2afe5cbbbb503b8d2858ea",
+          "cbus_toolkit/windows_sesu_cohort_registry.py": "f0142c2d0288c1951af39ebe7d578951aa0a127906065b1cfa2bbbf696344ab0",
+          "cbus_toolkit/windows_sesu_current_user_cohort.py": "ddca9907371eb93a2f949ee57a65d57ac5b63d75fd5f56a3d38364283cb8b048",
+          "cbus_toolkit/wireless_actions.py": "58da6f28dd4c3838ece9e13afdf483adf8a7fd3aa2b09765ede74c5a5b75c27c",
+          "cbus_toolkit/wireless_cli.py": "6e580b9be9203ad04b60c7f754dcea647a484b77451513ceeafbd184f98e3e49",
+          "cbus_toolkit/wireless_commissioning.py": "e8e0e701946649f3c091ddf2a207a8855e2efb5e485b2c3895c707cf2585bfc3",
+          "cbus_toolkit/wireless_connection.py": "08b84e89bf47f55a5fee9618cf4360ea16b0e58b449354c26dee0d687519ea85",
+          "cbus_toolkit/wireless_gateway.py": "d9d4c5a0a4afed1cf231d505ecec8ddfbf489e28f064f89cc4246fce45e05bdd",
+          "cbus_toolkit/wireless_project_remotes.py": "29861cab8c6c99e3e22ad5b23cf16c7b15d309f1e10b139ac8f818c0a77c96b2",
+          "cbus_toolkit/wireless_scenes.py": "9178625311673d3a1048dd1418b10f95baad37afab9d954f3b501be4391e3437",
+          "cbus_toolkit/wireless_unit_globals.py": "b6bea286395486c9c5bfe8af7c8597f1cef75cf9106005498832d508019224c3"
+        },
+        "proofs": {
+          "runtime-import-proof.json": {
+            "bytes": 239,
+            "sha256": "ea1a2790d6266b62b7a6f576ba2a5420608b763d75c31df564a3a7e58d201170"
+          },
+          "wheel-package-proof.json": {
+            "bytes": 42995,
+            "sha256": "d5cdcadb7a5d3e59bd20f10e9d450c8354ce1e5adf087f298bb9670ea405fc14"
+          },
+          "wheel-package-terminal-proof.json": {
+            "bytes": 42942,
+            "sha256": "cdcd4c37b86bc5484a0e91e8c77d094f305024739340640a01212ef1bd153782"
+          }
+        },
+        "runtime_imports": {
+          "processes": 400,
+          "raw_record_sha256": "441aa271ef30c072835c05e618724b1f74ad021d904cc7feb6e88b9c80dddf1b",
+          "records": 752,
+          "required_pytest_phases": [
+            "startup",
+            "terminal"
+          ],
+          "violations": 0
+        },
+        "source_zip_installed_files": 380,
+        "wheel_sha256": "8b40efebd07bd6f871fcc8e05bc5d9c1f3fd8fa546d04e3bf2398eb5dba70474"
+      },
+      "parents": {
+        "passed": 640,
+        "skipped": 15
+      },
+      "preserved_DIN_public_parent_cases": [
+        {
+          "id": "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN4-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN4-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN8-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN8-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN8B-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN8B-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN12-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN12-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[DIMDN4-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[DIMDN4-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[DIMDN4F-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[DIMDN4F-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[DIMDN8-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[DIMDN8-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[DIMDN8F-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[DIMDN8F-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_din_save_interop.py::test_public_din_successful_save_lost_response_is_not_replayed[DIMDN8-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_din_save_interop.py::test_public_din_successful_save_lost_response_is_not_replayed[DIMDN8-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_din_save_interop.py::test_public_din_successful_save_lost_response_is_not_replayed[RELDN8-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_din_save_interop.py::test_public_din_successful_save_lost_response_is_not_replayed[RELDN8-daemon]",
+          "outcome": "passed"
+        }
+      ],
+      "raw_artifacts": {
+        "audit-results.json": {
+          "bytes": 693116,
+          "sha256": "78a69cb3679cb19a4e5224d2e4cf5f4fe9214b0b42b548e430c1a5fe206842ae"
+        },
+        "harness.py": {
+          "bytes": 15763,
+          "sha256": "51e69b18282fb7f0dbbf4e2c43cf10722f890a14aab2ea78c4a9ed4b6cee9881"
+        },
+        "junit.xml": {
+          "bytes": 233892,
+          "sha256": "c84a14a7474de8309ed09bd955e3407997cc03ca94fcf6ba2b72af7824168615"
+        },
+        "pytest.log": {
+          "bytes": 2650,
+          "sha256": "3826dec931bac1d0a001b182e84a5a36d8a94d49657bd5853f147a857ee51cbe"
+        },
+        "summary.json": {
+          "bytes": 12321,
+          "sha256": "0baeb9ada0462f66dfe24fc30de9d661110f79d28a332b57ff149acd4c3d0991"
+        },
+        "trace.json": {
+          "bytes": 534194,
+          "sha256": "58d08bdd70634c87f37307b070d19cee1af922c54c1fb9d85674e09d5824e639"
+        }
+      },
+      "scope": "wheel-final1",
+      "selected_modules": [
+        "tests/test_edlt_parent_widget_controls.py",
+        "tests/test_edlt_static_text_dialog.py",
+        "tests/test_edlt_parent_blank_reset.py",
+        "tests/test_cgate_contract_inventory.py",
+        "tests/test_cgate_session_differential.py",
+        "tests/test_cgate_tagged_session_differential.py",
+        "tests/test_cgate_dbsetxml_unit_differential.py",
+        "tests/test_parity_register.py",
+        "tests/test_coverage_require_complete.py",
+        "tests/test_skip_census.py",
+        "tests/test_cli_coverage_reconcile.py",
+        "tests/test_edlt_parent_transaction.py",
+        "tests/test_edlt_parent_metadata.py",
+        "tests/test_edlt_static_grid.py",
+        "tests/test_cli_edlt_parent_transaction.py",
+        "tests/test_cli_edlt_parent_metadata.py",
+        "tests/test_edlt_time_date_controls.py",
+        "tests/test_edlt_time_date_control_static.py",
+        "tests/test_edlt_parent_time_date_controls.py",
+        "tests/test_cgate_edlt_time_date_controls_interop.py",
+        "tests/test_edlt_time_date.py",
+        "tests/test_edlt_parent_repository_uncertainty.py",
+        "tests/test_cgate_repository_uncertainty.py",
+        "tests/test_cgate.py",
+        "tests/test_edlt_scene_metadata.py",
+        "tests/test_din_output_save.py",
+        "tests/test_din_output_settings.py",
+        "tests/test_cli_din_save.py",
+        "tests/test_cli_din_output_settings.py",
+        "tests/test_cgate_din_save_interop.py",
+        "tests/test_edlt_parent_dual_key_controls.py",
+        "tests/test_edlt_parent_mra_controls.py",
+        "tests/test_edlt_lifecycle.py",
+        "tests/test_edlt_lifecycle_phases.py",
+        "tests/test_edlt_parent_scene_names.py",
+        "tests/test_edlt_parent_scene_language.py",
+        "tests/test_edlt_parent_scene_manager.py",
+        "tests/test_edlt_parent_scene_metadata.py",
+        "tests/test_edlt_global_programming.py"
+      ],
+      "separate_subtests_passed": 1490,
+      "skips": [
+        {
+          "id": "tests/test_edlt_parent_transaction.py::NativeParentTransactionTests::test_native_database_one_save_close_load_preserves_multi_edit",
+          "outcome": "skipped"
+        },
+        {
+          "id": "tests/test_edlt_parent_metadata.py::ParentMetadataTests::test_optional_native_database_metadata_parent_transaction",
+          "outcome": "skipped"
+        },
+        {
+          "id": "tests/test_edlt_time_date_control_static.py::TimeDateStaticTests::test_full_annex_regeneration_from_pinned_static_bytes",
+          "outcome": "skipped"
+        },
+        {
+          "id": "tests/test_edlt_time_date.py::OriginalTimeDateTests::test_unchanged_original_model_vectors_and_ui_available_types",
+          "outcome": "skipped"
+        },
+        {
+          "id": "tests/test_edlt_time_date.py::NativeTimeDateTests::test_all_formats_locations_original_save_crc_and_native_storage",
+          "outcome": "skipped"
+        },
+        {
+          "id": "tests/test_cgate.py::NativeCGateTests::test_native_command_surface_and_information_framing",
+          "outcome": "skipped"
+        },
+        {
+          "id": "tests/test_cgate.py::NativeCGateTests::test_native_xml_framing",
+          "outcome": "skipped"
+        },
+        {
+          "id": "tests/test_edlt_scene_metadata.py::SceneMetadataTests::test_optional_native_missing_scene_metadata_transaction",
+          "outcome": "skipped"
+        },
+        {
+          "id": "tests/test_din_output_save.py::DinSaveSourceReceiptTest::test_optional_original_bytes_match_static_method_ranges_without_execution",
+          "outcome": "skipped"
+        },
+        {
+          "id": "tests/test_din_output_settings.py::OriginalLevelVectorTest::test_original_instructions_regenerate_the_vectors",
+          "outcome": "skipped"
+        },
+        {
+          "id": "tests/test_din_output_settings.py::DinOutputNativeTest::test_admitted_types_tabs_raw_bytes_preservation_save_reload_and_refusals",
+          "outcome": "skipped"
+        },
+        {
+          "id": "tests/test_cli_din_output_settings.py::DinCliTests::test_native_preview_apply_saved_plan_and_stale_refusal",
+          "outcome": "skipped"
+        },
+        {
+          "id": "tests/test_edlt_lifecycle.py::OriginalLifecycleTests::test_full_original_stages_and_all_enable_input_pairs",
+          "outcome": "skipped"
+        },
+        {
+          "id": "tests/test_edlt_lifecycle.py::NativeLifecycleTests::test_original_full_native_pp_crc_raw_save_and_reload",
+          "outcome": "skipped"
+        },
+        {
+          "id": "tests/test_edlt_parent_scene_metadata.py::ParentSceneMetadataTests::test_optional_native_parent_scene_metadata_transaction",
+          "outcome": "skipped"
+        }
+      ],
+      "source_snapshot": {
+        "bytes": 715220,
+        "identity": "inputs-before.json",
+        "sha256": "8b45eb8eaf02c2f04c0b29e5982fadb7ac76f8582341d9c26aa9c3fc07eb8f43"
+      },
+      "whole_inputs_quiet": true
+    },
+    "source": {
+      "all_required_module_bodies_present": true,
+      "auditor_counts_include_separate_subtests": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 2130,
+        "skipped": 15,
+        "tests": 2145
+      },
+      "command_exits": [
+        0,
+        0
+      ],
+      "executed_parent_head": "2b46f35a4c1c3644ce11f3a29718e0fed54498ac",
+      "frozen_binaries_quiet": true,
+      "full_python_suite": false,
+      "input_count": 4012,
+      "new_public_time_date_parent_cases": [
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[retained-raw-readonly-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[retained-raw-readonly-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[functional-all-bindings-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[functional-all-bindings-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[standby-one-grow-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[standby-one-grow-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[standby-four-grow-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[standby-four-grow-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[standby-same-double-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[standby-same-double-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[standby-shrink-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[standby-shrink-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[standby-already-blank-neighbor-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[standby-already-blank-neighbor-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[ordinary-conversion-then-display-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[ordinary-conversion-then-display-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[scalar-grow-callback-shrink-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[scalar-grow-callback-shrink-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[source-setup-explicit-read-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[source-setup-explicit-read-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[two-controls-same-global-value-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_callbacks_one_save_and_preservation[two-controls-same-global-value-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_preconnection_refusals[caller-state-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_preconnection_refusals[caller-state-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_preconnection_refusals[wrong-ordinal-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_preconnection_refusals[wrong-ordinal-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_lost_successful_save_is_not_replayed[mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_edlt_time_date_controls_interop.py::test_public_time_date_lost_successful_save_is_not_replayed[daemon]",
+          "outcome": "passed"
+        }
+      ],
+      "parents": {
+        "passed": 640,
+        "skipped": 15
+      },
+      "preserved_DIN_public_parent_cases": [
+        {
+          "id": "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN4-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN4-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN8-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN8-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN8B-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN8B-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN12-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[RELDN12-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[DIMDN4-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[DIMDN4-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[DIMDN4F-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[DIMDN4F-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[DIMDN8-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[DIMDN8-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[DIMDN8F-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_din_save_interop.py::test_public_din_toolkit_save_all_profiles[DIMDN8F-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_din_save_interop.py::test_public_din_successful_save_lost_response_is_not_replayed[DIMDN8-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_din_save_interop.py::test_public_din_successful_save_lost_response_is_not_replayed[DIMDN8-daemon]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_din_save_interop.py::test_public_din_successful_save_lost_response_is_not_replayed[RELDN8-mock]",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests/test_cgate_din_save_interop.py::test_public_din_successful_save_lost_response_is_not_replayed[RELDN8-daemon]",
+          "outcome": "passed"
+        }
+      ],
+      "raw_artifacts": {
+        "audit-results.json": {
+          "bytes": 693117,
+          "sha256": "febd7e3598ea4f937f7c36829501a93f8de8edab8c73ce23bcffcbed7c36364d"
+        },
+        "harness.py": {
+          "bytes": 15763,
+          "sha256": "51e69b18282fb7f0dbbf4e2c43cf10722f890a14aab2ea78c4a9ed4b6cee9881"
+        },
+        "junit.xml": {
+          "bytes": 233787,
+          "sha256": "36ffe95255e601ede23fc4a71840a5d902f47c3d640b3d096277d0dca38440a6"
+        },
+        "pytest.log": {
+          "bytes": 2650,
+          "sha256": "9dc195d4304dddf55623f3447f3ffd47a89e2fb966ad671c1611c5fad050108d"
+        },
+        "summary.json": {
+          "bytes": 8608,
+          "sha256": "ea44ff135a0b51e1349b780ff9ac7197761f3902ff7c16aa5b6c0e1139cdbebb"
+        },
+        "trace.json": {
+          "bytes": 534194,
+          "sha256": "58d08bdd70634c87f37307b070d19cee1af922c54c1fb9d85674e09d5824e639"
+        }
+      },
+      "scope": "source-final1",
+      "selected_modules": [
+        "tests/test_edlt_parent_widget_controls.py",
+        "tests/test_edlt_static_text_dialog.py",
+        "tests/test_edlt_parent_blank_reset.py",
+        "tests/test_cgate_contract_inventory.py",
+        "tests/test_cgate_session_differential.py",
+        "tests/test_cgate_tagged_session_differential.py",
+        "tests/test_cgate_dbsetxml_unit_differential.py",
+        "tests/test_parity_register.py",
+        "tests/test_coverage_require_complete.py",
+        "tests/test_skip_census.py",
+        "tests/test_cli_coverage_reconcile.py",
+        "tests/test_edlt_parent_transaction.py",
+        "tests/test_edlt_parent_metadata.py",
+        "tests/test_edlt_static_grid.py",
+        "tests/test_cli_edlt_parent_transaction.py",
+        "tests/test_cli_edlt_parent_metadata.py",
+        "tests/test_edlt_time_date_controls.py",
+        "tests/test_edlt_time_date_control_static.py",
+        "tests/test_edlt_parent_time_date_controls.py",
+        "tests/test_cgate_edlt_time_date_controls_interop.py",
+        "tests/test_edlt_time_date.py",
+        "tests/test_edlt_parent_repository_uncertainty.py",
+        "tests/test_cgate_repository_uncertainty.py",
+        "tests/test_cgate.py",
+        "tests/test_edlt_scene_metadata.py",
+        "tests/test_din_output_save.py",
+        "tests/test_din_output_settings.py",
+        "tests/test_cli_din_save.py",
+        "tests/test_cli_din_output_settings.py",
+        "tests/test_cgate_din_save_interop.py",
+        "tests/test_edlt_parent_dual_key_controls.py",
+        "tests/test_edlt_parent_mra_controls.py",
+        "tests/test_edlt_lifecycle.py",
+        "tests/test_edlt_lifecycle_phases.py",
+        "tests/test_edlt_parent_scene_names.py",
+        "tests/test_edlt_parent_scene_language.py",
+        "tests/test_edlt_parent_scene_manager.py",
+        "tests/test_edlt_parent_scene_metadata.py",
+        "tests/test_edlt_global_programming.py"
+      ],
+      "separate_subtests_passed": 1490,
+      "skips": [
+        {
+          "id": "tests/test_edlt_parent_transaction.py::NativeParentTransactionTests::test_native_database_one_save_close_load_preserves_multi_edit",
+          "outcome": "skipped"
+        },
+        {
+          "id": "tests/test_edlt_parent_metadata.py::ParentMetadataTests::test_optional_native_database_metadata_parent_transaction",
+          "outcome": "skipped"
+        },
+        {
+          "id": "tests/test_edlt_time_date_control_static.py::TimeDateStaticTests::test_full_annex_regeneration_from_pinned_static_bytes",
+          "outcome": "skipped"
+        },
+        {
+          "id": "tests/test_edlt_time_date.py::OriginalTimeDateTests::test_unchanged_original_model_vectors_and_ui_available_types",
+          "outcome": "skipped"
+        },
+        {
+          "id": "tests/test_edlt_time_date.py::NativeTimeDateTests::test_all_formats_locations_original_save_crc_and_native_storage",
+          "outcome": "skipped"
+        },
+        {
+          "id": "tests/test_cgate.py::NativeCGateTests::test_native_command_surface_and_information_framing",
+          "outcome": "skipped"
+        },
+        {
+          "id": "tests/test_cgate.py::NativeCGateTests::test_native_xml_framing",
+          "outcome": "skipped"
+        },
+        {
+          "id": "tests/test_edlt_scene_metadata.py::SceneMetadataTests::test_optional_native_missing_scene_metadata_transaction",
+          "outcome": "skipped"
+        },
+        {
+          "id": "tests/test_din_output_save.py::DinSaveSourceReceiptTest::test_optional_original_bytes_match_static_method_ranges_without_execution",
+          "outcome": "skipped"
+        },
+        {
+          "id": "tests/test_din_output_settings.py::OriginalLevelVectorTest::test_original_instructions_regenerate_the_vectors",
+          "outcome": "skipped"
+        },
+        {
+          "id": "tests/test_din_output_settings.py::DinOutputNativeTest::test_admitted_types_tabs_raw_bytes_preservation_save_reload_and_refusals",
+          "outcome": "skipped"
+        },
+        {
+          "id": "tests/test_cli_din_output_settings.py::DinCliTests::test_native_preview_apply_saved_plan_and_stale_refusal",
+          "outcome": "skipped"
+        },
+        {
+          "id": "tests/test_edlt_lifecycle.py::OriginalLifecycleTests::test_full_original_stages_and_all_enable_input_pairs",
+          "outcome": "skipped"
+        },
+        {
+          "id": "tests/test_edlt_lifecycle.py::NativeLifecycleTests::test_original_full_native_pp_crc_raw_save_and_reload",
+          "outcome": "skipped"
+        },
+        {
+          "id": "tests/test_edlt_parent_scene_metadata.py::ParentSceneMetadataTests::test_optional_native_parent_scene_metadata_transaction",
+          "outcome": "skipped"
+        }
+      ],
+      "source_snapshot": {
+        "bytes": 715220,
+        "identity": "inputs-before.json",
+        "sha256": "8b45eb8eaf02c2f04c0b29e5982fadb7ac76f8582341d9c26aa9c3fc07eb8f43"
+      },
+      "whole_inputs_quiet": true
+    }
+  },
+  "release_binaries": {
+    "cgate-mock": {
+      "bytes": 3715024,
+      "sha256": "1ca094a3492ef43ca51395e8f0adda0ccea1bc04cbf9ab13dc6887f731694ced"
+    },
+    "cmqttd": {
+      "bytes": 13602768,
+      "sha256": "af360d9403af4ab11d9188eb05f530160614b861d863c77a4d6874544eca504e"
+    }
+  },
+  "release_limits": {
+    "category_implemented": 18,
+    "category_ratio_is_functionality_percentage": false,
+    "category_total": 42,
+    "complete_toolkit_parity": false,
+    "docker_deployment": false,
+    "framework_host_acceptance": false,
+    "functional_denominator_ready": false,
+    "functional_percentage": null,
+    "house_network_contact": false,
+    "issues_remaining_open": [
+      35,
+      45,
+      69,
+      77
+    ],
+    "original_instructions_executed": false,
+    "physical_acceptance": false,
+    "protected_original_handoff_issue": 72,
+    "publication_ci": "Separate observation; this receipt does not claim publication-head CI success."
+  },
+  "repository_recovery": {
+    "CGL_export_type": "Retained export computes application type from address; raw input type preservation is not claimed.",
+    "actual_hardware_fault": false,
+    "automatic_retry": false,
+    "classification": "Typed applied replacement error; not text guessing.",
+    "command_calls": 16,
+    "directory_sync_faults_injected": "Exact-path, one-shot, test-only; no production fault flag.",
+    "distinct_new_fault_tests": 8,
+    "model_matches_replaced_image": true,
+    "parent_and_scene_no_inverse_after_applied_error": true,
+    "parent_cause_chain_bounded": 8,
+    "power_loss_durability_confirmed": false,
+    "pre_rename_rollback_preserved": true,
+    "python_exact_error_closes_transport": true,
+    "repository_save_calls": 19,
+    "startup_bookkeeping": "One command-level PROJECT DELETE fault after successful construction checks populated startup selection and client state.",
+    "startup_calls": 3,
+    "startup_propagation": "Source-reviewed classified-error propagation at all three constructor save calls; not three independently injected startup faults.",
+    "startup_reload_normalization": "Only the three explicitly named NetCatalogAPPLIED fields in the PROJECT NEW fixture are migrated.",
+    "test_profiles": [
+      "local database/config/file/access/repair/transform/log/scene/PP saves",
+      "XML/CGL pending events",
+      "startup project bookkeeping",
+      "typed repository I/O",
+      "actual TCP final reply",
+      "XML-to-SQL portable transform",
+      "DALI saved/volatile target and fresh reload",
+      "scripted physical patch database finalization"
+    ],
+    "wire_final": "500 Database commit applied; durability unconfirmed; do not retry"
+  },
+  "required_rust": {
+    "commands": [
+      {
+        "argv": [
+          "cargo",
+          "fmt",
+          "--check"
+        ],
+        "elapsed_seconds": 1.995,
+        "exit": 0,
+        "log": "format.log",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "argv": [
+          "cargo",
+          "clippy",
+          "--workspace",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "elapsed_seconds": 11.967,
+        "exit": 0,
+        "log": "clippy.log",
+        "log_sha256": "e7d9f72f36916b0f7a5925a52a77eca23b84db6c117279ccef30ca078f5629c3"
+      },
+      {
+        "argv": [
+          "cargo",
+          "test",
+          "--workspace"
+        ],
+        "elapsed_seconds": 495.24,
+        "exit": 0,
+        "log": "workspace.log",
+        "log_sha256": "2fd7fd3bd9e275cff2ca524c79e7d0bf485730b38b6e241f0f8cbc29b46050bd"
+      },
+      {
+        "argv": [
+          "cargo",
+          "build",
+          "--release",
+          "--workspace"
+        ],
+        "elapsed_seconds": 105.461,
+        "exit": 0,
+        "log": "release.log",
+        "log_sha256": "076e7d8fb65bb871479a404c6888925ae8b6aa97fac1214664fa05fe35c3e4c3"
+      }
+    ],
+    "counts": {
+      "failed": 0,
+      "ignored": 1,
+      "passed": 8728,
+      "rows": [
+        [
+          "585",
+          "0",
+          "1"
+        ],
+        [
+          "11",
+          "0",
+          "0"
+        ],
+        [
+          "3",
+          "0",
+          "0"
+        ],
+        [
+          "31",
+          "0",
+          "0"
+        ],
+        [
+          "1",
+          "0",
+          "0"
+        ],
+        [
+          "1",
+          "0",
+          "0"
+        ],
+        [
+          "1",
+          "0",
+          "0"
+        ],
+        [
+          "2",
+          "0",
+          "0"
+        ],
+        [
+          "1",
+          "0",
+          "0"
+        ],
+        [
+          "1",
+          "0",
+          "0"
+        ],
+        [
+          "3",
+          "0",
+          "0"
+        ],
+        [
+          "3",
+          "0",
+          "0"
+        ],
+        [
+          "1",
+          "0",
+          "0"
+        ],
+        [
+          "2",
+          "0",
+          "0"
+        ],
+        [
+          "67",
+          "0",
+          "0"
+        ],
+        [
+          "2",
+          "0",
+          "0"
+        ],
+        [
+          "18",
+          "0",
+          "0"
+        ],
+        [
+          "7",
+          "0",
+          "0"
+        ],
+        [
+          "9",
+          "0",
+          "0"
+        ],
+        [
+          "1",
+          "0",
+          "0"
+        ],
+        [
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "3409",
+          "0",
+          "0"
+        ],
+        [
+          "3618",
+          "0",
+          "0"
+        ],
+        [
+          "17",
+          "0",
+          "0"
+        ],
+        [
+          "24",
+          "0",
+          "0"
+        ],
+        [
+          "6",
+          "0",
+          "0"
+        ],
+        [
+          "11",
+          "0",
+          "0"
+        ],
+        [
+          "66",
+          "0",
+          "0"
+        ],
+        [
+          "12",
+          "0",
+          "0"
+        ],
+        [
+          "86",
+          "0",
+          "0"
+        ],
+        [
+          "12",
+          "0",
+          "0"
+        ],
+        [
+          "44",
+          "0",
+          "0"
+        ],
+        [
+          "22",
+          "0",
+          "0"
+        ],
+        [
+          "19",
+          "0",
+          "0"
+        ],
+        [
+          "1",
+          "0",
+          "0"
+        ],
+        [
+          "5",
+          "0",
+          "0"
+        ],
+        [
+          "1",
+          "0",
+          "0"
+        ],
+        [
+          "5",
+          "0",
+          "0"
+        ],
+        [
+          "14",
+          "0",
+          "0"
+        ],
+        [
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "3",
+          "0",
+          "0"
+        ],
+        [
+          "2",
+          "0",
+          "0"
+        ],
+        [
+          "31",
+          "0",
+          "0"
+        ],
+        [
+          "32",
+          "0",
+          "0"
+        ],
+        [
+          "237",
+          "0",
+          "0"
+        ],
+        [
+          "12",
+          "0",
+          "0"
+        ],
+        [
+          "12",
+          "0",
+          "0"
+        ],
+        [
+          "6",
+          "0",
+          "0"
+        ],
+        [
+          "10",
+          "0",
+          "0"
+        ],
+        [
+          "2",
+          "0",
+          "0"
+        ],
+        [
+          "23",
+          "0",
+          "0"
+        ],
+        [
+          "2",
+          "0",
+          "0"
+        ],
+        [
+          "23",
+          "0",
+          "0"
+        ],
+        [
+          "6",
+          "0",
+          "0"
+        ],
+        [
+          "6",
+          "0",
+          "0"
+        ],
+        [
+          "30",
+          "0",
+          "0"
+        ],
+        [
+          "2",
+          "0",
+          "0"
+        ],
+        [
+          "1",
+          "0",
+          "0"
+        ],
+        [
+          "8",
+          "0",
+          "0"
+        ],
+        [
+          "6",
+          "0",
+          "0"
+        ],
+        [
+          "1",
+          "0",
+          "0"
+        ],
+        [
+          "5",
+          "0",
+          "0"
+        ],
+        [
+          "1",
+          "0",
+          "0"
+        ],
+        [
+          "1",
+          "0",
+          "0"
+        ],
+        [
+          "1",
+          "0",
+          "0"
+        ],
+        [
+          "7",
+          "0",
+          "0"
+        ],
+        [
+          "1",
+          "0",
+          "0"
+        ],
+        [
+          "1",
+          "0",
+          "0"
+        ],
+        [
+          "1",
+          "0",
+          "0"
+        ],
+        [
+          "2",
+          "0",
+          "0"
+        ],
+        [
+          "3",
+          "0",
+          "0"
+        ],
+        [
+          "1",
+          "0",
+          "0"
+        ],
+        [
+          "1",
+          "0",
+          "0"
+        ],
+        [
+          "1",
+          "0",
+          "0"
+        ],
+        [
+          "1",
+          "0",
+          "0"
+        ],
+        [
+          "1",
+          "0",
+          "0"
+        ],
+        [
+          "1",
+          "0",
+          "0"
+        ],
+        [
+          "1",
+          "0",
+          "0"
+        ],
+        [
+          "18",
+          "0",
+          "0"
+        ],
+        [
+          "1",
+          "0",
+          "0"
+        ],
+        [
+          "1",
+          "0",
+          "0"
+        ],
+        [
+          "1",
+          "0",
+          "0"
+        ],
+        [
+          "1",
+          "0",
+          "0"
+        ],
+        [
+          "1",
+          "0",
+          "0"
+        ],
+        [
+          "1",
+          "0",
+          "0"
+        ],
+        [
+          "2",
+          "0",
+          "0"
+        ],
+        [
+          "2",
+          "0",
+          "0"
+        ],
+        [
+          "11",
+          "0",
+          "0"
+        ],
+        [
+          "9",
+          "0",
+          "0"
+        ],
+        [
+          "18",
+          "0",
+          "0"
+        ],
+        [
+          "5",
+          "0",
+          "0"
+        ],
+        [
+          "15",
+          "0",
+          "0"
+        ],
+        [
+          "5",
+          "0",
+          "0"
+        ],
+        [
+          "29",
+          "0",
+          "0"
+        ],
+        [
+          "1",
+          "0",
+          "0"
+        ],
+        [
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "0",
+          "0",
+          "0"
+        ],
+        [
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      "summary_rows": 102
+    },
+    "input_count": 471,
+    "source_quiet": true,
+    "summary": {
+      "bytes": 6290,
+      "identity": "summary.json",
+      "sha256": "7501cfe2456ff977787775b3d19d9d0f54aee53ff6962ccc7e313327d25142c9"
+    }
+  },
+  "runtime_test_ci_inputs": {
+    ".github/workflows/ci.yml": {
+      "bytes": 21921,
+      "sha256": "0584313d6cacdb1fc2e11d3ac818fea809235005555ec1e42607fa18e4166989"
+    },
+    "rust/cbus-cgate/src/service.rs": {
+      "bytes": 750901,
+      "sha256": "481fdea423728dbabdc9d179c9fa10540c03ec64351b344d48f068b28dc8df2b"
+    },
+    "rust/cbus-cgate/src/service/dali_specialized.rs": {
+      "bytes": 306991,
+      "sha256": "287ca68724b494b8a6a3fd31a4c85bcf0512b25110f701b59bd8318a113562c5"
+    },
+    "rust/cbus-cgate/src/service/net_lifecycle.rs": {
+      "bytes": 62553,
+      "sha256": "76d37d4a7319c619d924724c6220a8e1eceb7070a4b09e65ab7fe063e953490e"
+    },
+    "rust/cbus-cgate/src/service/repository_io.rs": {
+      "bytes": 9921,
+      "sha256": "b7308178b6c1644b0006f26537c9bd734b4e7d8db1ce8c85a55a5f37a4e312a6"
+    },
+    "rust/cbus-cgate/src/service/tests.rs": {
+      "bytes": 822416,
+      "sha256": "aab4a11e6b9a27477a19fbb5bece61fc6d99f4480490875f5f1eab4fcc0454fe"
+    },
+    "rust/cbus-cgate/src/service/tests/repository_uncertainty.rs": {
+      "bytes": 12520,
+      "sha256": "0b55c95a8421d4324ec0651dcdfc7e71477a4f085c8af0d8b714f1670d3ff120"
+    },
+    "rust/scripts/local_test_runner.py": {
+      "bytes": 2325,
+      "sha256": "8ab8c6a375db150728560610fd620b737e5577c0e6ccce42ac64c8261df91bc9"
+    },
+    "rust/testdata/vectors/cgate_repository_uncertainty.json": {
+      "bytes": 402,
+      "sha256": "8fa6cf6ff466e700bf22ca55dd941f67c087893d57a967401e3084f5c478f880"
+    },
+    "toolkit-cli/Makefile": {
+      "bytes": 94941,
+      "sha256": "6b307fe2cf3d6ea4f32492234b0a82ef33433f0cb9207745d0ec30b23a13d1f5"
+    },
+    "toolkit-cli/research/edlt_time_date_control_static.py": {
+      "bytes": 23072,
+      "sha256": "c0c82e2cb82a10c961484118cf1a23a6f1ef489abbb3c5c0401fa0f3dc2f9b50"
+    },
+    "toolkit-cli/research/fixtures/cgate-dbsetxml-unit-differential-cmqttd.json": {
+      "bytes": 63329,
+      "sha256": "33eb308799b3244666d176dc42d88d007993c192bc5998aad8fee3a0a732428d"
+    },
+    "toolkit-cli/research/fixtures/cgate-dbsetxml-unit-differential-mock.json": {
+      "bytes": 61424,
+      "sha256": "11bb62e5fcd4e06af690bf2f1bb305da637b10b6b289c8d879a4083e2e91420a"
+    },
+    "toolkit-cli/research/fixtures/cgate-session-differential-cmqttd.json": {
+      "bytes": 35544,
+      "sha256": "5d4bcd37bd95b3d89852ad1e92db3287f2eb5fc4095d9460ebfe85efa80164b4"
+    },
+    "toolkit-cli/research/fixtures/cgate-session-differential-fixed.json": {
+      "bytes": 33149,
+      "sha256": "49e014200d4cb960775aa7fc003c9db599ffad5c5032631317342f9297263137"
+    },
+    "toolkit-cli/research/fixtures/cgate-session-physical-applicability.json": {
+      "bytes": 2877,
+      "sha256": "9cdefcef095dd5f9f91f31361cc7529ddd4a817aeb3bf9837c4fa4b1e9a755a6"
+    },
+    "toolkit-cli/research/fixtures/cgate-tagged-session-differential-cgate-mock.json": {
+      "bytes": 32605,
+      "sha256": "e28f8d29bce4fecb3be649df50e14708a4a547eac69fb95a3358038f15098469"
+    },
+    "toolkit-cli/research/fixtures/cgate-tagged-session-differential-cmqttd.json": {
+      "bytes": 34730,
+      "sha256": "e0c934f1e56b557b146ffbf9072b21274a92dd9dcdc97cdd67430379087fd448"
+    },
+    "toolkit-cli/research/fixtures/edlt-time-date-control-literal-vectors.json": {
+      "bytes": 503672,
+      "sha256": "7606e2dec523cc010a8ae4c6cb089d4788a328bdd76da7c50ccdc8b6de9612ad"
+    },
+    "toolkit-cli/research/fixtures/edlt-time-date-control-provenance.json": {
+      "bytes": 2315,
+      "sha256": "a1c07045f58e065e2820f2e1b19aebe1c927f788e7b77cb4212cb3db4270506f"
+    },
+    "toolkit-cli/research/fixtures/edlt-time-date-control-source-annex.json": {
+      "bytes": 1083666,
+      "sha256": "3e319f735db16fb66c7346d05d0a5012e8c7a73f4b315cd3c58797a215c006b7"
+    },
+    "toolkit-cli/research/release-gates/skip-census.json": {
+      "bytes": 382728,
+      "sha256": "ed1abf7840cc7e9a2c02501a7ec01b782da64742b5133b642b7c25b281c95982"
+    },
+    "toolkit-cli/src/cbus_toolkit/cgate-contract-inventory.json": {
+      "bytes": 4277587,
+      "sha256": "1846d78efe46c202064e7cf2e67c4afd414dd2ed801078840eb6dd0aa1c077f8"
+    },
+    "toolkit-cli/src/cbus_toolkit/cgate.py": {
+      "bytes": 15779,
+      "sha256": "f394cf5675f006ec652d98338e3c1bd843b018f7047bab1b67ede697657bf670"
+    },
+    "toolkit-cli/src/cbus_toolkit/edlt_parent_metadata.py": {
+      "bytes": 163423,
+      "sha256": "346471897529002c394861dcee6c0ef40c3f95060bcaa01d11689b98b1ba48da"
+    },
+    "toolkit-cli/src/cbus_toolkit/edlt_parent_transaction.py": {
+      "bytes": 110606,
+      "sha256": "ec009971f032078c03a9d3c71cd8e907272a72337d5ec014505be6b7a89498f1"
+    },
+    "toolkit-cli/src/cbus_toolkit/edlt_scene_metadata.py": {
+      "bytes": 92467,
+      "sha256": "902009f19bd21e67bff8bfd2131a142064971e53155cb890f3b834a25d77356c"
+    },
+    "toolkit-cli/src/cbus_toolkit/edlt_static_grid.py": {
+      "bytes": 6216,
+      "sha256": "2d8f1e065c31ee12713bad70e1c6eb52fd3060faf650aa35bda37ffa351b2b60"
+    },
+    "toolkit-cli/src/cbus_toolkit/edlt_time_date_control_properties.py": {
+      "bytes": 7901,
+      "sha256": "f5e04796aa82460832bae9944f69b5ee536c71b6b24ec10382ef19639807c45f"
+    },
+    "toolkit-cli/src/cbus_toolkit/edlt_time_date_controls.py": {
+      "bytes": 21623,
+      "sha256": "97351f2de6a22db7880f3adfc80fe6cadc7708988520488290d751293c0d4dcf"
+    },
+    "toolkit-cli/src/cbus_toolkit/edlt_time_date_parent_controls.py": {
+      "bytes": 6220,
+      "sha256": "348c53294c74ab6e6ebe50ccd6fff2f9ac584241ac233af31f5ea4ca58d96827"
+    },
+    "toolkit-cli/src/cbus_toolkit/parity-evidence.json": {
+      "bytes": 32813,
+      "sha256": "e79f48be4850fc20cecef82888d00f5311b7ee801abc4aae55a7e83e9f5065c1"
+    },
+    "toolkit-cli/src/cbus_toolkit/parity-obligations.json": {
+      "bytes": 12931091,
+      "sha256": "ae898ed03a4613bbfd0886013383640374bfbbae5c0a176eab6254ac29c95a8d"
+    },
+    "toolkit-cli/tests/test_cgate_edlt_time_date_controls_interop.py": {
+      "bytes": 13928,
+      "sha256": "1fe641703ef07dc3737e36883fae765c5debf3ea57a05d57ee70b6d3f2ab138f"
+    },
+    "toolkit-cli/tests/test_cgate_repository_uncertainty.py": {
+      "bytes": 4127,
+      "sha256": "424d7bf2b1bf7b004028fae8d397ff3d6a8c792dddce0745b5618a0c053d05f2"
+    },
+    "toolkit-cli/tests/test_edlt_parent_repository_uncertainty.py": {
+      "bytes": 3050,
+      "sha256": "ad8dba8a4b77ee74ff1710d496635984ad64c68a010ca52702b409afe034f05f"
+    },
+    "toolkit-cli/tests/test_edlt_parent_time_date_controls.py": {
+      "bytes": 9668,
+      "sha256": "cf92139381c331c3ce6753d55d63df2c30e7aee438f3ea8214dff5a051f1143a"
+    },
+    "toolkit-cli/tests/test_edlt_time_date_control_static.py": {
+      "bytes": 14621,
+      "sha256": "bd7a76305a18f312bf31d901ea3d10aeb6102d045c2ef0399c08951aa44d18ea"
+    },
+    "toolkit-cli/tests/test_edlt_time_date_controls.py": {
+      "bytes": 22622,
+      "sha256": "3b5868a8a18bd4dc2918fa8dd5a3ff987101e9b31457d6ab10fe5ae91434a2df"
+    },
+    "toolkit-cli/tests/time-date-public-literals.json": {
+      "bytes": 35069,
+      "sha256": "56501062582d877c340bfb8052dc2d107bc69e0ef2c338ea84af1ce728a6b098"
+    }
+  },
+  "target": "Toolkit1.18.0.2754/C-Gate3.4.0.2001"
+}

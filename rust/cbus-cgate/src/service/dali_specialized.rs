@@ -1867,24 +1867,29 @@ impl Service {
         };
         let mut model = self.model.lock().await;
         let previous = model.dali_saved_sessions.insert(oid.clone(), saved);
+        let mut persistence_error = None;
         if let Err(error) = Database::from_server(&model).save(&self.state_path) {
-            if let Some(previous) = previous {
-                model.dali_saved_sessions.insert(oid, previous);
-            } else {
-                model.dali_saved_sessions.remove(&oid);
-            }
             tracing::error!("DALI session database commit failed: {error}");
-            return err(
-                tag,
-                500,
-                "500 Database commit failed; DALI session not saved",
-            );
+            if super::repository_io::commit_applied(&error) {
+                persistence_error = Some(super::repository_uncertain(tag));
+            } else {
+                if let Some(previous) = previous {
+                    model.dali_saved_sessions.insert(oid, previous);
+                } else {
+                    model.dali_saved_sessions.remove(&oid);
+                }
+                return err(
+                    tag,
+                    500,
+                    "500 Database commit failed; DALI session not saved",
+                );
+            }
         }
         drop(model);
         if let Some(session) = self.dali_state.lock().await.sessions.get_mut(&args[0]) {
             session.target_unit = Some(args[1].clone());
         }
-        ok(tag, vec!["120-start save".to_string()], "200 OK.")
+        persistence_error.unwrap_or_else(|| ok(tag, vec!["120-start save".to_string()], "200 OK."))
     }
 
     async fn dali_session_load(&self, tag: &str, args: &[String]) -> Response {
@@ -5873,6 +5878,85 @@ mod tests {
                 .is_err(),
             "retired-generation store was replayed"
         );
+        std::fs::remove_file(path).unwrap();
+    }
+
+    #[tokio::test]
+    async fn post_rename_dali_session_save_keeps_target_and_fresh_reload() {
+        let (service, mut remote, path) = setup().await;
+        let mut client = ClientState::default();
+        for command in [
+            "DALI SESSION NEW work",
+            "DALI SESSION SET work /cdg/daliLines/0/lineId 9",
+        ] {
+            assert_eq!(
+                service
+                    .handle(&mut client, &format!("[setup] {command}"))
+                    .await
+                    .status,
+                200
+            );
+        }
+        {
+            let _fault = super::super::repository_io::fail_next_directory_sync(&path);
+            let response = service
+                .handle(
+                    &mut client,
+                    "[fault] DALI SESSION SAVE work !dali-gateway-20",
+                )
+                .await;
+            assert_eq!(response.status, 500);
+            assert_eq!(
+                response.final_text,
+                super::super::repository_io::UNCERTAIN_REPLY
+            );
+        }
+        let model = service.model.lock().await;
+        let disk: Database = super::super::repository_io::load(&path).unwrap();
+        assert_eq!(
+            serde_json::to_value(&disk).unwrap(),
+            serde_json::to_value(Database::from_server(&model)).unwrap()
+        );
+        let saved = model.dali_saved_sessions["dali-gateway-20"].clone();
+        assert_eq!(saved["targetUnit"], "!dali-gateway-20");
+        drop(model);
+        assert_eq!(
+            service.dali_state.lock().await.sessions["work"]
+                .target_unit
+                .as_deref(),
+            Some("!dali-gateway-20")
+        );
+        assert!(
+            tokio::time::timeout(Duration::from_millis(5), line(&mut remote))
+                .await
+                .is_err()
+        );
+        let pci = service.pci.read().await.clone();
+        drop(service);
+        let restarted = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+        assert_eq!(
+            restarted.model.lock().await.dali_saved_sessions["dali-gateway-20"],
+            saved
+        );
+        for command in [
+            "DALI SESSION NEW fresh",
+            "DALI SESSION LOAD fresh !dali-gateway-20",
+        ] {
+            assert_eq!(
+                restarted
+                    .handle(&mut client, &format!("[reload] {command}"))
+                    .await
+                    .status,
+                200
+            );
+        }
+        let readback = restarted
+            .handle(
+                &mut client,
+                "[read] DALI SESSION GET fresh /cdg/daliLines/0/lineId",
+            )
+            .await;
+        assert_eq!(readback.lines[1], "120-9");
         std::fs::remove_file(path).unwrap();
     }
 

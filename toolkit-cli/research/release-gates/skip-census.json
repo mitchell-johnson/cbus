@@ -50,9 +50,9 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 763,
-    "modules_without_skip_sites": 446,
-    "modules_with_skip_sites": 317,
+    "test_modules": 817,
+    "modules_without_skip_sites": 490,
+    "modules_with_skip_sites": 327,
     "modules_by_category": {
       "cgate_test_host": 133,
       "external_cgate_project": 1,
@@ -62,12 +62,12 @@
       "native_cgate_local": 79,
       "native_opt_in": 2,
       "original_model_runtime": 4,
-      "original_toolkit": 109,
+      "original_toolkit": 118,
       "private_evidence_input": 4,
       "private_vendor_tree": 8,
       "runtime_capability": 6,
       "rust_binaries": 15,
-      "unclassified": 39,
+      "unclassified": 40,
       "unit_specs": 148,
       "vendor_firmware": 4,
       "windows": 12
@@ -75,7 +75,7 @@
     "native_modules": {
       "all": 140,
       "partial": 20,
-      "none": 157
+      "none": 167
     },
     "native_runnable_tests": 259,
     "native_selected_required_tests": 259,
@@ -316,7 +316,7 @@
         "unclassified"
       ],
       "native": "none",
-      "gated_tests": 5,
+      "gated_tests": 7,
       "native_runnable_tests": 0,
       "native_selected_tests": 0,
       "sites": [
@@ -339,6 +339,8 @@
             "unclassified"
           ],
           "tests": [
+            "test_cli_empty_wire_preserves_call_inventory",
+            "test_cli_process_timeout_retains_partial_attempt",
             "test_public_barcode_failure_is_exact_once_without_rollback",
             "test_public_barcode_guards_are_read_only",
             "test_public_barcode_named_unit_preservation_and_lifecycle",
@@ -697,7 +699,7 @@
       "native": "all",
       "gated_tests": 2,
       "native_runnable_tests": 2,
-      "native_selected_tests": 14,
+      "native_selected_tests": 17,
       "sites": [
         {
           "scope": "tests/test_cgl.py::NativeCGLTests",
@@ -3213,6 +3215,41 @@
           ],
           "tests": [
             "DialogMapTests::test_regeneration_from_original_inputs_matches_committed_map"
+          ]
+        }
+      ]
+    },
+    "tests/test_din_output_controls.py": {
+      "categories": [
+        "original_toolkit"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_din_output_controls.py::DinControlSourceTest::test_static_method_and_constant_bytes_without_execution",
+          "kind": "decorator.skipUnless",
+          "condition": "os.environ.get('CBUS_TOOLKIT_EXE')",
+          "reason": "requires pinned original bytes for static hash check only",
+          "environment": [
+            "CBUS_TOOLKIT_EXE"
+          ],
+          "categories": [
+            "original_toolkit"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "original_toolkit"
+          ],
+          "tests": [
+            "DinControlSourceTest::test_static_method_and_constant_bytes_without_execution"
           ]
         }
       ]
@@ -6294,6 +6331,41 @@
         }
       ]
     },
+    "tests/test_edlt_time_date_control_static.py": {
+      "categories": [
+        "unclassified"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_edlt_time_date_control_static.py::TimeDateStaticTests::test_full_annex_regeneration_from_pinned_static_bytes",
+          "kind": "decorator.skipUnless",
+          "condition": "os.environ.get('CBUS_TIME_DATE_STATIC_ROOT')",
+          "reason": "Requires explicitly configured pinned original static bytes; no instruction execution",
+          "environment": [
+            "CBUS_TIME_DATE_STATIC_ROOT"
+          ],
+          "categories": [
+            "unclassified"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "unclassified"
+          ],
+          "tests": [
+            "TimeDateStaticTests::test_full_annex_regeneration_from_pinned_static_bytes"
+          ]
+        }
+      ]
+    },
     "tests/test_edlt_timer.py": {
       "categories": [
         "cgate_test_host",
@@ -7882,6 +7954,42 @@
           ],
           "offline": "skips",
           "native": "runs"
+        }
+      ]
+    },
+    "tests/test_neo_indicator_editor.py": {
+      "categories": [
+        "original_toolkit"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_neo_indicator_editor.py::NeoIndicatorEditorTests::test_optional_original_static_review",
+          "kind": "decorator.skipUnless",
+          "condition": "os.environ.get('CBUS_TOOLKIT_EXE') and os.environ.get('CBUS_TOOLKIT_MAP')",
+          "reason": "Original Toolkit EXE/MAP explicitly required for static hash verification",
+          "environment": [
+            "CBUS_TOOLKIT_EXE",
+            "CBUS_TOOLKIT_MAP"
+          ],
+          "categories": [
+            "original_toolkit"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "original_toolkit"
+          ],
+          "tests": [
+            "NeoIndicatorEditorTests::test_optional_original_static_review"
+          ]
         }
       ]
     },
@@ -10701,6 +10809,186 @@
       ],
       "note": "Its separate CBUS_TEMPLATE_TRANSACTION_TEST_HOST gate targets a C-Gate-compatible service, not the original server. A 2026-09-30 trial against the owned native C-Gate 3.4.0.2001 failed with '425 Lock failed' and '408 Unable to delete file', so tests/conftest.py does not publish it."
     },
+    "tests/test_thermostat_damper_controls.py": {
+      "categories": [
+        "original_toolkit"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_thermostat_damper_controls.py::DamperControlTests::test_fresh_source_data_matches_annex",
+          "kind": "decorator.skipUnless",
+          "condition": "os.environ.get('CBUS_TOOLKIT_EXE') and os.environ.get('CBUS_TOOLKIT_MAP')",
+          "reason": "Explicit original EXE/MAP required for source-data-only verification",
+          "environment": [
+            "CBUS_TOOLKIT_EXE",
+            "CBUS_TOOLKIT_MAP"
+          ],
+          "categories": [
+            "original_toolkit"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "original_toolkit"
+          ],
+          "tests": [
+            "DamperControlTests::test_fresh_source_data_matches_annex"
+          ]
+        }
+      ]
+    },
+    "tests/test_thermostat_output_add.py": {
+      "categories": [
+        "original_toolkit"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_thermostat_output_add.py::OutputAddTests::test_optional_static_source",
+          "kind": "decorator.skipUnless",
+          "condition": "os.environ.get('CBUS_TOOLKIT_EXE') and os.environ.get('CBUS_TOOLKIT_MAP')",
+          "reason": "Explicit original EXE/MAP required for static source verification",
+          "environment": [
+            "CBUS_TOOLKIT_EXE",
+            "CBUS_TOOLKIT_MAP"
+          ],
+          "categories": [
+            "original_toolkit"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "original_toolkit"
+          ],
+          "tests": [
+            "OutputAddTests::test_optional_static_source"
+          ]
+        }
+      ]
+    },
+    "tests/test_thermostat_output_default_ascii_static.py": {
+      "categories": [
+        "original_toolkit"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_thermostat_output_default_ascii_static.py::ASCIIDefaultSourceTests::test_fresh_pinned_source_data_matches_published_facts",
+          "kind": "decorator.skipUnless",
+          "condition": "os.environ.get('CBUS_TOOLKIT_EXE') and os.environ.get('CBUS_TOOLKIT_MAP')",
+          "reason": "Explicit original EXE/MAP required for source-data-only verification",
+          "environment": [
+            "CBUS_TOOLKIT_EXE",
+            "CBUS_TOOLKIT_MAP"
+          ],
+          "categories": [
+            "original_toolkit"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "original_toolkit"
+          ],
+          "tests": [
+            "ASCIIDefaultSourceTests::test_fresh_pinned_source_data_matches_published_facts"
+          ]
+        }
+      ]
+    },
+    "tests/test_thermostat_output_edit.py": {
+      "categories": [
+        "original_toolkit"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_thermostat_output_edit.py::OutputEditTests::test_optional_static_source",
+          "kind": "decorator.skipUnless",
+          "condition": "os.environ.get('CBUS_TOOLKIT_EXE') and os.environ.get('CBUS_TOOLKIT_MAP')",
+          "reason": "Explicit original EXE/MAP required for static source verification",
+          "environment": [
+            "CBUS_TOOLKIT_EXE",
+            "CBUS_TOOLKIT_MAP"
+          ],
+          "categories": [
+            "original_toolkit"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "original_toolkit"
+          ],
+          "tests": [
+            "OutputEditTests::test_optional_static_source"
+          ]
+        }
+      ]
+    },
+    "tests/test_thermostat_output_groups.py": {
+      "categories": [
+        "original_toolkit"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_thermostat_output_groups.py::OutputGroupTests::test_optional_static_source",
+          "kind": "decorator.skipUnless",
+          "condition": "os.environ.get('CBUS_TOOLKIT_EXE') and os.environ.get('CBUS_TOOLKIT_MAP')",
+          "reason": "Explicit original EXE/MAP required for static source verification",
+          "environment": [
+            "CBUS_TOOLKIT_EXE",
+            "CBUS_TOOLKIT_MAP"
+          ],
+          "categories": [
+            "original_toolkit"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "original_toolkit"
+          ],
+          "tests": [
+            "OutputGroupTests::test_optional_static_source"
+          ]
+        }
+      ]
+    },
     "tests/test_thermostat_post_load_native.py": {
       "categories": [
         "native_cgate_local",
@@ -10727,6 +11015,78 @@
           ],
           "offline": "skips",
           "native": "runs"
+        }
+      ]
+    },
+    "tests/test_thermostat_remote_levels.py": {
+      "categories": [
+        "original_toolkit"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_thermostat_remote_levels.py::RemoteLevelTests::test_optional_static_source",
+          "kind": "decorator.skipUnless",
+          "condition": "os.environ.get('CBUS_TOOLKIT_EXE') and os.environ.get('CBUS_TOOLKIT_MAP')",
+          "reason": "Explicit original EXE/MAP required for static source verification",
+          "environment": [
+            "CBUS_TOOLKIT_EXE",
+            "CBUS_TOOLKIT_MAP"
+          ],
+          "categories": [
+            "original_toolkit"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "original_toolkit"
+          ],
+          "tests": [
+            "RemoteLevelTests::test_optional_static_source"
+          ]
+        }
+      ]
+    },
+    "tests/test_thermostat_remote_references.py": {
+      "categories": [
+        "original_toolkit"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_thermostat_remote_references.py::RemoteReferenceTests::test_optional_static_source",
+          "kind": "decorator.skipUnless",
+          "condition": "os.environ.get('CBUS_TOOLKIT_EXE') and os.environ.get('CBUS_TOOLKIT_MAP')",
+          "reason": "Explicit original EXE/MAP required for static source verification",
+          "environment": [
+            "CBUS_TOOLKIT_EXE",
+            "CBUS_TOOLKIT_MAP"
+          ],
+          "categories": [
+            "original_toolkit"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "original_toolkit"
+          ],
+          "tests": [
+            "RemoteReferenceTests::test_optional_static_source"
+          ]
         }
       ]
     },

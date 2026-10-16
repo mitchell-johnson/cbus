@@ -13,6 +13,35 @@ cargo build --release --workspace
 
 CI runs the same four checks for pull requests and pushes to `main`.
 
+Retained native receipts may describe an earlier implementation. Their archive
+checks verify immutable recorded bytes and source pins; they do not establish
+current native applicability. The separately provisioned matrix records its
+actual implementation, and evidence validation still rejects changed current
+invalidation inputs. See the [receipt correction report](../toolkit-cli/docs/feature-batch-2026-10-03-ci-receipt-regressions.md).
+
+
+On this Mac, the native trust-store test has failed when its executable runs
+from the external build volume and passed from a byte-identical internal copy.
+The precise OS cause is not established. The opt-in
+[`local_test_runner.py`](../rust/scripts/local_test_runner.py) retains each
+executable's hashes, arguments and exit status while executing an internal
+temporary copy. It changes neither assertions nor trust policy. Use this
+profile only when reproducing that location difference, and retain the failed
+ordinary run separately. From `rust/`:
+
+```sh
+cbus_test_runtime=$(mktemp -d /private/tmp/cbus-rust-tests.XXXXXX)
+export CBUS_RUST_TEST_RUNNER_DIR="$cbus_test_runtime"
+export CBUS_RUST_TEST_RUNNER_RECORDS="$cbus_test_runtime/executions.jsonl"
+export CARGO_TARGET_AARCH64_APPLE_DARWIN_RUNNER="python3 -B $PWD/scripts/local_test_runner.py"
+unset SSL_CERT_FILE SSL_CERT_DIR
+cargo test --workspace
+```
+
+Unsetting those CA overrides selects the actual native store; supplying a PEM
+file would test a different profile. Temporary executable copies are removed
+after each owned process exits. The private execution record remains available.
+
 For a Python-only feature chunk, the current user-directed local workflow uses
 focused owning and affected historical modules rather than rerunning every
 suite. The SceneManager inventory release selection is declared in
@@ -24,6 +53,17 @@ skip. Pin source inputs before/after; retain Rust gates only when their entire
 input set and owned binary hashes are unchanged. CI still runs the full gates.
 
 ## Toolkit CLI checks
+
+The automatic installed-wheel Rust job runs a fresh noneditable wheel against both
+owned services, separately from the offline wheel job. It requires the complete
+maintained Make selections: 991 explicit selectors (including the historical
+985 quoted cohort and six daemon guards) plus seven whole-module expansions.
+Package equality, actual pytest/CLI import origins, cleanup and JUnit/trace
+identities are audited. Only two exact census-bound private UnitSpec cases may
+skip; explicit selected IDs always require passing bodies. See the
+[runner guide](../toolkit-cli/docs/installed-rust-interop.md) for full/focused
+commands and retained failure evidence. A focused local pass does not establish
+a full hosted pass or native/hardware acceptance.
 
 Install Python 3.13 or newer and the development extras from the repository root:
 

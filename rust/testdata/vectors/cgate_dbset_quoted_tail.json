@@ -1,0 +1,59 @@
+{
+  "format": "cbus-cgate-dbset-quoted-tail-v1",
+  "scope": {
+    "original_execution": false,
+    "physical_io": false,
+    "decode_once": "DBSET quoted final value before database dispatch; DBSETSAFE and unquoted token handling unchanged"
+  },
+  "set_address_command": "DBSET !%OID%/Address \"%ADDRESS%\"",
+  "set_tag_command": "DBSET %TARGET%/TagName %QUOTED%",
+  "set_wire": "[named-db] 200 OK.\n",
+  "created_wire": "[named-db] 301 OID=%OID%\n",
+  "read_tag_wire": "[named-db] 342 %TARGET%/TagName=%VALUE%\n",
+  "read_address_wire": "[named-db] 342 %TARGET%/Address=%ADDRESS%\n",
+  "cases": [
+    {
+      "id": "double-ascii-space",
+      "value": "éPump  Ω",
+      "quoted": "\"éPump\\ \\ Ω\""
+    },
+    {
+      "id": "nbsp",
+      "value": "A B",
+      "quoted": "\"A B\""
+    },
+    {
+      "id": "nbsp-only",
+      "value": " ",
+      "quoted": "\" \""
+    },
+    {
+      "id": "quote-backslash-hash",
+      "value": "Quote \" slash \\ #",
+      "quoted": "\"Quote\\ \\\"\\ slash\\ \\\\\\ #\""
+    },
+    {
+      "id": "literal-enclosing-quotes",
+      "value": "\"Literal quoted\"",
+      "quoted": "\"\\\"Literal\\ quoted\\\"\""
+    },
+    {
+      "id": "backslash-path",
+      "value": "C:\\temp\\one",
+      "quoted": "\"C:\\\\temp\\\\one\""
+    },
+    {
+      "id": "hash-only",
+      "value": "#",
+      "quoted": "\"#\""
+    }
+  ],
+  "unquoted": {
+    "tail": "Old   unquoted  tail",
+    "value": "Old unquoted tail"
+  },
+  "safe": {
+    "tail": "\"Safe   quoted\"",
+    "value": "\"Safe quoted\""
+  }
+}

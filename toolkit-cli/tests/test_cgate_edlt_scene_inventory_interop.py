@@ -132,7 +132,7 @@ def journey(backend, variable, case, tmp_path):
         if path.exists(): path.rename(tmp_path/'scene-inventory-evidence.json')
 
 
-def invoke(relay,evidence,specs,tmp_path,operations,*,dry_run=False,expected=0,surface='parent',parent_operations=None):
+def invoke(relay,evidence,specs,tmp_path,operations,*,dry_run=False,expected=0,surface='parent',parent_operations=None,process_timeout=None):
     path = tmp_path/'inventory-operations.json'
     supplied = (parent_operations if parent_operations is not None else
                 [{'op':'scene-manager','operations':operations},selector.parent.widget()]
@@ -145,7 +145,8 @@ def invoke(relay,evidence,specs,tmp_path,operations,*,dry_run=False,expected=0,s
         '--spec-dir',specs,'--auto-metadata','--exclusive-project',
         '--display-preferences',prefs,'--operations',path]
     if not dry_run: argv += ['--backup-project','PABACKUP']
-    return cli(relay,evidence['calls'],*argv,expected=expected,complete=expected==0)
+    budget = process_timeout if process_timeout is not None else (90 if surface == 'parent' else 20)
+    return cli(relay,evidence['calls'],*argv,expected=expected,complete=expected==0,process_timeout=budget)
 
 
 def inventory_timeline(native):

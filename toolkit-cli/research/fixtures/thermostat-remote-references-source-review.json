@@ -1,0 +1,593 @@
+{
+  "alias_class_chains": {
+    "PC_TSA": [
+      "TPC_TSA",
+      "TProgrammableThermostat",
+      "TThermostat",
+      "TPCI4",
+      "TPCI",
+      "TCBUSUnit",
+      "TCGateObject",
+      "TCBUSObject",
+      "TPersistableObject",
+      "TIdentifiableObject",
+      "TFlashObject",
+      "TFoundationObject",
+      "TCustomFlashObject",
+      "TFlashElement",
+      "TManagedFlashObject",
+      "TBASEObject",
+      "TObject"
+    ],
+    "PC_TSA5": [
+      "TPC_TSA5",
+      "TPC_TSA",
+      "TProgrammableThermostat",
+      "TThermostat",
+      "TPCI4",
+      "TPCI",
+      "TCBUSUnit",
+      "TCGateObject",
+      "TCBUSObject",
+      "TPersistableObject",
+      "TIdentifiableObject",
+      "TFlashObject",
+      "TFoundationObject",
+      "TCustomFlashObject",
+      "TFlashElement",
+      "TManagedFlashObject",
+      "TBASEObject",
+      "TObject"
+    ],
+    "PC_TSB": [
+      "TPC_TSB",
+      "TBasicThermostat",
+      "TThermostat",
+      "TPCI4",
+      "TPCI",
+      "TCBUSUnit",
+      "TCGateObject",
+      "TCBUSObject",
+      "TPersistableObject",
+      "TIdentifiableObject",
+      "TFlashObject",
+      "TFoundationObject",
+      "TCustomFlashObject",
+      "TFlashElement",
+      "TManagedFlashObject",
+      "TBASEObject",
+      "TObject"
+    ],
+    "PC_TSB5": [
+      "TPC_TSB5",
+      "TPC_TSB",
+      "TBasicThermostat",
+      "TThermostat",
+      "TPCI4",
+      "TPCI",
+      "TCBUSUnit",
+      "TCGateObject",
+      "TCBUSObject",
+      "TPersistableObject",
+      "TIdentifiableObject",
+      "TFlashObject",
+      "TFoundationObject",
+      "TCustomFlashObject",
+      "TFlashElement",
+      "TManagedFlashObject",
+      "TBASEObject",
+      "TObject"
+    ]
+  },
+  "checks": {
+    "0x1131b22": true,
+    "0x1131b33": true,
+    "0x1131b36": true,
+    "0x1131b46": true,
+    "0x1131b4b": true,
+    "0x1131b4d": true,
+    "0x1131dc5": true,
+    "0x1131df4": true,
+    "0x1131df9": true,
+    "0x1131e28": true,
+    "0x1131e2d": true,
+    "0x1131e2f": true,
+    "0x11323ae": true,
+    "0x1132437": true,
+    "0x113255b": true,
+    "0x113255c": true,
+    "0x11333d1": true,
+    "0x11333ec": true,
+    "0x1133407": true,
+    "0x1133422": true,
+    "0x1133424": true,
+    "0x11334e1": true,
+    "0x1133532": true,
+    "0x1133583": true,
+    "0x113360d": true,
+    "0x113360e": true,
+    "0x1210f84": true,
+    "0x1210f8c": true,
+    "0x128e4bc": true,
+    "0x128e4d9": true,
+    "0x128e515": true,
+    "0x128e518": true,
+    "0x128e527": true,
+    "0x128e93f": true,
+    "0x128e942": true,
+    "0x128e967": true,
+    "0x128e972": true,
+    "0x128e975": true,
+    "0x128e9ad": true,
+    "0x128e9b8": true,
+    "0x128e9bb": true,
+    "0x128e9eb": true,
+    "0x128e9ec": true,
+    "0x128ea0e": true,
+    "0x128ea1d": true,
+    "0x128ea52": true,
+    "0x128ea61": true,
+    "0x128ea89": true,
+    "0x128ea8b": true,
+    "0x128ea9d": true,
+    "0x128ea9f": true,
+    "0x1294d80": true,
+    "0x1294d94": true,
+    "0x1294dce": true,
+    "0x1294dfe": true,
+    "0x1294e24": true,
+    "0x12994f5": true,
+    "0x129979a": true,
+    "0x129979b": true,
+    "0x12997a0": true,
+    "0x12997cb": true,
+    "0x12997cc": true,
+    "0x12998c5": true,
+    "0x12998db": true,
+    "0x12998f9": true,
+    "0x1299912": true,
+    "0x1299937": true,
+    "0x1299945": true,
+    "0x129997d": true,
+    "0x129998b": true,
+    "0x12999c3": true,
+    "0x12999d1": true,
+    "0x1299a07": true,
+    "0x1299a0e": true,
+    "0x1299a3f": true,
+    "0x1299a46": true,
+    "0x1299a77": true,
+    "0x1299a7e": true,
+    "0x1299bbc": true,
+    "0x1299fb7": true,
+    "0x1299fcd": true,
+    "0x1299fe3": true,
+    "0x1299fea": true,
+    "0x129a028": true,
+    "0x129a062": true,
+    "0x129a09c": true,
+    "0x129a0f2": true,
+    "0x129a118": true,
+    "0x129a13e": true,
+    "0x85aef4": true,
+    "0x85af04": true,
+    "0xf2338c_storage_save_slots": true,
+    "0xf23cd4_storage_save_slots": true,
+    "0xf2607a": true,
+    "0xf26086": true,
+    "0xf2647e": true,
+    "0xf26483": true,
+    "0xf2649d": true,
+    "0xf2649f": true,
+    "0xf264a4": true,
+    "0xf264c4": true,
+    "0xf264e4": true,
+    "0xf2656f": true,
+    "0xf2657b": true,
+    "0xf26585": true,
+    "0xf2658e": true,
+    "0xf2659e": true,
+    "0xf265b6": true,
+    "0xf265c4": true,
+    "0xf265d6": true,
+    "0xf265f4": true,
+    "0xf265fc": true,
+    "0xf28b9c": true,
+    "0xf28ba8": true,
+    "0xf28bb2": true,
+    "0xf28bc0": true,
+    "0xf28bc5": true,
+    "0xf28bce": true,
+    "0xf28bdc": true,
+    "0xf28c32": true,
+    "0xf28c58": true,
+    "0xf28c8b": true,
+    "0xf2aa9d": true,
+    "0xf2b13d": true,
+    "CIS_TddThermostat.TddProgrammableThermostat.ValidateRemoteScheduleAndRemoteSetbackGroups_identity_validator": true,
+    "CIS_TddThermostat.TddProgrammableThermostat.ValidateRemoteScheduleGroups_identity_validator": true,
+    "CIS_TddThermostat.TddThermostat.ValidateRemoteSetbackGroups_identity_validator": true,
+    "PC_TSA5_family": true,
+    "PC_TSA_family": true,
+    "PC_TSB5_family": true,
+    "PC_TSB_family": true,
+    "TBasicThermostat_application_getter": true,
+    "THERMOSTATA.xml:ApplicationNumber_byte_shape": true,
+    "THERMOSTATA.xml:EvapProgramEnabled_byte_shape": true,
+    "THERMOSTATA.xml:NonEvapProgramEnabled_byte_shape": true,
+    "THERMOSTATA.xml:RemoteScheduleEnable_byte_shape": true,
+    "THERMOSTATA.xml:RemoteScheduleOffGroup_byte_shape": true,
+    "THERMOSTATA.xml:RemoteScheduleOnGroup_byte_shape": true,
+    "THERMOSTATA.xml:RemoteScheduleOverrideGroup_byte_shape": true,
+    "THERMOSTATA.xml:RemoteSetbackControlSource_byte_shape": true,
+    "THERMOSTATA.xml:RemoteSetbackOffGroup_byte_shape": true,
+    "THERMOSTATA.xml:RemoteSetbackOnGroup_byte_shape": true,
+    "THERMOSTATA.xml_firmware_bounds": true,
+    "THERMOSTATA.xml_type": true,
+    "THERMOSTATB.xml:ApplicationNumber_byte_shape": true,
+    "THERMOSTATB.xml:RemoteScheduleEnable_byte_shape": true,
+    "THERMOSTATB.xml:RemoteScheduleOffGroup_byte_shape": true,
+    "THERMOSTATB.xml:RemoteScheduleOnGroup_byte_shape": true,
+    "THERMOSTATB.xml:RemoteScheduleOverrideGroup_byte_shape": true,
+    "THERMOSTATB.xml:RemoteSetbackControlSource_byte_shape": true,
+    "THERMOSTATB.xml:RemoteSetbackOffGroup_byte_shape": true,
+    "THERMOSTATB.xml:RemoteSetbackOnGroup_byte_shape": true,
+    "THERMOSTATB.xml_firmware_bounds": true,
+    "THERMOSTATB.xml_type": true,
+    "TProgrammableThermostat_application_getter": true,
+    "TThermostat_application_getter": true,
+    "catalogue_group_overrides": true,
+    "default_group_name": true,
+    "enable_application_name": true,
+    "enable_application_unconditional_check_then_find": true,
+    "group_command_kind": true,
+    "group_format": true,
+    "group_save_verb": true,
+    "native_xml_preprocessor_no_group_creator": true,
+    "raw_schedule_enable_not_read_on_load": true,
+    "unused_name": true
+  },
+  "contract": {
+    "creation_command_kind": "Group",
+    "enable_application_getter": "unconditional check/create followed by lookup; no bAdd preference",
+    "enabled_schedule_eligibility": "all three non255 and all five remote non255 identities distinct",
+    "existing_reference": "same object; no rename/save",
+    "graph_only_policy": "owned CLI policy: zero PP saves, one target project save",
+    "identity": "same address in different application is distinct",
+    "native255": "real group; create-enabled lookup creates/saves if missing; disabled lookup does not create",
+    "new_application203_name": "Enable Control",
+    "new_group255_name": "<Unused>",
+    "new_group_name203": "Enable Network Variable N",
+    "new_group_name_lighting48_95": "Group N",
+    "no_op_policy": "only when both PP delta and planned graph additions are empty",
+    "optional_levels": "declined creation prompt preserves validation success; existing levels unchanged",
+    "role_lookup_order": [
+      "setback_on",
+      "setback_off",
+      "schedule_on",
+      "schedule_off",
+      "schedule_override"
+    ],
+    "schedule_enable": "OR of normalized Evap and NonEvap; raw RemoteScheduleEnable ignored",
+    "serialized_child_kind": "separate database/backend contract; command kind does not prove XML spelling",
+    "setback_eligibility": "at least one non255; two non255 roles must have distinct identity",
+    "source1_application": "ApplicationNumber, not generic Application array or fixed56",
+    "source2_and_schedule_application": 203
+  },
+  "decoded_specifications": {
+    "THERMOSTATA.xml": {
+      "maximum_version": "9",
+      "minimum_version": "0",
+      "parameters": {
+        "ApplicationNumber": {
+          "address": 262,
+          "bits": 8,
+          "count": 1,
+          "type": "int"
+        },
+        "EvapProgramEnabled": {
+          "address": 271,
+          "bits": 8,
+          "count": 1,
+          "type": "int"
+        },
+        "NonEvapProgramEnabled": {
+          "address": 272,
+          "bits": 8,
+          "count": 1,
+          "type": "int"
+        },
+        "RemoteScheduleEnable": {
+          "address": 315,
+          "bits": 8,
+          "count": 1,
+          "type": "int"
+        },
+        "RemoteScheduleOffGroup": {
+          "address": 313,
+          "bits": 8,
+          "count": 1,
+          "type": "int"
+        },
+        "RemoteScheduleOnGroup": {
+          "address": 312,
+          "bits": 8,
+          "count": 1,
+          "type": "int"
+        },
+        "RemoteScheduleOverrideGroup": {
+          "address": 314,
+          "bits": 8,
+          "count": 1,
+          "type": "int"
+        },
+        "RemoteSetbackControlSource": {
+          "address": 304,
+          "bits": 8,
+          "count": 1,
+          "type": "int"
+        },
+        "RemoteSetbackOffGroup": {
+          "address": 306,
+          "bits": 8,
+          "count": 1,
+          "type": "int"
+        },
+        "RemoteSetbackOnGroup": {
+          "address": 305,
+          "bits": 8,
+          "count": 1,
+          "type": "int"
+        }
+      },
+      "sha256": "3ae197382370fe23efb4c61476c4cb09ac3b0ee74a7f4f1feca1afb04fa326ed",
+      "sources": {
+        "THERMOSTAT.xml": "780c4a9abd7640e46c21258f29cb970f4e78460154229d0d5901a0355506b367",
+        "THERMOSTATA.xml": "3ae197382370fe23efb4c61476c4cb09ac3b0ee74a7f4f1feca1afb04fa326ed"
+      },
+      "type": "THERMOSTATA"
+    },
+    "THERMOSTATB.xml": {
+      "maximum_version": "9",
+      "minimum_version": "0",
+      "parameters": {
+        "ApplicationNumber": {
+          "address": 262,
+          "bits": 8,
+          "count": 1,
+          "type": "int"
+        },
+        "RemoteScheduleEnable": {
+          "address": 315,
+          "bits": 8,
+          "count": 1,
+          "type": "int"
+        },
+        "RemoteScheduleOffGroup": {
+          "address": 313,
+          "bits": 8,
+          "count": 1,
+          "type": "int"
+        },
+        "RemoteScheduleOnGroup": {
+          "address": 312,
+          "bits": 8,
+          "count": 1,
+          "type": "int"
+        },
+        "RemoteScheduleOverrideGroup": {
+          "address": 314,
+          "bits": 8,
+          "count": 1,
+          "type": "int"
+        },
+        "RemoteSetbackControlSource": {
+          "address": 304,
+          "bits": 8,
+          "count": 1,
+          "type": "int"
+        },
+        "RemoteSetbackOffGroup": {
+          "address": 306,
+          "bits": 8,
+          "count": 1,
+          "type": "int"
+        },
+        "RemoteSetbackOnGroup": {
+          "address": 305,
+          "bits": 8,
+          "count": 1,
+          "type": "int"
+        }
+      },
+      "sha256": "fe7cfeae5c9d16873adeeb0b9dcd6cb4ac34f3d1b8eb2b2c57236111316f4b74",
+      "sources": {
+        "THERMOSTAT.xml": "780c4a9abd7640e46c21258f29cb970f4e78460154229d0d5901a0355506b367",
+        "THERMOSTATB.xml": "fe7cfeae5c9d16873adeeb0b9dcd6cb4ac34f3d1b8eb2b2c57236111316f4b74"
+      },
+      "type": "THERMOSTATB"
+    }
+  },
+  "format": "cbus-thermostat-remote-references-static-v1",
+  "limits": [
+    "Raw candidate edits precede one bounded remote agent load/save projection, not GUI controls.",
+    "Remote validation is a subset; no complete parent form or unrelated AfterLoad graph is claimed.",
+    "Native Delphi groups differ from managed eDLT virtual unused groups.",
+    "Firmware must satisfy the selected caller-supplied decoded specification and exact family alias.",
+    "Decoded source1/2 description labels are reversed; actual agent branches are authoritative.",
+    "THERMOSTATB contains schedule PP fields but its basic class does not execute programmable projection.",
+    "Object StorageSave order is static evidence, not an atomic native C-Gate transaction receipt.",
+    "No original instructions, emulator, GUI, native endpoint or hardware executed by this reproducer."
+  ],
+  "method_spans": {
+    "CIS_TCBusGroupCGateAgent.TCBusGroupCGateAgent.AgentSave": {
+      "end": "0x1210ec4",
+      "sha256": "88b10b4d543b77a8a0ed05b87562a247ca36ec099d6be2dd0d2606b4537b0137",
+      "start": "0x1210d28"
+    },
+    "CIS_TCBusGroupCGateAgent.TCBusGroupCGateAgent.CreateGroup": {
+      "end": "0x1211010",
+      "sha256": "0b8aadea6e3fe603b08ff7cb3e0f700fb42ffbeaa9dd4c7dae32dae0e5800b6c",
+      "start": "0x1210f3c"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusProgrammableThermostatCGateAgent.AfterLoadProgrammingInformation": {
+      "end": "0x1299b98",
+      "sha256": "8e869e22ac8e8d586f6941d291ab8ccccd5adcb2ba0aa7d035971f9fad2d1fc5",
+      "start": "0x12994d0"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusProgrammableThermostatCGateAgent.BeforeSaveProgrammingInformation": {
+      "end": "0x129a190",
+      "sha256": "efb5759d3d169d32cd32d01b74981715a6398f9fa701bfcb9ead9540c692122d",
+      "start": "0x1299b98"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.AfterLoadProgrammingInformation": {
+      "end": "0x128f9a0",
+      "sha256": "2334495515fab9b4f1942a3c1a1caf58003877da1e82b3d00c91a907719b69be",
+      "start": "0x128e06c"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.BeforeSaveProgrammingInformation": {
+      "end": "0x12966fc",
+      "sha256": "8c12c86a1e8eeb8da70d889b9a6dcc1f9ecf4c67b80a0259bb70759b440fad82",
+      "start": "0x129471c"
+    },
+    "CIS_TCommonCBus.PreProcessXML@0xf25964": {
+      "end": "0xf2604c",
+      "sha256": "a9b0a94cfde40773a82167d2af7b42fa9a9fe8a8e7fc443e4f818fe7e7b9ee8c",
+      "start": "0xf25964"
+    },
+    "CIS_TCommonCBus.TCBUSApplication.InternalCreate": {
+      "end": "0xf25858",
+      "sha256": "74f748a4f29c737d626e5b88c62f5f60f6cd3a03eda9d46c4579f189706b5a0a",
+      "start": "0xf25704"
+    },
+    "CIS_TCommonCBus.TCBUSApplication.ProcessAndLoadFromXMLString": {
+      "end": "0xf260b4",
+      "sha256": "2759c7202553a8c77c56d10dc367068361f3cd482e8f29f8a9a636801f95025a",
+      "start": "0xf2604c"
+    },
+    "CIS_TCommonCBus.TCBUSApplicationManager.Add": {
+      "end": "0xf2644c",
+      "sha256": "f4a66264fe9d3d835e75be0238ded1eb7660a1cdd7b84998b5168cc3aca40064",
+      "start": "0xf26410"
+    },
+    "CIS_TCommonCBus.TCBUSApplicationManager.ApplicationByAddress": {
+      "end": "0xf267c8",
+      "sha256": "3263b0d320c3870a7765edb54946d587b2372de62bbf7249df62763699188e1b",
+      "start": "0xf264fc"
+    },
+    "CIS_TCommonCBus.TCBUSApplicationManager.ApplicationByAddressExclude": {
+      "end": "0xf268f4",
+      "sha256": "2d10dfbd80af2741c488fc371bebeea2cb890ede4871ce7a0903a0e385454c8c",
+      "start": "0xf26878"
+    },
+    "CIS_TCommonCBus.TCBUSApplicationManager.CheckAllHaveUnusedGroup": {
+      "end": "0xf264b8",
+      "sha256": "0f31bf1d546406be28a383844580c8fd37d4a1d7ab27d941817cf9920e466b14",
+      "start": "0xf2644c"
+    },
+    "CIS_TCommonCBus.TCBUSApplicationManager.CheckAndCreate": {
+      "end": "0xf264d8",
+      "sha256": "6aa8a446059c35fcb30a9e520c50e05cedffd4c5bd6f7ce5a2d5fd374d65cc34",
+      "start": "0xf264b8"
+    },
+    "CIS_TCommonCBus.TCBUSApplicationManager.FindApplicationByAddress": {
+      "end": "0xf264fc",
+      "sha256": "a31cb4dfbcea72630bc37a9ab2b0f385a8ba8fad49eb212dab5f9e1092909e51",
+      "start": "0xf264d8"
+    },
+    "CIS_TCommonCBus.TCBusGroupManager.Add": {
+      "end": "0xf28938",
+      "sha256": "d704bcb463fb41fb081f4a84151545818e93ca35b31da0eb74cb763d3bd3c0a9",
+      "start": "0xf288f0"
+    },
+    "CIS_TCommonCBus.TCBusGroupManager.Create": {
+      "end": "0xf288bc",
+      "sha256": "22f77db372a22d30e964a134592683b831b23fb9eeee09c430311b2d08820885",
+      "start": "0xf2880c"
+    },
+    "CIS_TCommonCBus.TCBusGroupManager.GroupByAddress": {
+      "end": "0xf28d10",
+      "sha256": "ca91f7a53a7820a9be87286f6c481e624bd888fc7a1f5c64f0a7a34ebbd91930",
+      "start": "0xf28b68"
+    },
+    "CIS_TCommonCBus.TCBusGroupManager.GroupByAddressExclude": {
+      "end": "0xf28d7c",
+      "sha256": "de132e634835a15c14207e5da78c5ee56b88a8a18d2a0bee4ea06161eabb36d2",
+      "start": "0xf28d10"
+    },
+    "CIS_TCommonCBus.TCBusNetwork.CheckStandardConfiguration": {
+      "end": "0xf2ab9c",
+      "sha256": "445fa3b3ce38e99d893910a8c780e5460e3c5533550cde9cd3e81e18393eef4e",
+      "start": "0xf2aa00"
+    },
+    "CIS_TCommonCBus.TCBusNetwork.FindOrCreateApplicationByAddress": {
+      "end": "0xf2b0d8",
+      "sha256": "24edc2caecf56d02ce3d9be02386b266d7bbef46ea4018c2333efd1cd5df7f5f",
+      "start": "0xf2b0a0"
+    },
+    "CIS_TCommonCBus.TCBusNetwork.GetEnableControlApplication": {
+      "end": "0xf2b154",
+      "sha256": "b436ebe5252ce9f2a7050d3bfbc8a9b71eac08faa3353f9d5463702f1ff172b2",
+      "start": "0xf2b134"
+    },
+    "CIS_TStandardCBusApplications.CIS_TStandardCBusApplications": {
+      "end": "0x136c174",
+      "sha256": "bf0c22d11e4ef357a9c6a5825245ed27aca9ccaaa7c7a62d1e83f3b18fd6c98e",
+      "start": "0x136bc30"
+    },
+    "CIS_TStandardCBusApplications.TStandardCBusApplication.Create": {
+      "end": "0x85af68",
+      "sha256": "571cba94dc0dbdee553d85d478afc0f22356cd782775017113fc6f2bf3d8b757",
+      "start": "0x85ae74"
+    },
+    "CIS_TStandardCBusApplications.TStandardCBusApplications.GetGroupName": {
+      "end": "0x85b30c",
+      "sha256": "0114adf84ee6a600c5a167903295d1d121e7831b8c583edb857df01d34633a8f",
+      "start": "0x85b2c4"
+    },
+    "CIS_TddThermostat.TddProgrammableThermostat.ValidateProgramming": {
+      "end": "0x1133640",
+      "sha256": "997427284508bda172a72d072d8a932a7bcab287781f65aa61e99f4a265e42b4",
+      "start": "0x11334c0"
+    },
+    "CIS_TddThermostat.TddProgrammableThermostat.ValidateRemoteScheduleAndRemoteSetbackGroups": {
+      "end": "0x11334c0",
+      "sha256": "a012c3d40aacee66e2efff8840aed3bf61886d8f42bfcf948452391f89ca758b",
+      "start": "0x1133434"
+    },
+    "CIS_TddThermostat.TddProgrammableThermostat.ValidateRemoteScheduleGroups": {
+      "end": "0x11333b4",
+      "sha256": "82be57d3687abc236871d6ef2fae295e3db9457a84c951ec76ab2b05add953ac",
+      "start": "0x1133350"
+    },
+    "CIS_TddThermostat.TddProgrammableThermostat.ValidateRemoteScheduleGroupsNotUnused": {
+      "end": "0x1133434",
+      "sha256": "ef43dabafad7de27cc191dfc1c8f7a1463f809c877ecaad485a451af082b3f97",
+      "start": "0x11333b4"
+    },
+    "CIS_TddThermostat.TddThermostat.SameGroups": {
+      "end": "0x1131b70",
+      "sha256": "73a741e6d3216fa89b7d838792226b4b99b5cf65c7a2b7db7aa634f567e3e37e",
+      "start": "0x1131ad0"
+    },
+    "CIS_TddThermostat.TddThermostat.ValidateProgramming": {
+      "end": "0x1132744",
+      "sha256": "f25e710535850c8e9fe51a1509d19163215e969938828cec20c1794912eb3b54",
+      "start": "0x11320c0"
+    },
+    "CIS_TddThermostat.TddThermostat.ValidateRemoteSetbackGroups": {
+      "end": "0x1131da8",
+      "sha256": "d45861bfd7503a360ef72f6f9bed982e94e3cf1005261ba7b6c2a8fb97829e84",
+      "start": "0x1131d58"
+    },
+    "CIS_TddThermostat.TddThermostat.ValidateRemoteSetbackGroupsNotUnused": {
+      "end": "0x1131e40",
+      "sha256": "897e2472c790c32216a5fdc05929e015629a2b153ade649ce511033703ada06d",
+      "start": "0x1131da8"
+    }
+  },
+  "original_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "original_executed": false,
+  "original_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "physical_io": false
+}

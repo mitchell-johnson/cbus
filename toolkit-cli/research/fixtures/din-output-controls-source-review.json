@@ -1,0 +1,540 @@
+{
+  "format": "cbus-din-output-controls-source-review-v1",
+  "target": "C-Bus Toolkit 1.18.0.2754 / C-Gate 3.4.0.2001",
+  "plan_format": "cbus-din-output-controls-plan-v1",
+  "original_code_executed": false,
+  "native_server_executed": false,
+  "physical_hardware_verified": false,
+  "toolkit_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "toolkit_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "profiles": [
+    "RELDN4",
+    "RELDN8",
+    "RELDN8B",
+    "RELDN12",
+    "DIMDN4",
+    "DIMDN4F",
+    "DIMDN8",
+    "DIMDN8F"
+  ],
+  "firmware": "2.7.00",
+  "methods": [
+    {
+      "name": "CIS_TfrmCBusDimmer.PopulateStaggerCombo",
+      "start": "0xef4714",
+      "end": "0xef490c",
+      "sha256": "073f1f1f1fb4ba67ea20b83fa0f226ebea065cbff6a5ee757098fca1ff0ac237"
+    },
+    {
+      "name": "CIS_TfrmCBusDimmer.EnableStaggerControls",
+      "start": "0xef490c",
+      "end": "0xef4be0",
+      "sha256": "8e48b3ababe73f76a68e59e389587c4001b5b123a2d92d59214333d2d35ddcb8"
+    },
+    {
+      "name": "CIS_TfrmCBusDimmer.BuildTurnOnForm",
+      "start": "0xef397c",
+      "end": "0xef3ad8",
+      "sha256": "da621960832f8dbb5b1c43fd00996bcb0448988ad74fd5e6222b37b4e46b90b0"
+    },
+    {
+      "name": "CIS_TfrmCBusDimmer.BuildRecoveryForm",
+      "start": "0xef3d90",
+      "end": "0xef4148",
+      "sha256": "b8856af16f940a45170ba9f939d11ef33046c4bbad82474c2e63e076087b81f8"
+    },
+    {
+      "name": "CIS_TfrmCBusDimmer.TfrmCBusDimmer.Init",
+      "start": "0xef5334",
+      "end": "0xef5df8",
+      "sha256": "d2c8acf192e7a4979d34ca84ceda4f7d2b2947590ad41fe3426eb5bf1af18c73"
+    },
+    {
+      "name": "CIS_TfrmCBusDimmer.TfrmCBusDimmer.OnTurnOnMinChange",
+      "start": "0xef67f4",
+      "end": "0xef686c",
+      "sha256": "860cf966eabf86175e94225ef5f1f65097c279d7ff55941040f840224d968b42"
+    },
+    {
+      "name": "CIS_TfrmCBusDimmer.TfrmCBusDimmer.OnTurnOnMaxChange",
+      "start": "0xef686c",
+      "end": "0xef68e4",
+      "sha256": "db0164c95aed344d020eb086339da9accf3e04ce911a2269365ff94dc3fe9d5c"
+    },
+    {
+      "name": "CIS_TfrmCBusDimmer.TfrmCBusDimmer.BtnStaggerMinClick",
+      "start": "0xef6a1c",
+      "end": "0xef6aa8",
+      "sha256": "b72c9be00f83c21a4731f5f854410d9d071bfbbb5294238a62d0156ee3436d08"
+    },
+    {
+      "name": "CIS_TfrmCBusDimmer.TfrmCBusDimmer.BtnStaggerMaxClick",
+      "start": "0xef68e4",
+      "end": "0xef6a1c",
+      "sha256": "72b7f47371d908262857dbf6c4c098db6e4fc2c93bd2c0ab6236d11b26c502a8"
+    },
+    {
+      "name": "CIS_TfrmCBusDimmer.TfrmCBusDimmer.OnRecoveryDelayChange",
+      "start": "0xef6e90",
+      "end": "0xef6f44",
+      "sha256": "c7882ba04e01a94b3dde779358e3d9657233ce8296bd0fc484d06348e8bf9420"
+    },
+    {
+      "name": "CIS_TfrmCBusDimmer.TfrmCBusDimmer.btnStaggerRecoveryDelayClick",
+      "start": "0xef758c",
+      "end": "0xef76f8",
+      "sha256": "fc7b24fde27ea5d6f1f80cf510e05a0d235939ddbf905712fe6b499e529a79a1"
+    },
+    {
+      "name": "CIS_TfrmCBusDimmerTurnOn.TfrmCBusDimmerTurnOn.Init",
+      "start": "0xeefb4c",
+      "end": "0xeefc74",
+      "sha256": "fc6a01bfd3ed083b701c9be0630a0d940e0da3765b5881d2587a93fd2d09221b"
+    },
+    {
+      "name": "CIS_TfrmCBusDimmerTurnOn.TfrmCBusDimmerTurnOn.SetData",
+      "start": "0xeefc74",
+      "end": "0xeefcf4",
+      "sha256": "aa542c1e918625a29409b4775b75254c3330b6180711a5460f04e93e09f315be"
+    },
+    {
+      "name": "CIS_TfrmCBusDimmerTurnOn.TfrmCBusDimmerTurnOn.ChannelsLinkValueChange",
+      "start": "0xeefcf4",
+      "end": "0xeefdb8",
+      "sha256": "aa5052201abf7d5dc9322f6e214116e41432c9a5c5c5c8f79153106bb9aa9b0d"
+    },
+    {
+      "name": "CIS_TfrmCBusDimmerTurnOn.TfrmCBusDimmerTurnOn.SetMin",
+      "start": "0xef0194",
+      "end": "0xef01ec",
+      "sha256": "f11a25ac7dceec7a704f604b17db50cc2c9f936ae2a1a2dff5c595eb437f6871"
+    },
+    {
+      "name": "CIS_TfrmCBusDimmerTurnOn.TfrmCBusDimmerTurnOn.SetMax",
+      "start": "0xef01ec",
+      "end": "0xef027c",
+      "sha256": "9ea5ce8f7d0af8becb5538e8f3a80cae93810df2ae2cfe79d74584bf43bba914"
+    },
+    {
+      "name": "CIS_TfrmCBusDimmerTurnOn.TfrmCBusDimmerTurnOn.trkMinPropertiesChange",
+      "start": "0xeeff70",
+      "end": "0xef0194",
+      "sha256": "cf84c0e067af1758698aecf3115f2a54c952cb08fcc5d89fbc0564e01c47704a"
+    },
+    {
+      "name": "CIS_TfrmCBusDimmerTurnOn.TfrmCBusDimmerTurnOn.trkMaxPropertiesChange",
+      "start": "0xeefdb8",
+      "end": "0xeeff70",
+      "sha256": "94e0b37475d2a9cdd0c769f95501af721a6909ce346f61adc981517c4ccc196e"
+    },
+    {
+      "name": "CIS_TfrmCBusDimmerRecovery.TfrmCBusDimmerRecovery.Init",
+      "start": "0xef0ff4",
+      "end": "0xef12a4",
+      "sha256": "97707f4ef5da0bbdabb7807a166c2050383bb6bc5512ed6f3a5ec9f95154b6b0"
+    },
+    {
+      "name": "CIS_TfrmCBusDimmerRecovery.TfrmCBusDimmerRecovery.SetData",
+      "start": "0xef1354",
+      "end": "0xef1388",
+      "sha256": "732ac8a3c2f4a3e07f89dee06c22cccfc9a5992c7eaec81a562576ede497bd5c"
+    },
+    {
+      "name": "CIS_TfrmCBusDimmerRecovery.TfrmCBusDimmerRecovery.ChannelsLinkValueChange",
+      "start": "0xef1388",
+      "end": "0xef1460",
+      "sha256": "f6e3ab1c7cf8e6672b6d8a063c2f5ca3fb72defe454d68a6ea94923df838faa3"
+    },
+    {
+      "name": "CIS_TfrmCBusDimmerRecovery.TfrmCBusDimmerRecovery.SetDelayValue",
+      "start": "0xef1bb8",
+      "end": "0xef1c48",
+      "sha256": "c135455378ce9da244422cfcd69c1ad186a051e7ec60e443a3bcf27a7c647305"
+    },
+    {
+      "name": "CIS_TfrmCBusDimmerRecovery.TfrmCBusDimmerRecovery.GetCanChangeDelay",
+      "start": "0xef1d2c",
+      "end": "0xef1d40",
+      "sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    {
+      "name": "CIS_TfrmCBusDimmerRecovery.TfrmCBusDimmerRecovery.trkRecoveryDelayPropertiesChange",
+      "start": "0xef179c",
+      "end": "0xef1938",
+      "sha256": "7ae9c37aa7ae560a9958df47279e6d0abad85ba873d34ea9935af2cc24000013"
+    },
+    {
+      "name": "CIS_TFlashCxTrackBar.TFlashCxTrackBarProperties.DoChanged",
+      "start": "0xc09ecc",
+      "end": "0xc0a020",
+      "sha256": "16fe95cd8dd38e435d46284f06c86f6c0d1ddee2c0b07ac0d662ae457fc26902"
+    },
+    {
+      "name": "CIS_TFlashCxTrackBar.TFlashCxVertTrackBar.ControllerValueChange",
+      "start": "0xc0a020",
+      "end": "0xc0a104",
+      "sha256": "fb1e54dbdf01adf192a216f397141086613a89faa89bab42c8b3080d750b30ed"
+    },
+    {
+      "name": "CIS_TFlashCxTrackBar.TFlashCxVertTrackBar.GetVertPosition",
+      "start": "0xc0a174",
+      "end": "0xc0a1b0",
+      "sha256": "d4e4ccc01ea3d698fed25aab88147feb488237dbd5ffbbb3a989b543f46dfe4d"
+    },
+    {
+      "name": "CIS_TFlashCxTrackBar.TFlashCxTrackBar.ControllerElementChange",
+      "start": "0xc09b28",
+      "end": "0xc09b38",
+      "sha256": "ffbe5d93e7a04e08345a2b8ed94a0d88abbd8cf94c102206779f88186dc07f1a"
+    },
+    {
+      "name": "cxTrackBar.TcxCustomTrackBar.SetPosition",
+      "start": "0xc08dec",
+      "end": "0xc08e78",
+      "sha256": "d8fe45b771720d12d0226ffe3cbc82b8b8ac4cc018ff05791c39038d6673c12d"
+    },
+    {
+      "name": "cxTrackBar.TcxCustomTrackBarProperties.FixPosition",
+      "start": "0xc08038",
+      "end": "0xc08088",
+      "sha256": "80400fab79cd91ed3b3b43a63da4203ee0fd6e1c2181d94437d6cb4d02649772"
+    },
+    {
+      "name": "cxTrackBar.TcxCustomTrackBarProperties.CanCompareEditValue",
+      "start": "0xc0784c",
+      "end": "0xc07860",
+      "sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    {
+      "name": "cxTrackBar.TcxCustomTrackBarProperties.HasDisplayValue",
+      "start": "0xc07ad4",
+      "end": "0xc07ae8",
+      "sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    {
+      "name": "cxEdit.TcxCustomEdit.SetInternalEditValue",
+      "start": "0x964940",
+      "end": "0x964988",
+      "sha256": "1be96b7401f55d8756e948f583ba16cc432e78c6cec7520261f612393da2ded3"
+    },
+    {
+      "name": "cxEdit.TcxCustomEdit.InternalSetEditValue",
+      "start": "0x963d70",
+      "end": "0x963e34",
+      "sha256": "e9faf2e59a8a70cee10cce7f34471e87b3bc88ed45ba7f99306b90b64617205a"
+    },
+    {
+      "name": "cxEdit.TcxCustomEdit.DoChange",
+      "start": "0x9627c4",
+      "end": "0x9628b8",
+      "sha256": "93cdb4ad55a4a882254267b03a7a494dea4746c7032b62b18a12dfd811cf487f"
+    },
+    {
+      "name": "cxEdit.TcxCustomEdit.DoOnChange",
+      "start": "0x96312c",
+      "end": "0x96318c",
+      "sha256": "7a505079de1ca0dbc2a37caa3cd695ad39182531883aba4ee0afb6c3bf47df1c"
+    },
+    {
+      "name": "cxEdit.TcxCustomEdit.IsOnChangeEventAssigned",
+      "start": "0x964058",
+      "end": "0x964090",
+      "sha256": "05d82f5983404ba57f5057127070f3de1c1553f5cdeb2270e15116677fe31f1c"
+    },
+    {
+      "name": "cxEdit.TcxCustomEditProperties.Changed",
+      "start": "0x9581fc",
+      "end": "0x958224",
+      "sha256": "0278bc008835efaae78e574a5fb3008d84ae7e328bb4ab80c3d9482b53726d40"
+    },
+    {
+      "name": "cxEdit.TcxCustomEditProperties.DoChanged",
+      "start": "0x958a10",
+      "end": "0x958a64",
+      "sha256": "fdd1f83fba73282d3738c0e4fabf5153985f5978aaa279467c1c4cf24f9b9869"
+    },
+    {
+      "name": "Controls.TControl.GetEnabled",
+      "start": "0x6f5148",
+      "end": "0x6f5150",
+      "sha256": "d2aaab8fa808b6c5fe8c9730089d940658e44809294fb8985fd5d87bdd8f361e"
+    }
+  ],
+  "forms": [
+    {
+      "name": "TFRMCBUSDIMMER",
+      "sha256": "a86ed924ab115eaddf3f6ee4a515ea2938736e6666e28cb55f4c037735729ee6",
+      "byte_length": 14109,
+      "controls": [
+        {
+          "name": "lblStaggerMax",
+          "class_name": "TLabel",
+          "path": "/frmCBusDimmer/pnlAdvanced/pcMain/tsTurnOn/pnlHeader/lblStaggerMax",
+          "properties": {
+            "Caption": "Stagger Max Level by"
+          }
+        },
+        {
+          "name": "lblStaggerMin",
+          "class_name": "TLabel",
+          "path": "/frmCBusDimmer/pnlAdvanced/pcMain/tsTurnOn/pnlHeader/lblStaggerMin",
+          "properties": {
+            "Caption": "Stagger Min Level by"
+          }
+        },
+        {
+          "name": "chkSyncTurnOn",
+          "class_name": "TCheckBox",
+          "path": "/frmCBusDimmer/pnlAdvanced/pcMain/tsTurnOn/pnlHeader/chkSyncTurnOn",
+          "properties": {
+            "Caption": "Synchronise Sliders"
+          }
+        },
+        {
+          "name": "BtnStaggerMax",
+          "class_name": "TButton",
+          "path": "/frmCBusDimmer/pnlAdvanced/pcMain/tsTurnOn/pnlHeader/BtnStaggerMax",
+          "properties": {
+            "Caption": "Stagger",
+            "OnClick": "BtnStaggerMaxClick"
+          }
+        },
+        {
+          "name": "cbxStaggerMax",
+          "class_name": "TComboBox",
+          "path": "/frmCBusDimmer/pnlAdvanced/pcMain/tsTurnOn/pnlHeader/cbxStaggerMax",
+          "properties": {}
+        },
+        {
+          "name": "cbxStaggerMin",
+          "class_name": "TComboBox",
+          "path": "/frmCBusDimmer/pnlAdvanced/pcMain/tsTurnOn/pnlHeader/cbxStaggerMin",
+          "properties": {}
+        },
+        {
+          "name": "BtnStaggerMin",
+          "class_name": "TButton",
+          "path": "/frmCBusDimmer/pnlAdvanced/pcMain/tsTurnOn/pnlHeader/BtnStaggerMin",
+          "properties": {
+            "Caption": "Stagger",
+            "OnClick": "BtnStaggerMinClick"
+          }
+        },
+        {
+          "name": "pnlStagger",
+          "class_name": "TPanel",
+          "path": "/frmCBusDimmer/pnlAdvanced/pcMain/tsRecovery/pnlStagger",
+          "properties": {}
+        },
+        {
+          "name": "lblStaggerDelayBy",
+          "class_name": "TLabel",
+          "path": "/frmCBusDimmer/pnlAdvanced/pcMain/tsRecovery/pnlStagger/lblStaggerDelayBy",
+          "properties": {
+            "Caption": "Stagger Delay by"
+          }
+        },
+        {
+          "name": "chkSyncRecovery",
+          "class_name": "TCheckBox",
+          "path": "/frmCBusDimmer/pnlAdvanced/pcMain/tsRecovery/pnlStagger/chkSyncRecovery",
+          "properties": {
+            "Caption": "Synchronise Sliders"
+          }
+        },
+        {
+          "name": "cbxRecoveryStaggerDelay",
+          "class_name": "TComboBox",
+          "path": "/frmCBusDimmer/pnlAdvanced/pcMain/tsRecovery/pnlStagger/cbxRecoveryStaggerDelay",
+          "properties": {}
+        },
+        {
+          "name": "btnStaggerRecoveryDelay",
+          "class_name": "TButton",
+          "path": "/frmCBusDimmer/pnlAdvanced/pcMain/tsRecovery/pnlStagger/btnStaggerRecoveryDelay",
+          "properties": {
+            "Caption": "Stagger",
+            "OnClick": "btnStaggerRecoveryDelayClick"
+          }
+        }
+      ]
+    },
+    {
+      "name": "TFRMCBUSDIMMERRECOVERY",
+      "sha256": "f0b08a046be47dff569d8cea77362094903030c7e9dd98b1108d93f07365e8a6",
+      "byte_length": 4624,
+      "controls": [
+        {
+          "name": "trkRecoveryDelay",
+          "class_name": "TFlashCxVertTrackBar",
+          "path": "/frmCBusDimmerRecovery/Panel1/pnlBottom/pnlDelay/trkRecoveryDelay",
+          "properties": {
+            "Position": 100,
+            "Properties.Max": 255,
+            "Properties.Min": 5,
+            "Properties.OnChange": "trkRecoveryDelayPropertiesChange",
+            "FlashController.Expression": "PowerUpDelay",
+            "FlashController.RootLink": "ChannelsLink",
+            "FlashController.UpdateMode": "umChange",
+            "UseRawValues": true
+          }
+        }
+      ]
+    },
+    {
+      "name": "TFRMCBUSDIMMERTURNON",
+      "sha256": "18cb77d215272b7e66001cecb38b497e6289e245897905d51636afbe8eaff1e4",
+      "byte_length": 3797,
+      "controls": [
+        {
+          "name": "trkMin",
+          "class_name": "TFlashCxVertTrackBar",
+          "path": "/frmCBusDimmerTurnOn/Panel1/Panel3/pnlMin/trkMin",
+          "properties": {
+            "Properties.Max": 100,
+            "Properties.OnChange": "trkMinPropertiesChange",
+            "FlashController.Expression": "MinDimmingLevel",
+            "FlashController.RootLink": "ChannelsLink",
+            "FlashController.UpdateMode": "umChange",
+            "UseRawValues": false
+          }
+        },
+        {
+          "name": "trkMax",
+          "class_name": "TFlashCxVertTrackBar",
+          "path": "/frmCBusDimmerTurnOn/Panel1/Panel3/pnlMax/trkMax",
+          "properties": {
+            "Properties.Max": 100,
+            "Properties.OnChange": "trkMaxPropertiesChange",
+            "FlashController.Expression": "MaxDimmingLevel",
+            "FlashController.RootLink": "ChannelsLink",
+            "FlashController.UpdateMode": "umChange",
+            "UseRawValues": false
+          }
+        }
+      ]
+    }
+  ],
+  "vmt_slots": [
+    {
+      "class_name": "CIS_TFlashCxTrackBar..TFlashCxVertTrackBar",
+      "offset": "0x5c",
+      "symbol": "Controls.TControl.GetEnabled"
+    },
+    {
+      "class_name": "CIS_TFlashCxTrackBar..TFlashCxVertTrackBar",
+      "offset": "0x2d8",
+      "symbol": "cxEdit.TcxCustomEdit.DoEditValueChanged"
+    },
+    {
+      "class_name": "CIS_TFlashCxTrackBar..TFlashCxVertTrackBar",
+      "offset": "0x2d4",
+      "symbol": "cxEdit.TcxCustomEdit.DoChange"
+    },
+    {
+      "class_name": "CIS_TFlashCxTrackBar..TFlashCxVertTrackBar",
+      "offset": "0x2f0",
+      "symbol": "cxEdit.TcxCustomEdit.DoOnChange"
+    },
+    {
+      "class_name": "CIS_TFlashCxTrackBar..TFlashCxVertTrackBar",
+      "offset": "0x340",
+      "symbol": "cxEdit.TcxCustomEdit.InternalSetEditValue"
+    },
+    {
+      "class_name": "CIS_TFlashCxTrackBar..TFlashCxVertTrackBar",
+      "offset": "0x3a0",
+      "symbol": "cxEdit.TcxCustomEdit.SetInternalEditValue"
+    },
+    {
+      "class_name": "CIS_TFlashCxTrackBar..TFlashCxVertTrackBar",
+      "offset": "0x3a8",
+      "symbol": "cxTrackBar.TcxCustomTrackBar.SynchronizeDisplayValue"
+    },
+    {
+      "class_name": "CIS_TFlashCxTrackBar..TFlashCxTrackBarProperties",
+      "offset": "0x2c",
+      "symbol": "CIS_TFlashCxTrackBar.TFlashCxTrackBarProperties.DoChanged"
+    },
+    {
+      "class_name": "CIS_TFlashCxTrackBar..TFlashCxTrackBarProperties",
+      "offset": "0x54",
+      "symbol": "cxTrackBar.TcxCustomTrackBarProperties.HasDisplayValue"
+    },
+    {
+      "class_name": "CIS_TFlashCxTrackBar..TFlashCxTrackBarProperties",
+      "offset": "0x60",
+      "symbol": "cxTrackBar.TcxCustomTrackBarProperties.CanCompareEditValue"
+    },
+    {
+      "class_name": "CIS_TFlashCxTrackBar..TFlashCxTrackBarProperties",
+      "offset": "0xb0",
+      "symbol": "cxTrackBar.TcxCustomTrackBarProperties.FixPosition"
+    },
+    {
+      "class_name": "CIS_TfrmCBusDimmer..TfrmCBusDimmer",
+      "offset": "0x5c",
+      "symbol": "Controls.TControl.GetEnabled"
+    }
+  ],
+  "literals": [
+    {
+      "address": "0xef48bc",
+      "value": "5 s"
+    },
+    {
+      "address": "0xef48d0",
+      "value": "10 s"
+    },
+    {
+      "address": "0xef48e8",
+      "value": "20 s"
+    },
+    {
+      "address": "0xef4900",
+      "value": "30 s"
+    },
+    {
+      "address": "0xef4bbc",
+      "value": "Stagger Level by"
+    },
+    {
+      "address": "0xef76e4",
+      "value": " s"
+    }
+  ],
+  "delay_stagger": {
+    "va": "0xef76ec",
+    "extended_hex": "911ea89cddc2afc6fb3f",
+    "exact_fraction": "14316875997505920657/147573952589676412928",
+    "float_approx": 0.09701492537313433,
+    "choices_seconds": [
+      5,
+      10,
+      20,
+      30
+    ],
+    "rule": "For d=(i+1)*step: d if d<60, otherwise60+ceil((d-60)*exact extended constant). This is not the inverse of display ten-second scale."
+  },
+  "semantics": {
+    "initialization": "Snapshot-derived slider positions with sync checkboxes false; no implicit binding writes or complete GUI lifecycle. Delay position clamps to5 but delay histories refuse stored active delay<5.",
+    "same_position": "SetPosition0xc08dec calls FixPosition then compares current position before editing; no-op preserves noncanonical raw bytes and suppresses parent callback.",
+    "loaded_percent": "GetVertPosition and ControllerValueChange derive percent=(raw+2)*100 div255; writes use PercentToLevel=p*255 div100.",
+    "initial_sync": "DFM checkboxes omit Checked/State (default false) and OnClick. Changing them alone writes no parameter.",
+    "percentage_choices": "PopulateStaggerCombo creates integer strings1..100 div channel_count; copies list to max and recovery combos.",
+    "control_bounds": "Turn-on min/max0..100. Recovery delay5..255. FixPosition clamps before equality check.",
+    "stagger": "Every Stagger sets its tab sync=false first; list order0..N-1; helper setters guard parent notification, retain local coupling.",
+    "minimum_stagger": "k*(i+1); dimmer-only visible; no last-channel100 correction.",
+    "maximum_stagger": "Dimmer100-k*(N-i-1); relayk*(i+1). At final combo choice force last100. Relay SetMax routes to trkMin; actual MaxDimmingLevel is hidden/unbound.",
+    "coupling_order": "TurnOn Properties.Changed writes first; then local min/max coupling; then parent. Parent sync loops every channel with helper guard. Source maximum can fan out before source minimum if minimum reaches maximum.",
+    "endpoint_order": "min100/max90 ->99/100 via nested coupling; min100/max100 ->100/100 via no-op. max0/min10 ->1/0; max0/min0 ->0/0. Guarded targets may differ from source.",
+    "recovery_delay_order": "Delay handler parent notification precedes Properties.Changed; targets in ascending order, then source commit. SetDelayValue suppresses parent; GetCanChangeDelay always true. Level store does not gate delay.",
+    "relay_recovery_sync": "Checkbox remains visible/enabled for admitted relays withN>1; switching it alone is admitted but recovery-level/store actions are not.",
+    "serialization": "Ordered operations, initial/final positions/sync, every control receipt, settings bytes and optional exactly-one save normalization are replayed before PP access."
+  },
+  "boundaries": [
+    "Recovery-level Synchronise/Stagger and shared-group/store/logic callbacks are excluded.",
+    "Group object creation, implicit initial binding and complete original form dispatch are excluded.",
+    "Other profiles/firmware, native original acceptance and physical timing remain open."
+  ]
+}

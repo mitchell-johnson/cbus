@@ -1661,6 +1661,11 @@ read-only repository descriptor,
 1.1 label graph over database bridge-Unit routes while
 `cgl_controller_side_effects: false` and `cgl_pci_traffic: false` record that
 an import neither programs a controller nor sends PCI traffic,
+`cgl_application_export_order: "tracked-creation-with-unknown-legacy-prefix"`
+and `cgl_group_level_export_order: "address-order-native-order-unverified"`
+distinguish recorded Application chronology from the remaining Group/Level
+disposition. Legacy snapshots and foreign XML/SQLite archives have unknown
+prior chronology; internal cmqttd snapshots retain the durable order field,
 `applications_catalog: "configured-unitspec-directory-applications.xml"`
 denotes the operator-supplied XML source,
 `network_calculator: "configured-cbusunits-database-records"` and
@@ -1781,10 +1786,16 @@ traffic.
 
 `CGL IMPORT` and `CGL EXPORT` implement a bounded CGL 1.1 JSON label graph for
 known database routes. Import preserves existing application/group/level
-names, creates missing labels atomically, persists them in `cmqttd-json`, and
+names, creates missing labels in captured input order, persists them in `cmqttd-json`, and
 uses the retained incomplete 380 result for skipped networks. Export supports
 network/application filters and keeps a selected network shell even when no
-application matches. Do not infer automation-controller programming or
+application matches. Applications retain tracked creation order, even when
+a selected filter is numeric. Successful prefixes before a native-shaped 408
+remain applied; callers must not replay an uncertain import. New typed CLI
+imports validate the entire document before transmission. Missing legacy order
+uses an explicit unknown numeric prefix followed by later recorded creations.
+Group/Level chronology remains unverified. See
+`toolkit-cli/docs/cgl-application-order.md`. Do not infer automation-controller programming or
 round-trip preservation of unknown vendor metadata.
 
 All five `TRANSFORM` leaves are local operations inside the controlled FILE
@@ -1880,6 +1891,95 @@ packet, publishes no MQTT state, persists nothing, and requires LOGIN when the
 optional command gate is armed. See
 `rust/testdata/fixtures/native_cgate_broadcast_event.json` and
 `rust/testdata/fixtures/native_cgate_event_fanout.json`.
+
+### Application SAFE copy and identity edits (owned profile)
+
+For an admitted complete numeric or unique-OID Application, typed
+`cbus-toolkit cgate database copy SOURCE NETWORK ADDRESS NAME --project PROJECT`
+reads source XML and sends one `DBCOPYSAFE`. Copy stages the complete admitted
+Group/NetVar/Level subtree, preserves scalar fields and admitted TagsDLT content,
+assigns fresh OIDs throughout, and appends once to the destination Network's
+recorded order. Both projects must be loaded for a cross-project copy. An
+occupied or orphan-bearing destination, ambiguous/incomplete source, associated
+raw Level values or unclassified metadata refuses before commit; unsupported
+children are never silently dropped. Scalar references outside the subtree
+remain literal. This does not establish arbitrary XML or native archive parity.
+
+`database set APPLICATION/Address DECIMAL --project PROJECT` sends one
+`DBSETSAFE` and stages an identity-preserving move within that selected project's
+Network. It refuses a destination Address already assigned to an incomplete
+sibling Application, even before that sibling has a TagName/path. It preserves
+descendant OIDs, recorded order, existing opaque/missing Level values, unrelated
+Unit PP and physical observations. A retained Address lexeme such as `070` uses
+canonical Application path `70` for SAFE Application and Group scalar delegation;
+derive actual indexed positions from fresh data. Copied NULL Levels retain their
+absent Value and fresh OID, with the matching typed-owner null getter. A deferred
+empty TagsDLT child materializes on LOAD after SAVE only for the relevant pending
+copy; compare explicit whole-graph phases rather than pruning empty labels. TagName refuses blank
+or duplicate sibling names. Existing Unit/shared-OID resolution and raw DBSET
+routes remain under their original owners. SAFE names retain existing single-space
+word joining. Target 3.4.0.2001 HELP* indices 58/70 document business rules; they
+do not prove native Address mutation replies or case/no-op/whitespace behavior.
+Neither typed command saves a project or retries uncertain writes. Read back,
+then explicitly save the changed project. See
+[`application-database-safe.md`](../../../../toolkit-cli/docs/application-database-safe.md)
+for selectors, refusal scopes, persistence and the still-open native boundaries.
+
+An incomplete raw Application can reserve a sibling TagName before it has an
+Address/path. SAFE Application rename and copy refuse that same-project,
+same-Network name before mutation/allocation, including the exact retained
+Network-OID parent representation. Unrelated Network/project reservations do
+not block the target, and the current target's exact path remains excluded.
+Raw constructor and Network-OID retained-state evidence are distinct. Exact
+native name/no-op/case/whitespace/error behavior remains unproved.
+
+At the original Application feature checkpoint, the Application scalar owner
+did not supply ordinary numeric Level Value support.
+[Issue 131](https://github.com/mitchell-johnson/cbus/issues/131) recorded an ordinary
+unassociated typed Network where numeric `DBSETSAFE .../Value` acknowledged
+`200` without changing authoritative Level XML. The byte-edit workaround at that
+checkpoint was a fresh unique issued Level OID, followed by both the `342`
+scalar and full XML readback. That OID-only guidance is historical; the
+now-adopted numeric byte owner below defines current admission.
+The public creation result has `lines`, `final` and `status` with `301 OID=UUID`,
+not a top-level `oid` field. Raw Values require the existing admitted associated
+owner and matching typed/pending identity; a generic numeric alias or opaque
+field row is not that proof. The explicit public Languages association fixture
+and its Value-only whole-graph/342 checks must be qualified to actual execution.
+That checkpoint's source 59 and separate installed mock 28/daemon 31 selections
+passed with no failures or skips; native issues 124/125 stay open. Its configured
+full interop roster and then-open ordinary numeric Level Value gap were separate
+scopes. Never relabel the issue 131 false-success captures as fixture errors.
+
+The separate full source offline repeat passed with 1,714 provisioning skips.
+The pre-matrix full source interop gate passed all 1,050 required IDs (519 mock,
+531 daemon) plus seven whole core modules, with exactly two optional UnitSpec
+skips. Later matrix/serial/metadata composition requires its separate checks.
+These source results do not establish native or hardware acceptance. Issue 131
+was unadopted and had no public/installed acceptance at that Application feature
+checkpoint; its later consistency proof is separate.
+
+For the now-adopted ordinary numeric byte Value fix, read
+`toolkit-cli/docs/ordinary-level-value.md`. Its adopted branch separately passed
+exact source 12 and fresh installed mock 6/daemon 6 cases with the current
+runner. The separate resilience checkpoint at
+`toolkit-cli/docs/acceptance/2026-10-05-ordinary-level-resilience/report.md` passed
+source five and fresh installed mock two/daemon three cases for public NetVar
+child-Level edits, lost successful Value/save receipts and disk-backed restart.
+Issue 131 remains open pending merge/required CI at that checkpoint. Earlier
+isolated 13 library/source 12/installed mock 6/daemon 6 and four Rust gates remain
+distinct epochs. These focused proofs do not execute the full configured 1,067
+explicit identities plus seven whole modules. Canonical numeric DBGET/DBSETSAFE Value validates
+one complete selected-project typed owner and coherent parent/pending/mirrors
+before staging the existing issued-OID byte initializer. Numeric/OID/whole-XML
+readbacks must agree. A conflicting global OID cache is tolerated only if a
+present coherent loaded unassociated owner with that OID explains its exact
+byte; this is not historical-writer provenance. Stale/competing ownership
+refuses without repair. Unsafe DBSET, Unit/shared-OID and associated raw owners
+retain their existing dispatch. Owned byte/raw/NULL policy is source-backed;
+new native execution is not its closure precondition. Exact native equivalence
+remains separate. Never relabel the retained numeric false-success capture as a
+fixture error.
 
 ### PP administration and PROGRAMMER queues
 
@@ -2272,9 +2372,17 @@ Its startup and atomic commit paths stream through independent byte limits.
 whole-repository rollback snapshots. Inspect `repository_max_bytes`,
 `repository_storage` and `repository_snapshot_free_reads`; this is a bounded
 cmqttd profile, not a native capacity claim. Sixteen simultaneous large backups
-have complete restart/readback/MQTT evidence on owned fixtures. Mutation clones,
-post-rename directory-sync uncertainty and original capacity comparison remain
-open. Read `docs/cgate-repository-capacity.md`; never replay an uncertain save.
+have complete restart/readback/MQTT evidence on owned fixtures. Mutation clones
+and original capacity comparison remain open. A post-rename directory-sync
+failure now retains the replaced durable model and returns the exact local
+`500 Database commit applied; durability unconfirmed; do not retry` reply.
+Inspect `repository_commit_uncertainty`. The Python transport closes on that
+exact reply; parent/SceneManager recovery suppresses inverse writes even on a
+still-connected supplied client. Ordinary complete 500 errors keep their
+existing behavior. Reconnect explicitly for read-only inspection; no automatic
+retry, restore, project CLOSE/LOAD or power-loss durability claim is permitted.
+All 19 save callers and eight deterministic fault tests are distinct from broad
+OS or hardware acceptance. Read `docs/cgate-repository-capacity.md`.
 
 
 - Input line: 1 MiB maximum.

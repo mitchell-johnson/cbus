@@ -56,7 +56,7 @@ def no_contact_trap():
 
 
 @contextmanager
-def owned_backend(kind, binary, work, *, state_path=None, auth_file=None):
+def owned_backend(kind, binary, work, *, state_path=None, auth_file=None, extra_args=()):
     """One direct child; no adopted process, listener, PCI or MQTT endpoint."""
     record = {"backend": kind, "process_cleanup": False}
     pci = broker_endpoint = endpoint = simulator = None
@@ -90,6 +90,7 @@ def owned_backend(kind, binary, work, *, state_path=None, auth_file=None):
         else:
             argv = [str(binary), "--bind", "127.0.0.1:0", "--native-project-archives"]
             pattern = r"cgate-mock listening on 127\.0\.0\.1:(\d+)"
+        argv.extend(map(str, extra_args))
         stdout_path, stderr_path = work / "stdout.log", work / "stderr.log"
         stdout = resources.enter_context(stdout_path.open("wb"))
         stderr = resources.enter_context(stderr_path.open("wb"))
@@ -118,8 +119,10 @@ def owned_backend(kind, binary, work, *, state_path=None, auth_file=None):
             assert endpoint is not None, logs
             lsof = shutil.which("lsof")
             assert lsof is not None, "Owned listener verification requires lsof"
+            # Sandbox mount-stat warnings are unrelated to TCP ownership.
+            # Suppress those warnings while retaining strict exit/PID/listener checks.
             listing = subprocess.run(
-                [lsof, "-nP", "-a", "-p", str(process.pid), "-iTCP", "-sTCP:LISTEN", "-Fpn"],
+                [lsof, "-w", "-nP", "-a", "-p", str(process.pid), "-iTCP", "-sTCP:LISTEN", "-Fpn"],
                 text=True, capture_output=True, timeout=5,
             )
             assert listing.returncode == 0 and not listing.stderr, listing

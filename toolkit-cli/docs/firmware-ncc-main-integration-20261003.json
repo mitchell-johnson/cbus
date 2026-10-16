@@ -1,0 +1,269 @@
+{
+  "boundaries": {
+    "backend_services_not_rerun": true,
+    "full_suite_run": false,
+    "global_parity_complete": false,
+    "input_tests_block_transports_sockets_sleep_and_child_execution": true,
+    "original_gui_executed": false,
+    "original_instructions_executed": false,
+    "physical_acceptance": false,
+    "physical_ncc_executor_added": false,
+    "post_validation_files": [
+      "docs/firmware-ncc-main-integration-20261003.json",
+      "docs/firmware-ncc-transcripts.md",
+      "docs/implementation-status.md"
+    ],
+    "publication_head_ci_is_separate": true,
+    "rust_main_validation_not_repeated": true,
+    "rust_sources_authored_in_this_lane": false,
+    "serial_peer_and_original_assembly_classes_excluded": true,
+    "vendor_server_executed": false
+  },
+  "candidate": {
+    "historical_publication_head": "99f3c6d09fc045c4483df8d0540b0e90d3a6eb38",
+    "later_ci_correction_merge": "clean",
+    "main_baseline": "86dd5c8763d83832f41fe3522d48703378632ca3",
+    "main_runtime_merge": "clean; generated compatibility receipts selected from maintained main",
+    "snapshots": [
+      {
+        "bytes": 565820,
+        "identity": "inputs-before.json",
+        "sha256": "aca2cbc0f6def0bd252d2b3f2519145b564af390c4bf3034a6a01e14909a7ea2"
+      },
+      {
+        "bytes": 565820,
+        "identity": "inputs-terminal.json",
+        "sha256": "aca2cbc0f6def0bd252d2b3f2519145b564af390c4bf3034a6a01e14909a7ea2"
+      }
+    ],
+    "tested_head": "4de01da2cee2de51de734bfbdf135575b583c66b",
+    "tracked_input_count": 4018,
+    "tracked_input_scope": "all tracked repository files, no release binaries required",
+    "tracked_inputs_unchanged": true
+  },
+  "date": "2026-10-03",
+  "external_execution_records": [
+    {
+      "bytes": 1474,
+      "identity": "prepare_proof.py",
+      "sha256": "33f37089de51dcdd386a715bc6aceb1209a23da7b0545e807857b894b8867efc"
+    },
+    {
+      "bytes": 4211,
+      "identity": "proof.py",
+      "sha256": "cca57e7fae14e680c9545bf9d7d146edf1113979c0e82e4f79e92a9a2063e255"
+    },
+    {
+      "bytes": 1521,
+      "identity": "run_phase.py",
+      "sha256": "a6c1c12640da6f844fa46ad78ba14f79bd985da0b8b4999e554c54f3957faf96"
+    },
+    {
+      "bytes": 1078,
+      "identity": "validate_reused.py",
+      "sha256": "6e8d80a0cd16ea6274a449faad623808f90de1bbb184f5e9a7415d4e9215406b"
+    },
+    {
+      "bytes": 952,
+      "identity": "console_probe.py",
+      "sha256": "bf9c320d580e83bbe3f4be79b367227b2c12a4c5e42d55be1e80baaafde8086a"
+    },
+    {
+      "bytes": 1037,
+      "identity": "source-command.json",
+      "sha256": "8a4fcc4748bcbc74451d9946a13cd32dfa2e2f1095e3bf96563e8170b48d493c"
+    },
+    {
+      "bytes": 1046,
+      "identity": "wheel-command.json",
+      "sha256": "8d6994d4683d366d51f104e7c14b616bed3f7e6c0b90e0e74803abc7c9209050"
+    },
+    {
+      "bytes": 1996,
+      "identity": "console-probe.json",
+      "sha256": "7298500fdd833cfdc1d4ba4279d9f37eef4a2c0a14eef54b39646f7fda8df1d6"
+    },
+    {
+      "bytes": 215216,
+      "identity": "results-summary.json",
+      "sha256": "880bd1710bda58731515e861104581867405fce88e9150d993e1b79752f230ef"
+    }
+  ],
+  "format": "cbus-ncc-main-integration-v1",
+  "historical_evidence": {
+    "original_adapter_review": "retained clear review; no new independent review claimed for this merge",
+    "original_release_receipt": {
+      "bytes": 11402,
+      "identity": "docs/firmware-ncc-release-20261003.json",
+      "sha256": "614b74e8dca31434ca181990e0dc542d09cc11a671ef5eb76e0acfebcea0a361"
+    },
+    "original_release_receipt_unchanged": true,
+    "source_and_wheel_repeat_same_cases_and_are_not_added_as_unique_coverage": true
+  },
+  "issue": 64,
+  "issue_closed": false,
+  "metadata": {
+    "all_six_exact_source_bindings_valid": true,
+    "backend_comparisons_in_this_execution": 0,
+    "backend_driver_invocations": 0,
+    "census_complete": false,
+    "checks": [
+      {
+        "bytes": 609,
+        "identity": "inventory-check.log",
+        "sha256": "e6039daac440dbd18476bfa238dae2cba97249c54df4dc45aadcc5fa71a68379"
+      },
+      {
+        "bytes": 125,
+        "identity": "register-check.log",
+        "sha256": "9c3610cbb65a696a6a40bf415dc65232b845f9cf2bb1dc9902d0f31b34f369b1"
+      },
+      {
+        "bytes": 183,
+        "identity": "census-check.log",
+        "sha256": "ba5edf5e1a5077f143474b2e86cf951612882e2f784daff15792e915181d58a0"
+      },
+      {
+        "bytes": 228938,
+        "identity": "coverage.json",
+        "sha256": "441ad86bdf4985e1217d9132ab770c704a71209845d597dad63eb32eaaa60869"
+      }
+    ],
+    "coverage_require_complete_exit": 1,
+    "inventory_register_census_checks": "passed",
+    "native_required_selected": 259,
+    "obligations": 487,
+    "retained_receipt_combined_checks": 4,
+    "retained_receipt_primary_comparisons": 64,
+    "reused_receipts": [
+      {
+        "bytes": 33149,
+        "identity": "research/fixtures/cgate-session-differential-fixed.json",
+        "sha256": "49e014200d4cb960775aa7fc003c9db599ffad5c5032631317342f9297263137"
+      },
+      {
+        "bytes": 35544,
+        "identity": "research/fixtures/cgate-session-differential-cmqttd.json",
+        "sha256": "5d4bcd37bd95b3d89852ad1e92db3287f2eb5fc4095d9460ebfe85efa80164b4"
+      },
+      {
+        "bytes": 32605,
+        "identity": "research/fixtures/cgate-tagged-session-differential-cgate-mock.json",
+        "sha256": "e28f8d29bce4fecb3be649df50e14708a4a547eac69fb95a3358038f15098469"
+      },
+      {
+        "bytes": 34730,
+        "identity": "research/fixtures/cgate-tagged-session-differential-cmqttd.json",
+        "sha256": "e0c934f1e56b557b146ffbf9072b21274a92dd9dcdc97cdd67430379087fd448"
+      },
+      {
+        "bytes": 61424,
+        "identity": "research/fixtures/cgate-dbsetxml-unit-differential-mock.json",
+        "sha256": "11bb62e5fcd4e06af690bf2f1bb305da637b10b6b289c8d879a4083e2e91420a"
+      },
+      {
+        "bytes": 63329,
+        "identity": "research/fixtures/cgate-dbsetxml-unit-differential-cmqttd.json",
+        "sha256": "33eb308799b3244666d176dc42d88d007993c192bc5998aad8fee3a0a732428d"
+      }
+    ],
+    "six_main_receipts_reused_byte_exact": true,
+    "test_modules": 731
+  },
+  "package": {
+    "extras": {
+      "capstone": "5.0.7",
+      "cryptography": "50.0.2",
+      "pefile": "2024.8.26",
+      "pyserial": "3.5",
+      "pytest": "9.1.1",
+      "pyusb": "1.3.1",
+      "pyzipper": "0.3.6",
+      "unicorn": "2.1.4"
+    },
+    "installed_import_no_source_leak": true,
+    "package_files": 381,
+    "proof": {
+      "bytes": 38426,
+      "identity": "package-proof.json",
+      "sha256": "22809efc342aa1632132a41018076a61da0f98620a5cc1d736b75e743685a89b"
+    },
+    "python": "3.13.14",
+    "source_zip_installed_equal": true,
+    "wheel": {
+      "bytes": 2928515,
+      "identity": "cbus_toolkit_cli-0.1.0-py3-none-any.whl",
+      "sha256": "70571fd51e4e38f0b182f04e827ee419e2b96f576ddd3fc892c94e17b786c956"
+    }
+  },
+  "phases": {
+    "source": {
+      "audit": {
+        "bytes": 99417,
+        "identity": "source-results.json",
+        "sha256": "9779686b4973d92bc5653980ba64f84735964a5cc20f9d9f531ce6243c4a2304"
+      },
+      "counts": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 230,
+        "skipped": 0,
+        "tests": 230
+      },
+      "junit": {
+        "bytes": 46740,
+        "identity": "source.xml",
+        "sha256": "e8b949e52de8c95d276ea0d3391da214d540bca09e73b80459584493310cd1e5"
+      },
+      "parent_passed": 132,
+      "parent_skipped": 0,
+      "public_adapter_parent_passed": 14,
+      "separate_subtests_passed": 98,
+      "skipped_ids": [],
+      "trace": {
+        "bytes": 71247,
+        "identity": "source-trace.json",
+        "sha256": "728e5373953fd5647f43b309d8330e6b48e320a31a4281491c6cf5c1ebf4b898"
+      }
+    },
+    "wheel": {
+      "audit": {
+        "bytes": 99417,
+        "identity": "wheel-results.json",
+        "sha256": "566f6382525d64a958ab03ac1dc5f9cc91636db0341d727f6af4cc262fb7ed30"
+      },
+      "counts": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 230,
+        "skipped": 0,
+        "tests": 230
+      },
+      "junit": {
+        "bytes": 46740,
+        "identity": "wheel.xml",
+        "sha256": "a1beb2ce0cb66dacf6daa6eaf19035b28cf9049dcb6a655321b2191e42b27bb7"
+      },
+      "parent_passed": 132,
+      "parent_skipped": 0,
+      "public_adapter_parent_passed": 14,
+      "separate_subtests_passed": 98,
+      "skipped_ids": [],
+      "trace": {
+        "bytes": 71247,
+        "identity": "wheel-trace.json",
+        "sha256": "728e5373953fd5647f43b309d8330e6b48e320a31a4281491c6cf5c1ebf4b898"
+      }
+    }
+  },
+  "pr": 84,
+  "selection": [
+    "tests/test_cli_firmware_ncc.py",
+    "tests/test_firmware_ncc.py",
+    "tests/test_firmware_diagnostics.py::FirmwareDiagnosticsTest",
+    "tests/test_cgate_tagged_session_differential.py",
+    "tests/test_cgate_dbsetxml_unit_differential.py",
+    "tests/test_cgate_session_differential.py",
+    "tests/test_sanitize_evidence_receipts.py"
+  ]
+}

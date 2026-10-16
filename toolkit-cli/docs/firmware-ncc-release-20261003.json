@@ -1,0 +1,307 @@
+{
+  "counts_overlap": "Source and installed-wheel selections repeat the same 54 parent tests and 98 separate subtests; do not add them as unique coverage.",
+  "date": "2026-10-03",
+  "earlier_debug_run": {
+    "correction": "Socket guard retains subclassability while refusing construction.",
+    "evidence_location": "Retained task tool transcript; no separate failure artifact was created.",
+    "failure_kind": "Test fixture: socket guard used a function and broke stdlib SSLSocket subclass definition.",
+    "failures": 1,
+    "overlaps_final_selection": true,
+    "parents": 40,
+    "product_failure": false,
+    "scope": "New CLI and retained NCC model unittest selection before release preparation.",
+    "skips": 0,
+    "subsequent_focused_unittest": {
+      "failures": 0,
+      "parents": 40,
+      "skips": 0
+    }
+  },
+  "excluded_classes": [
+    "FirmwareSerialPeerTest",
+    "FirmwareOriginalAssemblyTest"
+  ],
+  "executed_tree": {
+    "freeze": {
+      "identity": "freeze.json",
+      "retained_outside_git": true,
+      "sha256": "a483a769416fd2b3d94239168571c0926c7781ee8f4c9af93b448c9cefb69f58"
+    },
+    "frozen_delta": {
+      "identity": "executed-tree.diff",
+      "retained_outside_git": true,
+      "sha256": "3935a293091d020990456538923733bffe2df36251675e882279b9a2011894c4"
+    },
+    "git_base_revision": "70b392815c59f99aeb63a0ccdc38b1949adcf1c9",
+    "inputs_before": {
+      "identity": "inputs-before.json",
+      "retained_outside_git": true,
+      "sha256": "279467dca985c9a9b8401a8e15845b8d8bd429f29038db3660395b41499e8f7d"
+    },
+    "inputs_terminal": {
+      "identity": "inputs-terminal.json",
+      "retained_outside_git": true,
+      "sha256": "279467dca985c9a9b8401a8e15845b8d8bd429f29038db3660395b41499e8f7d"
+    },
+    "revision_alone_identifies_execution_tree": false,
+    "snapshot_inputs_unchanged": true,
+    "source_input_count": 1853,
+    "source_inputs_unchanged": true,
+    "uncommitted_tracked_delta_sha256": "3935a293091d020990456538923733bffe2df36251675e882279b9a2011894c4"
+  },
+  "external_execution_records": [
+    {
+      "identity": "prepare.py",
+      "retained_outside_git": true,
+      "sha256": "c4cd0c5275e024be6d474093257cd92f5e573fa87c55dce10262b1d33247654d"
+    },
+    {
+      "identity": "validate.py",
+      "retained_outside_git": true,
+      "sha256": "e95100e69424eeff6e498367dde981ed26055bd5ed55764d9d18327d31bafb80"
+    },
+    {
+      "identity": "metadata_probe.py",
+      "retained_outside_git": true,
+      "sha256": "317338c0eb3620dd40ba86ca4dc49b50d5cd9e63f9cb73937ebe4b668532270f"
+    },
+    {
+      "identity": "validation-commands.json",
+      "retained_outside_git": true,
+      "sha256": "c7c6ede579fab5fa395f159baab150e32a40670ced7f41afeb5cbe542f955d43"
+    },
+    {
+      "identity": "terminal.json",
+      "retained_outside_git": true,
+      "sha256": "a2a92b1a5ad4f56051e19b58162f9f9baadab400c24a84553703bd9567e8befa"
+    }
+  ],
+  "format": "cbus-ncc-transcript-cli-release-v1",
+  "issue": 64,
+  "issue_closed": false,
+  "limits": {
+    "complete_toolkit_parity": false,
+    "firmware_authenticity_or_bootability_verified": false,
+    "fresh_original_instructions_executed": false,
+    "full_suite_run": false,
+    "native_server_run": false,
+    "physical_acceptance": false,
+    "physical_ncc_executor_added": false,
+    "publication_head_ci_claimed": false
+  },
+  "metadata": {
+    "binary_sha256": {
+      "cgate-mock": "99cf92f3ffd8a382690572c71dd10ce17135bf7a113b9a518bf3fd3eb47770ab",
+      "cmqttd": "c3be7edec491ef3240e73117cfa173377787ca477cb1dca2f34506aa0d230ff1"
+    },
+    "binary_unchanged": true,
+    "combined_checks_passed": 4,
+    "driver_invocations": 4,
+    "final_checks": [
+      {
+        "identity": "logs/final-inventory-check.stdout",
+        "retained_outside_git": true,
+        "sha256": "e6039daac440dbd18476bfa238dae2cba97249c54df4dc45aadcc5fa71a68379"
+      },
+      {
+        "identity": "logs/final-register-check.stdout",
+        "retained_outside_git": true,
+        "sha256": "9c3610cbb65a696a6a40bf415dc65232b845f9cf2bb1dc9902d0f31b34f369b1"
+      },
+      {
+        "identity": "logs/final-skip-census-check.stdout",
+        "retained_outside_git": true,
+        "sha256": "67bffd0e34a26aa6453dc7cd8c466054c1e532f20f8d7a5dda1a1428094107e6"
+      }
+    ],
+    "hardware_accessed": false,
+    "inventory_check": "passed",
+    "original_runtime_executed": false,
+    "owned_receipts": 6,
+    "pre_fix_fixture_sha256": "31ee281f082c648595daff84a7453710f64fa39b5993c1496a29be9eaf9bace4",
+    "pre_fix_fixture_unchanged": true,
+    "preparation_evidence": {
+      "identity": "preparation.json",
+      "retained_outside_git": true,
+      "sha256": "9e64906c1fb9aa16fbf66e44cd8eded5f98f517755bb7ec3d2a311d1698944b8"
+    },
+    "primary_comparisons_passed": 64,
+    "provision": "Owned ephemeral loopback Rust services and synthetic PCI/broker peers; retained native comparison fixtures only.",
+    "receipts": [
+      {
+        "combined_checks": 0,
+        "path": "research/fixtures/cgate-session-differential-fixed.json",
+        "primary_cases": 9,
+        "raw_retained_privately": true,
+        "raw_sha256": "3653876f8a9d3e2f63edd0bcfc2a96840ddc5ce820a5cb7f240cc9ec77fb22ae",
+        "result": "passed",
+        "sanitized_with_maintained_producer": true,
+        "sha256": "a840c5f4d2f69f25779c4853b5d3a687a8ac26de8d0f9d7de7296415a0409c7b"
+      },
+      {
+        "combined_checks": 0,
+        "path": "research/fixtures/cgate-session-differential-cmqttd.json",
+        "primary_cases": 9,
+        "raw_retained_privately": true,
+        "raw_sha256": "d99844e1e91a85792c9bf0f6e3d6a3194f5c34264bda1fd9c9a66bdd3c660edf",
+        "result": "passed",
+        "sanitized_with_maintained_producer": true,
+        "sha256": "8ffc7a7c8b8b93d9ad7de0b2b921dba73b08df0c137b1ffddfd032703d48635e"
+      },
+      {
+        "combined_checks": 0,
+        "path": "research/fixtures/cgate-tagged-session-differential-cgate-mock.json",
+        "primary_cases": 11,
+        "raw_retained_privately": true,
+        "raw_sha256": "4bcb376a0eef3ab522b32a8351b5119fa931b6a704052fc51b06a2b9a85300db",
+        "result": "passed",
+        "sanitized_with_maintained_producer": true,
+        "sha256": "2903e7a983e1cfc09cc8cb894714b19150d1dceb78152d1cf4248a36e7eb1759"
+      },
+      {
+        "combined_checks": 0,
+        "path": "research/fixtures/cgate-tagged-session-differential-cmqttd.json",
+        "primary_cases": 11,
+        "raw_retained_privately": true,
+        "raw_sha256": "7bd2dfb77b454d20d81b3edf3c61e379666ca5a7db907c4c54fae4de348f80b4",
+        "result": "passed",
+        "sanitized_with_maintained_producer": true,
+        "sha256": "9e6743e3a212f2610d9108d7df5a15996bdad7c1316b000dabe9124557d97ae6"
+      },
+      {
+        "combined_checks": 2,
+        "path": "research/fixtures/cgate-dbsetxml-unit-differential-mock.json",
+        "primary_cases": 12,
+        "raw_retained_privately": true,
+        "raw_sha256": "e296886f6589647724ea18fbb1bb555dd4e7cc3a4c449d978611e19f1d9520a1",
+        "result": "passed",
+        "sanitized_with_maintained_producer": true,
+        "sha256": "55d49ffc1f32786a68b1a95f26095f229eb50804674f34340709d9e362d138c2"
+      },
+      {
+        "combined_checks": 2,
+        "path": "research/fixtures/cgate-dbsetxml-unit-differential-cmqttd.json",
+        "primary_cases": 12,
+        "raw_retained_privately": true,
+        "raw_sha256": "448fef0147b74047ba151616fcb4257a086e39f628748ef2dedb8f15f5bffc13",
+        "result": "passed",
+        "sanitized_with_maintained_producer": true,
+        "sha256": "b413bdcf88ab604c08e62c7275e6030292ea7256eb15de2fa8b54ab8953b1001"
+      }
+    ],
+    "register_check": "passed",
+    "skip_census_check": "passed"
+  },
+  "package": {
+    "dependency_versions": {
+      "capstone": "5.0.7",
+      "cryptography": "50.0.2",
+      "pefile": "2024.8.26",
+      "pyserial": "3.5",
+      "pytest": "9.1.1",
+      "pyusb": "1.3.1",
+      "pyzipper": "0.3.6",
+      "unicorn": "2.1.4"
+    },
+    "editable_install": false,
+    "installed_console_help_passed_without_pythonpath": true,
+    "installed_extras": [
+      "test",
+      "research",
+      "serial",
+      "usb"
+    ],
+    "package_files": 378,
+    "package_manifest": {
+      "identity": "package-manifest.json",
+      "retained_outside_git": true,
+      "sha256": "be3ad529fd17414b0171ee7e23b27ce112f44f3d8ba56c13121c2ce8cdd09e9c"
+    },
+    "packaged_parity_evidence": {
+      "identity": "logs/packaged-parity-probe.stdout",
+      "retained_outside_git": true,
+      "sha256": "3501b2daf78fd327ebb840bcec4b199dab790c37e843e98d2bc973e0f636a77c"
+    },
+    "packaged_parity_read_assert": "passed",
+    "python": "3.13.14",
+    "snapshot_manifest": {
+      "identity": "snapshot/snapshot.json",
+      "retained_outside_git": true,
+      "sha256": "54123e445c6c3204c67655a09919afb40e71b21ade4074c9c1ee9dc7be95e084"
+    },
+    "snapshot_source_import_leak": false,
+    "source_import_leak": false,
+    "source_wheel_installed_equal": true,
+    "wheel_sha256": "6217940dc252b6255d602713d38c8f754eb2c7385feba6dbbdf08594ed2f87d2"
+  },
+  "results": {
+    "source": {
+      "deselected": 0,
+      "errors": 0,
+      "evidence": [
+        {
+          "identity": "source-results.json",
+          "retained_outside_git": true,
+          "sha256": "15d46134bd8ba440a91e41a6bf8c23942d744737257bfdef3faa3f4e412191c8"
+        },
+        {
+          "identity": "source-trace.json",
+          "retained_outside_git": true,
+          "sha256": "322fcad333a05c78614cb0ec2f63ed87d6f34a4abde7775e78b8a4905a465d62"
+        },
+        {
+          "identity": "source.xml",
+          "retained_outside_git": true,
+          "sha256": "5b60b8b2d91f57a2eb3d5d065636d0d9c6389a812c0fb3678cb63296279f85ec"
+        },
+        {
+          "identity": "logs/source-tests.stdout",
+          "retained_outside_git": true,
+          "sha256": "d71669b067aa34947f0e5e66d3acd8563d147e617a51ec4f65a02e37359a24f8"
+        }
+      ],
+      "failures": 0,
+      "passed_parents": 54,
+      "passed_separate_subtests": 98,
+      "selection_fully_started": true,
+      "skips": 0
+    },
+    "wheel": {
+      "deselected": 0,
+      "errors": 0,
+      "evidence": [
+        {
+          "identity": "wheel-results.json",
+          "retained_outside_git": true,
+          "sha256": "3b48e1962d7c5425b5c0a64831560c2b6542c84de68aa90bb0669875c6bbf950"
+        },
+        {
+          "identity": "wheel-trace.json",
+          "retained_outside_git": true,
+          "sha256": "322fcad333a05c78614cb0ec2f63ed87d6f34a4abde7775e78b8a4905a465d62"
+        },
+        {
+          "identity": "wheel.xml",
+          "retained_outside_git": true,
+          "sha256": "a10fc5df79b87b7cd60ef1b2d41cbcd33fb12c6abebe62567f99c1fe66646bc3"
+        },
+        {
+          "identity": "logs/wheel-tests.stdout",
+          "retained_outside_git": true,
+          "sha256": "031ea72f5c85d3404123bca270658633f892b451f40242e527b9fd52b101872e"
+        }
+      ],
+      "failures": 0,
+      "passed_parents": 54,
+      "passed_separate_subtests": 98,
+      "selection_fully_started": true,
+      "skips": 0
+    }
+  },
+  "scope": "Public offline NCC transcript CLI adapter over the unchanged retained pure model; focused source and installed-wheel validation.",
+  "selection": [
+    "tests/test_cli_firmware_ncc.py",
+    "tests/test_firmware_ncc.py",
+    "tests/test_firmware_diagnostics.py::FirmwareDiagnosticsTest"
+  ]
+}
