@@ -98,23 +98,25 @@ def journey(backend, variable, tmp_path, source="DIMDN8", target="DIMDU4", *, au
     work = associated_work(tmp_path, "backend")
     specs = tmp_path / "synthetic-specs"
     profile = profile_files(specs, source, target)
-    # exec retains the direct child's PID and listener ownership. The launcher
-    # only adds this test's public synthetic unitspec directory to the backend.
-    launcher = work / "owned-unitspec-backend"
+    # Launch the selected Rust binary directly; retain this public synthetic
+    # specification profile and the actual argv in the v2 journal.
     flag = "--unitspec" if backend == "cgate-mock" else "--cgate-unitspec"
-    launcher.write_text("#!" + sys.executable + "\nimport os,sys\nos.execv(" + repr(str(binary))
-                        + ", [" + repr(str(binary)) + ", *sys.argv[1:], " + repr(flag) + ", "
-                        + repr(str(specs)) + "])\n", encoding="utf-8")
-    launcher.chmod(0o700)
-    evidence = {"format": "cbus-toolkit-tweaker-owned-v1", "backend": backend,
+    evidence = {"format": "cbus-toolkit-tweaker-owned-v2", "backend": backend,
                 "original_execution": False, "physical_acceptance": False,
-                "binary_sha256": digest(binary.read_bytes()), "launcher_sha256": digest(launcher.read_bytes()),
+                "binary_sha256": digest(binary.read_bytes()),
+                "direct_launch_profile": {"kind": "selected-owned-rust",
+                    "binary": {"resolved": str(binary), "sha256": digest(binary.read_bytes()),
+                               "bytes": binary.stat().st_size},
+                    "extra_args": [flag, str(specs)],
+                    "specifications": {p.name: digest(p.read_bytes()) for p in specs.iterdir()},
+                    "argv": None},
                 "specifications": {p.name: digest(p.read_bytes()) for p in specs.iterdir()},
                 "calls": [], "processes": [], "wires": []}
     relay = None
     try:
         with no_contact_trap() as trap:
-            with owned_backend(backend, launcher, work, auth_file=auth_file) as (endpoint, process):
+            with owned_backend(backend, binary, work, auth_file=auth_file, extra_args=(flag, specs)) as (endpoint, process):
+                evidence["direct_launch_profile"]["argv"] = list(process["argv"])
                 evidence["processes"].append(process)
                 with CGateClient(*endpoint, timeout=15) as owner, RecordedGate(endpoint) as relay:
                     if auth_file is not None:
@@ -221,8 +223,10 @@ def test_public_toolkit_tweaker_preview_apply_family(backend, variable, source, 
         final, call = cli(relay, evidence, specs, profile, source, target, extra=apply_flags(preview))
         assert final["phase"] == "complete" and final["created"] and final["applied"] and final["accepted"]
         assert final["planned_assignments_complete"] and not final["outcome_uncertain"]
-        assert final["xml_comparison"] == {"whitespace_only_text_around_element_children_compared": False,
-                                           "xml_space_preserve_override_enforced": False}
+        assert final["xml_comparison"] == {"formatting_only_container_indentation_compared": False,
+                                           "xml_space_preserve_override_enforced": True,
+                                           "mixed_content_text_whitespace_compared": True,
+                                           "whitespace_only_leaf_values_compared": True}
         assert final["plan_sha256"] == preview["plan_sha256"] == plan_digest(final["plan"])
         assert final["verified_expected_parameters"] == final["plan"]["expected_parameters"]
         assert [{k: v for k, v in row.items() if k != "confirmed"} for row in final["assignments"]] == final["plan"]["assignments"]

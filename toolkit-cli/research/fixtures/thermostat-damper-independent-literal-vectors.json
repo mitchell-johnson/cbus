@@ -1,0 +1,7528 @@
+{
+  "cases": [
+    {
+      "events": [
+        {
+          "op": "damper-form-show"
+        }
+      ],
+      "expected": {
+        "after_show_installed": true,
+        "alert_codes": [],
+        "caches": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {},
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 30,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "shown": true,
+        "warnings": [
+          true,
+          true,
+          true,
+          true
+        ]
+      },
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "PC_TSA-show",
+      "kind": "PC_TSA",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-form-show"
+        }
+      ],
+      "expected": {
+        "after_show_installed": true,
+        "alert_codes": [],
+        "caches": [
+          70,
+          71,
+          72,
+          73
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {},
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 30,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          70,
+          71,
+          72,
+          73
+        ],
+        "shown": true,
+        "warnings": [
+          true,
+          true,
+          true,
+          true
+        ]
+      },
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "PC_TSA-relay-warnings-master-independent",
+      "kind": "PC_TSA",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 0,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 70,
+        "DamperZone2Output": 71,
+        "DamperZone3Output": 72,
+        "DamperZone4Output": 73,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-form-show"
+        }
+      ],
+      "expected": {
+        "after_show_installed": true,
+        "alert_codes": [],
+        "caches": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {},
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 30,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "shown": true,
+        "warnings": [
+          true,
+          true,
+          true,
+          true
+        ]
+      },
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "PC_TSA5-show",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-form-show"
+        }
+      ],
+      "expected": {
+        "after_show_installed": true,
+        "alert_codes": [],
+        "caches": [
+          70,
+          71,
+          72,
+          73
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {},
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 30,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          70,
+          71,
+          72,
+          73
+        ],
+        "shown": true,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "PC_TSA5-relay-warnings-master-independent",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 0,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 70,
+        "DamperZone2Output": 71,
+        "DamperZone3Output": 72,
+        "DamperZone4Output": 73,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-form-show"
+        }
+      ],
+      "expected": {
+        "after_show_installed": true,
+        "alert_codes": [],
+        "caches": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {},
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 30,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          255,
+          255,
+          255,
+          255
+        ],
+        "shown": true,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "PC_TSB-show",
+      "kind": "PC_TSB",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-form-show"
+        }
+      ],
+      "expected": {
+        "after_show_installed": true,
+        "alert_codes": [],
+        "caches": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {},
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 30,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          255,
+          255,
+          255,
+          255
+        ],
+        "shown": true,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "PC_TSB-relay-warnings-master-independent",
+      "kind": "PC_TSB",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 0,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 70,
+        "DamperZone2Output": 71,
+        "DamperZone3Output": 72,
+        "DamperZone4Output": 73,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-form-show"
+        }
+      ],
+      "expected": {
+        "after_show_installed": true,
+        "alert_codes": [],
+        "caches": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {},
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 30,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          255,
+          255,
+          255,
+          255
+        ],
+        "shown": true,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "PC_TSB5-show",
+      "kind": "PC_TSB5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-form-show"
+        }
+      ],
+      "expected": {
+        "after_show_installed": true,
+        "alert_codes": [],
+        "caches": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {},
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 30,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          255,
+          255,
+          255,
+          255
+        ],
+        "shown": true,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "PC_TSB5-relay-warnings-master-independent",
+      "kind": "PC_TSB5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 0,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 70,
+        "DamperZone2Output": 71,
+        "DamperZone3Output": 72,
+        "DamperZone4Output": 73,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-installed-zones",
+          "value": 0
+        }
+      ],
+      "expected": {
+        "after_show_installed": false,
+        "alert_codes": [],
+        "caches": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {
+          "ControlledZones": 0,
+          "InstalledZones": 0
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 0,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "shown": false,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "binding-mask-only-no-inferred-update",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-installed-zones",
+          "value": 0
+        },
+        {
+          "op": "damper-zone-update"
+        }
+      ],
+      "expected": {
+        "after_show_installed": false,
+        "alert_codes": [],
+        "caches": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {
+          "ControlledZones": 0,
+          "InstalledZones": 0
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 0,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          255,
+          255,
+          255,
+          255
+        ],
+        "shown": false,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "inactive-caches-before-unused",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-form-show"
+        },
+        {
+          "op": "damper-installed-zones",
+          "value": 0
+        },
+        {
+          "op": "damper-zone-update"
+        },
+        {
+          "op": "damper-installed-zones",
+          "value": 18
+        },
+        {
+          "op": "damper-zone-update"
+        },
+        {
+          "op": "damper-installed-zones",
+          "value": 30
+        },
+        {
+          "op": "damper-zone-update"
+        },
+        {
+          "op": "damper-form-show"
+        }
+      ],
+      "expected": {
+        "after_show_installed": true,
+        "alert_codes": [],
+        "caches": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {
+          "ControlledZones": 30,
+          "InstalledZones": 30
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 30,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "shown": true,
+        "warnings": [
+          true,
+          true,
+          true,
+          true
+        ]
+      },
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "expansion-shrink-reexpand",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-installed-zones",
+          "value": 1
+        },
+        {
+          "op": "damper-zone-update"
+        }
+      ],
+      "expected": {
+        "after_show_installed": false,
+        "alert_codes": [],
+        "caches": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {
+          "ControlledZones": 1,
+          "InstalledZones": 1
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 1,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          255,
+          255,
+          255,
+          255
+        ],
+        "shown": false,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "bit-zero-not-a-damper",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-installed-zones",
+          "value": 2
+        },
+        {
+          "op": "damper-zone-update"
+        }
+      ],
+      "expected": {
+        "after_show_installed": false,
+        "alert_codes": [],
+        "caches": [
+          null,
+          41,
+          42,
+          43
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {
+          "ControlledZones": 2,
+          "InstalledZones": 2
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 2,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          40,
+          255,
+          255,
+          255
+        ],
+        "shown": false,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "only-zone-1",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-installed-zones",
+          "value": 4
+        },
+        {
+          "op": "damper-zone-update"
+        }
+      ],
+      "expected": {
+        "after_show_installed": false,
+        "alert_codes": [],
+        "caches": [
+          40,
+          null,
+          42,
+          43
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {
+          "ControlledZones": 4,
+          "InstalledZones": 4
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 4,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          255,
+          41,
+          255,
+          255
+        ],
+        "shown": false,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "only-zone-2",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-installed-zones",
+          "value": 8
+        },
+        {
+          "op": "damper-zone-update"
+        }
+      ],
+      "expected": {
+        "after_show_installed": false,
+        "alert_codes": [],
+        "caches": [
+          40,
+          41,
+          null,
+          43
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {
+          "ControlledZones": 8,
+          "InstalledZones": 8
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 8,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          255,
+          255,
+          42,
+          255
+        ],
+        "shown": false,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "only-zone-3",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-installed-zones",
+          "value": 16
+        },
+        {
+          "op": "damper-zone-update"
+        }
+      ],
+      "expected": {
+        "after_show_installed": false,
+        "alert_codes": [],
+        "caches": [
+          40,
+          41,
+          42,
+          null
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {
+          "ControlledZones": 16,
+          "InstalledZones": 16
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 16,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          255,
+          255,
+          255,
+          43
+        ],
+        "shown": false,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "only-zone-4",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-installed-zones",
+          "value": 2
+        },
+        {
+          "op": "damper-zone-update"
+        }
+      ],
+      "expected": {
+        "after_show_installed": false,
+        "alert_codes": [],
+        "caches": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "checked": false,
+        "creations": [
+          {
+            "address": 2,
+            "name": "[CG07] Damper Zone 1"
+          }
+        ],
+        "expected": {
+          "ControlledZones": 2,
+          "InstalledZones": 2
+        },
+        "graph_operations": [
+          {
+            "action": "create",
+            "address": 2,
+            "name": "Group 2"
+          },
+          {
+            "action": "rename",
+            "address": 2,
+            "name": "[CG07] Damper Zone 1",
+            "previous_name": "Group 2"
+          }
+        ],
+        "help_bound": false,
+        "installed_zones": 2,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          2,
+          255,
+          255,
+          255
+        ],
+        "shown": false,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "first-free-not-old-source-byte",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 255,
+        "DamperZone2Output": 255,
+        "DamperZone3Output": 255,
+        "DamperZone4Output": 255,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-installed-zones",
+          "value": 30
+        },
+        {
+          "op": "damper-zone-update"
+        }
+      ],
+      "expected": {
+        "after_show_installed": false,
+        "alert_codes": [],
+        "caches": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "checked": false,
+        "creations": [
+          {
+            "address": 2,
+            "name": "[CG07] Damper Zone 1"
+          },
+          {
+            "address": 3,
+            "name": "[CG07] Damper Zone 2"
+          },
+          {
+            "address": 4,
+            "name": "[CG07] Damper Zone 3"
+          },
+          {
+            "address": 5,
+            "name": "[CG07] Damper Zone 4"
+          }
+        ],
+        "expected": {
+          "ControlledZones": 30,
+          "InstalledZones": 30
+        },
+        "graph_operations": [
+          {
+            "action": "create",
+            "address": 2,
+            "name": "Group 2"
+          },
+          {
+            "action": "rename",
+            "address": 2,
+            "name": "[CG07] Damper Zone 1",
+            "previous_name": "Group 2"
+          },
+          {
+            "action": "create",
+            "address": 3,
+            "name": "Group 3"
+          },
+          {
+            "action": "rename",
+            "address": 3,
+            "name": "[CG07] Damper Zone 2",
+            "previous_name": "Group 3"
+          },
+          {
+            "action": "create",
+            "address": 4,
+            "name": "Group 4"
+          },
+          {
+            "action": "rename",
+            "address": 4,
+            "name": "[CG07] Damper Zone 3",
+            "previous_name": "Group 4"
+          },
+          {
+            "action": "create",
+            "address": 5,
+            "name": "Group 5"
+          },
+          {
+            "action": "rename",
+            "address": 5,
+            "name": "[CG07] Damper Zone 4",
+            "previous_name": "Group 5"
+          }
+        ],
+        "help_bound": false,
+        "installed_zones": 30,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          2,
+          3,
+          4,
+          5
+        ],
+        "shown": false,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "four-first-free-source-order",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 255,
+        "DamperZone2Output": 255,
+        "DamperZone3Output": 255,
+        "DamperZone4Output": 255,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-installed-zones",
+          "value": 2
+        },
+        {
+          "op": "damper-zone-update"
+        }
+      ],
+      "expected": {
+        "after_show_installed": false,
+        "alert_codes": [],
+        "caches": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {
+          "ControlledZones": 2,
+          "InstalledZones": 2
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 2,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          80,
+          255,
+          255,
+          255
+        ],
+        "shown": false,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five",
+        "80": "[cg07] dAMPER zONE 1"
+      },
+      "id": "same-generated-tag-existing-reuse",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 255,
+        "DamperZone2Output": 255,
+        "DamperZone3Output": 255,
+        "DamperZone4Output": 255,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-installed-zones",
+          "value": 2
+        },
+        {
+          "op": "damper-zone-update"
+        }
+      ],
+      "expected": {
+        "after_show_installed": false,
+        "alert_codes": [],
+        "caches": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {
+          "ControlledZones": 2,
+          "InstalledZones": 2
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 2,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          255,
+          255,
+          255,
+          255
+        ],
+        "shown": false,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "[CG07] Damper Zone 1",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "generated-tag-at-unused-no-create",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 255,
+        "DamperZone2Output": 255,
+        "DamperZone3Output": 255,
+        "DamperZone4Output": 255,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-installed-zones",
+          "value": 2
+        },
+        {
+          "op": "damper-zone-update"
+        }
+      ],
+      "expected": {
+        "after_show_installed": false,
+        "alert_codes": [],
+        "caches": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {
+          "ControlledZones": 0,
+          "InstalledZones": 2
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 2,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          null,
+          255,
+          255,
+          255
+        ],
+        "shown": false,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "slave-missing-remains-nil",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 0,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 255,
+        "DamperZone2Output": 255,
+        "DamperZone3Output": 255,
+        "DamperZone4Output": 255,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-installed-zones",
+          "value": 2
+        },
+        {
+          "op": "damper-zone-update"
+        }
+      ],
+      "expected": {
+        "after_show_installed": false,
+        "alert_codes": [],
+        "caches": [
+          null,
+          41,
+          42,
+          43
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {
+          "ControlledZones": 0,
+          "InstalledZones": 2
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 2,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          40,
+          255,
+          255,
+          255
+        ],
+        "shown": false,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "slave-existing-stays-model-bound",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 0,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-form-show"
+        },
+        {
+          "op": "damper-installed-zones",
+          "value": 0
+        },
+        {
+          "op": "damper-zone-update"
+        },
+        {
+          "op": "damper-form-show"
+        }
+      ],
+      "expected": {
+        "after_show_installed": true,
+        "alert_codes": [],
+        "caches": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {
+          "ControlledZones": 0,
+          "InstalledZones": 0
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 0,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          255,
+          255,
+          255,
+          255
+        ],
+        "shown": true,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "reopen-does-not-clear-cache",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-form-show"
+        },
+        {
+          "op": "damper-after-show"
+        }
+      ],
+      "expected": {
+        "after_show_installed": true,
+        "alert_codes": [],
+        "caches": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {},
+        "graph_operations": [],
+        "help_bound": true,
+        "installed_zones": 30,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "shown": true,
+        "warnings": [
+          true,
+          true,
+          true,
+          true
+        ]
+      },
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "after-show-help-only",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-form-show"
+        },
+        {
+          "checked": true,
+          "op": "damper-modulation-click"
+        }
+      ],
+      "expected": {
+        "after_show_installed": true,
+        "alert_codes": [
+          7323
+        ],
+        "caches": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "checked": true,
+        "creations": [],
+        "expected": {},
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 30,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "shown": true,
+        "warnings": [
+          true,
+          true,
+          true,
+          true
+        ]
+      },
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "click-true-alert-without-model-write",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-form-show"
+        },
+        {
+          "checked": false,
+          "op": "damper-modulation-click"
+        }
+      ],
+      "expected": {
+        "after_show_installed": true,
+        "alert_codes": [],
+        "caches": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {},
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 30,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "shown": true,
+        "warnings": [
+          true,
+          true,
+          true,
+          true
+        ]
+      },
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "click-false-no-alert",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-form-show"
+        }
+      ],
+      "expected": {
+        "after_show_installed": true,
+        "alert_codes": [],
+        "caches": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "checked": true,
+        "creations": [],
+        "expected": {},
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 30,
+        "model_modulation": true,
+        "names": {},
+        "references": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "shown": true,
+        "warnings": [
+          true,
+          true,
+          true,
+          true
+        ]
+      },
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "setup-checked-does-not-click",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 3,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-form-show"
+        },
+        {
+          "checked": true,
+          "op": "damper-modulation-binding"
+        }
+      ],
+      "expected": {
+        "after_show_installed": true,
+        "alert_codes": [],
+        "caches": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "checked": true,
+        "creations": [],
+        "expected": {
+          "DamperModulationEnable": 0
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 30,
+        "model_modulation": true,
+        "names": {},
+        "references": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "shown": true,
+        "warnings": [
+          true,
+          true,
+          true,
+          true
+        ]
+      },
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "binding-save-factor-0",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 0,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-form-show"
+        },
+        {
+          "checked": true,
+          "op": "damper-modulation-binding"
+        }
+      ],
+      "expected": {
+        "after_show_installed": true,
+        "alert_codes": [],
+        "caches": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "checked": true,
+        "creations": [],
+        "expected": {
+          "DamperModulationEnable": 1
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 30,
+        "model_modulation": true,
+        "names": {},
+        "references": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "shown": true,
+        "warnings": [
+          true,
+          true,
+          true,
+          true
+        ]
+      },
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "binding-save-factor-1",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 1,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-form-show"
+        },
+        {
+          "checked": true,
+          "op": "damper-modulation-binding"
+        }
+      ],
+      "expected": {
+        "after_show_installed": true,
+        "alert_codes": [],
+        "caches": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "checked": true,
+        "creations": [],
+        "expected": {
+          "DamperModulationEnable": 2
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 30,
+        "model_modulation": true,
+        "names": {},
+        "references": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "shown": true,
+        "warnings": [
+          true,
+          true,
+          true,
+          true
+        ]
+      },
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "binding-save-factor-2",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 2,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-form-show"
+        },
+        {
+          "checked": true,
+          "op": "damper-modulation-binding"
+        }
+      ],
+      "expected": {
+        "after_show_installed": true,
+        "alert_codes": [],
+        "caches": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "checked": true,
+        "creations": [],
+        "expected": {
+          "DamperModulationEnable": 1
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 30,
+        "model_modulation": true,
+        "names": {},
+        "references": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "shown": true,
+        "warnings": [
+          true,
+          true,
+          true,
+          true
+        ]
+      },
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "binding-save-factor-3",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-form-show"
+        },
+        {
+          "checked": true,
+          "op": "damper-modulation-binding"
+        }
+      ],
+      "expected": {
+        "after_show_installed": true,
+        "alert_codes": [],
+        "caches": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "checked": true,
+        "creations": [],
+        "expected": {
+          "DamperModulationEnable": 3
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 30,
+        "model_modulation": true,
+        "names": {},
+        "references": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "shown": true,
+        "warnings": [
+          true,
+          true,
+          true,
+          true
+        ]
+      },
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "binding-save-factor-6",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 6,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-form-show"
+        },
+        {
+          "checked": true,
+          "op": "damper-modulation-binding"
+        }
+      ],
+      "expected": {
+        "after_show_installed": true,
+        "alert_codes": [],
+        "caches": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "checked": true,
+        "creations": [],
+        "expected": {
+          "DamperModulationEnable": 3
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 30,
+        "model_modulation": true,
+        "names": {},
+        "references": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "shown": true,
+        "warnings": [
+          true,
+          true,
+          true,
+          true
+        ]
+      },
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "binding-save-factor-10",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 10,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-form-show"
+        },
+        {
+          "checked": true,
+          "op": "damper-modulation-binding"
+        }
+      ],
+      "expected": {
+        "after_show_installed": true,
+        "alert_codes": [],
+        "caches": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "checked": true,
+        "creations": [],
+        "expected": {
+          "DamperModulationEnable": 1
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 30,
+        "model_modulation": true,
+        "names": {},
+        "references": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "shown": true,
+        "warnings": [
+          true,
+          true,
+          true,
+          true
+        ]
+      },
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "binding-save-factor-11",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 11,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-form-show"
+        },
+        {
+          "checked": true,
+          "op": "damper-modulation-binding"
+        },
+        {
+          "checked": false,
+          "op": "damper-modulation-click"
+        }
+      ],
+      "expected": {
+        "after_show_installed": true,
+        "alert_codes": [],
+        "caches": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {
+          "DamperModulationEnable": 1
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 30,
+        "model_modulation": true,
+        "names": {},
+        "references": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "shown": true,
+        "warnings": [
+          true,
+          true,
+          true,
+          true
+        ]
+      },
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "binding-and-click-separate",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-installed-zones",
+          "value": 0
+        }
+      ],
+      "expected": {
+        "after_show_installed": false,
+        "alert_codes": [],
+        "caches": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {
+          "ControlledZones": 0,
+          "InstalledZones": 0
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 0,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "shown": false,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "expected_boolean_writes": [
+        {
+          "changed": false,
+          "intermediate_mask": 30,
+          "notification_intent": false,
+          "value": false,
+          "zone": 0
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 28,
+          "notification_intent": true,
+          "value": false,
+          "zone": 1
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 24,
+          "notification_intent": true,
+          "value": false,
+          "zone": 2
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 16,
+          "notification_intent": true,
+          "value": false,
+          "zone": 3
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 0,
+          "notification_intent": true,
+          "value": false,
+          "zone": 4
+        }
+      ],
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "ordered-set-zones-0",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-installed-zones",
+          "value": 1
+        }
+      ],
+      "expected": {
+        "after_show_installed": false,
+        "alert_codes": [],
+        "caches": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {
+          "ControlledZones": 1,
+          "InstalledZones": 1
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 1,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "shown": false,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "expected_boolean_writes": [
+        {
+          "changed": true,
+          "intermediate_mask": 31,
+          "notification_intent": true,
+          "value": true,
+          "zone": 0
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 29,
+          "notification_intent": true,
+          "value": false,
+          "zone": 1
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 25,
+          "notification_intent": true,
+          "value": false,
+          "zone": 2
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 17,
+          "notification_intent": true,
+          "value": false,
+          "zone": 3
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 1,
+          "notification_intent": true,
+          "value": false,
+          "zone": 4
+        }
+      ],
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "ordered-set-zones-1",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-installed-zones",
+          "value": 2
+        }
+      ],
+      "expected": {
+        "after_show_installed": false,
+        "alert_codes": [],
+        "caches": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {
+          "ControlledZones": 2,
+          "InstalledZones": 2
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 2,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "shown": false,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "expected_boolean_writes": [
+        {
+          "changed": false,
+          "intermediate_mask": 30,
+          "notification_intent": false,
+          "value": false,
+          "zone": 0
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 30,
+          "notification_intent": false,
+          "value": true,
+          "zone": 1
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 26,
+          "notification_intent": true,
+          "value": false,
+          "zone": 2
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 18,
+          "notification_intent": true,
+          "value": false,
+          "zone": 3
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 2,
+          "notification_intent": true,
+          "value": false,
+          "zone": 4
+        }
+      ],
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "ordered-set-zones-2",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-installed-zones",
+          "value": 3
+        }
+      ],
+      "expected": {
+        "after_show_installed": false,
+        "alert_codes": [],
+        "caches": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {
+          "ControlledZones": 3,
+          "InstalledZones": 3
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 3,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "shown": false,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "expected_boolean_writes": [
+        {
+          "changed": true,
+          "intermediate_mask": 31,
+          "notification_intent": true,
+          "value": true,
+          "zone": 0
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 31,
+          "notification_intent": false,
+          "value": true,
+          "zone": 1
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 27,
+          "notification_intent": true,
+          "value": false,
+          "zone": 2
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 19,
+          "notification_intent": true,
+          "value": false,
+          "zone": 3
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 3,
+          "notification_intent": true,
+          "value": false,
+          "zone": 4
+        }
+      ],
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "ordered-set-zones-3",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-installed-zones",
+          "value": 4
+        }
+      ],
+      "expected": {
+        "after_show_installed": false,
+        "alert_codes": [],
+        "caches": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {
+          "ControlledZones": 4,
+          "InstalledZones": 4
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 4,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "shown": false,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "expected_boolean_writes": [
+        {
+          "changed": false,
+          "intermediate_mask": 30,
+          "notification_intent": false,
+          "value": false,
+          "zone": 0
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 28,
+          "notification_intent": true,
+          "value": false,
+          "zone": 1
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 28,
+          "notification_intent": false,
+          "value": true,
+          "zone": 2
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 20,
+          "notification_intent": true,
+          "value": false,
+          "zone": 3
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 4,
+          "notification_intent": true,
+          "value": false,
+          "zone": 4
+        }
+      ],
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "ordered-set-zones-4",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-installed-zones",
+          "value": 5
+        }
+      ],
+      "expected": {
+        "after_show_installed": false,
+        "alert_codes": [],
+        "caches": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {
+          "ControlledZones": 5,
+          "InstalledZones": 5
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 5,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "shown": false,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "expected_boolean_writes": [
+        {
+          "changed": true,
+          "intermediate_mask": 31,
+          "notification_intent": true,
+          "value": true,
+          "zone": 0
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 29,
+          "notification_intent": true,
+          "value": false,
+          "zone": 1
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 29,
+          "notification_intent": false,
+          "value": true,
+          "zone": 2
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 21,
+          "notification_intent": true,
+          "value": false,
+          "zone": 3
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 5,
+          "notification_intent": true,
+          "value": false,
+          "zone": 4
+        }
+      ],
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "ordered-set-zones-5",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-installed-zones",
+          "value": 6
+        }
+      ],
+      "expected": {
+        "after_show_installed": false,
+        "alert_codes": [],
+        "caches": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {
+          "ControlledZones": 6,
+          "InstalledZones": 6
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 6,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "shown": false,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "expected_boolean_writes": [
+        {
+          "changed": false,
+          "intermediate_mask": 30,
+          "notification_intent": false,
+          "value": false,
+          "zone": 0
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 30,
+          "notification_intent": false,
+          "value": true,
+          "zone": 1
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 30,
+          "notification_intent": false,
+          "value": true,
+          "zone": 2
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 22,
+          "notification_intent": true,
+          "value": false,
+          "zone": 3
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 6,
+          "notification_intent": true,
+          "value": false,
+          "zone": 4
+        }
+      ],
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "ordered-set-zones-6",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-installed-zones",
+          "value": 7
+        }
+      ],
+      "expected": {
+        "after_show_installed": false,
+        "alert_codes": [],
+        "caches": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {
+          "ControlledZones": 7,
+          "InstalledZones": 7
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 7,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "shown": false,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "expected_boolean_writes": [
+        {
+          "changed": true,
+          "intermediate_mask": 31,
+          "notification_intent": true,
+          "value": true,
+          "zone": 0
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 31,
+          "notification_intent": false,
+          "value": true,
+          "zone": 1
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 31,
+          "notification_intent": false,
+          "value": true,
+          "zone": 2
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 23,
+          "notification_intent": true,
+          "value": false,
+          "zone": 3
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 7,
+          "notification_intent": true,
+          "value": false,
+          "zone": 4
+        }
+      ],
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "ordered-set-zones-7",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-installed-zones",
+          "value": 8
+        }
+      ],
+      "expected": {
+        "after_show_installed": false,
+        "alert_codes": [],
+        "caches": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {
+          "ControlledZones": 8,
+          "InstalledZones": 8
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 8,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "shown": false,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "expected_boolean_writes": [
+        {
+          "changed": false,
+          "intermediate_mask": 30,
+          "notification_intent": false,
+          "value": false,
+          "zone": 0
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 28,
+          "notification_intent": true,
+          "value": false,
+          "zone": 1
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 24,
+          "notification_intent": true,
+          "value": false,
+          "zone": 2
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 24,
+          "notification_intent": false,
+          "value": true,
+          "zone": 3
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 8,
+          "notification_intent": true,
+          "value": false,
+          "zone": 4
+        }
+      ],
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "ordered-set-zones-8",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-installed-zones",
+          "value": 9
+        }
+      ],
+      "expected": {
+        "after_show_installed": false,
+        "alert_codes": [],
+        "caches": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {
+          "ControlledZones": 9,
+          "InstalledZones": 9
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 9,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "shown": false,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "expected_boolean_writes": [
+        {
+          "changed": true,
+          "intermediate_mask": 31,
+          "notification_intent": true,
+          "value": true,
+          "zone": 0
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 29,
+          "notification_intent": true,
+          "value": false,
+          "zone": 1
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 25,
+          "notification_intent": true,
+          "value": false,
+          "zone": 2
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 25,
+          "notification_intent": false,
+          "value": true,
+          "zone": 3
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 9,
+          "notification_intent": true,
+          "value": false,
+          "zone": 4
+        }
+      ],
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "ordered-set-zones-9",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-installed-zones",
+          "value": 10
+        }
+      ],
+      "expected": {
+        "after_show_installed": false,
+        "alert_codes": [],
+        "caches": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {
+          "ControlledZones": 10,
+          "InstalledZones": 10
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 10,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "shown": false,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "expected_boolean_writes": [
+        {
+          "changed": false,
+          "intermediate_mask": 30,
+          "notification_intent": false,
+          "value": false,
+          "zone": 0
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 30,
+          "notification_intent": false,
+          "value": true,
+          "zone": 1
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 26,
+          "notification_intent": true,
+          "value": false,
+          "zone": 2
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 26,
+          "notification_intent": false,
+          "value": true,
+          "zone": 3
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 10,
+          "notification_intent": true,
+          "value": false,
+          "zone": 4
+        }
+      ],
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "ordered-set-zones-10",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-installed-zones",
+          "value": 11
+        }
+      ],
+      "expected": {
+        "after_show_installed": false,
+        "alert_codes": [],
+        "caches": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {
+          "ControlledZones": 11,
+          "InstalledZones": 11
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 11,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "shown": false,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "expected_boolean_writes": [
+        {
+          "changed": true,
+          "intermediate_mask": 31,
+          "notification_intent": true,
+          "value": true,
+          "zone": 0
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 31,
+          "notification_intent": false,
+          "value": true,
+          "zone": 1
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 27,
+          "notification_intent": true,
+          "value": false,
+          "zone": 2
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 27,
+          "notification_intent": false,
+          "value": true,
+          "zone": 3
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 11,
+          "notification_intent": true,
+          "value": false,
+          "zone": 4
+        }
+      ],
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "ordered-set-zones-11",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-installed-zones",
+          "value": 12
+        }
+      ],
+      "expected": {
+        "after_show_installed": false,
+        "alert_codes": [],
+        "caches": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {
+          "ControlledZones": 12,
+          "InstalledZones": 12
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 12,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "shown": false,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "expected_boolean_writes": [
+        {
+          "changed": false,
+          "intermediate_mask": 30,
+          "notification_intent": false,
+          "value": false,
+          "zone": 0
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 28,
+          "notification_intent": true,
+          "value": false,
+          "zone": 1
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 28,
+          "notification_intent": false,
+          "value": true,
+          "zone": 2
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 28,
+          "notification_intent": false,
+          "value": true,
+          "zone": 3
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 12,
+          "notification_intent": true,
+          "value": false,
+          "zone": 4
+        }
+      ],
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "ordered-set-zones-12",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-installed-zones",
+          "value": 13
+        }
+      ],
+      "expected": {
+        "after_show_installed": false,
+        "alert_codes": [],
+        "caches": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {
+          "ControlledZones": 13,
+          "InstalledZones": 13
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 13,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "shown": false,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "expected_boolean_writes": [
+        {
+          "changed": true,
+          "intermediate_mask": 31,
+          "notification_intent": true,
+          "value": true,
+          "zone": 0
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 29,
+          "notification_intent": true,
+          "value": false,
+          "zone": 1
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 29,
+          "notification_intent": false,
+          "value": true,
+          "zone": 2
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 29,
+          "notification_intent": false,
+          "value": true,
+          "zone": 3
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 13,
+          "notification_intent": true,
+          "value": false,
+          "zone": 4
+        }
+      ],
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "ordered-set-zones-13",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-installed-zones",
+          "value": 14
+        }
+      ],
+      "expected": {
+        "after_show_installed": false,
+        "alert_codes": [],
+        "caches": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {
+          "ControlledZones": 14,
+          "InstalledZones": 14
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 14,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "shown": false,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "expected_boolean_writes": [
+        {
+          "changed": false,
+          "intermediate_mask": 30,
+          "notification_intent": false,
+          "value": false,
+          "zone": 0
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 30,
+          "notification_intent": false,
+          "value": true,
+          "zone": 1
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 30,
+          "notification_intent": false,
+          "value": true,
+          "zone": 2
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 30,
+          "notification_intent": false,
+          "value": true,
+          "zone": 3
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 14,
+          "notification_intent": true,
+          "value": false,
+          "zone": 4
+        }
+      ],
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "ordered-set-zones-14",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-installed-zones",
+          "value": 15
+        }
+      ],
+      "expected": {
+        "after_show_installed": false,
+        "alert_codes": [],
+        "caches": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {
+          "ControlledZones": 15,
+          "InstalledZones": 15
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 15,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "shown": false,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "expected_boolean_writes": [
+        {
+          "changed": true,
+          "intermediate_mask": 31,
+          "notification_intent": true,
+          "value": true,
+          "zone": 0
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 31,
+          "notification_intent": false,
+          "value": true,
+          "zone": 1
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 31,
+          "notification_intent": false,
+          "value": true,
+          "zone": 2
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 31,
+          "notification_intent": false,
+          "value": true,
+          "zone": 3
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 15,
+          "notification_intent": true,
+          "value": false,
+          "zone": 4
+        }
+      ],
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "ordered-set-zones-15",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-installed-zones",
+          "value": 16
+        }
+      ],
+      "expected": {
+        "after_show_installed": false,
+        "alert_codes": [],
+        "caches": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {
+          "ControlledZones": 16,
+          "InstalledZones": 16
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 16,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "shown": false,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "expected_boolean_writes": [
+        {
+          "changed": false,
+          "intermediate_mask": 30,
+          "notification_intent": false,
+          "value": false,
+          "zone": 0
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 28,
+          "notification_intent": true,
+          "value": false,
+          "zone": 1
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 24,
+          "notification_intent": true,
+          "value": false,
+          "zone": 2
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 16,
+          "notification_intent": true,
+          "value": false,
+          "zone": 3
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 16,
+          "notification_intent": false,
+          "value": true,
+          "zone": 4
+        }
+      ],
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "ordered-set-zones-16",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-installed-zones",
+          "value": 17
+        }
+      ],
+      "expected": {
+        "after_show_installed": false,
+        "alert_codes": [],
+        "caches": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {
+          "ControlledZones": 17,
+          "InstalledZones": 17
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 17,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "shown": false,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "expected_boolean_writes": [
+        {
+          "changed": true,
+          "intermediate_mask": 31,
+          "notification_intent": true,
+          "value": true,
+          "zone": 0
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 29,
+          "notification_intent": true,
+          "value": false,
+          "zone": 1
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 25,
+          "notification_intent": true,
+          "value": false,
+          "zone": 2
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 17,
+          "notification_intent": true,
+          "value": false,
+          "zone": 3
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 17,
+          "notification_intent": false,
+          "value": true,
+          "zone": 4
+        }
+      ],
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "ordered-set-zones-17",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-installed-zones",
+          "value": 18
+        }
+      ],
+      "expected": {
+        "after_show_installed": false,
+        "alert_codes": [],
+        "caches": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {
+          "ControlledZones": 18,
+          "InstalledZones": 18
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 18,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "shown": false,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "expected_boolean_writes": [
+        {
+          "changed": false,
+          "intermediate_mask": 30,
+          "notification_intent": false,
+          "value": false,
+          "zone": 0
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 30,
+          "notification_intent": false,
+          "value": true,
+          "zone": 1
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 26,
+          "notification_intent": true,
+          "value": false,
+          "zone": 2
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 18,
+          "notification_intent": true,
+          "value": false,
+          "zone": 3
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 18,
+          "notification_intent": false,
+          "value": true,
+          "zone": 4
+        }
+      ],
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "ordered-set-zones-18",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-installed-zones",
+          "value": 19
+        }
+      ],
+      "expected": {
+        "after_show_installed": false,
+        "alert_codes": [],
+        "caches": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {
+          "ControlledZones": 19,
+          "InstalledZones": 19
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 19,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "shown": false,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "expected_boolean_writes": [
+        {
+          "changed": true,
+          "intermediate_mask": 31,
+          "notification_intent": true,
+          "value": true,
+          "zone": 0
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 31,
+          "notification_intent": false,
+          "value": true,
+          "zone": 1
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 27,
+          "notification_intent": true,
+          "value": false,
+          "zone": 2
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 19,
+          "notification_intent": true,
+          "value": false,
+          "zone": 3
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 19,
+          "notification_intent": false,
+          "value": true,
+          "zone": 4
+        }
+      ],
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "ordered-set-zones-19",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-installed-zones",
+          "value": 20
+        }
+      ],
+      "expected": {
+        "after_show_installed": false,
+        "alert_codes": [],
+        "caches": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {
+          "ControlledZones": 20,
+          "InstalledZones": 20
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 20,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "shown": false,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "expected_boolean_writes": [
+        {
+          "changed": false,
+          "intermediate_mask": 30,
+          "notification_intent": false,
+          "value": false,
+          "zone": 0
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 28,
+          "notification_intent": true,
+          "value": false,
+          "zone": 1
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 28,
+          "notification_intent": false,
+          "value": true,
+          "zone": 2
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 20,
+          "notification_intent": true,
+          "value": false,
+          "zone": 3
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 20,
+          "notification_intent": false,
+          "value": true,
+          "zone": 4
+        }
+      ],
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "ordered-set-zones-20",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-installed-zones",
+          "value": 21
+        }
+      ],
+      "expected": {
+        "after_show_installed": false,
+        "alert_codes": [],
+        "caches": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {
+          "ControlledZones": 21,
+          "InstalledZones": 21
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 21,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "shown": false,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "expected_boolean_writes": [
+        {
+          "changed": true,
+          "intermediate_mask": 31,
+          "notification_intent": true,
+          "value": true,
+          "zone": 0
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 29,
+          "notification_intent": true,
+          "value": false,
+          "zone": 1
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 29,
+          "notification_intent": false,
+          "value": true,
+          "zone": 2
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 21,
+          "notification_intent": true,
+          "value": false,
+          "zone": 3
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 21,
+          "notification_intent": false,
+          "value": true,
+          "zone": 4
+        }
+      ],
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "ordered-set-zones-21",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-installed-zones",
+          "value": 22
+        }
+      ],
+      "expected": {
+        "after_show_installed": false,
+        "alert_codes": [],
+        "caches": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {
+          "ControlledZones": 22,
+          "InstalledZones": 22
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 22,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "shown": false,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "expected_boolean_writes": [
+        {
+          "changed": false,
+          "intermediate_mask": 30,
+          "notification_intent": false,
+          "value": false,
+          "zone": 0
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 30,
+          "notification_intent": false,
+          "value": true,
+          "zone": 1
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 30,
+          "notification_intent": false,
+          "value": true,
+          "zone": 2
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 22,
+          "notification_intent": true,
+          "value": false,
+          "zone": 3
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 22,
+          "notification_intent": false,
+          "value": true,
+          "zone": 4
+        }
+      ],
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "ordered-set-zones-22",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-installed-zones",
+          "value": 23
+        }
+      ],
+      "expected": {
+        "after_show_installed": false,
+        "alert_codes": [],
+        "caches": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {
+          "ControlledZones": 23,
+          "InstalledZones": 23
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 23,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "shown": false,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "expected_boolean_writes": [
+        {
+          "changed": true,
+          "intermediate_mask": 31,
+          "notification_intent": true,
+          "value": true,
+          "zone": 0
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 31,
+          "notification_intent": false,
+          "value": true,
+          "zone": 1
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 31,
+          "notification_intent": false,
+          "value": true,
+          "zone": 2
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 23,
+          "notification_intent": true,
+          "value": false,
+          "zone": 3
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 23,
+          "notification_intent": false,
+          "value": true,
+          "zone": 4
+        }
+      ],
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "ordered-set-zones-23",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-installed-zones",
+          "value": 24
+        }
+      ],
+      "expected": {
+        "after_show_installed": false,
+        "alert_codes": [],
+        "caches": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {
+          "ControlledZones": 24,
+          "InstalledZones": 24
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 24,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "shown": false,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "expected_boolean_writes": [
+        {
+          "changed": false,
+          "intermediate_mask": 30,
+          "notification_intent": false,
+          "value": false,
+          "zone": 0
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 28,
+          "notification_intent": true,
+          "value": false,
+          "zone": 1
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 24,
+          "notification_intent": true,
+          "value": false,
+          "zone": 2
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 24,
+          "notification_intent": false,
+          "value": true,
+          "zone": 3
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 24,
+          "notification_intent": false,
+          "value": true,
+          "zone": 4
+        }
+      ],
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "ordered-set-zones-24",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-installed-zones",
+          "value": 25
+        }
+      ],
+      "expected": {
+        "after_show_installed": false,
+        "alert_codes": [],
+        "caches": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {
+          "ControlledZones": 25,
+          "InstalledZones": 25
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 25,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "shown": false,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "expected_boolean_writes": [
+        {
+          "changed": true,
+          "intermediate_mask": 31,
+          "notification_intent": true,
+          "value": true,
+          "zone": 0
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 29,
+          "notification_intent": true,
+          "value": false,
+          "zone": 1
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 25,
+          "notification_intent": true,
+          "value": false,
+          "zone": 2
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 25,
+          "notification_intent": false,
+          "value": true,
+          "zone": 3
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 25,
+          "notification_intent": false,
+          "value": true,
+          "zone": 4
+        }
+      ],
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "ordered-set-zones-25",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-installed-zones",
+          "value": 26
+        }
+      ],
+      "expected": {
+        "after_show_installed": false,
+        "alert_codes": [],
+        "caches": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {
+          "ControlledZones": 26,
+          "InstalledZones": 26
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 26,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "shown": false,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "expected_boolean_writes": [
+        {
+          "changed": false,
+          "intermediate_mask": 30,
+          "notification_intent": false,
+          "value": false,
+          "zone": 0
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 30,
+          "notification_intent": false,
+          "value": true,
+          "zone": 1
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 26,
+          "notification_intent": true,
+          "value": false,
+          "zone": 2
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 26,
+          "notification_intent": false,
+          "value": true,
+          "zone": 3
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 26,
+          "notification_intent": false,
+          "value": true,
+          "zone": 4
+        }
+      ],
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "ordered-set-zones-26",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-installed-zones",
+          "value": 27
+        }
+      ],
+      "expected": {
+        "after_show_installed": false,
+        "alert_codes": [],
+        "caches": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {
+          "ControlledZones": 27,
+          "InstalledZones": 27
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 27,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "shown": false,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "expected_boolean_writes": [
+        {
+          "changed": true,
+          "intermediate_mask": 31,
+          "notification_intent": true,
+          "value": true,
+          "zone": 0
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 31,
+          "notification_intent": false,
+          "value": true,
+          "zone": 1
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 27,
+          "notification_intent": true,
+          "value": false,
+          "zone": 2
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 27,
+          "notification_intent": false,
+          "value": true,
+          "zone": 3
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 27,
+          "notification_intent": false,
+          "value": true,
+          "zone": 4
+        }
+      ],
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "ordered-set-zones-27",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-installed-zones",
+          "value": 28
+        }
+      ],
+      "expected": {
+        "after_show_installed": false,
+        "alert_codes": [],
+        "caches": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {
+          "ControlledZones": 28,
+          "InstalledZones": 28
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 28,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "shown": false,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "expected_boolean_writes": [
+        {
+          "changed": false,
+          "intermediate_mask": 30,
+          "notification_intent": false,
+          "value": false,
+          "zone": 0
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 28,
+          "notification_intent": true,
+          "value": false,
+          "zone": 1
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 28,
+          "notification_intent": false,
+          "value": true,
+          "zone": 2
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 28,
+          "notification_intent": false,
+          "value": true,
+          "zone": 3
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 28,
+          "notification_intent": false,
+          "value": true,
+          "zone": 4
+        }
+      ],
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "ordered-set-zones-28",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-installed-zones",
+          "value": 29
+        }
+      ],
+      "expected": {
+        "after_show_installed": false,
+        "alert_codes": [],
+        "caches": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {
+          "ControlledZones": 29,
+          "InstalledZones": 29
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 29,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "shown": false,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "expected_boolean_writes": [
+        {
+          "changed": true,
+          "intermediate_mask": 31,
+          "notification_intent": true,
+          "value": true,
+          "zone": 0
+        },
+        {
+          "changed": true,
+          "intermediate_mask": 29,
+          "notification_intent": true,
+          "value": false,
+          "zone": 1
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 29,
+          "notification_intent": false,
+          "value": true,
+          "zone": 2
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 29,
+          "notification_intent": false,
+          "value": true,
+          "zone": 3
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 29,
+          "notification_intent": false,
+          "value": true,
+          "zone": 4
+        }
+      ],
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "ordered-set-zones-29",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-installed-zones",
+          "value": 30
+        }
+      ],
+      "expected": {
+        "after_show_installed": false,
+        "alert_codes": [],
+        "caches": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {
+          "ControlledZones": 30,
+          "InstalledZones": 30
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 30,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "shown": false,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "expected_boolean_writes": [
+        {
+          "changed": false,
+          "intermediate_mask": 30,
+          "notification_intent": false,
+          "value": false,
+          "zone": 0
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 30,
+          "notification_intent": false,
+          "value": true,
+          "zone": 1
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 30,
+          "notification_intent": false,
+          "value": true,
+          "zone": 2
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 30,
+          "notification_intent": false,
+          "value": true,
+          "zone": 3
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 30,
+          "notification_intent": false,
+          "value": true,
+          "zone": 4
+        }
+      ],
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "ordered-set-zones-30",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    },
+    {
+      "events": [
+        {
+          "op": "damper-installed-zones",
+          "value": 31
+        }
+      ],
+      "expected": {
+        "after_show_installed": false,
+        "alert_codes": [],
+        "caches": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "checked": false,
+        "creations": [],
+        "expected": {
+          "ControlledZones": 31,
+          "InstalledZones": 31
+        },
+        "graph_operations": [],
+        "help_bound": false,
+        "installed_zones": 31,
+        "model_modulation": false,
+        "names": {},
+        "references": [
+          40,
+          41,
+          42,
+          43
+        ],
+        "shown": false,
+        "warnings": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      "expected_boolean_writes": [
+        {
+          "changed": true,
+          "intermediate_mask": 31,
+          "notification_intent": true,
+          "value": true,
+          "zone": 0
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 31,
+          "notification_intent": false,
+          "value": true,
+          "zone": 1
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 31,
+          "notification_intent": false,
+          "value": true,
+          "zone": 2
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 31,
+          "notification_intent": false,
+          "value": true,
+          "zone": 3
+        },
+        {
+          "changed": false,
+          "intermediate_mask": 31,
+          "notification_intent": false,
+          "value": true,
+          "zone": 4
+        }
+      ],
+      "groups": {
+        "0": "Occupied zero",
+        "1": "Occupied one",
+        "255": "<Unused>",
+        "40": "Zone one",
+        "41": "Zone two",
+        "42": "Zone three",
+        "43": "Zone four",
+        "70": "Relay one",
+        "71": "Relay two",
+        "72": "Relay three",
+        "73": "Relay four",
+        "74": "Relay five"
+      },
+      "id": "ordered-set-zones-31",
+      "kind": "PC_TSA5",
+      "scope": "admitted-explicit-history",
+      "values": {
+        "ApplicationNumber": 56,
+        "ControlledZones": 30,
+        "CoolActivationOutput": 255,
+        "CoolFanHighOutput": 255,
+        "CoolFanLowOutput": 255,
+        "CoolFanMediumOutput": 255,
+        "CoolStage1Output": 255,
+        "CoolStage2Output": 255,
+        "CoolStage3Output": 255,
+        "DamperModulationEnable": 0,
+        "DamperZone1Output": 40,
+        "DamperZone2Output": 41,
+        "DamperZone3Output": 42,
+        "DamperZone4Output": 43,
+        "HeatActivationOutput": 255,
+        "HeatFanHighOutput": 255,
+        "HeatFanLowOutput": 255,
+        "HeatFanMediumOutput": 255,
+        "HeatStage1Output": 255,
+        "HeatStage2Output": 255,
+        "HeatStage3Output": 255,
+        "InstallationCode": 1,
+        "InstalledZones": 30,
+        "InternalPlantType": 3,
+        "InternalPlantZones": 30,
+        "InternalRelay1GroupNumber": 70,
+        "InternalRelay2GroupNumber": 71,
+        "InternalRelay3GroupNumber": 72,
+        "InternalRelay4GroupNumber": 73,
+        "InternalRelay5GroupNumber": 74,
+        "ZoneGroup": 7
+      }
+    }
+  ],
+  "format": "cbus-thermostat-damper-independent-literals-v2",
+  "graph_creation_names": "Final live name after source GroupByAddress then ChangeTagName; transient operations are separately literal.",
+  "hardware_executed": false,
+  "host_dispatch_executed": false,
+  "initial_cache": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "limits": [
+    "Explicit source-owned callback histories only; not original form or native checkbox rendering.",
+    "Source-only stale-root callback examples do not authorize caller supplied controller roots.",
+    "InstalledZones and InternalPlantZones are distinct; no automatic subscriber dispatch is inferred.",
+    "Basic aliases may invoke source methods explicitly despite hidden GUI damper controls.",
+    "Cached identity/name liveness is owned by the shared resolver, never detached JSON.",
+    "Exact original manager-sort duplicate-name survivor remains outside unique-name admission."
+  ],
+  "original_executed": false,
+  "producer_output_used": false,
+  "source_only_callback_cases": [
+    {
+      "bound": "nil",
+      "cache_unchanged": true,
+      "warning_unchanged": true
+    },
+    {
+      "bound": "non-group",
+      "cache_unchanged": true,
+      "warning_unchanged": true
+    },
+    {
+      "bound": "unused255",
+      "cache_unchanged": true,
+      "warning": false
+    },
+    {
+      "bound": "foreign-same-resolver40",
+      "cached": "41",
+      "model": "41",
+      "warning": true
+    }
+  ]
+}

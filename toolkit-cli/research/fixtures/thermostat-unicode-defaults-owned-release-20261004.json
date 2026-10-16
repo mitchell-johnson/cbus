@@ -1,0 +1,373 @@
+{
+  "CI_registration": {
+    "binding": {
+      "artifact": "registration-preparation1/summary-v1.json",
+      "bytes": 2985,
+      "sha256": "7abd2537f17480952661814cf5e660ed3b6125582a0448af04c496cc003f7b21"
+    },
+    "inherited_745_identity_digest": "1c530f89c4780322fffe47f24ef9aa6943ce387d58b5829ea181c31c741928d8",
+    "previous_813_preserved": true,
+    "registration_is_not_execution": true,
+    "unique_backend_selectors": 829
+  },
+  "actual_installed_coverage": {
+    "binding": {
+      "artifact": "coverage-isolated-unicode1/summary.json",
+      "bytes": 6186,
+      "sha256": "cff247bd5ca2009aa67d1af09e7ef258447ddc89c446b7ad9c890ab56aa95abb"
+    },
+    "copied_root_diagnostic": {
+      "exit": 1,
+      "machine_output_available": false,
+      "refusal": "Missing ignored toolkit-cli/research/experiments/2026-09-25/cgate-session-native-acceptance.json; no coverage payload emitted.",
+      "trusted_root_verification_passed": false
+    },
+    "default": {
+      "census_complete": false,
+      "complete": false,
+      "denominator_ready": false,
+      "evidence_artifacts_verified": false,
+      "evidence_fingerprints_verified": false,
+      "exit": 1,
+      "feature_categories": {
+        "functionality_estimate": false,
+        "implemented": 18,
+        "implemented_percent": 42.86,
+        "in_progress": 22,
+        "pending": 2,
+        "total": 42
+      },
+      "obligations": {
+        "accepted": 0,
+        "accepted_percent": null,
+        "defined": 3,
+        "implementation_percent": null,
+        "implemented": 18,
+        "total": 487
+      }
+    }
+  },
+  "baseline_head": "318eacced464c57afac0738a63c24cc4583f91a4",
+  "baseline_head_is_not_complete_executed_source_identity": true,
+  "current_metadata": {
+    "census_register_check_commands": 5,
+    "combined_unit_checks": 4,
+    "owned_capture_check_commands": 7,
+    "owned_refresh": {
+      "artifact": "metadata-owned-refresh-unicode-1/summary.json",
+      "bytes": 42264,
+      "sha256": "00693e9f6df1199516fe0fc7f639313a5541a841fe51ae42e137689ce7cb34af"
+    },
+    "primary_cases": 64,
+    "register_refresh": {
+      "artifact": "metadata-register-unicode-1/summary.json",
+      "bytes": 6179,
+      "sha256": "6a2b9d14bbdaa8f0d02cf96719c0e78bccfa003f81162d95aa2085a81a2e491b"
+    }
+  },
+  "date": "2026-10-04",
+  "freeze": {
+    "backend_count": 108,
+    "backend_ids": {
+      "bytes": 15717,
+      "sha256": "14c6e61e0abf8f78c0e9ccd39ff57ef2d0d970280ddb2760a37d7b9653770bce"
+    },
+    "input_count": 4121,
+    "inputs": {
+      "bytes": 733962,
+      "sha256": "713d4a5a9317ec32fcce65b357e55fa89c023661b2ec67aeb5fe674d960cd35f"
+    },
+    "module_count": 19,
+    "modules": {
+      "bytes": 950,
+      "sha256": "b4a3c85d1b3ce1fd1dbca6b446a19babb94955f3d2e96469151a417469ba6106"
+    },
+    "package": {
+      "bytes": 42914,
+      "sha256": "48fe308def1cddbe9b3529086f720a92651047a1c6c6c27063df85c0a4a9df00"
+    },
+    "package_count": 389,
+    "rust": {
+      "bytes": 76352,
+      "sha256": "251c3938ab500040b66af29e766e06a88d6b97a9e3357564bad2003f6e460e90"
+    },
+    "rust_source_count": 473
+  },
+  "fresh_wheel": {
+    "bytes": 2979879,
+    "sha256": "8b85f053d77f0efa6d15c1136ca3887090b2e7dacc47b5b1bbffa16b988a3fb6"
+  },
+  "full_suite_rerun": false,
+  "full_toolkit_parity": false,
+  "fully_completed_thermostat": false,
+  "hardware_acceptance": false,
+  "independent_runtime_source_review": {
+    "artifact": "unicode-runtime-independent-review-final1.json",
+    "bytes": 3847,
+    "scope": "A7 default-lookup production and source-fact review; reviewer-owned registration/wheel author work excluded.",
+    "sha256": "0a79e2aeb53d9ce2f1a610aee58b743c892854514435b7e38ba6d540c4ab9de4"
+  },
+  "limits": [
+    "Duplicate generated-name matches still refuse because manager order is unproved.",
+    "Actual generated defaults remain source-owned ASCII; direct Unicode comparator probes are not public Unicode-default workflows.",
+    "Existing Address/OID/shared references and opaque optional Level Value metadata remain preserved; new Levels still require canonical bytes.",
+    "Unicode reply loss covers quoted DBSET TagName200, not a new lost-SAVE claim; uncertain mutation stops without replay.",
+    "Graphs are whole synthetic 98/109 PP cases; no private vendor specification or complete GUI/device profile claim.",
+    "Application migration, exposed Delete semantics, locale/manager order, implicit framework dispatch and complete original/native/hardware acceptance remain open under issues #42/#72."
+  ],
+  "native_CGate_runtime_executed": false,
+  "origin_scope": "Hash-bound actual interpreter and pytest PID startup/terminal loaded-module snapshots; not continuous import tracing.",
+  "original_instructions_executed": false,
+  "owner_handoffs": {
+    "fresh_wheel_execution_and_coverage": {
+      "artifact": "wheel-author-handoff-final1.json",
+      "bytes": 63779,
+      "sha256": "779ea6f0314a23dc82e8a04118febd5218d9c34a9a83a545c948f241b0da6a25"
+    },
+    "source_execution_and_artifact_raw_reviews": {
+      "artifact": "source-acceptance-preparation1/source-and-raw108-handoff-final1.json",
+      "bytes": 13062,
+      "sha256": "d14b151c611e99c37c7e44281f60cbb9f1f25e93133ebd8e77adb14852fff41d"
+    },
+    "source_producer": {
+      "artifact": "author-seven-handoff-final1.json",
+      "bytes": 2373,
+      "sha256": "1206ba407cf7bf5e7e1c97e7afafa78f13ab533c61298e583173844ca287b85a"
+    }
+  },
+  "phases": {
+    "fresh_installed_wheel": {
+      "actual_CLI_terminal_origins_matched": 178,
+      "actual_pytest_pid": 64764,
+      "audit_binding": {
+        "artifact": "wheel-final1/audit-receipt.json",
+        "bytes": 376040,
+        "sha256": "1f953e313c46d999982d0e918a7e816330de6a010cc75e35675b7540c6ca8a72"
+      },
+      "auditor_exit": 0,
+      "backend_partition": {
+        "new_unicode_inventory": 16,
+        "per_server": 54,
+        "retained": 92
+      },
+      "body_required_modules": 19,
+      "closure": {
+        "Rust473_quiet": true,
+        "binary_quiet": true,
+        "copied_reference_quiet": true,
+        "freeze_quiet": true,
+        "head_quiet": true,
+        "package_quiet": true,
+        "prior_proof_pins_quiet": true,
+        "source_quiet": true
+      },
+      "current_raw_aggregate": {
+        "CLI_calls": 178,
+        "CLI_exit_0": 140,
+        "CLI_exit_1": 38,
+        "actually_dropped_upstream_200": 14,
+        "actually_dropped_upstream_301": 2,
+        "cgate-mock_records": 54,
+        "cleaned_owned_PIDs": 108,
+        "cmqttd_records": 54,
+        "connections": 178,
+        "controlled_stale_source_changes": 6,
+        "direct_binary": 108,
+        "records": 108,
+        "startup_PCI_frames": 432,
+        "tagged_commands": 14292
+      },
+      "exact_passing_backend_ids": 108,
+      "later_or_trap_PCI_traffic_observed": 0,
+      "new_unicode_raw_aggregate": {
+        "CLI_calls": 24,
+        "CLI_exit_0": 16,
+        "CLI_exit_1": 8,
+        "actually_dropped_upstream_200": 2,
+        "cgate-mock_records": 8,
+        "cleaned_owned_PIDs": 16,
+        "cmqttd_records": 8,
+        "connections": 24,
+        "controlled_stale_source_changes": 2,
+        "direct_binary": 16,
+        "records": 16,
+        "startup_PCI_frames": 64,
+        "tagged_commands": 1284
+      },
+      "parent_outcomes": {
+        "passed": 251,
+        "skipped": 6
+      },
+      "pytest_exit": 0,
+      "raw_review_binding": {
+        "artifact": "wheel-final1/raw-public108-review.json",
+        "bytes": 98524,
+        "sha256": "ced6e3cc2220ca79b410a371fc7640a5e0a1734f545f4155e321e88555fc59d1"
+      },
+      "result_binding": {
+        "artifact": "wheel-final1/focused-result.json",
+        "bytes": 66769,
+        "sha256": "2b39b6d92c02b769f74ea926a2958d242b11ac4f7c5da64ceb2acb0dbc95d04c"
+      },
+      "separate_subtests": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 976,
+        "reported": 976,
+        "skipped": 0
+      },
+      "skips": [
+        "tests/test_thermostat_remote_references.py::RemoteReferenceTests::test_optional_static_source",
+        "tests/test_thermostat_remote_levels.py::RemoteLevelTests::test_optional_static_source",
+        "tests/test_thermostat_output_groups.py::OutputGroupTests::test_optional_static_source",
+        "tests/test_thermostat_output_add.py::OutputAddTests::test_optional_static_source",
+        "tests/test_thermostat_output_edit.py::OutputEditTests::test_optional_static_source",
+        "tests/test_thermostat_output_default_ascii_static.py::ASCIIDefaultSourceTests::test_fresh_pinned_source_data_matches_published_facts"
+      ],
+      "wrapper_exit": 0
+    },
+    "source": {
+      "actual_CLI_terminal_origins_matched": 178,
+      "actual_pytest_pid": 65305,
+      "audit_binding": {
+        "artifact": "source-final2/audit-receipt.json",
+        "bytes": 376043,
+        "sha256": "17ee0531e11a38bb3d1cd2baac4be1136f9470f60c396597ebf12f3590ea88b5"
+      },
+      "auditor_exit": 0,
+      "backend_partition": {
+        "new_unicode_inventory": 16,
+        "per_server": 54,
+        "retained": 92
+      },
+      "body_required_modules": 19,
+      "closure": {
+        "binaries_quiet": true,
+        "freeze_artifacts_quiet": true,
+        "git_head_quiet": true,
+        "package_quiet": true,
+        "rust_quiet": true,
+        "source_quiet": true
+      },
+      "current_raw_aggregate": {
+        "CLI_calls": 178,
+        "CLI_exit_0": 140,
+        "CLI_exit_1": 38,
+        "actually_dropped_upstream_200": 14,
+        "actually_dropped_upstream_301": 2,
+        "cgate-mock_records": 54,
+        "cleaned_owned_PIDs": 108,
+        "cmqttd_records": 54,
+        "connections": 178,
+        "controlled_stale_source_changes": 6,
+        "direct_binary": 108,
+        "records": 108,
+        "startup_PCI_frames": 432,
+        "tagged_commands": 14292
+      },
+      "exact_passing_backend_ids": 108,
+      "later_or_trap_PCI_traffic_observed": 0,
+      "new_unicode_raw_aggregate": {
+        "CLI_calls": 24,
+        "CLI_exit_0": 16,
+        "CLI_exit_1": 8,
+        "actually_dropped_upstream_200": 2,
+        "cgate-mock_records": 8,
+        "cleaned_owned_PIDs": 16,
+        "cmqttd_records": 8,
+        "connections": 24,
+        "controlled_stale_source_changes": 2,
+        "direct_binary": 16,
+        "records": 16,
+        "startup_PCI_frames": 64,
+        "tagged_commands": 1284
+      },
+      "parent_outcomes": {
+        "passed": 251,
+        "skipped": 6
+      },
+      "pytest_exit": 0,
+      "raw_review_binding": {
+        "artifact": "source-final2/raw-public108-review.json",
+        "bytes": 98512,
+        "sha256": "d35dcba39e69defff5d0ca696a5af483d4312c31a817eaedec0ef9a9a4387ff0"
+      },
+      "result_binding": {
+        "artifact": "source-final2/source-focused-result.json",
+        "bytes": 55482,
+        "sha256": "823ee74c1fb44da164ef752405298728d84d22857e65f5d320dd87b1095c67bb"
+      },
+      "separate_subtests": {
+        "errors": 0,
+        "failures": 0,
+        "passed": 976,
+        "reported": 976,
+        "skipped": 0
+      },
+      "skips": [
+        "tests/test_thermostat_remote_references.py::RemoteReferenceTests::test_optional_static_source",
+        "tests/test_thermostat_remote_levels.py::RemoteLevelTests::test_optional_static_source",
+        "tests/test_thermostat_output_groups.py::OutputGroupTests::test_optional_static_source",
+        "tests/test_thermostat_output_add.py::OutputAddTests::test_optional_static_source",
+        "tests/test_thermostat_output_edit.py::OutputEditTests::test_optional_static_source",
+        "tests/test_thermostat_output_default_ascii_static.py::ASCIIDefaultSourceTests::test_fresh_pinned_source_data_matches_published_facts"
+      ],
+      "wrapper_exit": 0
+    }
+  },
+  "preserved_failure_history": {
+    "source_final1": {
+      "auditor_exit": 1,
+      "cause": "Sandbox EPERM at owned loopback trap bind before service startup; no backend acceptance.",
+      "parent_outcomes": {
+        "failure": 108,
+        "passed": 143,
+        "skipped": 6
+      },
+      "pytest_exit": 1,
+      "separate_identical_input_escalated_success_epoch": "source-final2",
+      "summary_binding": {
+        "artifact": "source-final1/summary.json",
+        "bytes": 661,
+        "sha256": "f52967524794ef9d69c6c5fe654eb32f283e3521b7380ede8f76642b4a54cf89"
+      }
+    }
+  },
+  "publication_CI_green_claimed": false,
+  "raw_writer_labels_are_not_one_to_one_pytest_nodeids": true,
+  "result": "FOCUSED_UNICODE_DEFAULT_PASS_WITH_LIMITS",
+  "retained_Rust": {
+    "new_Rust_code_or_gate_execution": false,
+    "prior_workspace_tests_ignored": 1,
+    "prior_workspace_tests_passed": 8730,
+    "required_prior_gates": [
+      "format",
+      "all_target_workspace_clippy_warnings_denied",
+      "workspace_test",
+      "release_workspace_build"
+    ],
+    "unchanged_inputs": 473
+  },
+  "runtime": {
+    "bytes": 21899,
+    "path": "toolkit-cli/src/cbus_toolkit/thermostat_output_groups.py",
+    "sha256": "c09d4e1a05459b5eaf5f26ba9a523470ea4139b28eea59b65d7f4ea1f2d270ea"
+  },
+  "schema": "cbus-thermostat-unicode-defaults-owned-release-v1",
+  "scope": "Missing ordinary ASCII output/damper default-name lookup inside the existing thermostat settings owner; unrelated Unicode inventory is admitted.",
+  "source_data_proof": {
+    "binding": {
+      "artifact": "source-dependency-capture1/summary.json",
+      "bytes": 2528,
+      "sha256": "495982f4faa431b428dde15051022a89995ef2e10e22e27e79357f8a281df949"
+    },
+    "bytes": 2722,
+    "fixture": "toolkit-cli/research/fixtures/thermostat-output-default-ascii-source.json",
+    "method_spans": 5,
+    "semantic_checks": 15,
+    "sha256": "f690330e95f6a1689935086afedee06966aab53ade009e7720dd26c7ecbd2fc1",
+    "source_data_check_exit": 0
+  },
+  "supplier_runtime_commit": "1fdfa8081d8b54fd2c7e0b685391f55c7bdf850a",
+  "wheel_package_files_source_zip_installed_equal": 389
+}
