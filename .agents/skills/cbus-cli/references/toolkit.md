@@ -706,7 +706,7 @@ currently selected identity: pass `op: "edit-output-group"`, `parameter`,
 Address/OID are immutable, shared renames remain causal, existing Level Values
 stay opaque and uncertain writes are never replayed. Read
 `toolkit-cli/docs/thermostat-output-add.md` and
-`toolkit-cli/docs/thermostat-output-edit.md`. Missing actual ASCII output/damper defaults also admit unrelated Unicode group inventory; comparison folds ASCII letters only and duplicate generated-name matches still refuse. Read `toolkit-cli/docs/thermostat-default-names.md` and its current focused acceptance report. Do not infer application migration, arbitrary Unicode defaults or original/hardware acceptance. Omit --set for a bounded load/save of the current snapshot. Keep
+`toolkit-cli/docs/thermostat-output-edit.md`. Missing actual ASCII output/damper defaults also admit unrelated Unicode group inventory; comparison folds ASCII letters only and duplicate generated-name matches still refuse. Read `toolkit-cli/docs/thermostat-default-names.md` and its current focused acceptance report. Do not infer application migration, arbitrary Unicode defaults or original/hardware acceptance. The fresh quick-zone owner composes `quick-zone-view`, `quick-zone-refresh`, `quick-zone-click`, `select-plant-type` and explicit `dispatch-plant-type-change` records in the same `--output-operation` history. Require explicit `--temperature-preference celsius` and the guide's settled source profile; schema and preference refuse before connection, while changed ControlledZones refusal compares the authoritative readonly snapshot. The owner retains the loaded master role, Basic save tail, final Programmable schedule state and live reference identities. Pending owner-issued messages refuse save; diagnostic JSON is not a continuation. Read `toolkit-cli/docs/thermostat-quick-zone-controls.md`. The bounded source/installed-wheel/backend acceptance is recorded in `toolkit-cli/docs/feature-batch-2026-10-04-thermostat-quick-zone-controls.md`; native/Windows control timing and complete issue 42 remain open. Omit --set for a bounded load/save of the current snapshot. Keep
 all project networks closed, own project editing exclusively and review uncertain
 creation/save outcomes without automatic replay. Original GUI callbacks remain open.
 Template 9 group allocation requires the documented initially empty application
@@ -1076,6 +1076,72 @@ changes the model; warning Click observes checked state. Inspect final factor
 serialization, ControlledZones, graph creations and whole PP preservation.
 No-op writes nothing; graph-only mutation has no PP save. Use one settings
 transaction and never replay an uncertain save. Native GUI, subscriber
-multiplicity, full quick-zone/queued dispatch and hardware acceptance stay open.
+multiplicity outside the separate fixed fresh-owner profile and hardware acceptance stay open.
+The new `toolkit-cli/docs/thermostat-quick-zone-controls.md` describes that
+bounded explicit owner integration; its accepted source/wheel scope is recorded in `toolkit-cli/docs/feature-batch-2026-10-04-thermostat-quick-zone-controls.md`.
 The batch report separates failed 22-module predecessors from the corrected
 78-case source/installed-wheel follow-ups; do not combine their test counts.
+
+## Application SAFE database workflow
+
+For complete admitted Application database copy or Address/TagName edits, read
+`toolkit-cli/docs/application-database-safe.md` first. `cgate database copy`
+reads the source and sends one `DBCOPYSAFE`; `cgate database set` sends one
+`DBSETSAFE`. Supply `--project` on that same operation connection, check fresh
+issued identities and the complete graph, then explicitly save the project that
+changed. Address moves retain subtree identities and recorded order; copied
+descendants receive fresh OIDs. Incomplete sibling reservations and unsupported
+source metadata refuse before commit. Never retry an uncertain mutation or save.
+Existing Unit/shared-OID and raw owners remain unchanged.
+
+Application scalar acceptance does not prove numeric Level Value mutation.
+The separate now-adopted consistency fix is described in
+`toolkit-cli/docs/ordinary-level-value.md`. Its adopted branch separately passed
+exact source 12 and fresh installed mock 6/daemon 6 cases with the current
+runner. The separate resilience report at
+`toolkit-cli/docs/acceptance/2026-10-05-ordinary-level-resilience/report.md` records
+source five and fresh installed mock two/daemon three cases for public NetVar
+edits, lost successful Value/save receipts and disk-backed restart. Owned policy
+is source-backed; issue 131 remains open pending merge/required CI at that
+checkpoint. Prior proofs remain distinct. These focused proofs do not execute
+the full configured 1,067 explicit identities plus seven whole modules. In a build with
+the fix, use canonical numeric coordinates, `--project` on the same connection
+and a complete coherent typed byte owner. Require fresh numeric/OID/whole-XML
+readback. A coherent presently loaded foreign owner can explain an exact global
+OID-cache byte; it does not prove which historical writer created that cache.
+A cache alone is not owner authority. Unsafe, Unit/shared-OID and existing
+associated raw owners remain separate. Target 3.4 HELP*
+documents the copy/set business rules but not the missing exact mutation,
+error/no-op/case/whitespace receipts of issues 124/125. Those native boundaries,
+native/hardware acceptance and the general parity ledger remain open.
+
+The original full source Make interop checkpoint passed all 1,050 required IDs
+and seven whole core modules, with two optional UnitSpec skips. The fresh
+installed 28/31 focused phases are separate. Later matrix/serial/metadata
+composition and issue 131 adoption are outside that original acceptance.
+
+
+## Conversion XML and prepared thermostat zone controls
+
+Conversion creation, replacement and read-only recovery use a conversion-only
+semantic XML comparator. Inherited `xml:space="preserve"`, mixed-content
+separators, CDATA and whitespace-only leaves are significant; only default-scope
+element-container formatting indentation is ignored. Detached Units retain
+actual ancestor scope and namespace context. Invalid directives refuse locally.
+Read `toolkit-cli/docs/conversion-xml-preservation.md`; preserve stopped journals,
+never replay uncertain sends, and never promote legacy journal observations to
+new semantic persistence proof. Across cmqttd restart, retain the same state file
+and journal endpoint; distinguish the current durable tree from the saved image
+and keep lost-SAVE journals uncertain even when both match. Mock storage is
+process-local. This does not widen native XML schema admission.
+
+Use `{"op":"zone-checkbox-binding","binding":"MeasuredZones.Zone2","checked":true}`
+in the existing ordered `--output-operation` history for one of the 34 prepared
+thermostat Boolean bindings. Require the current fresh owner and explicit
+`--temperature-preference celsius`; equality guards, synchronous callbacks,
+shared damper/output references and one sealed family save apply. Read
+`toolkit-cli/docs/thermostat-zone-controls.md` for the exact closed roster,
+profile and Basic/Programmable consequences. JSON diagnostics are observations,
+not resumable owner state. Unknown bindings, non-Booleans and caller callbacks
+refuse before connection. Native GUI admission/dispatch, Application migration,
+Delete, unrecovered temperature/time controls and hardware remain separate work.
