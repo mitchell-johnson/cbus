@@ -501,7 +501,13 @@ class NewInteropSelectionTests(unittest.TestCase):
         complete_ids = re.findall(r"'(tests/[^']+::[^']+)'", make)
         # New owner-temperature registrations do not alter inherited identities.
         complete_ids = [row for row in complete_ids
-                        if not row.startswith('tests/test_thermostat_temperature_owner_backends.py::')]
+                        if not row.startswith(('tests/test_thermostat_temperature_owner_backends.py::',
+                                               'tests/test_cgl_application_order_backends.py::',
+                                               'tests/test_application_copy_safe_backends.py::',
+                                               'tests/test_application_safe_set_backends.py::',
+                                               'tests/test_ordinary_level_value_backends.py::',
+                                               'tests/test_ordinary_level_value_followon_backends.py::',
+                                               'tests/test_conversion_xml_preservation_backends.py::', 'tests/test_thermostat_zone_controls_backends.py::', 'tests/test_conversion_xml_restart_backends.py::'))]
         self.assertEqual(len(complete_ids), 945)
         self.assertEqual(len(set(complete_ids)), 945)
         inherited_945 = '\n'.join(sorted(complete_ids)) + '\n'
@@ -549,6 +555,224 @@ class NewInteropSelectionTests(unittest.TestCase):
                 self.assertEqual(audit_body.count('--require-module ' + module + '\n'), 1)
             self.assertNotIn('--require-module tests/test_thermostat_settings_native.py\n', audit_body)
 
+    def test_cgl_order_literal_backend_roster_and_required_bodies(self):
+        root = Path(__file__).resolve().parents[2]
+        make = (root / 'toolkit-cli/Makefile').read_text()
+        workflow = (root / '.github/workflows/ci.yml').read_text()
+        module = 'tests/test_cgl_application_order_backends.py'
+        names = (
+            'test_public_cgl_retained_native_prefix_order_filters_and_routes',
+            'test_public_cgl_saved_load_runtime_reannouncement_preserves_order',
+            'test_public_cgl_typed_replace_readdress_copy_delete_recreate',
+            'test_public_cgl_complete_network_replacement_retains_and_appends',
+            'test_public_cgl_project_copy_native_archive_and_graph_isolation',
+            'test_public_cgl_lost_import_success_is_not_replayed_or_rolled_back',
+            'test_public_cgl_invalid_python_document_has_no_prefix_mutation',
+        )
+        total = []
+        for backend, target, selection in (('mock', 'check-cgate-interop', 'cgate-mock'),
+                                          ('daemon', 'check-cmqtt-interop', 'cmqttd')):
+            expected = {module + '::' + name + '[' + backend + ']' for name in names}
+            if backend == 'daemon':
+                expected |= {module + '::test_public_cmqttd_cgl_durable_restart_and_explicit_legacy_fallback[' + mode + ']'
+                             for mode in ('recorded-restart', 'legacy-missing-field')}
+            body = make.split(target + ': compile\n', 1)[1].split('\n\n', 1)[0]
+            actual = [row for row in re.findall(r"'(tests/[^']+::[^']+)'", body)
+                      if row.startswith(module + '::')]
+            self.assertEqual(len(actual), 7 if backend == 'mock' else 9)
+            self.assertEqual(set(actual), expected)
+            audit = workflow.split('--selection ' + selection + '\n', 1)[1].split('\n      - name:', 1)[0]
+            self.assertEqual(audit.count('--require-module ' + module + '\n'), 1)
+            total.extend(actual)
+        self.assertEqual(len(total), len(set(total)))
+        self.assertEqual(len(total), 16)
+
+    def test_application_database_safe_exact_roster_and_required_bodies(self):
+        root = Path(__file__).resolve().parents[2]
+        make = (root / 'toolkit-cli/Makefile').read_text()
+        workflow = (root / '.github/workflows/ci.yml').read_text()
+        copy_module = 'tests/test_application_copy_safe_backends.py'
+        set_module = 'tests/test_application_safe_set_backends.py'
+        copy_names = (
+            'test_public_numeric_application_copy_complete_save_reload_isolation',
+            'test_public_application_oid_copy_to_network_oid',
+            'test_public_application_cross_project_copy_preserves_source',
+            'test_public_application_copy_sibling_conflicts_do_not_mutate',
+            'test_public_application_copy_wrong_parent_and_raw_level_refuse',
+            'test_public_application_copy_unsaved_close_drops_only_destination',
+            'test_public_application_copy_lost_301_no_replay_or_inverse_cleanup',
+            'test_public_application_copy_lost_project_save_preserves_complete_copy',
+        )
+        total = []
+        for backend, target, selection in (('mock', 'check-cgate-interop', 'cgate-mock'),
+                                          ('daemon', 'check-cmqtt-interop', 'cmqttd')):
+            expected = {copy_module + '::' + name + '[' + backend + ']' for name in copy_names}
+            expected |= {set_module + '::test_public_application_safe_move_preserves_full_graph[' + backend + '-' + mode + ']'
+                         for mode in ('numeric', 'oid')}
+            expected |= {set_module + '::test_public_application_safe_refusal_is_atomic[' + backend + '-' + reason + ']'
+                         for reason in ('plus', 'minus', 'hex', 'overflow', 'text', 'occupied', 'name-collision', 'blank-name')}
+            expected.add(set_module + '::test_public_application_safe_noop_rename_and_replacement_share_identity[' + backend + ']')
+            expected |= {set_module + '::test_public_application_safe_lost_success_is_not_replayed[' + backend + '-' + phase + ']'
+                         for phase in ('lost-move', 'lost-save')}
+            if backend == 'daemon':
+                expected.add(set_module + '::test_public_application_safe_cmqttd_restart_preserves_address_and_oid')
+            body = make.split(target + ': compile\n', 1)[1].split('\n\n', 1)[0]
+            actual = [row for row in re.findall(r"'(tests/[^']+::[^']+)'", body)
+                      if row.split('::', 1)[0] in (copy_module, set_module)]
+            self.assertEqual(len(actual), 21 if backend == 'mock' else 22)
+            self.assertEqual(len(actual), len(set(actual)))
+            self.assertEqual(set(actual), expected)
+            audit = workflow.split('--selection ' + selection + '\n', 1)[1].split('\n      - name:', 1)[0]
+            for module in (copy_module, set_module):
+                self.assertEqual(audit.count('--require-module ' + module + '\n'), 1)
+            total.extend(actual)
+        self.assertEqual(len(total), 43)
+        self.assertEqual(len(set(total)), 43)
+        self.assertEqual(hashlib.sha256(('\n'.join(sorted(total)) + '\n').encode()).hexdigest(),
+                         '51dba3a00aedf0bbfb01dcc41d27d1fcc65d7e1178b4b3b421e25773f057a734')
+
+
+
+    def test_prepared_zone_literal_roster_and_required_bodies(self):
+        root = Path(__file__).resolve().parents[2]
+        make = (root / 'toolkit-cli/Makefile').read_text()
+        workflow = (root / '.github/workflows/ci.yml').read_text()
+        module = 'tests/test_thermostat_zone_controls_backends.py'
+        expected = {'daemon': ['tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-UIAllocatedZones-daemon]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-InternalPlantZones-daemon]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-InternalPlantModes-daemon]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-MeasuredZones-daemon]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-CoolingPlantInstalledZones-daemon]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-VentingPlantInstalledZones-daemon]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-HeatingPlantInstalledZones-daemon]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[empty-heating-callback-chain-daemon]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[vent-mode-family-fan-save-tail-daemon]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[basic-operation-zone-tail-pc_tsb-daemon]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[basic-operation-zone-tail-pc_tsb5-daemon]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_refuses_before_backup[unsettled-profile-daemon]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_refuses_before_backup[pending-queue-daemon]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_failed_stage_never_saves_or_inverts[daemon]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_lost_successful_save_never_replays[PP SAVE_TO_SOURCE-daemon]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_lost_successful_save_never_replays[PROJECT SAVE-daemon]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_schema_refuses_before_connection[unprepared-schedule]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_schema_refuses_before_connection[unprepared-standby]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_schema_refuses_before_connection[nonboolean]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_schema_refuses_before_connection[missing-celsius]'], 'mock': ['tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-UIAllocatedZones-mock]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-InternalPlantZones-mock]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-InternalPlantModes-mock]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-MeasuredZones-mock]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-CoolingPlantInstalledZones-mock]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-VentingPlantInstalledZones-mock]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[all-prepared-HeatingPlantInstalledZones-mock]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[empty-heating-callback-chain-mock]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[vent-mode-family-fan-save-tail-mock]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[basic-operation-zone-tail-pc_tsb-mock]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_history[basic-operation-zone-tail-pc_tsb5-mock]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_refuses_before_backup[unsettled-profile-mock]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_refuses_before_backup[pending-queue-mock]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_failed_stage_never_saves_or_inverts[mock]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_lost_successful_save_never_replays[PP SAVE_TO_SOURCE-mock]', 'tests/test_thermostat_zone_controls_backends.py::test_public_prepared_binding_lost_successful_save_never_replays[PROJECT SAVE-mock]']}
+        total = []
+        for backend, target, selection in (('mock', 'check-cgate-interop', 'cgate-mock'),
+                                          ('daemon', 'check-cmqtt-interop', 'cmqttd')):
+            body = make.split(target + ': compile\n', 1)[1].split('\n\n', 1)[0]
+            actual = [n for n in re.findall(r"'(tests/[^']+::[^']+)'", body) if n.startswith(module + '::')]
+            self.assertEqual(actual, expected[backend])
+            self.assertEqual(len(actual), len(set(actual)))
+            audit = workflow.split('--selection ' + selection + '\n', 1)[1].split('\n      - name:', 1)[0]
+            self.assertEqual(audit.count('--require-module ' + module + '\n'), 1)
+            total.extend(actual)
+        self.assertEqual(len(total), 36)
+        self.assertEqual(hashlib.sha256(('\n'.join(sorted(total)) + '\n').encode()).hexdigest(), 'd6e87f155befaa872c9059a14a0a59a399afb0f748f9e0b86bd79317ef98f175')
+        for selection in ('offline', 'installed-wheel'):
+            audit = workflow.split('--selection ' + selection + '\n', 1)[1].split('\n      - name:', 1)[0]
+            self.assertEqual(audit.count('--require-module tests/test_thermostat_zone_controls.py\n'), 1)
+        focused = make.split('check-thermostat-zone-controls:\n', 1)[1].split('\n\n', 1)[0]
+        self.assertNotIn('cargo ', focused)
+        self.assertIn('tests/test_thermostat_zone_controls.py', focused)
+        self.assertIn('tests/test_thermostat_zone_controls_backends.py', focused)
+
+
+    def test_conversion_xml_restart_exact_daemon_roster_and_body_requirement(self):
+        root = Path(__file__).resolve().parents[2]
+        make = (root / 'toolkit-cli/Makefile').read_text()
+        workflow = (root / '.github/workflows/ci.yml').read_text()
+        module = 'tests/test_conversion_xml_restart_backends.py'
+        expected = ['tests/test_conversion_xml_restart_backends.py::test_public_conversion_completed_journal_daemon_restart_preserves_xml', 'tests/test_conversion_xml_restart_backends.py::test_public_conversion_lost_save_daemon_restart_keeps_uncertainty']
+        for target, selection, wanted in (('check-cgate-interop', 'cgate-mock', []),
+                                           ('check-cmqtt-interop', 'cmqttd', expected)):
+            body = make.split(target + ': compile\n', 1)[1].split('\n\n', 1)[0]
+            actual = [n for n in re.findall(r"'(tests/[^']+::[^']+)'", body) if n.startswith(module + '::')]
+            self.assertEqual(actual, wanted)
+            audit = workflow.split('--selection ' + selection + '\n', 1)[1].split('\n      - name:', 1)[0]
+            self.assertEqual(audit.count('--require-module ' + module + '\n'), int(selection == 'cmqttd'))
+        self.assertEqual(len(expected), len(set(expected)))
+        self.assertEqual(hashlib.sha256(('\n'.join(sorted(expected)) + '\n').encode()).hexdigest(), 'ad24e6438d1d100ecd8d13cda2a4b66cd0360bce1b42a5afb54fcbff25c2c4c6')
+        focused = make.split('check-conversion-xml-preservation:\n', 1)[1].split('\n\n', 1)[0]
+        self.assertIn(module, focused)
+        self.assertNotIn('cargo ', focused)
+
+    def test_conversion_xml_preservation_exact_roster_and_required_bodies(self):
+        root = Path(__file__).resolve().parents[2]
+        make = (root / 'toolkit-cli/Makefile').read_text()
+        workflow = (root / '.github/workflows/ci.yml').read_text()
+        module = 'tests/test_conversion_xml_preservation_backends.py'
+        names = ('test_public_conversion_creation_preserve_and_default_reset', 'test_public_conversion_replace_backup_reopen_and_recovery_preserve', 'test_public_conversion_creation_mixed_separator_loss_refuses', 'test_public_conversion_backup_preserved_separator_loss_stops_before_add', 'test_public_conversion_predelete_preserve_parent_tail_loss_keeps_source', 'test_public_conversion_reopen_cdata_loss_refuses_completed_receipt', 'test_public_conversion_recovery_current_or_backup_space_loss_read_only', 'test_public_conversion_save_refusal_retains_preserved_graph', 'test_public_conversion_lost_save_200_retains_graph_without_replay')
+        total = []
+        for backend, target, selection in (('mock', 'check-cgate-interop', 'cgate-mock'),
+                                          ('daemon', 'check-cmqtt-interop', 'cmqttd')):
+            expected = {module + '::' + name + '[' + backend + ']' for name in names}
+            body = make.split(target + ': compile\n', 1)[1].split('\n\n', 1)[0]
+            actual = [n for n in re.findall(r"'(tests/[^']+::[^']+)'", body) if n.startswith(module + '::')]
+            self.assertEqual(len(actual), 9)
+            self.assertEqual(len(actual), len(set(actual)))
+            self.assertEqual(set(actual), expected)
+            audit = workflow.split('--selection ' + selection + '\n', 1)[1].split('\n      - name:', 1)[0]
+            self.assertEqual(audit.count('--require-module ' + module + '\n'), 1)
+            total.extend(actual)
+        self.assertEqual(hashlib.sha256(('\n'.join(sorted(total)) + '\n').encode()).hexdigest(), 'e209733d197dbdbb1c799bd2997ab4cd8504c4744ad5bde5f3c9b25bbf3a191c')
+        for selection in ('offline', 'installed-wheel'):
+            audit = workflow.split('--selection ' + selection + '\n', 1)[1].split('\n      - name:', 1)[0]
+            self.assertEqual(audit.count('--require-module tests/test_conversion_xml_preservation.py\n'), 1)
+        focused = make.split('check-conversion-xml-preservation:\n', 1)[1].split('\n\n', 1)[0]
+        self.assertNotIn('cargo ', focused)
+        self.assertIn('tests/test_conversion_xml_preservation.py', focused)
+        self.assertIn('tests/test_conversion_xml_preservation_backends.py', focused)
+
+    def test_ordinary_level_value_literal_roster_digest_and_required_bodies(self):
+        root = Path(__file__).resolve().parents[2]
+        make = (root / 'toolkit-cli/Makefile').read_text()
+        workflow = (root / '.github/workflows/ci.yml').read_text()
+        module = 'tests/test_ordinary_level_value_backends.py'
+        names = (
+            'test_public_numeric_level_byte_edit_readbacks_save_reload',
+            'test_public_invalid_numeric_level_bytes_refuse_atomically',
+            'test_public_plain_and_copied_null_levels_become_bytes',
+            'test_public_numeric_then_issued_oid_keeps_coherent_aliases',
+            'test_public_selected_project_copy_retained_oid_bytes_are_isolated',
+            'test_public_associated_raw_level_owner_keeps_its_lexemes',
+        )
+        total = []
+        for backend, target, selection in (('mock', 'check-cgate-interop', 'cgate-mock'),
+                                          ('daemon', 'check-cmqtt-interop', 'cmqttd')):
+            expected = {module + '::' + name + '[' + backend + ']' for name in names}
+            body = make.split(target + ': compile\n', 1)[1].split('\n\n', 1)[0]
+            actual = [row for row in re.findall(r"'(tests/[^']+::[^']+)'", body)
+                      if row.startswith(module + '::')]
+            self.assertEqual(len(actual), 6)
+            self.assertEqual(len(actual), len(set(actual)))
+            self.assertEqual(set(actual), expected)
+            audit = workflow.split('--selection ' + selection + '\n', 1)[1].split('\n      - name:', 1)[0]
+            self.assertEqual(audit.count('--require-module ' + module + '\n'), 1)
+            total.extend(actual)
+        self.assertEqual(len(total), 12)
+        self.assertEqual(len(set(total)), 12)
+        self.assertEqual(hashlib.sha256(('\n'.join(sorted(total)) + '\n').encode()).hexdigest(),
+                         'd2fd44cc1299cbe3422fac58d406551640e8ff0271e4ca87036f575eb99d6cdb')
+
+    def test_ordinary_level_value_followon_literal_roster_and_required_bodies(self):
+        root = Path(__file__).resolve().parents[2]
+        make = (root / 'toolkit-cli/Makefile').read_text()
+        workflow = (root / '.github/workflows/ci.yml').read_text()
+        module = 'tests/test_ordinary_level_value_followon_backends.py'
+        expected = {
+            'mock': {
+                module + '::test_public_numeric_level_lost_success_is_not_replayed[mock-value]',
+                module + '::test_public_numeric_level_lost_success_is_not_replayed[mock-save]',
+            },
+            'daemon': {
+                module + '::test_public_numeric_level_lost_success_is_not_replayed[daemon-value]',
+                module + '::test_public_numeric_level_lost_success_is_not_replayed[daemon-save]',
+                module + '::test_public_numeric_group_and_netvar_levels_survive_cmqttd_restart',
+            },
+        }
+        total = []
+        for backend, target, selection in (('mock', 'check-cgate-interop', 'cgate-mock'),
+                                          ('daemon', 'check-cmqtt-interop', 'cmqttd')):
+            body = make.split(target + ': compile\n', 1)[1].split('\n\n', 1)[0]
+            actual = [n for n in re.findall(r"'(tests/[^']+::[^']+)'", body)
+                      if n.startswith(module + '::')]
+            self.assertEqual(len(actual), len(set(actual)))
+            self.assertEqual(set(actual), expected[backend])
+            audit = workflow.split('--selection ' + selection + '\n', 1)[1].split('\n      - name:', 1)[0]
+            self.assertEqual(audit.count('--require-module ' + module + '\n'), 1)
+            total.extend(actual)
+        self.assertEqual(len(total), 5)
+        self.assertEqual(len(set(total)), 5)
+        self.assertEqual(hashlib.sha256(('\n'.join(sorted(total)) + '\n').encode()).hexdigest(), 'b14d154114f2583ead0aa02d1f8941dd2e2ea164525597d4cc2d20e17559451d')
+        inherited = [n for n in re.findall(r"'(tests/[^']+::[^']+)'", make)
+                     if not n.startswith((module + '::', 'tests/test_conversion_xml_preservation_backends.py::', 'tests/test_thermostat_zone_controls_backends.py::', 'tests/test_conversion_xml_restart_backends.py::'))]
+        self.assertEqual(len(inherited), 1056)
+        self.assertEqual(len(inherited), len(set(inherited)))
+        self.assertEqual(hashlib.sha256(('\n'.join(sorted(inherited)) + '\n').encode()).hexdigest(), '3a5b0584311acab115319254599a580f254062391c7b42108fcb93b15ea81a05')
+
     def test_temperature_owner_exact_backend_roster_and_body_requirements(self):
         # Literal declared acceptance profiles; never generated from Make or production.
         root = Path(__file__).resolve().parents[2]
@@ -577,7 +801,13 @@ class NewInteropSelectionTests(unittest.TestCase):
             'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[unsigned-overflow-pc_tsb-{backend}]',
             'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[unsigned-overflow-pc_tsb5-{backend}]',
         )
-        complete = re.findall(r"'(tests/[^']+::[^']+)'", make)
+        complete = [row for row in re.findall(r"'(tests/[^']+::[^']+)'", make)
+                    if not row.startswith(('tests/test_cgl_application_order_backends.py::',
+                                           'tests/test_application_copy_safe_backends.py::',
+                                           'tests/test_application_safe_set_backends.py::',
+                                           'tests/test_ordinary_level_value_backends.py::',
+                                           'tests/test_ordinary_level_value_followon_backends.py::',
+                                               'tests/test_conversion_xml_preservation_backends.py::', 'tests/test_thermostat_zone_controls_backends.py::', 'tests/test_conversion_xml_restart_backends.py::'))]
         self.assertEqual(len(complete), 985)
         self.assertEqual(len(set(complete)), 985)
         for backend, target, selection in (('mock', 'check-cgate-interop', 'cgate-mock'),

@@ -2598,6 +2598,7 @@ impl Server {
                 retries: 2,
                 units: Default::default(),
                 unit_xml_order: Vec::new(),
+                application_creation_order: super::ApplicationCreationOrder::known(),
                 created_seq,
                 physical: Default::default(),
                 levels: Default::default(),
@@ -2872,6 +2873,7 @@ impl Server {
                     retries: 2,
                     units,
                     unit_xml_order: Vec::new(),
+                    application_creation_order: super::ApplicationCreationOrder::known(),
                     created_seq: old.created_seq,
                     physical: old.physical,
                     levels: old.levels,
@@ -3280,6 +3282,7 @@ impl Server {
                         retries: 2,
                         units: Default::default(),
                         unit_xml_order: Vec::new(),
+                        application_creation_order: super::ApplicationCreationOrder::known(),
                         created_seq,
                         physical: Default::default(),
                         levels: Default::default(),
@@ -3335,6 +3338,7 @@ impl Server {
                 self.db_fields.insert(format!("{path}/TagName"), tag_name);
                 self.objects.insert(path.clone());
                 if element == "Application" {
+                    self.record_application_path(&path);
                     self.objects
                         .insert(format!("{parent}-APPLICATION-{address}"));
                 } else {
@@ -3593,7 +3597,7 @@ impl Server {
             };
             applications.insert(application);
         }
-        for application in applications {
+        for application in network.application_addresses_in_creation_order(applications) {
             if let Some(node) = self.copy_application_node(project, address, application) {
                 children.push(node);
             }
@@ -5306,6 +5310,111 @@ mod tests {
     use super::*;
     use crate::format_response;
     use std::collections::HashSet;
+
+    #[test]
+    fn application_creation_order_copy_and_database_snapshot_use_owned_order() {
+        let mut server = Server::new(AccessLevel::Program).with_programming(true);
+        assert_eq!(server.handle("[new] PROJECT NEW ORDER").status, 200);
+        assert_eq!(
+            server
+                .handle("[net] DBCREATENET 254 Local Cni 127.0.0.1:1")
+                .status,
+            200
+        );
+        for address in [72, 0, 71, 66] {
+            assert_eq!(
+                server
+                    .handle(&format!(
+                        "[app] DBADDSAFE //ORDER/254 Application {address} App{address}"
+                    ))
+                    .status,
+                301
+            );
+        }
+        let node = server.copy_network_node("ORDER", 254);
+        let copied_addresses = node
+            .children
+            .iter()
+            .filter(|child| child.element == "Application")
+            .map(|child| child.fields["Address"].parse::<u8>().unwrap())
+            .collect::<Vec<_>>();
+        assert_eq!(copied_addresses, [72, 0, 71, 66]);
+        assert_eq!(server.handle("[save] DBSAVE order.db").status, 200);
+        assert_eq!(server.handle("[clear] DBNEW").status, 200);
+        assert_eq!(server.handle("[load] DBLOAD order.db").status, 200);
+        assert_eq!(
+            server.projects["ORDER"].networks[&254]
+                .application_creation_order
+                .addresses,
+            [72, 0, 71, 66]
+        );
+        assert_eq!(server.handle("[destination] PROJECT NEW COPY").status, 200);
+        server
+            .insert_database_copy("COPY", "//COPY/@root", &node, false)
+            .unwrap();
+        let owner = &server.projects["COPY"].networks[&254];
+        assert_eq!(owner.application_creation_order.addresses, [72, 0, 71, 66]);
+        assert!(!owner.application_creation_order.historical_prefix_unknown);
+    }
+
+    #[test]
+    fn application_creation_order_recursive_completion_records_actual_vacancy() {
+        let mut server = Server::new(AccessLevel::Program).with_programming(true);
+        assert_eq!(server.handle("[new] PROJECT NEW ORDER").status, 200);
+        let parent = server.issue_oid();
+        let child = server.issue_oid();
+        server.insert_db_pending_object(DbPendingObject {
+            oid: parent.clone(),
+            project: "ORDER".into(),
+            parent: "//ORDER/@root".into(),
+            element: "Network".into(),
+            fields: std::collections::HashMap::from([("Address".into(), "254".into())]),
+            path: None,
+            xml_order: None,
+        });
+        server.insert_db_pending_object(DbPendingObject {
+            oid: child.clone(),
+            project: "ORDER".into(),
+            parent: format!("!{parent}"),
+            element: "Application".into(),
+            fields: std::collections::HashMap::from([
+                ("Address".into(), "72".into()),
+                ("TagName".into(), "ReadyChild".into()),
+            ]),
+            path: None,
+            xml_order: None,
+        });
+        assert!(server
+            .set_pending_database_field("ORDER", &child, "TagName", "ReadyChild".into())
+            .unwrap());
+        assert!(!server.projects["ORDER"].networks.contains_key(&254));
+        assert!(server
+            .set_pending_database_field("ORDER", &parent, "TagName", "ReadyParent".into())
+            .unwrap());
+        assert_eq!(
+            server
+                .pending_object("ORDER", &child)
+                .unwrap()
+                .path
+                .as_deref(),
+            Some("//ORDER/254/72")
+        );
+        assert_eq!(
+            server.projects["ORDER"].networks[&254]
+                .application_creation_order
+                .addresses,
+            [72]
+        );
+        assert!(server
+            .set_pending_database_field("ORDER", &parent, "Description", "Again".into())
+            .is_ok());
+        assert_eq!(
+            server.projects["ORDER"].networks[&254]
+                .application_creation_order
+                .addresses,
+            [72]
+        );
+    }
 
     #[test]
     fn manual_inventory_is_complete_and_unique() {
