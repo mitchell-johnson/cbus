@@ -75,6 +75,21 @@ Admitted historical journals that recorded the earlier whitespace comparison
 remain available for read-only classification. They are unchanged by recovery
 and cannot be upgraded to semantic persistence proof.
 
+## Inspecting after a cmqttd restart
+
+Keep the same `--cgate-state` file and journal endpoint when restarting the
+service, then use read-only `tweak-recover`. cmqttd restores its current durable
+database separately from the last `PROJECT SAVE` image. A current matching tree
+alone therefore does not prove that the save completed. Explicit project
+close/load checks of the saved image belong to a separately owned verification
+step; recovery itself never performs them.
+
+Recovery of an already completed, confirmed journal can verify matching current
+XML, backup and fresh PP. A lost SAVE reply remains uncertain after restart,
+even if the durable current and saved trees match. Preserve the unchanged
+journal and attempt marker. `cgate-mock` stores its database and FILE archives
+in process memory and provides no restart persistence contract.
+
 ## Compatibility boundary
 
 The regression profile uses public synthetic specifications and owned

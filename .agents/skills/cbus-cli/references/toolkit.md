@@ -1130,7 +1130,10 @@ element-container formatting indentation is ignored. Detached Units retain
 actual ancestor scope and namespace context. Invalid directives refuse locally.
 Read `toolkit-cli/docs/conversion-xml-preservation.md`; preserve stopped journals,
 never replay uncertain sends, and never promote legacy journal observations to
-new semantic persistence proof. This does not widen native XML schema admission.
+new semantic persistence proof. Across cmqttd restart, retain the same state file
+and journal endpoint; distinguish the current durable tree from the saved image
+and keep lost-SAVE journals uncertain even when both match. Mock storage is
+process-local. This does not widen native XML schema admission.
 
 Use `{"op":"zone-checkbox-binding","binding":"MeasuredZones.Zone2","checked":true}`
 in the existing ordered `--output-operation` history for one of the 34 prepared
