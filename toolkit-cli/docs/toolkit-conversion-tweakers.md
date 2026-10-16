@@ -75,13 +75,16 @@ whose sparse PP store otherwise retains the literal overlong string.
 
 One `PP SAVE_TO_SOURCE` persists the target PP, followed by a fresh PP session
 and full project readback. Acceptance requires the planned values and destination
-identity to match, with source and unrelated data preserved within the structural
-comparison bound. Attributes, comments, processing instructions, namespaces and
-non-whitespace text are checked. The shared comparison omits whitespace-only text
-around element children, including significant spaces in opaque mixed markup or
-under `xml:space="preserve"`; full XML text fidelity remains open. Output records
-this boundary in `xml_comparison`. Like the original tweaker API, copied `UnitAddress` PP retains
-the source address while the new database Unit stays at the requested address.
+identity to match, with source and unrelated data preserved under the
+[conversion XML comparison policy](conversion-xml-preservation.md). Attributes,
+comments, processing instructions, namespaces, inherited `xml:space="preserve"`
+data, mixed-content separators, CDATA and whitespace-only leaf values are checked.
+Only formatting indentation in an element-only container under `xml:space="default"`
+or the default scope is ignored. Output records these checks in `xml_comparison`.
+This compares parsed XML rather than every serialization choice and does not
+widen the server's admitted schema. Like the original tweaker API, copied
+`UnitAddress` PP retains the source address while the new database Unit stays at
+the requested address.
 
 Complete parameter assignment refusals remain recorded, following the original
 setter's declared-failure behavior. The frontend saves and checks the retained

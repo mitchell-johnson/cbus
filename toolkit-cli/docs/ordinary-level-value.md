@@ -12,8 +12,12 @@ fresh installed-wheel phases of six mock and six daemon cases, and four required
 Rust gates. The adopted branch then passed its own exact 12 source CLI cases and
 separate fresh wheel phases of six mock and six daemon cases using the current
 installed-wheel runner. These are distinct epochs, not a repeated full suite.
+A separate [resilience checkpoint](acceptance/2026-10-05-ordinary-level-resilience/report.md)
+passed five source cases and fresh installed-wheel mock two/daemon three cases
+for public NetVar interaction, lost receipts and disk-backed restart.
 [Issue 131](https://github.com/mitchell-johnson/cbus/issues/131) remains open
-pending merge. The full 1,062-ID declaration and native acceptance remain open.
+pending merge and required CI at that checkpoint. The configured 1,067 explicit
+identities plus seven whole modules were not fully executed in these proofs.
 This guide applies to a build containing the fix. The [acceptance report](acceptance/2026-10-05-ordinary-level-value/report.md)
 records the exact scopes and prior failures.
 
@@ -26,9 +30,12 @@ for the selected loaded project, such as `//LEVELS/254/80/8/4` or `254/80/8/4`.
 It does not reinterpret named or indexed selectors, leading-zero coordinates,
 Unit fields, arbitrary scalar paths, or an associated tag-Network's raw owner.
 These paths select a Level child beneath a Group or NetVar; the NetVar object
-itself is not a Level byte owner. Nested NetVar child-Level mutation is covered
-by the library proof. The 12 public CLI cases write Group Levels and preserve
-the unrelated NetVar subtree; they do not claim a public NetVar mutation run.
+itself is not a Level byte owner. Nested NetVar child-Level mutation was covered
+by the library proof. The historical 12 public CLI cases write Group Levels and
+preserve the unrelated NetVar subtree. The separate five-case resilience proof
+now writes its child Level from 66 to 42 and the Group Level from 77 to 99, while
+preserving the complete ordered graph, identities, sibling byte and three
+unrelated Unit PP values.
 
 The server requires one complete typed Level with a known issued OID, a coherent
 parent and matching pending/canonical mirrors. Competing, stale or incomplete
@@ -84,9 +91,15 @@ cbus-toolkit cgate --host HOST --port PORT database get-xml //LEVELS/254/80 --pr
 ```
 
 This edits the database model and performs no device programming. If a write or
-save receipt is uncertain, do not replay it automatically. The new 12-case
-packet did not inject lost receipts; its single-write checks are separate from
-the existing Application workflow's fault/no-replay evidence.
+save receipt is uncertain, do not replay it automatically. The historical
+12-case packet did not inject lost receipts. The separate five-case proof drops
+actual successful Value and project-save terminals, forwards each target once
+and checks fresh effects without retry, inverse cleanup or another write/save.
+Explicit CLOSE/LOAD after a lost save verifies the saved image separately.
+
+The restart case saves the Group and NetVar child edits, reaps the first daemon
+and opens a second owned context against the same explicit state file. Complete
+graph and PP readbacks survive without reseeding, rewriting or another save.
 
 ## Existing raw owners remain separate
 
@@ -98,7 +111,9 @@ defers that owner rather than treating its text as a byte. Creating a Languages
 collection to establish an association is a database mutation, not a general
 raw-write workaround.
 
-Owned model consistency is the accepted scope of the isolated and adopted
-focused proofs. Exact original C-Gate mutation, raw/NULL/lexical/error policies,
-hardware persistence, complete Toolkit parity and execution of the full
-1,062-ID declaration plus seven whole modules remain separate obligations.
+Owned model consistency and the source-backed byte/raw/NULL policy are the
+accepted scope of these proofs. The five-case checkpoint supplies the remaining
+local owned interactions; new native execution is not its closure precondition.
+Exact native equivalence, hardware persistence, complete Toolkit parity and
+full execution of the configured 1,067 explicit identities plus seven whole
+modules remain separate obligations.

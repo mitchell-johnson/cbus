@@ -139,8 +139,12 @@ bounded owned source and installed checks are separate from exact native
 acceptance in issues 124/125. The separate [ordinary numeric Level Value
 fix](docs/ordinary-level-value.md) has isolated library/source/wheel/Rust proofs
 and separate adopted-branch source 12 and fresh installed mock 6/daemon 6
-acceptance. Issue 131 remains open pending merge; full declared and native
-acceptance remain separate.
+acceptance. A separate [five-case resilience checkpoint](docs/acceptance/2026-10-05-ordinary-level-resilience/report.md)
+passed source five and fresh installed mock two/daemon three cases for public
+NetVar edits, lost successful receipts and disk-backed restart. Owned policy is
+source-backed; issue 131 remains open pending merge/required CI at that
+checkpoint. Full configured execution and exact native equivalence remain
+separate.
 
 `cgate file-upload SERVER_PATH LOCAL_FILE [--project NAME]` sends a bounded binary
 snapshot through the server FILE protocol. cmqttd stores it in its virtual

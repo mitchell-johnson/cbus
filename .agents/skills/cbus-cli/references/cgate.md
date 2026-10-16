@@ -1962,17 +1962,24 @@ checkpoint; its later consistency proof is separate.
 For the now-adopted ordinary numeric byte Value fix, read
 `toolkit-cli/docs/ordinary-level-value.md`. Its adopted branch separately passed
 exact source 12 and fresh installed mock 6/daemon 6 cases with the current
-runner; issue 131 remains open pending merge. Earlier isolated 13 library/source
-12/installed mock 6/daemon 6 and four Rust gates remain distinct epochs. Neither
-focused proof executes the full 1,062-ID declaration plus seven whole modules. Canonical numeric DBGET/DBSETSAFE Value validates
+runner. The separate resilience checkpoint at
+`toolkit-cli/docs/acceptance/2026-10-05-ordinary-level-resilience/report.md` passed
+source five and fresh installed mock two/daemon three cases for public NetVar
+child-Level edits, lost successful Value/save receipts and disk-backed restart.
+Issue 131 remains open pending merge/required CI at that checkpoint. Earlier
+isolated 13 library/source 12/installed mock 6/daemon 6 and four Rust gates remain
+distinct epochs. These focused proofs do not execute the full configured 1,067
+explicit identities plus seven whole modules. Canonical numeric DBGET/DBSETSAFE Value validates
 one complete selected-project typed owner and coherent parent/pending/mirrors
 before staging the existing issued-OID byte initializer. Numeric/OID/whole-XML
 readbacks must agree. A conflicting global OID cache is tolerated only if a
 present coherent loaded unassociated owner with that OID explains its exact
 byte; this is not historical-writer provenance. Stale/competing ownership
 refuses without repair. Unsafe DBSET, Unit/shared-OID and associated raw owners
-retain their existing dispatch. Native raw/NULL/lexical/error policy remains
-open; never relabel the retained numeric false-success capture as a fixture error.
+retain their existing dispatch. Owned byte/raw/NULL policy is source-backed;
+new native execution is not its closure precondition. Exact native equivalence
+remains separate. Never relabel the retained numeric false-success capture as a
+fixture error.
 
 ### PP administration and PROGRAMMER queues
 

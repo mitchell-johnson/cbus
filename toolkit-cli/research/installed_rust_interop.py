@@ -777,6 +777,7 @@ def main(argv=None):
         base_env = clean_environment()
         base_env.update(CBUS_CGATE_MOCK_BIN=str(args.mock_bin.absolute()),
                         CBUS_CMQTTD_BIN=str(args.cmqttd_bin.absolute()),
+                        CBUS_TOOLKIT_ACCEPTANCE_WHEEL=str(wheel.absolute()),
                         PATH=str(python.parent) + os.pathsep + base_env.get("PATH", ""),
                         PYTHONPATH=str(stage_toolkit) + os.pathsep + str(stage_toolkit / "tests"))
         temporary = output / "tmp"
