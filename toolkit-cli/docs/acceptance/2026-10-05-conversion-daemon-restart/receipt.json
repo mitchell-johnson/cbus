@@ -1,0 +1,349 @@
+{
+  "actual_restart_wire_counts_per_epoch": {
+    "cli_calls": 6,
+    "cli_exit_zero": 5,
+    "closed_connections": 10,
+    "expected_uncertain_cli_exit_one": 1,
+    "full_xml_responses": 69,
+    "later_pci_frames": 0,
+    "owned_rust_children_reaped": 4,
+    "startup_pci_frames": 32,
+    "tagged_requests": 364
+  },
+  "code_commit": "bf237341cd96662bf0f7e74cc1caa53280aa9503",
+  "date": "2026-10-05",
+  "declared_selection": {
+    "all_1121_prior_ids_order_preserved": true,
+    "daemon": 571,
+    "explicit_ids": 1123,
+    "full_declaration_execution_claimed": false,
+    "mock": 552,
+    "whole_modules": 7
+  },
+  "format": "cbus-conversion-xml-daemon-restart-acceptance-v1",
+  "independent_semantic_readback": {
+    "bytes": 10507,
+    "logical_name": "durability-source-review1/actual-source-wheel-review-v1.json",
+    "sha256": "ae97d993d2c2c8ed67f03d5bd70bbfc17c46fd14d0d98b4e838da04f0493e655",
+    "source_and_fresh_wheel_checked": true
+  },
+  "installed_wheel": {
+    "binaries_quiet": true,
+    "body_origins": {
+      "origin_records": 1142,
+      "owned_rust_children": 4,
+      "owned_rust_reaped": 4,
+      "product_import_events": 1128,
+      "python_processes": 7,
+      "scope": "guarded Python launches and observed product module loads",
+      "violations": 0
+    },
+    "commands": [
+      {
+        "exit": 0,
+        "name": "create-builder"
+      },
+      {
+        "exit": 0,
+        "name": "build-wheel"
+      },
+      {
+        "exit": 0,
+        "name": "create-installed"
+      },
+      {
+        "exit": 0,
+        "name": "install-wheel"
+      },
+      {
+        "exit": 0,
+        "name": "daemon-collect"
+      },
+      {
+        "exit": 0,
+        "name": "daemon-pytest"
+      },
+      {
+        "exit": 0,
+        "name": "installed-console-help"
+      }
+    ],
+    "errors": 0,
+    "failures": 0,
+    "input_count": 4218,
+    "package_equal_before_after": true,
+    "package_files": 397,
+    "parents_passed": 2,
+    "record_entries": 408,
+    "reference_quiet": true,
+    "scope": "focused-explicit-subset",
+    "seconds": 14.270136709004873,
+    "selected_ids": [
+      "tests/test_conversion_xml_restart_backends.py::test_public_conversion_completed_journal_daemon_restart_preserves_xml",
+      "tests/test_conversion_xml_restart_backends.py::test_public_conversion_lost_save_daemon_restart_keeps_uncertainty"
+    ],
+    "separate_subtest_events_passed": 0,
+    "skips": 0,
+    "source_after": {
+      "bytes": 751123,
+      "logical_name": "root-wheel-restart-v1/source-after.json",
+      "sha256": "74f4f59b074d28387042f2afec270ca5eb509c1ee6c9b23a9bbc95c31e82e8a5"
+    },
+    "source_before": {
+      "bytes": 751123,
+      "logical_name": "root-wheel-restart-v1/source-before.json",
+      "sha256": "74f4f59b074d28387042f2afec270ca5eb509c1ee6c9b23a9bbc95c31e82e8a5"
+    },
+    "source_quiet": true,
+    "summary": {
+      "bytes": 630434,
+      "logical_name": "root-wheel-restart-v1/summary.json",
+      "sha256": "c070241c173a50b1a8914fe7f55900b7bd5e7411f86a75da8ebe5d5863b591c8"
+    },
+    "wheel": {
+      "bytes": 3020201,
+      "sha256": "f74d9d8495f9cbdd38bdcb23591e3bad6c1fe3ee1b9d830fd0cdc61633736c59"
+    }
+  },
+  "metadata_refresh": {
+    "all_exit_zero": true,
+    "allowed_outputs": 11,
+    "changed_outputs": 10,
+    "commands": 18,
+    "independent_readback": {
+      "bytes": 17376,
+      "logical_name": "conversionparallel1/six-restart-refresh-actual-readback1/terminal-readback-v1.json",
+      "sha256": "716fb28cc3f35abfa10cb8a4f620ca8c0d6c75a6c1b2bf36c37096bcaa08c9d1"
+    },
+    "input_count": 4218,
+    "protected_historical_receipts": 8,
+    "registration_metadata_readback": {
+      "bytes": 5583,
+      "logical_name": "conversionparallel1/six-restart-refresh-actual-readback1/registration-metadata-actual-v1.json",
+      "sha256": "215beb85c5e76361c2f2c527408ca22bd12855885d58cd08ebaa89135badf437"
+    },
+    "rust_inputs": 484,
+    "summary": {
+      "bytes": 19472,
+      "logical_name": "root-six-restart-refresh1/summary.json",
+      "sha256": "8fe0b0ce4a56f3b1088842515cc02a433e46c0fbc5af15f08f426094a9677a75"
+    }
+  },
+  "restart_contract": {
+    "current_and_saved_xml_independently_read": true,
+    "daemon_processes_per_case": 2,
+    "distinct_pids_and_workdirs": true,
+    "full_xml_oid_unrelated_tree_preserved": true,
+    "house_io": false,
+    "journal_and_marker_bytes_unchanged": true,
+    "later_pci_frames": 0,
+    "lost_successful_save200_forwarded_once": true,
+    "original_journal_endpoint_retained": true,
+    "restart_reseed_import_or_save_count": 0,
+    "shared_explicit_state_file": true,
+    "target_and_backup_pp_independently_loaded_before_after_close_load": true,
+    "uncertain_journal_never_upgraded": true
+  },
+  "rust": {
+    "all_484_proof_inputs_exact": true,
+    "new_cargo_execution": false,
+    "pair": {
+      "daemon": {
+        "bytes": 55361368,
+        "sha256": "9837c9a7eacda88d4562a54836c22f4a948faafe1fd6d1c4685d1e122cf7b756"
+      },
+      "mock": {
+        "bytes": 18892104,
+        "sha256": "323c88858096ae2f1ffdcd02b1b16ea3ba7360bb8355d5f6d551ae49c7d78ed8"
+      }
+    },
+    "source_changes": false
+  },
+  "scope_limits": [
+    "Graceful owned cmqttd process restart, not power loss or hardware power-cycle.",
+    "Mock database and FILE archives are process-local; no mock persistence claim.",
+    "The 54 earlier PR138 cases remain a separate historical acceptance epoch; no combined fresh56 run.",
+    "Required hosted CI/main merge, original Toolkit/native importer and hardware acceptance remain separate.",
+    "The global parity gate remains incomplete; no overall completion percentage.",
+    "The pre-restart state-file image is retained as a test-recorded hash/size checkpoint only; raw current/saved XML and final state are retained. No independent full-state byte identity across restart is claimed."
+  ],
+  "source_epochs": {
+    "root-restart-metadata1": {
+      "artifacts": [
+        {
+          "bytes": 55684,
+          "logical_name": "root-restart-metadata1/junit.xml",
+          "sha256": "6a1636723714e4ab0fcd28fb1e3aadf8d28adfcf87ad663af16867b72ecac8a4"
+        },
+        {
+          "bytes": 157435,
+          "logical_name": "root-restart-metadata1/trace.json",
+          "sha256": "94770a95566e3b0390df8afa1ee7b147be25e014144548bd1c6ed416a53eb663"
+        },
+        {
+          "bytes": 200345,
+          "logical_name": "root-restart-metadata1/audit.json",
+          "sha256": "daf3a1c473097c3bf5624079797a6d2c084de074d4ef1253ed870c426cdb4d76"
+        },
+        {
+          "bytes": 56,
+          "logical_name": "root-restart-metadata1/terminal.json",
+          "sha256": "a389b115d50d0dcabf920c6d0c46e7c10165e389f48a88df53f5388848a2a44a"
+        }
+      ],
+      "errors": 0,
+      "failures": 0,
+      "input_count": 4218,
+      "inputs_quiet": true,
+      "parents_passed": 157,
+      "separate_subtest_events_passed": 550,
+      "skips": 0
+    },
+    "root-restart-registration1": {
+      "artifacts": [
+        {
+          "bytes": 60183,
+          "logical_name": "root-restart-registration1/junit.xml",
+          "sha256": "ad13be65c6472d6e7a9cd755d0acf544e585382ebbd470608f39976a5ef8f4da"
+        },
+        {
+          "bytes": 73312,
+          "logical_name": "root-restart-registration1/trace.json",
+          "sha256": "c726a156c2fe6fe4f2c9836453a27d1382df02d1b891731e9bea8d9eb255b9fe"
+        },
+        {
+          "bytes": 107203,
+          "logical_name": "root-restart-registration1/audit.json",
+          "sha256": "30a1fd3308d391280ab6664297491819a436fca93e12b3824f2b499b05c679b9"
+        },
+        {
+          "bytes": 56,
+          "logical_name": "root-restart-registration1/terminal.json",
+          "sha256": "db160e40251adca75830056bef949ef64f4d0607ba11023156a068e2277196e4"
+        }
+      ],
+      "errors": 0,
+      "failures": 0,
+      "input_count": 4218,
+      "inputs_quiet": true,
+      "parents_passed": 181,
+      "separate_subtest_events_passed": 14,
+      "skips": 0
+    },
+    "root-restart-source1": {
+      "artifacts": [
+        {
+          "bytes": 1415,
+          "logical_name": "root-restart-source1/junit.xml",
+          "sha256": "7966166a676d99385538774a26368e6a0e6ce6e77be62e058eacfb205653bdc4"
+        },
+        {
+          "bytes": 978,
+          "logical_name": "root-restart-source1/trace.json",
+          "sha256": "52d2aa4c4900ee0054686864d508e59c10347139aed008fd933ac79785c57e22"
+        },
+        {
+          "bytes": 1994,
+          "logical_name": "root-restart-source1/audit.json",
+          "sha256": "91cb6fa5215da566ab69ac1e5fa075abf67842655bfbae7320f14843cff7578f"
+        },
+        {
+          "bytes": 56,
+          "logical_name": "root-restart-source1/terminal.json",
+          "sha256": "d703684c318701d33c8b1fbda6cc86aa7f844bb13f98a0a1a7a29ac347526d43"
+        }
+      ],
+      "errors": 0,
+      "failures": 0,
+      "input_count": 4218,
+      "inputs_quiet": true,
+      "parents_passed": 2,
+      "separate_subtest_events_passed": 0,
+      "skips": 0
+    }
+  },
+  "source_pins": {
+    ".agents/skills/cbus-cli/references/toolkit.md": {
+      "bytes": 89183,
+      "sha256": "e284a1651bebe1046fb161b1b51bf0be0ea8c9e8746e3f4be3f2c7130e717379"
+    },
+    ".github/workflows/ci.yml": {
+      "bytes": 33353,
+      "sha256": "34a99b51005ef6a680c91c0d2ce30017b3f815345f16e6a65951a4756bdb4dce"
+    },
+    "README.md": {
+      "bytes": 83564,
+      "sha256": "5b6c64b18fed5cc299557b79124712227b440e42f59277b7636a0158d14127d3"
+    },
+    "toolkit-cli/Makefile": {
+      "bytes": 165788,
+      "sha256": "a7c4e84ca94ee7983a5b4c4e30b6cddea9af06c5b89112841bd238ff04576995"
+    },
+    "toolkit-cli/docs/conversion-xml-preservation.md": {
+      "bytes": 5407,
+      "sha256": "95870fb449d420e4abb8b21ab265a6ddf0d66319b75f6b8850fb9401f3e6c42b"
+    },
+    "toolkit-cli/docs/installed-rust-interop.md": {
+      "bytes": 5563,
+      "sha256": "8cf4ae702b81f8f7444545605e3e86b6d687dfd0561f5ec022f3153797757e8f"
+    },
+    "toolkit-cli/research/fixtures/cgate-dbsetxml-unit-differential-cmqttd.json": {
+      "bytes": 64998,
+      "sha256": "87d092d6bf04ed607051e512bffc87359ebc5a6b682d5e40a347e362d06c0811"
+    },
+    "toolkit-cli/research/fixtures/cgate-dbsetxml-unit-differential-mock.json": {
+      "bytes": 63093,
+      "sha256": "06580614384c1f0f463eafb8e3d17dfed970ff45315dc4026aef5dcf08999b49"
+    },
+    "toolkit-cli/research/fixtures/cgate-session-differential-cmqttd.json": {
+      "bytes": 37213,
+      "sha256": "1b7289a489e553a65c5b4c94dbf4ec9ce9942e1589f31129c94f61ab44c88895"
+    },
+    "toolkit-cli/research/fixtures/cgate-session-differential-fixed.json": {
+      "bytes": 34845,
+      "sha256": "288dba8abe2d84d539638762ba021d0a378a04a9ee87bf8002b8ab48d1b6aecb"
+    },
+    "toolkit-cli/research/fixtures/cgate-session-physical-applicability.json": {
+      "bytes": 2877,
+      "sha256": "d7ea1ff70d852e3417a7925684c040b6b663028f5670490944e3fa82e1d5deed"
+    },
+    "toolkit-cli/research/fixtures/cgate-tagged-session-differential-cgate-mock.json": {
+      "bytes": 34274,
+      "sha256": "fa0e6915225f3f1f40cdc6285ef9a4e8bbdc5a8a2f2a692dae78afe1be5eae02"
+    },
+    "toolkit-cli/research/fixtures/cgate-tagged-session-differential-cmqttd.json": {
+      "bytes": 36399,
+      "sha256": "d364fabcd8bf5e141dc328af231f1237a46cf21474da55e2837a9792380adf13"
+    },
+    "toolkit-cli/research/release-gates/skip-census.json": {
+      "bytes": 392365,
+      "sha256": "55d139dd56dc1c21c9f1a0b55d04b4e531db17c9a1b4a17aff1dc712630d5379"
+    },
+    "toolkit-cli/src/cbus_toolkit/parity-evidence.json": {
+      "bytes": 34539,
+      "sha256": "7743f1e8fab84c589af3900d4037dc9e22f160090ec7f24059d7a2167978e246"
+    },
+    "toolkit-cli/src/cbus_toolkit/parity-obligations.json": {
+      "bytes": 12931091,
+      "sha256": "344f2824932be9788dde7ab65b20f1ab5d349c9eb6a376a8e4c67079e5026c99"
+    },
+    "toolkit-cli/tests/test_ci_test_results.py": {
+      "bytes": 106787,
+      "sha256": "976ec85556e3d9947608bfd605d754cce5fefadc7a93ff424688bf87ab99cf3f"
+    },
+    "toolkit-cli/tests/test_conversion_xml_restart_backends.py": {
+      "bytes": 22243,
+      "sha256": "c566cd063de0a0b47310657b6ef02b6d794233e581416805f43c159962c6fa5a"
+    },
+    "toolkit-cli/tests/test_installed_rust_interop.py": {
+      "bytes": 56985,
+      "sha256": "1528e81914f2430b79634fe29d1d83ee558e1d0bad5a129425c6f76314910455"
+    },
+    "toolkit-cli/tests/test_installed_rust_interop_matrix.py": {
+      "bytes": 14766,
+      "sha256": "aad0de4d23d08f1b8dd62723e670ab9e324263257d4ea30f8fa1999a25ab285a"
+    }
+  },
+  "tested_overlay_then_committed": true,
+  "tested_parent_revision": "55bd4a85885294aa4678b261d13fd0c33d27591c"
+}

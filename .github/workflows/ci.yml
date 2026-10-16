@@ -139,6 +139,24 @@ jobs:
           --require-module tests/test_senlla_surface.py
           --require-module tests/test_thermostat_remote_references.py
           --require-module tests/test_thermostat_settings.py
+          --require-module tests/test_thermostat_remote_levels.py
+          --require-module tests/test_thermostat_output_groups.py
+          --require-module tests/test_thermostat_output_add.py
+          --require-module tests/test_thermostat_output_add_native.py
+          --require-module tests/test_thermostat_output_edit.py
+          --require-module tests/test_thermostat_output_edit_native.py
+          --require-module tests/test_thermostat_output_edit_opaque_values.py
+          --require-module tests/test_thermostat_output_default_unicode.py
+          --require-module tests/test_thermostat_output_default_ascii_static.py
+          --require-module tests/test_thermostat_damper_controls.py
+          --require-module tests/test_thermostat_plant_types.py
+          --require-module tests/test_thermostat_posted_changes.py
+          --require-module tests/test_thermostat_quick_zone_controls.py
+          --require-module tests/test_thermostat_temperature_model.py
+          --require-module tests/test_thermostat_temperature_owner.py
+          --require-module tests/test_cli_thermostat_damper_controls.py
+          --require-module tests/test_conversion_xml_preservation.py
+          --require-module tests/test_thermostat_zone_controls.py
           --summary "${GITHUB_STEP_SUMMARY}"
 
       - name: Python client against cgate-mock
@@ -196,7 +214,22 @@ jobs:
           --require-module tests/test_cgate_senll_inventory_interop.py
           --require-module tests/test_neo_indicator_editor_backends.py
           --require-module tests/test_thermostat_remote_references_backends.py
+          --require-module tests/test_thermostat_remote_levels_backends.py
+          --require-module tests/test_thermostat_output_groups_backends.py
+          --require-module tests/test_thermostat_output_add_backends.py
+          --require-module tests/test_thermostat_output_edit_backends.py
+          --require-module tests/test_thermostat_output_default_unicode_backends.py
+          --require-module tests/test_thermostat_damper_controls_backends.py
+          --require-module tests/test_thermostat_quick_zone_controls_backends.py
+          --require-module tests/test_thermostat_temperature_owner_backends.py
+          --require-module tests/test_cgl_application_order_backends.py
+          --require-module tests/test_application_copy_safe_backends.py
+          --require-module tests/test_application_safe_set_backends.py
+          --require-module tests/test_ordinary_level_value_backends.py
+          --require-module tests/test_ordinary_level_value_followon_backends.py
           --require-module tests/test_cgate_din_save_interop.py
+          --require-module tests/test_conversion_xml_preservation_backends.py
+          --require-module tests/test_thermostat_zone_controls_backends.py
           --summary "${GITHUB_STEP_SUMMARY}"
 
       - name: Python client against cmqttd
@@ -259,7 +292,23 @@ jobs:
           --require-module tests/test_cgate_senll_inventory_interop.py
           --require-module tests/test_neo_indicator_editor_backends.py
           --require-module tests/test_thermostat_remote_references_backends.py
+          --require-module tests/test_thermostat_remote_levels_backends.py
+          --require-module tests/test_thermostat_output_groups_backends.py
+          --require-module tests/test_thermostat_output_add_backends.py
+          --require-module tests/test_thermostat_output_edit_backends.py
+          --require-module tests/test_thermostat_output_default_unicode_backends.py
+          --require-module tests/test_thermostat_damper_controls_backends.py
+          --require-module tests/test_thermostat_quick_zone_controls_backends.py
+          --require-module tests/test_thermostat_temperature_owner_backends.py
+          --require-module tests/test_cgl_application_order_backends.py
+          --require-module tests/test_application_copy_safe_backends.py
+          --require-module tests/test_application_safe_set_backends.py
+          --require-module tests/test_ordinary_level_value_backends.py
+          --require-module tests/test_ordinary_level_value_followon_backends.py
           --require-module tests/test_cgate_din_save_interop.py
+          --require-module tests/test_conversion_xml_preservation_backends.py
+          --require-module tests/test_thermostat_zone_controls_backends.py
+          --require-module tests/test_conversion_xml_restart_backends.py
           --summary "${GITHUB_STEP_SUMMARY}"
 
       - name: Retain executed Toolkit tests and skips
@@ -352,6 +401,24 @@ jobs:
           --require-module tests/test_senlla_surface.py
           --require-module tests/test_thermostat_remote_references.py
           --require-module tests/test_thermostat_settings.py
+          --require-module tests/test_thermostat_remote_levels.py
+          --require-module tests/test_thermostat_output_groups.py
+          --require-module tests/test_thermostat_output_add.py
+          --require-module tests/test_thermostat_output_add_native.py
+          --require-module tests/test_thermostat_output_edit.py
+          --require-module tests/test_thermostat_output_edit_native.py
+          --require-module tests/test_thermostat_output_edit_opaque_values.py
+          --require-module tests/test_thermostat_output_default_unicode.py
+          --require-module tests/test_thermostat_output_default_ascii_static.py
+          --require-module tests/test_thermostat_damper_controls.py
+          --require-module tests/test_thermostat_plant_types.py
+          --require-module tests/test_thermostat_posted_changes.py
+          --require-module tests/test_thermostat_quick_zone_controls.py
+          --require-module tests/test_thermostat_temperature_model.py
+          --require-module tests/test_thermostat_temperature_owner.py
+          --require-module tests/test_cli_thermostat_damper_controls.py
+          --require-module tests/test_conversion_xml_preservation.py
+          --require-module tests/test_thermostat_zone_controls.py
           --summary "${GITHUB_STEP_SUMMARY}"
 
       - name: Retain installed-wheel tests and provisioning skips
@@ -364,6 +431,92 @@ jobs:
             ${{ runner.temp }}/toolkit-wheel.xml
             ${{ runner.temp }}/toolkit-wheel-trace.json
             ${{ runner.temp }}/toolkit-wheel-results.json
+
+  toolkit-wheel-rust-interop:
+    name: Toolkit installed wheel and Rust interoperability (${{ matrix.backend }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      matrix:
+        backend: [mock, daemon]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: rust
+
+      - name: Build both owned Rust interoperability servers
+        working-directory: toolkit-cli
+        run: make build-interop
+
+      - name: Require complete installed-wheel Rust interoperability selections
+        working-directory: toolkit-cli
+        run: >-
+          make check-wheel-interop WHEEL_PY=python
+          WHEEL_INTEROP_BACKEND=${{ matrix.backend }} WHEEL_INTEROP_TIMEOUT=14400
+          WHEEL_INTEROP_OUTPUT="${RUNNER_TEMP}/toolkit-wheel-rust-interop-${{ matrix.backend }}"
+
+      - name: Retain installed-wheel Rust execution and import evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: toolkit-wheel-rust-interop-${{ matrix.backend }}-${{ github.run_id }}-${{ github.run_attempt }}
+          if-no-files-found: error
+          include-hidden-files: true
+          path: ${{ runner.temp }}/toolkit-wheel-rust-interop-${{ matrix.backend }}
+
+  toolkit-wheel-rust-interop-matrix:
+    name: Toolkit installed wheel and Rust interoperability
+    needs: [toolkit-wheel-rust-interop]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Retrieve full mock backend evidence
+        uses: actions/download-artifact@v4
+        with:
+          name: toolkit-wheel-rust-interop-mock-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/wheel-matrix/mock
+
+      - name: Retrieve full daemon backend evidence
+        if: ${{ always() }}
+        uses: actions/download-artifact@v4
+        with:
+          name: toolkit-wheel-rust-interop-daemon-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/wheel-matrix/daemon
+
+      - name: Require both complete backend epochs and matching input payloads
+        if: ${{ always() }}
+        working-directory: toolkit-cli
+        run: >-
+          python research/installed_rust_interop.py audit-backend-matrix
+          --summary "${RUNNER_TEMP}/wheel-matrix/mock/summary.json"
+          --summary "${RUNNER_TEMP}/wheel-matrix/daemon/summary.json"
+          --output "${RUNNER_TEMP}/wheel-matrix/aggregate/summary.json"
+          --job-result "${{ needs.toolkit-wheel-rust-interop.result }}"
+
+      - name: Retain combined backend audit
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: toolkit-wheel-rust-interop-matrix-${{ github.run_id }}-${{ github.run_attempt }}
+          if-no-files-found: error
+          include-hidden-files: true
+          path: ${{ runner.temp }}/wheel-matrix/aggregate
 
   toolkit-native-release:
     name: Provisioned native release gate

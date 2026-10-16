@@ -1,0 +1,1232 @@
+{
+  "checks": {
+    "0x6186fe": true,
+    "0x618702": true,
+    "0x618736": true,
+    "0x61873b": true,
+    "0x61873e": true,
+    "0x618742": true,
+    "0x618744": true,
+    "0x618748": true,
+    "0x61874b": true,
+    "0x61874e": true,
+    "0x618ffc": true,
+    "0x619002": true,
+    "0x61901d": true,
+    "0x619023": true,
+    "0x6852f9": true,
+    "0x685306": true,
+    "0x68541a": true,
+    "0x685431": true,
+    "0xbbbfd2": true,
+    "0xbbbfe0": true,
+    "0xbbc2de": true,
+    "0xbbc2ee": true,
+    "0xbbda62": true,
+    "0xbc2e4e": true,
+    "0xbc2e53": true,
+    "0xbc2e57": true,
+    "0xbc2e9e": true,
+    "0xbc2eb0": true,
+    "0xbc2eb5": true,
+    "0xbc2eba": true,
+    "0xbc2ec5": true,
+    "0xbc2ecc": true,
+    "0xbc2ed1": true,
+    "0xbc2ef2": true,
+    "0xbc2f28": true,
+    "0xbc2f2f": true,
+    "0xbc2f4c": true,
+    "0xbc2f6c": true,
+    "0xbc2f73": true,
+    "0xbc2f85": true,
+    "0xbc2fa1": true,
+    "0xbc2fc5": true,
+    "0xbc2fd2": true,
+    "0xbc3023": true,
+    "0xbc3065": true,
+    "0xbc30a3": true,
+    "0xbc3291": true,
+    "0xbc329c": true,
+    "0xbc32b1": true,
+    "0xbc32ba": true,
+    "0xbc32c5": true,
+    "0xbc32dc": true,
+    "0xbc32e4": true,
+    "0xbc32f7": true,
+    "0xbc3649": true,
+    "0xbc3655": true,
+    "0xbc5913": true,
+    "0xbc5922": true,
+    "0xbc5954": true,
+    "0xbc595c": true,
+    "0xbc5960": true,
+    "0xbc5980": true,
+    "0xbc59be": true,
+    "0xbc59ef": true,
+    "0xbc5a2f": true,
+    "0xbc5a3e": true,
+    "0xbc5a55": true,
+    "0xbc5a79": true,
+    "0xbc5aa0": true,
+    "0xbc5aa9": true,
+    "0xbc5ab8": true,
+    "0xbc5ac1": true,
+    "0xbc5ad0": true,
+    "0xbc5adf": true,
+    "0xbc5b1b": true,
+    "0xbc5b20": true,
+    "0xbc5b25": true,
+    "0xbc5b3d": true,
+    "0xbc5b52": true,
+    "0xbc5b5e": true,
+    "0xbc5b83": true,
+    "0xbc5b8c": true,
+    "0xbc5b94": true,
+    "0xbc5b9e": true,
+    "0xbc5c17": true,
+    "0xc104aa": true,
+    "0xc104ba": true,
+    "0xf2d20a": true,
+    "0xf47734": true,
+    "0xf47754": true,
+    "0xf47763": true,
+    "CIS_TFlashCxComboBox..TFlashCxComboBox.OnBeforeChange": true,
+    "CIS_TFlashCxComboBox..TFlashCxComboBox.OnCanChangeElement": true,
+    "CIS_TFlashCxComboBox..TFlashCxComboBox.OnChange": true,
+    "CIS_TFlashCxGroupComboBox..TFlashCxGroupComboBox.ActionButtons": true,
+    "CIS_TFlashCxGroupComboBox..TFlashCxGroupComboBox.AllowIfControllerInactive": true,
+    "CIS_TFlashCxGroupComboBox..TFlashCxGroupComboBox.OnAfterButtonAddClick": true,
+    "CIS_TFlashCxGroupComboBox..TFlashCxGroupComboBox.OnBeforeButtonAddClick": true,
+    "TFRMCOOLINGGROUPS.cmbActivationGroup.default_action_buttons": true,
+    "TFRMCOOLINGGROUPS.cmbActivationGroup.no_address_limit_override": true,
+    "TFRMCOOLINGGROUPS.cmbActivationGroup.no_custom_handlers": true,
+    "TFRMCOOLINGGROUPS.cmbFanHighGroup.default_action_buttons": true,
+    "TFRMCOOLINGGROUPS.cmbFanHighGroup.no_address_limit_override": true,
+    "TFRMCOOLINGGROUPS.cmbFanHighGroup.no_custom_handlers": true,
+    "TFRMCOOLINGGROUPS.cmbFanLowGroup.default_action_buttons": true,
+    "TFRMCOOLINGGROUPS.cmbFanLowGroup.no_address_limit_override": true,
+    "TFRMCOOLINGGROUPS.cmbFanLowGroup.no_custom_handlers": true,
+    "TFRMCOOLINGGROUPS.cmbFanMediumGroup.default_action_buttons": true,
+    "TFRMCOOLINGGROUPS.cmbFanMediumGroup.no_address_limit_override": true,
+    "TFRMCOOLINGGROUPS.cmbFanMediumGroup.no_custom_handlers": true,
+    "TFRMCOOLINGGROUPS.cmbStage1Group.default_action_buttons": true,
+    "TFRMCOOLINGGROUPS.cmbStage1Group.no_address_limit_override": true,
+    "TFRMCOOLINGGROUPS.cmbStage1Group.no_custom_handlers": true,
+    "TFRMCOOLINGGROUPS.cmbStage2Group.default_action_buttons": true,
+    "TFRMCOOLINGGROUPS.cmbStage2Group.no_address_limit_override": true,
+    "TFRMCOOLINGGROUPS.cmbStage2Group.no_custom_handlers": true,
+    "TFRMCOOLINGGROUPS.cmbStage3Group.default_action_buttons": true,
+    "TFRMCOOLINGGROUPS.cmbStage3Group.no_address_limit_override": true,
+    "TFRMCOOLINGGROUPS.cmbStage3Group.no_custom_handlers": true,
+    "TFRMCOOLINGGROUPS.group_combo_count": true,
+    "TFRMDAMPERGROUPS.cmbZone1Group.default_action_buttons": true,
+    "TFRMDAMPERGROUPS.cmbZone1Group.no_address_limit_override": true,
+    "TFRMDAMPERGROUPS.cmbZone1Group.no_custom_handlers": true,
+    "TFRMDAMPERGROUPS.cmbZone2Group.default_action_buttons": true,
+    "TFRMDAMPERGROUPS.cmbZone2Group.no_address_limit_override": true,
+    "TFRMDAMPERGROUPS.cmbZone2Group.no_custom_handlers": true,
+    "TFRMDAMPERGROUPS.cmbZone3Group.default_action_buttons": true,
+    "TFRMDAMPERGROUPS.cmbZone3Group.no_address_limit_override": true,
+    "TFRMDAMPERGROUPS.cmbZone3Group.no_custom_handlers": true,
+    "TFRMDAMPERGROUPS.cmbZone4Group.default_action_buttons": true,
+    "TFRMDAMPERGROUPS.cmbZone4Group.no_address_limit_override": true,
+    "TFRMDAMPERGROUPS.cmbZone4Group.no_custom_handlers": true,
+    "TFRMDAMPERGROUPS.group_combo_count": true,
+    "TFRMHEATINGGROUPS.cmbActivationGroup.default_action_buttons": true,
+    "TFRMHEATINGGROUPS.cmbActivationGroup.no_address_limit_override": true,
+    "TFRMHEATINGGROUPS.cmbActivationGroup.no_custom_handlers": true,
+    "TFRMHEATINGGROUPS.cmbFanHighGroup.default_action_buttons": true,
+    "TFRMHEATINGGROUPS.cmbFanHighGroup.no_address_limit_override": true,
+    "TFRMHEATINGGROUPS.cmbFanHighGroup.no_custom_handlers": true,
+    "TFRMHEATINGGROUPS.cmbFanLowGroup.default_action_buttons": true,
+    "TFRMHEATINGGROUPS.cmbFanLowGroup.no_address_limit_override": true,
+    "TFRMHEATINGGROUPS.cmbFanLowGroup.no_custom_handlers": true,
+    "TFRMHEATINGGROUPS.cmbFanMediumGroup.default_action_buttons": true,
+    "TFRMHEATINGGROUPS.cmbFanMediumGroup.no_address_limit_override": true,
+    "TFRMHEATINGGROUPS.cmbFanMediumGroup.no_custom_handlers": true,
+    "TFRMHEATINGGROUPS.cmbStage1Group.default_action_buttons": true,
+    "TFRMHEATINGGROUPS.cmbStage1Group.no_address_limit_override": true,
+    "TFRMHEATINGGROUPS.cmbStage1Group.no_custom_handlers": true,
+    "TFRMHEATINGGROUPS.cmbStage2Group.default_action_buttons": true,
+    "TFRMHEATINGGROUPS.cmbStage2Group.no_address_limit_override": true,
+    "TFRMHEATINGGROUPS.cmbStage2Group.no_custom_handlers": true,
+    "TFRMHEATINGGROUPS.cmbStage3Group.default_action_buttons": true,
+    "TFRMHEATINGGROUPS.cmbStage3Group.no_address_limit_override": true,
+    "TFRMHEATINGGROUPS.cmbStage3Group.no_custom_handlers": true,
+    "TFRMHEATINGGROUPS.group_combo_count": true,
+    "TFRMTHERMOSTATPLANT.cmbInternalRelay1Group.default_action_buttons": true,
+    "TFRMTHERMOSTATPLANT.cmbInternalRelay1Group.no_address_limit_override": true,
+    "TFRMTHERMOSTATPLANT.cmbInternalRelay1Group.no_custom_handlers": true,
+    "TFRMTHERMOSTATPLANT.cmbInternalRelay2Group.default_action_buttons": true,
+    "TFRMTHERMOSTATPLANT.cmbInternalRelay2Group.no_address_limit_override": true,
+    "TFRMTHERMOSTATPLANT.cmbInternalRelay2Group.no_custom_handlers": true,
+    "TFRMTHERMOSTATPLANT.cmbInternalRelay3Group.default_action_buttons": true,
+    "TFRMTHERMOSTATPLANT.cmbInternalRelay3Group.no_address_limit_override": true,
+    "TFRMTHERMOSTATPLANT.cmbInternalRelay3Group.no_custom_handlers": true,
+    "TFRMTHERMOSTATPLANT.cmbInternalRelay4Group.default_action_buttons": true,
+    "TFRMTHERMOSTATPLANT.cmbInternalRelay4Group.no_address_limit_override": true,
+    "TFRMTHERMOSTATPLANT.cmbInternalRelay4Group.no_custom_handlers": true,
+    "TFRMTHERMOSTATPLANT.cmbInternalRelay5Group.default_action_buttons": true,
+    "TFRMTHERMOSTATPLANT.cmbInternalRelay5Group.no_address_limit_override": true,
+    "TFRMTHERMOSTATPLANT.cmbInternalRelay5Group.no_custom_handlers": true,
+    "TFRMTHERMOSTATPLANT.group_combo_count": true,
+    "active_flag_and_not_loading": true,
+    "address_change_name_separator": true,
+    "all_67_thermostat_panel_methods_scanned": true,
+    "app_add_capability_gate": true,
+    "application_reserves255": true,
+    "bound_group_creation_kind": true,
+    "cancel_initialization_has_no_direct_project_tag_read": true,
+    "cancel_modal_result2": true,
+    "constructor_action_buttons_add_edit": true,
+    "default_group_name_literals": true,
+    "duplicate_uses_ascii_uppercase": true,
+    "fresh_instance_zero_fill": true,
+    "group_assignment_seed_format": true,
+    "group_name_unicode_edit_maximum32": true,
+    "inherited_add_virtual_empty": true,
+    "maximum254_when_reserved": true,
+    "no_direct_optional_handler_or_address_limit_writes": true,
+    "numeric_first_free_address_lookup": true,
+    "numeric_first_free_bound": true,
+    "numeric_first_free_capacity": true,
+    "numeric_first_free_starts_zero": true,
+    "ok_connected_workspace_gate": true,
+    "ok_execute_update_bindings": true,
+    "project_inherits_tag_attribute": true,
+    "queued_change_dispatch": true,
+    "tag_attribute_name": true,
+    "wire_add_is_dbadd_not_dbaddsafe": true,
+    "wire_dbset_escapes_tag": true,
+    "wire_dbset_exact_prefix": true,
+    "wire_escape_quote_backslash_only": true,
+    "wire_generic_tag_update": true,
+    "wire_group_address_fields": true,
+    "wire_group_create_then_address": true,
+    "wire_group_project_save_verbs": true,
+    "wire_group_then_generic_tag_save": true,
+    "wire_only_ascii_space_second_pass": true,
+    "wire_quote_slash_double_space_literals": true,
+    "wire_tag_field_exact": true,
+    "wire_tag_update_oid_path": true,
+    "wire_unicode_code_unit_iteration": true
+  },
+  "contract": {
+    "accept_order": [
+      "OK validation",
+      "provisional Address/TagName assignment",
+      "manager Add",
+      "Group save",
+      "bound reference assignment",
+      "list refresh",
+      "queued change"
+    ],
+    "accepted_inputs": [
+      "op",
+      "parameter",
+      "outcome=accept",
+      "optional integer address0..254",
+      "optional final shown name"
+    ],
+    "address_change_rewrite": "empty current name or ASCII-insensitive prefix equal to catalogue noun rewrites noun + space + selected decimal address",
+    "bounds": [
+      "direct cancel only; no cancelled text-entry histories",
+      "integer address outcome; no raw text coercion",
+      "native command/XML name admission is an additional product boundary",
+      "no application migration, output Edit/Delete, zone history, whole original GUI or physical acceptance"
+    ],
+    "cancel_order": [
+      "nonaccept modal result",
+      "free provisional group"
+    ],
+    "cancelled_inputs": [
+      "op",
+      "parameter",
+      "outcome=cancel"
+    ],
+    "control_gate": "existing role gate plus prepared active controller, bound non255 application and GetCanAddGroups",
+    "history": "complete ordinary load then ordered select-output-group/add-output-group operations",
+    "initial_capacity": "first free numeric0..254; no capacity refuses before modal, including direct cancel",
+    "input_order": "initial first-free address/name; optional address selection with default-name rewrite; optional final name edit",
+    "ok_gate": "project installation workspace communicator connected; no physical network-open prerequisite",
+    "source_selection": "clicked combo bound reference; no thermostat Add/veto/custom OnChange handler",
+    "storage_projection": "complete owned preflight, ordered graph materialization and one owning settings save; does not emulate original partial failure prefixes"
+  },
+  "default_name_nouns": {
+    "203": "Enable Network Variable",
+    "48..95": "Group"
+  },
+  "dialog_and_output_controls": {
+    "TFRMCOOLINGGROUPS": {
+      "cmbActivationGroup": {
+        "AllowIfControllerInactive": false,
+        "FlashController.UpdateMode": "umChange",
+        "Properties.OnChange": "cmbGroupChange"
+      },
+      "cmbFanHighGroup": {
+        "AllowIfControllerInactive": false,
+        "FlashController.UpdateMode": "umChange",
+        "Properties.OnChange": "cmbGroupChange"
+      },
+      "cmbFanLowGroup": {
+        "AllowIfControllerInactive": false,
+        "FlashController.UpdateMode": "umChange",
+        "Properties.OnChange": "cmbGroupChange"
+      },
+      "cmbFanMediumGroup": {
+        "AllowIfControllerInactive": false,
+        "FlashController.UpdateMode": "umChange",
+        "Properties.OnChange": "cmbGroupChange"
+      },
+      "cmbStage1Group": {
+        "AllowIfControllerInactive": false,
+        "FlashController.UpdateMode": "umChange",
+        "Properties.OnChange": "cmbGroupChange"
+      },
+      "cmbStage2Group": {
+        "AllowIfControllerInactive": false,
+        "FlashController.UpdateMode": "umChange",
+        "Properties.OnChange": "cmbGroupChange"
+      },
+      "cmbStage3Group": {
+        "AllowIfControllerInactive": false,
+        "FlashController.UpdateMode": "umChange",
+        "Properties.OnChange": "cmbGroupChange"
+      }
+    },
+    "TFRMDAMPERGROUPS": {
+      "cmbZone1Group": {
+        "FlashController.UpdateMode": "umChange",
+        "Properties.OnChange": "cmbGroupChange"
+      },
+      "cmbZone2Group": {
+        "FlashController.UpdateMode": "umChange",
+        "Properties.OnChange": "cmbGroupChange"
+      },
+      "cmbZone3Group": {
+        "FlashController.UpdateMode": "umChange",
+        "Properties.OnChange": "cmbGroupChange"
+      },
+      "cmbZone4Group": {
+        "FlashController.UpdateMode": "umChange",
+        "Properties.OnChange": "cmbGroupChange"
+      }
+    },
+    "TFRMGROUPASSIGN": {
+      "actOK": {
+        "OnExecute": "actOKExecute",
+        "OnUpdate": "actOKUpdate"
+      },
+      "btnCancel": {
+        "ModalResult": 2
+      },
+      "cmbGroupAddress": {
+        "OnChange": "cmbGroupAddressChange"
+      },
+      "edtGroupName": {
+        "MaxLength": 32
+      }
+    },
+    "TFRMHEATINGGROUPS": {
+      "cmbActivationGroup": {
+        "AllowIfControllerInactive": false,
+        "FlashController.UpdateMode": "umChange",
+        "Properties.OnChange": "cmbGroupChange"
+      },
+      "cmbFanHighGroup": {
+        "AllowIfControllerInactive": false,
+        "FlashController.UpdateMode": "umChange",
+        "Properties.OnChange": "cmbGroupChange"
+      },
+      "cmbFanLowGroup": {
+        "AllowIfControllerInactive": false,
+        "FlashController.UpdateMode": "umChange",
+        "Properties.OnChange": "cmbGroupChange"
+      },
+      "cmbFanMediumGroup": {
+        "AllowIfControllerInactive": false,
+        "FlashController.UpdateMode": "umChange",
+        "Properties.OnChange": "cmbGroupChange"
+      },
+      "cmbStage1Group": {
+        "AllowIfControllerInactive": false,
+        "FlashController.UpdateMode": "umChange",
+        "Properties.OnChange": "cmbGroupChange"
+      },
+      "cmbStage2Group": {
+        "AllowIfControllerInactive": false,
+        "FlashController.UpdateMode": "umChange",
+        "Properties.OnChange": "cmbGroupChange"
+      },
+      "cmbStage3Group": {
+        "AllowIfControllerInactive": false,
+        "FlashController.UpdateMode": "umChange",
+        "Properties.OnChange": "cmbGroupChange"
+      }
+    },
+    "TFRMTHERMOSTATPLANT": {
+      "cmbInternalRelay1Group": {
+        "FlashController.UpdateMode": "umChange"
+      },
+      "cmbInternalRelay2Group": {
+        "FlashController.UpdateMode": "umChange"
+      },
+      "cmbInternalRelay3Group": {
+        "FlashController.UpdateMode": "umChange"
+      },
+      "cmbInternalRelay4Group": {
+        "FlashController.UpdateMode": "umChange"
+      },
+      "cmbInternalRelay5Group": {
+        "FlashController.UpdateMode": "umChange"
+      }
+    }
+  },
+  "format": "cbus-thermostat-output-add-static-v1",
+  "handler_scan": {
+    "direct_writes": [],
+    "field_offsets": [
+      "0x4e0",
+      "0x4e4",
+      "0x4e8",
+      "0x4ec",
+      "0x508",
+      "0x50c",
+      "0x530",
+      "0x534",
+      "0x540",
+      "0x544",
+      "0x560",
+      "0x564",
+      "0x519",
+      "0x51a"
+    ],
+    "method_names": [
+      "CIS_TcdThermostatPlant.TcdThermostatPlant.Create",
+      "CIS_TcdThermostatPlant.TcdThermostatPlant.CreateSubForm",
+      "CIS_TcdThermostatPlant.TcdThermostatPlant.Destroy",
+      "CIS_TcdThermostatPlant.TcdThermostatPlant.EnableControlsForMasterDisableForSlave",
+      "CIS_TcdThermostatPlant.TcdThermostatPlant.EnableCycleLimitingControls",
+      "CIS_TcdThermostatPlant.TcdThermostatPlant.EnableDisablePlantModes",
+      "CIS_TcdThermostatPlant.TcdThermostatPlant.EnableDisableVentPlantType",
+      "CIS_TcdThermostatPlant.TcdThermostatPlant.EnableDisableZone",
+      "CIS_TcdThermostatPlant.TcdThermostatPlant.GetPlantForm",
+      "CIS_TcdThermostatPlant.TcdThermostatPlant.HandleCoolingGroupsClick",
+      "CIS_TcdThermostatPlant.TcdThermostatPlant.HandleCoolingGroupsUpdate",
+      "CIS_TcdThermostatPlant.TcdThermostatPlant.HandleDamperGroupsClick",
+      "CIS_TcdThermostatPlant.TcdThermostatPlant.HandleDamperGroupsUpdate",
+      "CIS_TcdThermostatPlant.TcdThermostatPlant.HandleEvaporativeCoolingClick",
+      "CIS_TcdThermostatPlant.TcdThermostatPlant.HandleEvaporativeCoolingUpdate",
+      "CIS_TcdThermostatPlant.TcdThermostatPlant.HandleFanCoilClick",
+      "CIS_TcdThermostatPlant.TcdThermostatPlant.HandleFanCoilUpdate",
+      "CIS_TcdThermostatPlant.TcdThermostatPlant.HandleFanSpeedsClick",
+      "CIS_TcdThermostatPlant.TcdThermostatPlant.HandleFanSpeedsUpdate",
+      "CIS_TcdThermostatPlant.TcdThermostatPlant.HandleHeatingGroupsClick",
+      "CIS_TcdThermostatPlant.TcdThermostatPlant.HandleHeatingGroupsUpdate",
+      "CIS_TcdThermostatPlant.TcdThermostatPlant.HandleInternalPlantTypeAfterChange",
+      "CIS_TcdThermostatPlant.TcdThermostatPlant.HandleInternalPlantTypeBeforeChange",
+      "CIS_TcdThermostatPlant.TcdThermostatPlant.HandlePlantCycleTimeChange",
+      "CIS_TcdThermostatPlant.TcdThermostatPlant.HandlePlantMinimumTimeChange",
+      "CIS_TcdThermostatPlant.TcdThermostatPlant.HandlePlantModeCoolClick",
+      "CIS_TcdThermostatPlant.TcdThermostatPlant.HandlePlantModeHeatClick",
+      "CIS_TcdThermostatPlant.TcdThermostatPlant.HandlePlantModeHeatCoolClick",
+      "CIS_TcdThermostatPlant.TcdThermostatPlant.HandlePlantModeVentClick",
+      "CIS_TcdThermostatPlant.TcdThermostatPlant.HandlePlantUnswitchedZoneClick",
+      "CIS_TcdThermostatPlant.TcdThermostatPlant.HandleVentPlantTypeIncludeItem",
+      "CIS_TcdThermostatPlant.TcdThermostatPlant.Initialise",
+      "CIS_TcdThermostatPlant.TcdThermostatPlant.PopulateComboListWithTimeValues",
+      "CIS_TcdThermostatPlant.TcdThermostatPlant.ResetControls",
+      "CIS_TcdThermostatPlant.TcdThermostatPlant.SetupComponents",
+      "CIS_TcdThermostatPlant.TcdThermostatPlant.SetupFlashComponents",
+      "CIS_TcdThermostatPlant.TcdThermostatPlant.UpdateApplicationLink",
+      "CIS_TcdThermostatPlant.TcdThermostatPlant.UpdateParametersToMatchPlantType",
+      "CIS_TcdThermostatPlant.TcdThermostatPlant.UpdateVentPlantType",
+      "CIS_TfrmThermostatCoolingGroups.TfrmCoolingGroups.AfterConstruction",
+      "CIS_TfrmThermostatCoolingGroups.TfrmCoolingGroups.FormShow",
+      "CIS_TfrmThermostatCoolingGroups.TfrmCoolingGroups.HandleAfterShow",
+      "CIS_TfrmThermostatCoolingGroups.TfrmCoolingGroups.HandleFanHighGroupIncludeItem",
+      "CIS_TfrmThermostatCoolingGroups.TfrmCoolingGroups.HandleFanLowGroupIncludeItem",
+      "CIS_TfrmThermostatCoolingGroups.TfrmCoolingGroups.HandleFanMediumGroupIncludeItem",
+      "CIS_TfrmThermostatCoolingGroups.TfrmCoolingGroups.SetupComponents",
+      "CIS_TfrmThermostatCoolingGroups.TfrmCoolingGroups.SetupFlashComponents",
+      "CIS_TfrmThermostatCoolingGroups.TfrmCoolingGroups.btnHelpClick",
+      "CIS_TfrmThermostatCoolingGroups.TfrmCoolingGroups.cmbGroupChange",
+      "CIS_TfrmThermostatDamperGroups.TfrmDamperGroups.AfterConstruction",
+      "CIS_TfrmThermostatDamperGroups.TfrmDamperGroups.FormShow",
+      "CIS_TfrmThermostatDamperGroups.TfrmDamperGroups.HandleAfterShow",
+      "CIS_TfrmThermostatDamperGroups.TfrmDamperGroups.SetupFlashComponents",
+      "CIS_TfrmThermostatDamperGroups.TfrmDamperGroups.btnHelpClick",
+      "CIS_TfrmThermostatDamperGroups.TfrmDamperGroups.chbEnableDamperModulationClick",
+      "CIS_TfrmThermostatDamperGroups.TfrmDamperGroups.cmbGroupChange",
+      "CIS_TfrmThermostatHeatingGroups.TfrmHeatingGroups.AfterConstruction",
+      "CIS_TfrmThermostatHeatingGroups.TfrmHeatingGroups.EnableDisableCombos",
+      "CIS_TfrmThermostatHeatingGroups.TfrmHeatingGroups.FormShow",
+      "CIS_TfrmThermostatHeatingGroups.TfrmHeatingGroups.HandleAfterShow",
+      "CIS_TfrmThermostatHeatingGroups.TfrmHeatingGroups.HandleFanHighGroupIncludeItem",
+      "CIS_TfrmThermostatHeatingGroups.TfrmHeatingGroups.HandleFanLowGroupIncludeItem",
+      "CIS_TfrmThermostatHeatingGroups.TfrmHeatingGroups.HandleFanMediumGroupIncludeItem",
+      "CIS_TfrmThermostatHeatingGroups.TfrmHeatingGroups.SetupComponents",
+      "CIS_TfrmThermostatHeatingGroups.TfrmHeatingGroups.SetupFlashComponents",
+      "CIS_TfrmThermostatHeatingGroups.TfrmHeatingGroups.btnHelpClick",
+      "CIS_TfrmThermostatHeatingGroups.TfrmHeatingGroups.cmbGroupChange"
+    ],
+    "scope": "syntactic direct writes, composed with fresh zero-fill and DFM absence"
+  },
+  "method_spans": {
+    "CIS_FlashGUI.PrepareFlashCxGroupComboBox": {
+      "address": "0xc103a4",
+      "end": "0xc1052c",
+      "sha256": "cb6b7ad9367469cfeda5748b05f3dd4f65739b2a4ff59ba875cae71c96a95128"
+    },
+    "CIS_Handles.TFlashExpressionController.GetActive": {
+      "address": "0x84dcac",
+      "end": "0x84dcdc",
+      "sha256": "8f7d9571a3eba2f41169d875d944fc91662b34ad0717e2fc98427db7c8b2e657"
+    },
+    "CIS_Handles.TFlashExpressionController.SetActive": {
+      "address": "0x84de00",
+      "end": "0x84de64",
+      "sha256": "c68d7335d1464ae4ef0ad248f1c194fd134039dde911ba71d06c6802224b3ebf"
+    },
+    "CIS_Strings.TagStringToCgateString": {
+      "address": "0x7b8cd8",
+      "end": "0x7b8f1c",
+      "sha256": "43b03ab93b600363bd6225a49508de5572809dbaa17b8dceb4ebe7f3d4b0d80d"
+    },
+    "CIS_TCBusGroupCGateAgent.TCBusGroupCGateAgent.AgentSave": {
+      "address": "0x1210d28",
+      "end": "0x1210ec4",
+      "sha256": "88b10b4d543b77a8a0ed05b87562a247ca36ec099d6be2dd0d2606b4537b0137"
+    },
+    "CIS_TCBusGroupCGateAgent.TCBusGroupCGateAgent.CreateGroup": {
+      "address": "0x1210f3c",
+      "end": "0x1211010",
+      "sha256": "0b8aadea6e3fe603b08ff7cb3e0f700fb42ffbeaa9dd4c7dae32dae0e5800b6c"
+    },
+    "CIS_TCBusObject.TCGateObject.InternalCreate": {
+      "address": "0xf47718",
+      "end": "0xf47880",
+      "sha256": "4f01608515a4aa6f5c989179f9eb001c39157861197fa9bfee3755f93370e260"
+    },
+    "CIS_TCGateAgent.TCGateAgent.AgentSave": {
+      "address": "0xcac354",
+      "end": "0xcac3bc",
+      "sha256": "8996d2b5923db1df9b14d91281ff07fe54adef66363c6e7bad558250d877c289"
+    },
+    "CIS_TCGateAgent.TCGateAgent.CGateAdd": {
+      "address": "0xcac698",
+      "end": "0xcac8c8",
+      "sha256": "01d46a10ced372f6188aadc40182d4bc2c7f8ad22b8f804a39be8b36a02a2af9"
+    },
+    "CIS_TCGateAgent.TCGateAgent.CommandDBAdd": {
+      "address": "0xcad208",
+      "end": "0xcad3a8",
+      "sha256": "26a750e37de1384c27f5145a1fdbeb999cb81bd5a23b28545f7abd5ec9cb8caf"
+    },
+    "CIS_TCGateAgent.TCGateAgent.CommandDBSet": {
+      "address": "0xcac928",
+      "end": "0xcacaf0",
+      "sha256": "6b426870691e983d78a22c72c06974511c65c0cfbf8a42cb46841f02a394bbaf"
+    },
+    "CIS_TCGateAgent.TCGateAgent.UpdateCGateValue": {
+      "address": "0xcac504",
+      "end": "0xcac614",
+      "sha256": "2ee8f07f61c598bf53a43eb1a8f44cb857094519d52069b877fe770d4123211a"
+    },
+    "CIS_TCGateAgent.TCGateAgent.UpdateTag": {
+      "address": "0xcac614",
+      "end": "0xcac698",
+      "sha256": "135697688217d9c33e59a8bf40cf57f3cf6e46e97c01d3eabfb59ea5885a8dd3"
+    },
+    "CIS_TCommonCBus.TCBUSApplication.GetCanAddGroups": {
+      "address": "0xf26108",
+      "end": "0xf26174",
+      "sha256": "3e453ce7f05420aefb8d0a5fb993d59d207b8b3e63db80e66e23081a47e4df76"
+    },
+    "CIS_TCommonCBus.TCBUSApplication.GetDefaultGroupName": {
+      "address": "0xf254a4",
+      "end": "0xf25508",
+      "sha256": "5f20bd42460f38cc0c3a7e88ee9558637890272b40501e14ffe2e06c337941ff"
+    },
+    "CIS_TCommonCBus.TCBUSApplication.GetHasReservedGroupAddress255": {
+      "address": "0xf261dc",
+      "end": "0xf261f0",
+      "sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    "CIS_TCommonCBus.TCBusGroupManager.GetMaximumPossibleAddress": {
+      "address": "0xf28a58",
+      "end": "0xf28a8c",
+      "sha256": "766343aa5ad4b64969052f7e9f7c09c7a6bba3d493bd0560e425267c72476664"
+    },
+    "CIS_TCommonCBus.TCBusGroupManager.GetNextAvailableAddress": {
+      "address": "0xf289fc",
+      "end": "0xf28a58",
+      "sha256": "86d97f9573fd455b1ace8d5c2bb0fa8cb561faf611d45d824114eed6d53f0db7"
+    },
+    "CIS_TCommonCBus.TCBusGroupManager.GroupByAddressExclude": {
+      "address": "0xf28d10",
+      "end": "0xf28d7c",
+      "sha256": "de132e634835a15c14207e5da78c5ee56b88a8a18d2a0bee4ea06161eabb36d2"
+    },
+    "CIS_TCommonCBus.TCBusGroupManager.GroupByTagNameExclude": {
+      "address": "0xf28e28",
+      "end": "0xf28f34",
+      "sha256": "e139064e84418d513365ba3316eeeb301dce1498bff6182b82505012bb68933c"
+    },
+    "CIS_TCommonCBus.TProject.InternalCreate": {
+      "address": "0xf2d200",
+      "end": "0xf2d300",
+      "sha256": "0c775d895ca3e93d36c08e2e07ee04550c93fbce0db7c3dc83b8117296ba143a"
+    },
+    "CIS_TFlashCxActionComboBox.TCustomFlashCxActionComboBox.Create": {
+      "address": "0xbbd9fc",
+      "end": "0xbbdd40",
+      "sha256": "a19cb6478e5711fa20b2289bea6f2c3d5688c035dc178fdbc8388d1791d42aba"
+    },
+    "CIS_TFlashCxActionComboBox.TCustomFlashCxActionComboBox.DoButtonAddClick": {
+      "address": "0xbbe45c",
+      "end": "0xbbe46c",
+      "sha256": "ffbe5d93e7a04e08345a2b8ed94a0d88abbd8cf94c102206779f88186dc07f1a"
+    },
+    "CIS_TFlashCxActionComboBox.TCustomFlashCxActionComboBox.HandleButtonAddClick": {
+      "address": "0xbbe2ac",
+      "end": "0xbbe318",
+      "sha256": "f29bab33aa2051e7a6f8443ce36e56a26afba2bc61f225797f2fa87bc09c573b"
+    },
+    "CIS_TFlashCxActionComboBox.TCustomFlashCxActionComboBox.UpdateActionButtons": {
+      "address": "0xbbe1d0",
+      "end": "0xbbe2ac",
+      "sha256": "10aa1ff780a64e2e5459900306a4e0bbe58806f5f64ffd5d4fb71b5ed2961a60"
+    },
+    "CIS_TFlashCxComboBox.TFlashCxComboBox.Create": {
+      "address": "0xbbbbe4",
+      "end": "0xbbbd98",
+      "sha256": "08b5e894aac90fbfb70708f95f0dbc90d211a506b756308ff1a71f9724d18648"
+    },
+    "CIS_TFlashCxComboBox.TFlashCxComboBox.DoIndexChange": {
+      "address": "0xbbbee8",
+      "end": "0xbbbff4",
+      "sha256": "6b6afbec815029ae3ccf3dcbdebfb20549a7c83c6948396f97feebc35dd72ea6"
+    },
+    "CIS_TFlashCxComboBox.TFlashCxComboBox.DoOnBeforeChange": {
+      "address": "0xbbc080",
+      "end": "0xbbc0ac",
+      "sha256": "f6287a7f28a700bfb94b42724e5d573d4dfec9a0758a0086076c4a365ec4f65f"
+    },
+    "CIS_TFlashCxComboBox.TFlashCxComboBox.DoOnCanChangeElement": {
+      "address": "0xbbc0ac",
+      "end": "0xbbc108",
+      "sha256": "6fbeb9b167dfd63b2583cb806ff4f4fa2050d81edbabf459c6376fca17c964ac"
+    },
+    "CIS_TFlashCxComboBox.TFlashCxComboBox.HandleComboChange": {
+      "address": "0xbbc158",
+      "end": "0xbbc1c0",
+      "sha256": "12204f0e3aa43f1ab662ceca9bdc5923922f4c63865191d0da33639a03e9fd03"
+    },
+    "CIS_TFlashCxComboBox.TFlashCxComboBox.Loaded": {
+      "address": "0xbbc2b0",
+      "end": "0xbbc2f8",
+      "sha256": "1a1d7e716fa081b4fef2500796ca3666bf0bef51547da0943e77e2568c547dcc"
+    },
+    "CIS_TFlashCxComboBox.TFlashCxComboBox.UpdateEnableState": {
+      "address": "0xbbc898",
+      "end": "0xbbc8d8",
+      "sha256": "93d8f3e6c934e61b0bc638e8dcd55bfe53cea205c7cb13b4c71f30c62ed93076"
+    },
+    "CIS_TFlashCxGroupComboBox.TFlashCxGroupComboBox.Create": {
+      "address": "0xbc497c",
+      "end": "0xbc4bb4",
+      "sha256": "5e4782d4ca653ab463b920e8497ad2d510005034f569ca3b666a89a38a5fab7b"
+    },
+    "CIS_TFlashCxGroupComboBox.TFlashCxGroupComboBox.DoButtonAddClick": {
+      "address": "0xbc58e8",
+      "end": "0xbc5cbc",
+      "sha256": "d842ba913d134e130229eb168f48116f9e8b8f578993f5732749e88d491143e5"
+    },
+    "CIS_TFlashCxGroupComboBox.TFlashCxGroupComboBox.GetCBusApplication": {
+      "address": "0xbc5f50",
+      "end": "0xbc6054",
+      "sha256": "9873628e6f16c5050960d612ca1c61ee4563256ba532e1f520a8a8db418e3015"
+    },
+    "CIS_TFlashCxGroupComboBox.TFlashCxGroupComboBox.UpdateEnableState": {
+      "address": "0xbc54fc",
+      "end": "0xbc58e8",
+      "sha256": "07acaf93a1f94d16d838ebea16e9e4b19d2b28c5408aa07ba9cf608781ebc535"
+    },
+    "CIS_TStandardCBusApplications.CIS_TStandardCBusApplications": {
+      "address": "0x136bc30",
+      "end": "0x136c174",
+      "sha256": "bf0c22d11e4ef357a9c6a5825245ed27aca9ccaaa7c7a62d1e83f3b18fd6c98e"
+    },
+    "CIS_TStandardCBusApplications.TStandardCBusApplications.GetGroupName": {
+      "address": "0x85b2c4",
+      "end": "0x85b30c",
+      "sha256": "0114adf84ee6a600c5a167903295d1d121e7831b8c583edb857df01d34633a8f"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.Create": {
+      "address": "0x1126dbc",
+      "end": "0x1126e48",
+      "sha256": "f2ec7a451a76dcfbafb05e1f30cdb4125c755daffe20dae18825153bdb8886e6"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.CreateSubForm": {
+      "address": "0x11273dc",
+      "end": "0x1127424",
+      "sha256": "3ab9616bae2f271b51ef1b9c59b88b2dddbedd488ee2475ba807778fa1e718e2"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.Destroy": {
+      "address": "0x1126e48",
+      "end": "0x1126f1c",
+      "sha256": "e041c5954d7a2603180abf20a77d5ef764810dda5eca096c4b956b6f4b946947"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.EnableControlsForMasterDisableForSlave": {
+      "address": "0x1129154",
+      "end": "0x11293e0",
+      "sha256": "229303c1e0dc35e1965cf5ae4ec6a3af4c3177b0c353336b0dfc99d4aefd9298"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.EnableCycleLimitingControls": {
+      "address": "0x11293e0",
+      "end": "0x112947c",
+      "sha256": "41ec4941ae8894e0bbd2d9b54b57005080fa6a03e96530644e9bba3ca8034199"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.EnableDisablePlantModes": {
+      "address": "0x1128ef4",
+      "end": "0x1129154",
+      "sha256": "298c3696b04ff794331398eafe4edd5b2994e30ff920879d1c068af82e164f56"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.EnableDisableVentPlantType": {
+      "address": "0x1128e6c",
+      "end": "0x1128ef4",
+      "sha256": "9b84f3d0ac918e9e3b30f3d437c3c9a044522f5f705a6d3e65c49f100bd2e78f"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.EnableDisableZone": {
+      "address": "0x1126f1c",
+      "end": "0x1127000",
+      "sha256": "f25c6f4819ad68bd93b9f3a93acb3156aa4c540b06635df9a5fdbe20ac2508a1"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.GetPlantForm": {
+      "address": "0x1127000",
+      "end": "0x112701c",
+      "sha256": "334d535e49cca9626ece4f15559992114f1106c77467d83a173636c9a67800b9"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.HandleCoolingGroupsClick": {
+      "address": "0x1128d44",
+      "end": "0x1128d74",
+      "sha256": "1e2ac838b9ade61a42888c3f1b66164a5afce6aab069bf567a1e2ac29ca41bd6"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.HandleCoolingGroupsUpdate": {
+      "address": "0x1128d74",
+      "end": "0x1128dbc",
+      "sha256": "2a705374964cbe8bb1d6624287bcdc7023e532d37aba3982be1e90fbae9ec9e9"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.HandleDamperGroupsClick": {
+      "address": "0x11298f8",
+      "end": "0x1129970",
+      "sha256": "d1df08178c99b1195517ecf9a416c155e262f60f38e2889c2e899f4b608588fd"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.HandleDamperGroupsUpdate": {
+      "address": "0x1129970",
+      "end": "0x1129a00",
+      "sha256": "865d0d4f174241f616ec5660e990e3484a65575f6baa9e4dc64569be10cfb807"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.HandleEvaporativeCoolingClick": {
+      "address": "0x1128cd0",
+      "end": "0x1128cf8",
+      "sha256": "8a435c7ba38816225cd33eeab930727feaa683fb6e6851766e7ecaf322006014"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.HandleEvaporativeCoolingUpdate": {
+      "address": "0x1128cf8",
+      "end": "0x1128d44",
+      "sha256": "6ab6153a4dc62e0615c459e7a88af0b8a265e08deb067d66b69d69040bc095d0"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.HandleFanCoilClick": {
+      "address": "0x1128ba0",
+      "end": "0x1128bc8",
+      "sha256": "27b9496b0478f969552d84f1f15d1b39a4d63534cfd946e2367b0cddf5a240ef"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.HandleFanCoilUpdate": {
+      "address": "0x1128bc8",
+      "end": "0x1128c4c",
+      "sha256": "dfbb8534b9322dac9045fdc9e288b09393c6e0a1a461fa28dfad30be08aa815f"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.HandleFanSpeedsClick": {
+      "address": "0x1128c4c",
+      "end": "0x1128c7c",
+      "sha256": "5ab01c9bbe9e7eef1ff1a028e1e9668ce625626095c568e725141e8881cbb3c2"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.HandleFanSpeedsUpdate": {
+      "address": "0x1128c7c",
+      "end": "0x1128cd0",
+      "sha256": "3b56741fa7fa0510f5a4828f686704a57efff16f3cce9030210baea23144f219"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.HandleHeatingGroupsClick": {
+      "address": "0x1128dbc",
+      "end": "0x1128dec",
+      "sha256": "f9dcfed2f92e2fe2f55217c37d1d3f75f27da451ef85a989e0067248263b707e"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.HandleHeatingGroupsUpdate": {
+      "address": "0x1128dec",
+      "end": "0x1128e34",
+      "sha256": "6f1c8aea982f2167816786841b9dc3b5716d7b32fa548cf5707a343d610acbde"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.HandleInternalPlantTypeAfterChange": {
+      "address": "0x112947c",
+      "end": "0x11294c4",
+      "sha256": "5c6418bb35c7b8d54c23cfd1057632051b3d2bbd12d9e0a4d07d6b4ed1e481db"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.HandleInternalPlantTypeBeforeChange": {
+      "address": "0x1128e34",
+      "end": "0x1128e6c",
+      "sha256": "34bc6094cb3e673db150b8d96be00e8365624bd7277aa6ae3d50339aaaba4acb"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.HandlePlantCycleTimeChange": {
+      "address": "0x11287d4",
+      "end": "0x11288bc",
+      "sha256": "acd7860ec2e8a3f3cbb78ade1c18a0e6813a3766eda41666efcf9cfaed37bbed"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.HandlePlantMinimumTimeChange": {
+      "address": "0x11282fc",
+      "end": "0x1128400",
+      "sha256": "abdfd4613b38d1f747cb73d3f276576cde379d5effd69bbff1e96dd79d6d29fd"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.HandlePlantModeCoolClick": {
+      "address": "0x11284c8",
+      "end": "0x1128578",
+      "sha256": "be473b9c35ab6c97f84786b3bb98c52023550e25faeee1ea6db0c05c3bd23e8f"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.HandlePlantModeHeatClick": {
+      "address": "0x1128400",
+      "end": "0x11284c8",
+      "sha256": "d77118efde3df747ab488791ea5de067a3e5b268191c2ece3419f98a92d93bfe"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.HandlePlantModeHeatCoolClick": {
+      "address": "0x1128578",
+      "end": "0x1128628",
+      "sha256": "849bf8ccf6c9b8feb3eecb3fa94bb630a4e6612c6f8227a1c7a636eba5fc64fe"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.HandlePlantModeVentClick": {
+      "address": "0x1128628",
+      "end": "0x11287d4",
+      "sha256": "baad23b32949035023d7f66567b44cb179036f59b20e663a6adc33e2522f2991"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.HandlePlantUnswitchedZoneClick": {
+      "address": "0x1127fd0",
+      "end": "0x1128044",
+      "sha256": "3155fae739f11f59211eba74fec20b0161752cc77e356f3a26e689fefed53b89"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.HandleVentPlantTypeIncludeItem": {
+      "address": "0x1128044",
+      "end": "0x1128184",
+      "sha256": "c85416883d43d4503b56e9db4f4f3993debceeed39e67bf0914ce80c0660b4a7"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.Initialise": {
+      "address": "0x112725c",
+      "end": "0x1127390",
+      "sha256": "f1a9648cf2991a79b234c3013d09783af54c5594d9b2839ab3c3514ad652bc5d"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.PopulateComboListWithTimeValues": {
+      "address": "0x11288bc",
+      "end": "0x11289e4",
+      "sha256": "a5fd13f033c788c4e44c786af9086ba6566e750bcf8d278a1fd138d70dd7492b"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.ResetControls": {
+      "address": "0x112701c",
+      "end": "0x112725c",
+      "sha256": "e99f013df235d58f04966c0651dcb18ad892061cb61560a54e9aafa8d124d8fa"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.SetupComponents": {
+      "address": "0x11289e4",
+      "end": "0x1128ba0",
+      "sha256": "373777b230d098569b2d73ceac0fe5e595772bcb6c51bf5da630508dc226b0b7"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.SetupFlashComponents": {
+      "address": "0x1127424",
+      "end": "0x1127fd0",
+      "sha256": "bfc4bd26f3a1f1d42513a6f8fa29b769498d01f03c290d677da7c09ddcf24cea"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.UpdateApplicationLink": {
+      "address": "0x1127390",
+      "end": "0x11273dc",
+      "sha256": "746a5a28f90773bbbd7424b3ce04587094542544f2d6557c839fc044ff6e89f8"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.UpdateParametersToMatchPlantType": {
+      "address": "0x1129508",
+      "end": "0x11298f8",
+      "sha256": "9582cf39b8e7e2d3a27c69c5d05b88204c24b4e6fec4ef3b061d56c9364c7df4"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.UpdateVentPlantType": {
+      "address": "0x1128184",
+      "end": "0x11282fc",
+      "sha256": "c55920d91b6e66b1dc06266a0d32c037a04061cdcbd7f092dbd7cf5b1f1eba66"
+    },
+    "CIS_TcgcDBAdd.TcgcDBAdd.GenerateCommandText": {
+      "address": "0xcab95c",
+      "end": "0xcab9d4",
+      "sha256": "f42234c7430ed1e0f10cd7a74af3f7d61feb9318020a25a7415e9e875ab2f61a"
+    },
+    "CIS_TcgcDBSet.TcgcDBSet.GenerateCommandText": {
+      "address": "0xcab1d4",
+      "end": "0xcab28c",
+      "sha256": "fd1a76df35160456e43e45ce02cf23679e6100e202048fd917609c791352de4d"
+    },
+    "CIS_TddThermostat.TddThermostat.HandleLightingApplicationChange": {
+      "address": "0x1132f9c",
+      "end": "0x1132fc4",
+      "sha256": "0e9408b3bcaffc907cdc934e6ad7a1d1a40f2b4805c32cb573ac1091fa8c915f"
+    },
+    "CIS_TfrmGroupAssign.TfrmGroupAssign.IsSiteOpen": {
+      "address": "0xbc3168",
+      "end": "0xbc31fc",
+      "sha256": "1789f196fcc92daaeae66915882234455fe492491cff04aded0e200a80b122f7"
+    },
+    "CIS_TfrmGroupAssign.TfrmGroupAssign.SelectedAddress": {
+      "address": "0xbc34b0",
+      "end": "0xbc356c",
+      "sha256": "28ed942c3ba67b1f1a7f6b2578a82529e0c14e2571bd5d08017ec4acf6179622"
+    },
+    "CIS_TfrmGroupAssign.TfrmGroupAssign.SetValues": {
+      "address": "0xbc356c",
+      "end": "0xbc3bd8",
+      "sha256": "2f224395bbd9adefe3d77e61fc6016f740b1f95fc966602e77935ead3a98a359"
+    },
+    "CIS_TfrmGroupAssign.TfrmGroupAssign.actOKExecute": {
+      "address": "0xbc2dc4",
+      "end": "0xbc3140",
+      "sha256": "66949da4b1955973442b25eec8fc1725a14292aa2393a75db4acbf64764c8fd5"
+    },
+    "CIS_TfrmGroupAssign.TfrmGroupAssign.actOKUpdate": {
+      "address": "0xbc3140",
+      "end": "0xbc3168",
+      "sha256": "16afe7b2429113209e35debb0b3ff54e0199ee9c99770e756e0a416972483b6e"
+    },
+    "CIS_TfrmGroupAssign.TfrmGroupAssign.cmbGroupAddressChange": {
+      "address": "0xbc31fc",
+      "end": "0xbc33a0",
+      "sha256": "062b2b2ca004abdc893b06f388045f994711c4c8928d9c0b8652ae1cdaac90ab"
+    },
+    "CIS_TfrmThermostatCoolingGroups.TfrmCoolingGroups.AfterConstruction": {
+      "address": "0x1124ac4",
+      "end": "0x1124b24",
+      "sha256": "5088ff679a44301a0190a097e8ce93c8c45a5a2bf803acc7ee268aa32d050655"
+    },
+    "CIS_TfrmThermostatCoolingGroups.TfrmCoolingGroups.FormShow": {
+      "address": "0x1124b24",
+      "end": "0x1124be8",
+      "sha256": "7d2b9d3669d0c70380ebe466dbfbddcd76a1fd0f3318223427a7da29522baed9"
+    },
+    "CIS_TfrmThermostatCoolingGroups.TfrmCoolingGroups.HandleAfterShow": {
+      "address": "0x1124ff8",
+      "end": "0x1125024",
+      "sha256": "af79ee54fda6773143f63048bbbd94b017b88de02c3d3a6219da4139ab330ab0"
+    },
+    "CIS_TfrmThermostatCoolingGroups.TfrmCoolingGroups.HandleFanHighGroupIncludeItem": {
+      "address": "0x1125024",
+      "end": "0x1125094",
+      "sha256": "08c438e18664e117b14b363587f1252f8a3354baa50f873e62c7a27dc84c2df6"
+    },
+    "CIS_TfrmThermostatCoolingGroups.TfrmCoolingGroups.HandleFanLowGroupIncludeItem": {
+      "address": "0x1125094",
+      "end": "0x1125104",
+      "sha256": "982819b36c9f0ae528d80d4fcdc88590de559a605b0a749566abea417209709d"
+    },
+    "CIS_TfrmThermostatCoolingGroups.TfrmCoolingGroups.HandleFanMediumGroupIncludeItem": {
+      "address": "0x1125104",
+      "end": "0x1125174",
+      "sha256": "0a9de4afed731fde1bba01411661e2ecd05be047076a33dfddc19699c449834a"
+    },
+    "CIS_TfrmThermostatCoolingGroups.TfrmCoolingGroups.SetupComponents": {
+      "address": "0x11252e0",
+      "end": "0x1125474",
+      "sha256": "954cab0b78a498041fbd05cf9ff0a8da80125e1883ed01627734e3c957c69ed8"
+    },
+    "CIS_TfrmThermostatCoolingGroups.TfrmCoolingGroups.SetupFlashComponents": {
+      "address": "0x1124be8",
+      "end": "0x1124fb8",
+      "sha256": "221820a49552d15fd27bda84e0af8be96e0e7403fbbd7de26b02eb4a469a2bd9"
+    },
+    "CIS_TfrmThermostatCoolingGroups.TfrmCoolingGroups.btnHelpClick": {
+      "address": "0x1124fb8",
+      "end": "0x1124ff8",
+      "sha256": "056dc577852d486d602934027cbaeb99edace6cfbd1d4d54baee7c6e159ec665"
+    },
+    "CIS_TfrmThermostatCoolingGroups.TfrmCoolingGroups.cmbGroupChange": {
+      "address": "0x1125174",
+      "end": "0x11252e0",
+      "sha256": "c93386478b00f74452b017f00105e94d20cb99d13e1195450e816961d1e4711c"
+    },
+    "CIS_TfrmThermostatDamperGroups.TfrmDamperGroups.AfterConstruction": {
+      "address": "0x11266b0",
+      "end": "0x1126710",
+      "sha256": "0c9c36595f0918682f7fcde93e627a0c375396128efa2a30798fa694723cb909"
+    },
+    "CIS_TfrmThermostatDamperGroups.TfrmDamperGroups.FormShow": {
+      "address": "0x1126710",
+      "end": "0x112679c",
+      "sha256": "78597bbdd7bee9b18b6ea9dfa6e7e3928af5c36129d3579df1967cc94f52b450"
+    },
+    "CIS_TfrmThermostatDamperGroups.TfrmDamperGroups.HandleAfterShow": {
+      "address": "0x1126a50",
+      "end": "0x1126a7c",
+      "sha256": "dcb9cd16befd485b61cf634bbff34032e7b3ba558c8cb9fc52564308c8dc3811"
+    },
+    "CIS_TfrmThermostatDamperGroups.TfrmDamperGroups.SetupFlashComponents": {
+      "address": "0x112679c",
+      "end": "0x1126a10",
+      "sha256": "935789c07db1c599fad4686b8838094ab76c75e302d9b785375765dcedf9961d"
+    },
+    "CIS_TfrmThermostatDamperGroups.TfrmDamperGroups.btnHelpClick": {
+      "address": "0x1126a10",
+      "end": "0x1126a50",
+      "sha256": "a2d9c5bd5980dc4ef5185fea11a81ab3a3f247251b61397acd97db05398f3359"
+    },
+    "CIS_TfrmThermostatDamperGroups.TfrmDamperGroups.chbEnableDamperModulationClick": {
+      "address": "0x1126a7c",
+      "end": "0x1126ad4",
+      "sha256": "654d5a6455f7a22c1c69af4698d6173a130a634b402de1b1345306c699b9a3b6"
+    },
+    "CIS_TfrmThermostatDamperGroups.TfrmDamperGroups.cmbGroupChange": {
+      "address": "0x1126ad4",
+      "end": "0x1126d0c",
+      "sha256": "680ad5971107afb95ef5e68230043f180c382fa8e1b12258e70dd43ab14a0435"
+    },
+    "CIS_TfrmThermostatHeatingGroups.TfrmHeatingGroups.AfterConstruction": {
+      "address": "0x1125914",
+      "end": "0x1125974",
+      "sha256": "08713e86eb488f8e0c9c76ecb36013f06584acb121b65538db8e1f79c9257f11"
+    },
+    "CIS_TfrmThermostatHeatingGroups.TfrmHeatingGroups.EnableDisableCombos": {
+      "address": "0x1125a40",
+      "end": "0x1125aec",
+      "sha256": "830ade659ae38be9a872d20bb0b7184c404bd217a53f81a28b510a906df620e1"
+    },
+    "CIS_TfrmThermostatHeatingGroups.TfrmHeatingGroups.FormShow": {
+      "address": "0x1125974",
+      "end": "0x1125a40",
+      "sha256": "73d76f1ff2f5767bf24cee8c31ae8eb6d99c7a8f1f13df0592d6c5e26095f613"
+    },
+    "CIS_TfrmThermostatHeatingGroups.TfrmHeatingGroups.HandleAfterShow": {
+      "address": "0x1125fc4",
+      "end": "0x1125ff0",
+      "sha256": "f648bad4dcdb2c54e14519471ceed62a0efcc912e24c69e381809d52c572f6f8"
+    },
+    "CIS_TfrmThermostatHeatingGroups.TfrmHeatingGroups.HandleFanHighGroupIncludeItem": {
+      "address": "0x1125ff0",
+      "end": "0x1126060",
+      "sha256": "9b326bf96c3fbc9e6c34bb411286b8a99dd013685d895f58c46c90215018e6a3"
+    },
+    "CIS_TfrmThermostatHeatingGroups.TfrmHeatingGroups.HandleFanLowGroupIncludeItem": {
+      "address": "0x1126060",
+      "end": "0x11260d0",
+      "sha256": "f03e2724773be84e5e7fc95f24dd3d34301f3d1a5bfefe58d4d77f7ae8b6d17d"
+    },
+    "CIS_TfrmThermostatHeatingGroups.TfrmHeatingGroups.HandleFanMediumGroupIncludeItem": {
+      "address": "0x11260d0",
+      "end": "0x1126140",
+      "sha256": "ff0b9716ac00b4272ebed0cf282b6b3d09bd44a6e17cdc0d02e5e446040db3c7"
+    },
+    "CIS_TfrmThermostatHeatingGroups.TfrmHeatingGroups.SetupComponents": {
+      "address": "0x1125aec",
+      "end": "0x1125bb4",
+      "sha256": "97a46405a8dd0f020aa305aba9f01be119dc8060c68726725d3eaceee4da2770"
+    },
+    "CIS_TfrmThermostatHeatingGroups.TfrmHeatingGroups.SetupFlashComponents": {
+      "address": "0x1125bb4",
+      "end": "0x1125f84",
+      "sha256": "ece66a510ad819d5cff4fbb7786276afb8d9e2abbd5797eea8e5ca3aa3f2f65f"
+    },
+    "CIS_TfrmThermostatHeatingGroups.TfrmHeatingGroups.btnHelpClick": {
+      "address": "0x1125f84",
+      "end": "0x1125fc4",
+      "sha256": "55bf353d39d3e74a3f1f13ad209326162b32dd6726dd18a4cc6d6f0c7cb11f69"
+    },
+    "CIS_TfrmThermostatHeatingGroups.TfrmHeatingGroups.cmbGroupChange": {
+      "address": "0x1126140",
+      "end": "0x11262ac",
+      "sha256": "e2f6e8834d6b2bceff0b2228e1f3c23a26a0e085e9ae3f03dfd996fd248f259a"
+    },
+    "StdCtrls.TCustomEdit.CreateWnd": {
+      "address": "0x685a0c",
+      "end": "0x685b24",
+      "sha256": "dbcf184df715cf6a8c387afe96992e6fce77e39390eaae99b461d76dc5ec3b43"
+    },
+    "StdCtrls.TCustomEdit.DoSetMaxLength": {
+      "address": "0x6852f0",
+      "end": "0x685310",
+      "sha256": "605c6fe6c59dc4c579075f3c8de50d5c9e7d9d93a500ca9dc782943728387afe"
+    },
+    "StdCtrls.TCustomEdit.SetMaxLength": {
+      "address": "0x68540c",
+      "end": "0x68543c",
+      "sha256": "7a09cfdf4a0a3b496978d515984326148afbce3ccccdb614675536ebb2a0bcfc"
+    },
+    "SysUtils.Trim": {
+      "address": "0x618f9c",
+      "end": "0x61905c",
+      "sha256": "46f173e577d12cb0f1549aef9bee0a459a325ecd9561d303ba7d58baaf501a7f"
+    },
+    "SysUtils.UpperCase": {
+      "address": "0x6186e4",
+      "end": "0x61875c",
+      "sha256": "31d49e2c60709181dfc1e9cf67b3f0aeed856589842419b8ba2a7b8fc7205753"
+    },
+    "System.TObject.InitInstance": {
+      "address": "0x60620c",
+      "end": "0x606264",
+      "sha256": "fb7cb3f8df9713f17bd5d9170506b9dba7bd3f7ad43b4e0839aa4ec298c204a7"
+    }
+  },
+  "name_rules": {
+    "distinct_examples": [
+      [
+        "\u00e9",
+        "\u00c9"
+      ],
+      [
+        "stra\u00dfe",
+        "STRASSE"
+      ],
+      [
+        "\u00a0name\u00a0",
+        "name"
+      ]
+    ],
+    "duplicate_name_comparison": "ASCII-only UpperCase on proposed trimmed name and each existing TagName",
+    "maximum_utf16_code_units_before_trim": 32,
+    "other_reserved_names": "No independent reserved label test; address255 is reserved, and existing labels can collide.",
+    "project_tag_comparison": "exact UTF-16 string equality after Trim; accept-only dependency",
+    "trim_code_units_inclusive": [
+      0,
+      32
+    ],
+    "uppercase_transform": {
+      "from_inclusive": [
+        97,
+        122
+      ],
+      "xor": 32
+    },
+    "utf16_length_examples": [
+      {
+        "text": "\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00",
+        "units": 32
+      },
+      {
+        "text": "\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00\ud83d\ude00",
+        "units": 34
+      }
+    ]
+  },
+  "native_vendor_executed": false,
+  "original_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "original_executed": false,
+  "original_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "original_wire_projection": {
+    "boundary": "static original command generation; owned adapter may compose graph staging and one owner save, with fresh identity and exact-name verification",
+    "commands": [
+      "DBAdd parent-application-OID Group",
+      "dbset new-group-OID/Address address",
+      "dbset new-group-OID/TagName encoded-name",
+      "ProjectSave"
+    ],
+    "tag_encoding": {
+      "always_wrap": "double quotes",
+      "conditional_second_pass": "if escaped string contains two consecutive ASCII spaces, prefix every ASCII space with backslash",
+      "escape_character": "\\",
+      "escape_code_units": [
+        34,
+        92
+      ],
+      "other_unicode": "unchanged UTF-16 code units, including NBSP"
+    }
+  },
+  "physical_io": false,
+  "published_properties": {
+    "CIS_TFlashCxActionComboBox..TCustomFlashCxActionComboBox": {},
+    "CIS_TFlashCxComboBox..TFlashCxComboBox": {
+      "OnBeforeChange": {
+        "address": "0xbbba8d",
+        "bytes": 41,
+        "default": 2147483648,
+        "get": "0xff0004e0",
+        "set": "0xff0004e0",
+        "sha256": "fa70305a8c1d51439b9f6a7ac490e9e0de81fcd75e128defb29386c9cda766e0"
+      },
+      "OnCanChangeElement": {
+        "address": "0xbbbad9",
+        "bytes": 45,
+        "default": 2147483648,
+        "get": "0xff000508",
+        "set": "0xff000508",
+        "sha256": "c9c7f1f788c9bd53deb64c1df1cc4ead9147016d6cae98fce23d5967f5f89a96"
+      },
+      "OnChange": {
+        "address": "0xbbbab6",
+        "bytes": 35,
+        "default": 2147483648,
+        "get": "0xff0004e8",
+        "set": "0xff0004e8",
+        "sha256": "4537201b34737c59657b556ecbd8071d5427c16b2bc2a3401875826a07c10b3f"
+      }
+    },
+    "CIS_TFlashCxGroupComboBox..TFlashCxGroupComboBox": {
+      "ActionButtons": {
+        "address": "0xbc4741",
+        "bytes": 40,
+        "default": 3,
+        "get": "0xff000518",
+        "set": "0xbbde68",
+        "sha256": "b89c2c6c24614cc87112c49884d10731bbad2496bd853e1473524b238e8d1414"
+      },
+      "AllowIfControllerInactive": {
+        "address": "0xbc478d",
+        "bytes": 52,
+        "default": 1,
+        "get": "0xff000581",
+        "set": "0xff000581",
+        "sha256": "648c4eba083abcecaf881a91f68fb185fe2c20260d1d124c74f7c47d1009c398"
+      },
+      "OnAfterButtonAddClick": {
+        "address": "0xbc488b",
+        "bytes": 48,
+        "default": 2147483648,
+        "get": "0xff000560",
+        "set": "0xff000560",
+        "sha256": "783480ab99a799ae43a0397ebce15616eb2cc98ab99d70716efbc6a5526de800"
+      },
+      "OnBeforeButtonAddClick": {
+        "address": "0xbc47c1",
+        "bytes": 49,
+        "default": 2147483648,
+        "get": "0xff000540",
+        "set": "0xff000540",
+        "sha256": "51dba501b33451f1711a839a21e30a941b0e172099fc4ffa27bbdd0e907f6008"
+      }
+    }
+  },
+  "queued_change_message": {
+    "id": "0x426",
+    "target": "0xbbc158"
+  },
+  "resources": {
+    "TFRMCOOLINGGROUPS": {
+      "bytes": 18312,
+      "sha256": "109476bdd712164d4ca87d6169853179f917d9942ce32d40453c66598a239411"
+    },
+    "TFRMDAMPERGROUPS": {
+      "bytes": 11353,
+      "sha256": "c72c47427e0081398916158ad9d5c99efac59ef4478ea520ca2b8d2d51bd2a80"
+    },
+    "TFRMGROUPASSIGN": {
+      "bytes": 4089,
+      "sha256": "6efde9adcae0d5a691437f83ac26f8c37d72dda703dc1e1d73782db7f9a1c479"
+    },
+    "TFRMHEATINGGROUPS": {
+      "bytes": 18497,
+      "sha256": "71334ef180569268b0222e12e34f1ca3cc342c5ad4014ac3c4ac14fc72320507"
+    },
+    "TFRMTHERMOSTATPLANT": {
+      "bytes": 11312,
+      "sha256": "a5e27c916fd893329c2e47f28064b4862ae10d20e00550cfbb513aabae682a2c"
+    }
+  }
+}

@@ -180,6 +180,18 @@ passing tests from the cgate-mock module and both cmqttd modules. Provisioned
 native and hardware release gates have separate strict receipts and reject
 missing provision or any skipped selected test.
 
+For installed-wheel Rust interoperability use `make check-wheel-interop` with
+explicit `CGATE_MOCK_BIN`, `CMQTTD_BIN`, `WHEEL_PY` and a new
+`WHEEL_INTEROP_OUTPUT` directory outside the checkout. CI builds both services
+first and runs the complete maintained declaration. Local iteration may use
+exact registered `--select` tokens with `research/installed_rust_interop.py`;
+report that focused scope separately. Read
+`toolkit-cli/docs/installed-rust-interop.md` and its actual execution receipt.
+The guard observes the pytest and Python CLI processes, validates the installed
+package against source/ZIP/RECORD and rejects source fallback or unreaped owned
+children. This is synthetic owned-service evidence, with separate native and
+hardware gates.
+
 For Toolkit changes, create `toolkit-cli/.venv` with Python 3.13 and the
 `test,research,serial,usb` extras, then run `make check`,
 `make check-interop`, and `make check-wheel` from `toolkit-cli/`.

@@ -1,0 +1,2301 @@
+{
+  "checks": {
+    "0x1125a5c": true,
+    "0x1125a5e": true,
+    "0x1125a60": true,
+    "0x1125a62": true,
+    "0x1126f36": true,
+    "0x1126f44": true,
+    "0x1128b25": true,
+    "0x1128b55": true,
+    "0x1128b65": true,
+    "0x1128b98": true,
+    "0x1128d90": true,
+    "0x1128d92": true,
+    "0x1128d94": true,
+    "0x1128d96": true,
+    "0x1128d98": true,
+    "0x1128d9a": true,
+    "0x1128e08": true,
+    "0x1128e0a": true,
+    "0x1128e0c": true,
+    "0x1128e0e": true,
+    "0x1128e10": true,
+    "0x1128e12": true,
+    "0x11292b5": true,
+    "0x11292c9": true,
+    "0x11292dd": true,
+    "0x11292f1": true,
+    "0x1129305": true,
+    "0x1129982": true,
+    "0x1129997": true,
+    "0x11299ac": true,
+    "0x11299c1": true,
+    "0x11299e0": true,
+    "0x11299e2": true,
+    "0x1131b33": true,
+    "0x1131b46": true,
+    "0x1131b4b": true,
+    "0x128dfca": true,
+    "0x128dfdb": true,
+    "0x128dff0": true,
+    "0x128e002": true,
+    "0x128e02d": true,
+    "0x128e098": true,
+    "0x128e0fc": true,
+    "0x128e0ff": true,
+    "0x128e518": true,
+    "0x128eb86": true,
+    "0x128eb88": true,
+    "0x128eb97": true,
+    "0x128ebad": true,
+    "0x128f43f": true,
+    "0x128f44c": true,
+    "0x128f559": true,
+    "0x128f55b": true,
+    "0x128f58f": true,
+    "0x128f591": true,
+    "0x128f5c5": true,
+    "0x128f5c7": true,
+    "0x128f5fb": true,
+    "0x128f5fd": true,
+    "0x128f654": true,
+    "0x129367d": true,
+    "0x1293694": true,
+    "0x1293697": true,
+    "0x129604c": true,
+    "0x1296062": true,
+    "0x12960a6": true,
+    "0x1296134": true,
+    "0x12961c2": true,
+    "0x1296250": true,
+    "0x7ddc34": true,
+    "0x7ddc82": true,
+    "0x7ddc8d": true,
+    "0xfe167a": true,
+    "0xfe1690": true,
+    "0xfe16a6": true,
+    "0xfe1e66": true,
+    "0xfe2865": true,
+    "0xfe286c": true,
+    "0xfe28ae": true,
+    "0xfe28dd": true,
+    "0xfe28ed": true,
+    "0xfe29e9": true,
+    "0xfe2b8b": true,
+    "0xfe2b9a": true,
+    "0xfe2ba3": true,
+    "0xfe6028": true,
+    "0xfe602a": true,
+    "0xfecca5": true,
+    "0xfeda51": true,
+    "0xfeda65": true,
+    "CIS_TThermostat.TPlantControlService.GetDefaultCoolActivationOutputGroupForPlantType_ordinary_false_flag": true,
+    "CIS_TThermostat.TPlantControlService.GetDefaultCoolFanHighOutputGroupForPlantType_ordinary_false_flag": true,
+    "CIS_TThermostat.TPlantControlService.GetDefaultCoolFanLowOutputGroupForPlantType_ordinary_false_flag": true,
+    "CIS_TThermostat.TPlantControlService.GetDefaultCoolFanMediumOutputGroupForPlantType_ordinary_false_flag": true,
+    "CIS_TThermostat.TPlantControlService.GetDefaultCoolStage1OutputGroupForPlantType_ordinary_false_flag": true,
+    "CIS_TThermostat.TPlantControlService.GetDefaultCoolStage2OutputGroupForPlantType_ordinary_false_flag": true,
+    "CIS_TThermostat.TPlantControlService.GetDefaultCoolStage3OutputGroupForPlantType_ordinary_false_flag": true,
+    "CIS_TThermostat.TPlantControlService.GetDefaultDamper1OutputGroup_ordinary_false_flag": true,
+    "CIS_TThermostat.TPlantControlService.GetDefaultDamper2OutputGroup_ordinary_false_flag": true,
+    "CIS_TThermostat.TPlantControlService.GetDefaultDamper3OutputGroup_ordinary_false_flag": true,
+    "CIS_TThermostat.TPlantControlService.GetDefaultDamper4OutputGroup_ordinary_false_flag": true,
+    "CIS_TThermostat.TPlantControlService.GetDefaultHeatActivationOutputGroupForPlantType_ordinary_false_flag": true,
+    "CIS_TThermostat.TPlantControlService.GetDefaultHeatFanHighOutputGroupForPlantType_ordinary_false_flag": true,
+    "CIS_TThermostat.TPlantControlService.GetDefaultHeatFanLowOutputGroupForPlantType_ordinary_false_flag": true,
+    "CIS_TThermostat.TPlantControlService.GetDefaultHeatFanMediumOutputGroupForPlantType_ordinary_false_flag": true,
+    "CIS_TThermostat.TPlantControlService.GetDefaultHeatStage1OutputGroupForPlantType_ordinary_false_flag": true,
+    "CIS_TThermostat.TPlantControlService.GetDefaultHeatStage2OutputGroupForPlantType_ordinary_false_flag": true,
+    "CIS_TThermostat.TPlantControlService.GetDefaultHeatStage3OutputGroupForPlantType_ordinary_false_flag": true,
+    "CoolActivation_does_not_allocate": true,
+    "CoolActivation_reference_setter": true,
+    "CoolActivation_unused_first": true,
+    "CoolFanHigh_does_not_allocate": true,
+    "CoolFanHigh_reference_setter": true,
+    "CoolFanHigh_unused_first": true,
+    "CoolFanLow_does_not_allocate": true,
+    "CoolFanLow_reference_setter": true,
+    "CoolFanLow_unused_first": true,
+    "CoolFanMedium_does_not_allocate": true,
+    "CoolFanMedium_reference_setter": true,
+    "CoolFanMedium_unused_first": true,
+    "CoolStage1_does_not_allocate": true,
+    "CoolStage1_reference_setter": true,
+    "CoolStage1_unused_first": true,
+    "CoolStage2_does_not_allocate": true,
+    "CoolStage2_reference_setter": true,
+    "CoolStage2_unused_first": true,
+    "CoolStage3_does_not_allocate": true,
+    "CoolStage3_reference_setter": true,
+    "CoolStage3_unused_first": true,
+    "DamperZone1_reference_setter": true,
+    "DamperZone2_reference_setter": true,
+    "DamperZone3_reference_setter": true,
+    "DamperZone4_reference_setter": true,
+    "HeatActivation_does_not_allocate": true,
+    "HeatActivation_reference_setter": true,
+    "HeatActivation_unused_first": true,
+    "HeatFanHigh_does_not_allocate": true,
+    "HeatFanHigh_reference_setter": true,
+    "HeatFanHigh_unused_first": true,
+    "HeatFanLow_does_not_allocate": true,
+    "HeatFanLow_reference_setter": true,
+    "HeatFanLow_unused_first": true,
+    "HeatFanMedium_does_not_allocate": true,
+    "HeatFanMedium_reference_setter": true,
+    "HeatFanMedium_unused_first": true,
+    "HeatStage1_does_not_allocate": true,
+    "HeatStage1_reference_setter": true,
+    "HeatStage1_unused_first": true,
+    "HeatStage2_does_not_allocate": true,
+    "HeatStage2_reference_setter": true,
+    "HeatStage2_unused_first": true,
+    "HeatStage3_does_not_allocate": true,
+    "HeatStage3_reference_setter": true,
+    "HeatStage3_unused_first": true,
+    "InternalRelay1_reference_setter": true,
+    "InternalRelay2_reference_setter": true,
+    "InternalRelay3_reference_setter": true,
+    "InternalRelay4_reference_setter": true,
+    "InternalRelay5_reference_setter": true,
+    "TFRMCOOLINGGROUPS.cmbActivationGroup.callback": true,
+    "TFRMCOOLINGGROUPS.cmbActivationGroup.update": true,
+    "TFRMCOOLINGGROUPS.cmbFanHighGroup.callback": true,
+    "TFRMCOOLINGGROUPS.cmbFanHighGroup.update": true,
+    "TFRMCOOLINGGROUPS.cmbFanLowGroup.callback": true,
+    "TFRMCOOLINGGROUPS.cmbFanLowGroup.update": true,
+    "TFRMCOOLINGGROUPS.cmbFanMediumGroup.callback": true,
+    "TFRMCOOLINGGROUPS.cmbFanMediumGroup.update": true,
+    "TFRMCOOLINGGROUPS.cmbStage1Group.callback": true,
+    "TFRMCOOLINGGROUPS.cmbStage1Group.update": true,
+    "TFRMCOOLINGGROUPS.cmbStage2Group.callback": true,
+    "TFRMCOOLINGGROUPS.cmbStage2Group.update": true,
+    "TFRMCOOLINGGROUPS.cmbStage3Group.callback": true,
+    "TFRMCOOLINGGROUPS.cmbStage3Group.update": true,
+    "TFRMDAMPERGROUPS.cmbZone1Group.callback": true,
+    "TFRMDAMPERGROUPS.cmbZone1Group.update": true,
+    "TFRMDAMPERGROUPS.cmbZone2Group.callback": true,
+    "TFRMDAMPERGROUPS.cmbZone2Group.update": true,
+    "TFRMDAMPERGROUPS.cmbZone3Group.callback": true,
+    "TFRMDAMPERGROUPS.cmbZone3Group.update": true,
+    "TFRMDAMPERGROUPS.cmbZone4Group.callback": true,
+    "TFRMDAMPERGROUPS.cmbZone4Group.update": true,
+    "TFRMHEATINGGROUPS.cmbActivationGroup.callback": true,
+    "TFRMHEATINGGROUPS.cmbActivationGroup.update": true,
+    "TFRMHEATINGGROUPS.cmbFanHighGroup.callback": true,
+    "TFRMHEATINGGROUPS.cmbFanHighGroup.update": true,
+    "TFRMHEATINGGROUPS.cmbFanLowGroup.callback": true,
+    "TFRMHEATINGGROUPS.cmbFanLowGroup.update": true,
+    "TFRMHEATINGGROUPS.cmbFanMediumGroup.callback": true,
+    "TFRMHEATINGGROUPS.cmbFanMediumGroup.update": true,
+    "TFRMHEATINGGROUPS.cmbStage1Group.callback": true,
+    "TFRMHEATINGGROUPS.cmbStage1Group.update": true,
+    "TFRMHEATINGGROUPS.cmbStage2Group.callback": true,
+    "TFRMHEATINGGROUPS.cmbStage2Group.update": true,
+    "TFRMHEATINGGROUPS.cmbStage3Group.callback": true,
+    "TFRMHEATINGGROUPS.cmbStage3Group.update": true,
+    "TFRMTHERMOSTATPLANT.cmbInternalRelay1Group.callback": true,
+    "TFRMTHERMOSTATPLANT.cmbInternalRelay1Group.update": true,
+    "TFRMTHERMOSTATPLANT.cmbInternalRelay2Group.callback": true,
+    "TFRMTHERMOSTATPLANT.cmbInternalRelay2Group.update": true,
+    "TFRMTHERMOSTATPLANT.cmbInternalRelay3Group.callback": true,
+    "TFRMTHERMOSTATPLANT.cmbInternalRelay3Group.update": true,
+    "TFRMTHERMOSTATPLANT.cmbInternalRelay4Group.callback": true,
+    "TFRMTHERMOSTATPLANT.cmbInternalRelay4Group.update": true,
+    "TFRMTHERMOSTATPLANT.cmbInternalRelay5Group.callback": true,
+    "TFRMTHERMOSTATPLANT.cmbInternalRelay5Group.update": true,
+    "ac_application_name": true,
+    "ac_group_name": true,
+    "catalogue_name_uses_address_equality": true,
+    "catalogue_selected_application_names": true,
+    "damper1_no_prefix_test": true,
+    "damper2_no_prefix_test": true,
+    "damper3_no_prefix_test": true,
+    "damper4_no_prefix_test": true,
+    "exact_damper_labels": true,
+    "ordinary_getter_order": true,
+    "prefix_literal": true,
+    "raw8_virtual11_branch": true,
+    "raw8_virtual11_complete_dependencies": true,
+    "save_role_order": true,
+    "unregistered_application_name_is_decimal": true,
+    "unused_name": true
+  },
+  "contract": {
+    "bounds": [
+      "no typed Add dialog",
+      "no template allocator",
+      "no ZoneGroup/application-change history",
+      "no future zone callback history",
+      "no original GUI, vendor execution or physical acceptance"
+    ],
+    "cooling_enabled_virtual_types": [
+      2,
+      3,
+      5,
+      6,
+      7,
+      9,
+      10,
+      11
+    ],
+    "damper_selector_gate": "programmable; virtual plant nonzero; InternalPlantZones & 30 nonzero",
+    "fan_filter": "unused always included; other two same-side fan identities excluded at each step",
+    "graph_preservation": "ordinary-load create/reuse/rename effects retained even if later selection chooses elsewhere",
+    "heating_disabled_virtual_types": [
+      0,
+      2,
+      5
+    ],
+    "heating_fans_disabled_virtual_types": [
+      0,
+      8
+    ],
+    "load_order": [
+      "AC application172",
+      "ZoneGroup in172",
+      "ApplicationNumber binding",
+      "setback references",
+      "CoolActivation",
+      "CoolStage1",
+      "CoolStage2",
+      "CoolStage3",
+      "CoolFanLow",
+      "CoolFanMedium",
+      "CoolFanHigh",
+      "HeatActivation",
+      "HeatStage1",
+      "HeatStage2",
+      "HeatStage3",
+      "HeatFanLow",
+      "HeatFanMedium",
+      "HeatFanHigh",
+      "DamperZone1",
+      "DamperZone2",
+      "DamperZone3",
+      "DamperZone4",
+      "InternalRelay1",
+      "InternalRelay2",
+      "InternalRelay3",
+      "InternalRelay4",
+      "InternalRelay5",
+      "schedule references"
+    ],
+    "new_selected_application_names": {
+      "203": "Enable Control",
+      "56": "Lighting",
+      "95": "DALI",
+      "other_admitted48_94": "decimal address"
+    },
+    "ordinary_model": "fresh model, template event flag false; no template or application-change callbacks",
+    "post_load_selection": "ordered parameter/address selections from existing bound-application group identities",
+    "relay_selector_gate": "TSA5 or TSB5; loaded ControlledZones > 0",
+    "save": "all fourteen outputs and five relays store selected address; dampers store255 for slave or nil",
+    "selection_callbacks": "cool/heat warning only; damper also caches last non255 object; no automatic relay reassignment",
+    "validation": "duplicate non255 identities refused independently within cooling7, heating7 and damper4"
+  },
+  "damper_labels": {
+    "1": "Damper Zone 1",
+    "2": "Damper Zone 2",
+    "3": "Damper Zone 3",
+    "4": "Damper Zone 4"
+  },
+  "default_labels": {
+    "CoolActivation": {
+      "0": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "1": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "10": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "11": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "2": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "3": [
+        {
+          "installation": null,
+          "label": "B (cool activation)"
+        }
+      ],
+      "4": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "5": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "6": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "7": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "8": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "9": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ]
+    },
+    "CoolFanHigh": {
+      "0": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "1": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "10": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "11": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "2": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "3": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "4": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "5": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "6": [
+        {
+          "installation": null,
+          "label": "cool fan speed 3"
+        }
+      ],
+      "7": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "8": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "9": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ]
+    },
+    "CoolFanLow": {
+      "0": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "1": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "10": [
+        {
+          "installation": null,
+          "label": "cool fan speed 1"
+        }
+      ],
+      "11": [
+        {
+          "installation": null,
+          "label": "G1 (fan speed 1)"
+        }
+      ],
+      "2": [
+        {
+          "installation": null,
+          "label": "cool fan speed 1"
+        }
+      ],
+      "3": [
+        {
+          "installation": null,
+          "label": "G (fan)"
+        }
+      ],
+      "4": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "5": [
+        {
+          "installation": null,
+          "label": "G (cool fan)"
+        }
+      ],
+      "6": [
+        {
+          "installation": null,
+          "label": "cool fan speed 1"
+        }
+      ],
+      "7": [
+        {
+          "installation": null,
+          "label": "G (cool fan)"
+        }
+      ],
+      "8": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "9": [
+        {
+          "installation": null,
+          "label": "G (fan)"
+        }
+      ]
+    },
+    "CoolFanMedium": {
+      "0": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "1": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "10": [
+        {
+          "installation": null,
+          "label": "cool fan speed 2"
+        }
+      ],
+      "11": [
+        {
+          "installation": null,
+          "label": "G2 (fan speed 2)"
+        }
+      ],
+      "2": [
+        {
+          "installation": null,
+          "label": "cool fan speed 2"
+        }
+      ],
+      "3": [
+        {
+          "installation": null,
+          "label": null
+        },
+        {
+          "installation": "Zoned 2 Stage Reverse Cycle System",
+          "label": "Heat/cool fan speed"
+        }
+      ],
+      "4": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "5": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "6": [
+        {
+          "installation": null,
+          "label": "cool fan speed 2"
+        }
+      ],
+      "7": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "8": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "9": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ]
+    },
+    "CoolStage1": {
+      "0": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "1": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "10": [
+        {
+          "installation": null,
+          "label": "pump"
+        }
+      ],
+      "11": [
+        {
+          "installation": null,
+          "label": "Y (cool)"
+        }
+      ],
+      "2": [
+        {
+          "installation": null,
+          "label": "pump"
+        }
+      ],
+      "3": [
+        {
+          "installation": null,
+          "label": "Y (heat/cool)"
+        },
+        {
+          "installation": "Zoned 2 Stage Reverse Cycle System",
+          "label": "Y1 (cool/heat)"
+        }
+      ],
+      "4": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "5": [
+        {
+          "installation": null,
+          "label": "Y (cool)"
+        }
+      ],
+      "6": [
+        {
+          "installation": null,
+          "label": "pump"
+        }
+      ],
+      "7": [
+        {
+          "installation": null,
+          "label": "Y (cool)"
+        }
+      ],
+      "8": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "9": [
+        {
+          "installation": null,
+          "label": "Y (cool)"
+        }
+      ]
+    },
+    "CoolStage2": {
+      "0": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "1": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "10": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "11": [
+        {
+          "installation": null,
+          "label": "Open"
+        }
+      ],
+      "2": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "3": [
+        {
+          "installation": null,
+          "label": null
+        },
+        {
+          "installation": "Zoned 2 Stage Reverse Cycle System",
+          "label": "Y2 (cool/heat)"
+        }
+      ],
+      "4": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "5": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "6": [
+        {
+          "installation": null,
+          "label": "dump"
+        }
+      ],
+      "7": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "8": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "9": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ]
+    },
+    "CoolStage3": {
+      "0": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "1": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "10": [
+        {
+          "installation": null,
+          "label": "fill"
+        }
+      ],
+      "11": [
+        {
+          "installation": null,
+          "label": "Close"
+        }
+      ],
+      "2": [
+        {
+          "installation": null,
+          "label": "fill"
+        }
+      ],
+      "3": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "4": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "5": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "6": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "7": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "8": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "9": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ]
+    },
+    "HeatActivation": {
+      "0": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "1": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "10": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "11": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "2": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "3": [
+        {
+          "installation": null,
+          "label": "B (heat activation)"
+        }
+      ],
+      "4": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "5": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "6": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "7": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "8": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "9": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ]
+    },
+    "HeatFanHigh": {
+      "0": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "1": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "10": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "11": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "2": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "3": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "4": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "5": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "6": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "7": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "8": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "9": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ]
+    },
+    "HeatFanLow": {
+      "0": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "1": [
+        {
+          "installation": null,
+          "label": "G (heat fan)"
+        }
+      ],
+      "10": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "11": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "2": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "3": [
+        {
+          "installation": null,
+          "label": "G (fan)"
+        }
+      ],
+      "4": [
+        {
+          "installation": null,
+          "label": "G (heat fan)"
+        }
+      ],
+      "5": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "6": [
+        {
+          "installation": null,
+          "label": "G1 (heat fan speed 1)"
+        }
+      ],
+      "7": [
+        {
+          "installation": null,
+          "label": "G (heat fan)"
+        }
+      ],
+      "8": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "9": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ]
+    },
+    "HeatFanMedium": {
+      "0": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "1": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "10": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "11": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "2": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "3": [
+        {
+          "installation": null,
+          "label": null
+        },
+        {
+          "installation": "Zoned 2 Stage Reverse Cycle System",
+          "label": "Heat/cool fan speed"
+        }
+      ],
+      "4": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "5": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "6": [
+        {
+          "installation": null,
+          "label": "G2 (heat fan speed 2)"
+        }
+      ],
+      "7": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "8": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "9": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ]
+    },
+    "HeatStage1": {
+      "0": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "1": [
+        {
+          "installation": null,
+          "label": "W (heat)"
+        }
+      ],
+      "10": [
+        {
+          "installation": null,
+          "label": "W (heat)"
+        }
+      ],
+      "11": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "2": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "3": [
+        {
+          "installation": null,
+          "label": "Y (heat/cool)"
+        },
+        {
+          "installation": "Zoned 2 Stage Reverse Cycle System",
+          "label": "Y1 (cool/heat)"
+        }
+      ],
+      "4": [
+        {
+          "installation": null,
+          "label": "W (heat)"
+        }
+      ],
+      "5": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "6": [
+        {
+          "installation": null,
+          "label": "W (heat)"
+        }
+      ],
+      "7": [
+        {
+          "installation": null,
+          "label": "W (heat)"
+        }
+      ],
+      "8": [
+        {
+          "installation": null,
+          "label": "W (heat)"
+        }
+      ],
+      "9": [
+        {
+          "installation": null,
+          "label": "W (heat)"
+        }
+      ]
+    },
+    "HeatStage2": {
+      "0": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "1": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "10": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "11": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "2": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "3": [
+        {
+          "installation": null,
+          "label": null
+        },
+        {
+          "installation": "Zoned 2 Stage Reverse Cycle System",
+          "label": "Y2 (cool/heat)"
+        }
+      ],
+      "4": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "5": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "6": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "7": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "8": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "9": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ]
+    },
+    "HeatStage3": {
+      "0": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "1": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "10": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "11": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "2": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "3": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "4": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "5": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "6": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "7": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "8": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ],
+      "9": [
+        {
+          "installation": null,
+          "label": null
+        }
+      ]
+    }
+  },
+  "format": "cbus-thermostat-output-groups-static-v1",
+  "method_spans": {
+    "CIS_TCBusThermostatCGateAgent.TCBusProgrammableThermostatCGateAgent.AfterLoadProgrammingInformation": {
+      "address": "0x12994d0",
+      "end": "0x1299b98",
+      "sha256": "8e869e22ac8e8d586f6941d291ab8ccccd5adcb2ba0aa7d035971f9fad2d1fc5"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.AfterLoadProgrammingInformation": {
+      "address": "0x128e06c",
+      "end": "0x128f9a0",
+      "sha256": "2334495515fab9b4f1942a3c1a1caf58003877da1e82b3d00c91a907719b69be"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.BeforeSaveProgrammingInformation": {
+      "address": "0x129471c",
+      "end": "0x12966fc",
+      "sha256": "8c12c86a1e8eeb8da70d889b9a6dcc1f9ecf4c67b80a0259bb70759b440fad82"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.CreateSpecialApplications": {
+      "address": "0x128df98",
+      "end": "0x128e06c",
+      "sha256": "f21b9894f221e436e1de49647f32143983671319ea168fd7d4f82666aea6b43a"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.IntUnitPlantTypeToVirtualPlantType": {
+      "address": "0x128de1c",
+      "end": "0x128df48",
+      "sha256": "5e567a858ddf994e8f8be268ebe9e4aba038c9415d56fcc1c5b64cd18b154de9"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.InternalCreate": {
+      "address": "0x128b948",
+      "end": "0x128dc7c",
+      "sha256": "685408975c6037afaa3de5b6b2b4f374560c8a2b690f2435cda38263212f64a8"
+    },
+    "CIS_TCBusThermostatCGateAgent.TCBusThermostatCGateAgent.LoadThermostatInstallations": {
+      "address": "0x1292de4",
+      "end": "0x129419c",
+      "sha256": "1850b34b1602349f1e4d3806f7c3d1ddc4fb72030af7aeed4edb24899d2d20ad"
+    },
+    "CIS_TCommonCBus.TCBUSApplicationManager.ApplicationByAddress": {
+      "address": "0xf264fc",
+      "end": "0xf267c8",
+      "sha256": "3263b0d320c3870a7765edb54946d587b2372de62bbf7249df62763699188e1b"
+    },
+    "CIS_TCommonCBus.TCBusGroupManager.GroupByAddress": {
+      "address": "0xf28b68",
+      "end": "0xf28d10",
+      "sha256": "ca91f7a53a7820a9be87286f6c481e624bd888fc7a1f5c64f0a7a34ebbd91930"
+    },
+    "CIS_TObjectReferenceAttribute.TObjectReferenceAttribute.SetFlashObject": {
+      "address": "0x7ddbf4",
+      "end": "0x7ddcb4",
+      "sha256": "913604d6225e746aa93b92f5d35fe62e5ff619e0fdec33baab261c92ccd8a0bb"
+    },
+    "CIS_TStandardCBusApplications.CIS_TStandardCBusApplications": {
+      "address": "0x136bc30",
+      "end": "0x136c174",
+      "sha256": "bf0c22d11e4ef357a9c6a5825245ed27aca9ccaaa7c7a62d1e83f3b18fd6c98e"
+    },
+    "CIS_TStandardCBusApplications.TStandardCBusApplications.GetApplicationName": {
+      "address": "0x85adc4",
+      "end": "0x85ae74",
+      "sha256": "078c110ccb2e15efbdbf43b63ddbaf997656c4204b41ee33081491af4ee86309"
+    },
+    "CIS_TThermostat.TPC_TSA5.GetUnitHasRelays": {
+      "address": "0xfeda5c",
+      "end": "0xfeda70",
+      "sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    "CIS_TThermostat.TPC_TSB5.GetUnitHasRelays": {
+      "address": "0xfeda48",
+      "end": "0xfeda5c",
+      "sha256": "8e6911aa9697979b3c9fcefda139976f552725b90536cdf4aed6f87c36c5dedd"
+    },
+    "CIS_TThermostat.TPlantControlService.AutogeneratedGroupName": {
+      "address": "0xfe2be4",
+      "end": "0xfe2c5c",
+      "sha256": "57ea68d2949eba052d7ae2734ad1f8fcc0f9bf6c73b73b74ab855f43b31f3c8e"
+    },
+    "CIS_TThermostat.TPlantControlService.AutogeneratedPrefix": {
+      "address": "0xfe2a74",
+      "end": "0xfe2afc",
+      "sha256": "777407f4647eff01e71b7f8d6551815fab6c047f865ab10244091cb8ae276a16"
+    },
+    "CIS_TThermostat.TPlantControlService.CreateAndRenameGroup": {
+      "address": "0xfe2830",
+      "end": "0xfe2a74",
+      "sha256": "e1932a6126eda2f6405fc5677e8fb6adff09dd659d29d17134f023912ebb9c7b"
+    },
+    "CIS_TThermostat.TPlantControlService.FindExistingGroup": {
+      "address": "0xfe2afc",
+      "end": "0xfe2be4",
+      "sha256": "b375c529b20d7d4bdcf23c94e14b660eae67fe67fbdf31e31c172d8173bc8087"
+    },
+    "CIS_TThermostat.TPlantControlService.GetCoolActivationOutputGroup": {
+      "address": "0xfe1738",
+      "end": "0xfe175c",
+      "sha256": "dc643a153d13386e2b5a95f31692fbc5c8698c1b624b38ae579cac1fd199ee47"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultCoolActivationOutputGroupForPlantType": {
+      "address": "0xfe6140",
+      "end": "0xfe6370",
+      "sha256": "9866f8385c317c5fdb46bf12b64d41f012db60c37b9399d7e350190644b06b51"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultCoolActivationOutputGroupName": {
+      "address": "0xfe6040",
+      "end": "0xfe6140",
+      "sha256": "b35ac6abef1b51de537b7d15763d4ab972b77dd50952cc433fca44722024082a"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultCoolFanHighOutputGroupForPlantType": {
+      "address": "0xfe790c",
+      "end": "0xfe7b44",
+      "sha256": "58fc0e7cac0f897fb0d01ea3dab6d4ae3d4c19cbcfa44ae7caf581a3b724a303"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultCoolFanHighOutputGroupName": {
+      "address": "0xfe780c",
+      "end": "0xfe790c",
+      "sha256": "6d2ad5861ad4ad896567749b09fd5f80abc588a4fd5f438be4581ca178a715b9"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultCoolFanLowOutputGroupForPlantType": {
+      "address": "0xfe70fc",
+      "end": "0xfe7394",
+      "sha256": "d34b23f47acbd944baa5c601f970316a639091892a4a5ae1316a5ae913459ac7"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultCoolFanLowOutputGroupName": {
+      "address": "0xfe6fe4",
+      "end": "0xfe70fc",
+      "sha256": "c616b39f055aa5a08d072e40469979bcfc433489d54400b5a842f59549472979"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultCoolFanMediumOutputGroupForPlantType": {
+      "address": "0xfe7534",
+      "end": "0xfe780c",
+      "sha256": "d50f6550acc39b753041447adf8ac7094a40da106e322b1620463b0ecdf22caf"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultCoolFanMediumOutputGroupName": {
+      "address": "0xfe7394",
+      "end": "0xfe7534",
+      "sha256": "d1c70747b32d4bbf85a6f02586e3940dbd86311bdcf56a02689226a7078d749c"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultCoolStage1OutputGroupForPlantType": {
+      "address": "0xfe6520",
+      "end": "0xfe6828",
+      "sha256": "2ead3d4b4cb76a3ca55fa37a5216dcea76019a20f1bff4520ffba148f68b7129"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultCoolStage1OutputGroupName": {
+      "address": "0xfe6370",
+      "end": "0xfe6520",
+      "sha256": "d1a93f2dcb5fff6845b0d6d17f3708ca909bf2b1db1a1a0b51418604d31a51f0"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultCoolStage2OutputGroupForPlantType": {
+      "address": "0xfe69c4",
+      "end": "0xfe6c84",
+      "sha256": "060233ce3c7e7f0d4d0b56d62f545ec92cae327f252b41da27ffd00b40c1479a"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultCoolStage2OutputGroupName": {
+      "address": "0xfe6828",
+      "end": "0xfe69c4",
+      "sha256": "646863444adb544b1096dcc8c62500a08444025e88ea3ced422ea329a95ee552"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultCoolStage3OutputGroupForPlantType": {
+      "address": "0xfe6d88",
+      "end": "0xfe6fe4",
+      "sha256": "cee4ff157a9d086126e88dcab78c45f5dcb6e8e0c09296e1a23ad0f41754c301"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultCoolStage3OutputGroupName": {
+      "address": "0xfe6c84",
+      "end": "0xfe6d88",
+      "sha256": "22c8612c4b72fd777faa9dc7cf595a5404759c4f435f7dd15501f59f907bfba1"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultDamper1OutputGroup": {
+      "address": "0xfe959c",
+      "end": "0xfe9654",
+      "sha256": "a4e8574ee3921c9ff414097ad5e3472513b3042ab755d0684afb160484c51f54"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultDamper1OutputGroupName": {
+      "address": "0xfe9554",
+      "end": "0xfe959c",
+      "sha256": "95f22fd4341daa69b8eb872d2e4f64971ea0395e142e24963c97a485cb8b6fd7"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultDamper2OutputGroup": {
+      "address": "0xfe969c",
+      "end": "0xfe9754",
+      "sha256": "2f6b9f28b0d6052b46b8b727b532b7fd12edeb8987a0edf5e8cb627432fcc4fc"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultDamper2OutputGroupName": {
+      "address": "0xfe9654",
+      "end": "0xfe969c",
+      "sha256": "191fe591e2a37040d1ffe9a00ff102abd4ff3f1f76350b7dfd40506f9e643d7a"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultDamper3OutputGroup": {
+      "address": "0xfe979c",
+      "end": "0xfe9854",
+      "sha256": "e9bd284126c85ba72f192f3d50ba76aa4778ec1c51262f60255628a1e873aac2"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultDamper3OutputGroupName": {
+      "address": "0xfe9754",
+      "end": "0xfe979c",
+      "sha256": "36d51fe37d14bcebd3d74dd89e224bd8a9b063329246c8bb31e8e83cd795e26e"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultDamper4OutputGroup": {
+      "address": "0xfe989c",
+      "end": "0xfe9954",
+      "sha256": "fd809a6d184173a929e5406b7a40a3cc4d87ab918ff24d4443ac2b86a609f2a3"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultDamper4OutputGroupName": {
+      "address": "0xfe9854",
+      "end": "0xfe989c",
+      "sha256": "0c9c3cdbef5a3067ee3aad63e214567d0e9966090b491811c1ef2ccfff15a74e"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultHeatActivationOutputGroupForPlantType": {
+      "address": "0xfe7c44",
+      "end": "0xfe7e74",
+      "sha256": "96cb1179b4aae74c8152a8adf1f1788fb6b931b49ddf8bc08d665460034d06ae"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultHeatActivationOutputGroupName": {
+      "address": "0xfe7b44",
+      "end": "0xfe7c44",
+      "sha256": "3fc2febd6a80eebd261fa049b5d76be65d36b972443c677e3319cf757f0f59e9"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultHeatFanHighOutputGroupForPlantType": {
+      "address": "0xfe9330",
+      "end": "0xfe9554",
+      "sha256": "40810c3c21622548df61a21b180929f53ed1fb3f58b349e026a42a7ad3d7cea7"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultHeatFanHighOutputGroupName": {
+      "address": "0xfe9234",
+      "end": "0xfe9330",
+      "sha256": "4c5db3ddabfae6f364ca2eef6aac434231f9296672155944841ec672c3e8c5b3"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultHeatFanLowOutputGroupForPlantType": {
+      "address": "0xfe8b8c",
+      "end": "0xfe8df8",
+      "sha256": "7f43b07391c0e2702b8ab91d72590100ae8c5488e7408f64da88f9e016ad19ff"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultHeatFanLowOutputGroupName": {
+      "address": "0xfe8a7c",
+      "end": "0xfe8b8c",
+      "sha256": "93a6581d13bcac64350f32f5a14b2f496b95669c079c724c3861ea4e34965ea5"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultHeatFanMediumOutputGroupForPlantType": {
+      "address": "0xfe8f84",
+      "end": "0xfe9234",
+      "sha256": "aff39149d4a7d67388697233cca4ea96b4925ab0cffc4d4d28cf50ee74bf0c87"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultHeatFanMediumOutputGroupName": {
+      "address": "0xfe8df8",
+      "end": "0xfe8f84",
+      "sha256": "cc5e89479b50b860d8fbc2bf15c41e5a29af3990fb702d4caceddc7266596236"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultHeatStage1OutputGroupForPlantType": {
+      "address": "0xfe8024",
+      "end": "0xfe832c",
+      "sha256": "a73ff34eea5b6c3ca34ab760fd4d40f6cb124f58ce3810ed5e745b9ed49f5c8a"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultHeatStage1OutputGroupName": {
+      "address": "0xfe7e74",
+      "end": "0xfe8024",
+      "sha256": "bd29fd0433f297eca4e962391240ee7eb67826b7e15b0a6b23c12d94c46f8db7"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultHeatStage2OutputGroupForPlantType": {
+      "address": "0xfe84c0",
+      "end": "0xfe875c",
+      "sha256": "b7ec5ccacdb0c3f588cb1de13dc73f5edf2340ccd6e21d1a43061627cb17c82a"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultHeatStage2OutputGroupName": {
+      "address": "0xfe832c",
+      "end": "0xfe84c0",
+      "sha256": "15b467b4015551cb0440f1cf90acd50d8db740db24fec2470ceb3bd98e96b7d7"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultHeatStage3OutputGroupForPlantType": {
+      "address": "0xfe8858",
+      "end": "0xfe8a7c",
+      "sha256": "3fa178d0a9447097ded770e4aa9bc265dbd276a0e7afc0a7ab4d5d8d9904e0a3"
+    },
+    "CIS_TThermostat.TPlantControlService.GetDefaultHeatStage3OutputGroupName": {
+      "address": "0xfe875c",
+      "end": "0xfe8858",
+      "sha256": "d8a8291d1feec1d2b777ff86123fa44172f89469efb09e90a79708fcae07ab20"
+    },
+    "CIS_TThermostat.TPlantControlService.GetInternalRelay1Group": {
+      "address": "0xfe1bb8",
+      "end": "0xfe1bdc",
+      "sha256": "a2fee73ae78d5b1285f5165c4acc2313a81435e26b1b1d13dcbe16d1a7bd93e3"
+    },
+    "CIS_TThermostat.TPlantControlService.GetUnusedGroup": {
+      "address": "0xfe6008",
+      "end": "0xfe6040",
+      "sha256": "99ef8533c86765e5a12d5b8017b2cb61036283a1c5c51ede7359a9ba39d14944"
+    },
+    "CIS_TThermostat.TPlantControlService.HookEvents": {
+      "address": "0xfe1664",
+      "end": "0xfe16b0",
+      "sha256": "bb827ae5efb0f2fac84f1dfe0bb9e852995bec5d14d3c46af0592c2e3b91e166"
+    },
+    "CIS_TThermostat.TPlantControlService.InternalCreate": {
+      "address": "0xfe012c",
+      "end": "0xfe1518",
+      "sha256": "08d5c62fffd60127237b95834174e6dabdc16c8a9967e74f57abccd24d1a80a9"
+    },
+    "CIS_TThermostat.TPlantControlService.SetCoolActivationOutputGroup": {
+      "address": "0xfe1e4c",
+      "end": "0xfe1e70",
+      "sha256": "5b3885979c9716230a328f8bef5f1ca90deab8f8b6a0d70bc2b577e8c97f8d54"
+    },
+    "CIS_TThermostat.TPlantControlService.SetCoolFanHighOutputGroup": {
+      "address": "0xfe1e70",
+      "end": "0xfe1e94",
+      "sha256": "52f3f9db5768f86051d09160cc9e47b6d0f1b742fe5bebcdb6e4e682efc182ee"
+    },
+    "CIS_TThermostat.TPlantControlService.SetCoolFanLowOutputGroup": {
+      "address": "0xfe1e94",
+      "end": "0xfe1eb8",
+      "sha256": "b7747d7b69499a9c5f685b661791df72dcfe05f2bdad11ee7fc1127d23f69ec2"
+    },
+    "CIS_TThermostat.TPlantControlService.SetCoolFanMediumOutputGroup": {
+      "address": "0xfe1eb8",
+      "end": "0xfe1edc",
+      "sha256": "727e376c0f734f6494a3463dce10fda4a98d8cd67771445f776abbf2f93c8d0d"
+    },
+    "CIS_TThermostat.TPlantControlService.SetCoolStage1OutputGroup": {
+      "address": "0xfe1ff8",
+      "end": "0xfe201c",
+      "sha256": "627d06075db482a3fd707c49b713dcfd87ebd9da6e67ed32e4492a95ae5ba234"
+    },
+    "CIS_TThermostat.TPlantControlService.SetCoolStage2OutputGroup": {
+      "address": "0xfe201c",
+      "end": "0xfe2040",
+      "sha256": "92ea391d15b4e25bc775ef3acfaa55e43a4e4c50113e720918481155857410f7"
+    },
+    "CIS_TThermostat.TPlantControlService.SetCoolStage3OutputGroup": {
+      "address": "0xfe2040",
+      "end": "0xfe2064",
+      "sha256": "341df2dce32f7eee648359dfcb8319b175b550c2f25ecc5b45b0f53981879e57"
+    },
+    "CIS_TThermostat.TPlantControlService.SetDamperZone1OutputGroup": {
+      "address": "0xfe2064",
+      "end": "0xfe2088",
+      "sha256": "d6c26291171b2beff21328a454bda93fc667273cce4da48abd4ae3a8a181dbf9"
+    },
+    "CIS_TThermostat.TPlantControlService.SetDamperZone2OutputGroup": {
+      "address": "0xfe2088",
+      "end": "0xfe20ac",
+      "sha256": "222443f7170072249c2ec4c548cf80498892e1292b918882c7772ae58339b790"
+    },
+    "CIS_TThermostat.TPlantControlService.SetDamperZone3OutputGroup": {
+      "address": "0xfe20ac",
+      "end": "0xfe20d0",
+      "sha256": "2dfc075c209347c054c58050944dfdef22a91f6cbbb8071b645c5097b3423e9a"
+    },
+    "CIS_TThermostat.TPlantControlService.SetDamperZone4OutputGroup": {
+      "address": "0xfe20d0",
+      "end": "0xfe20f4",
+      "sha256": "1cce30ad181cb179cfe662ef2c4406cad221ee6a0dbddc254ae597b7132caa92"
+    },
+    "CIS_TThermostat.TPlantControlService.SetHeatActivationOutputGroup": {
+      "address": "0xfe2330",
+      "end": "0xfe2354",
+      "sha256": "e6f64ccf073b55b96d4f4d26a4b054136f0d60f1e7eb8e228f11c0eeb3ff6420"
+    },
+    "CIS_TThermostat.TPlantControlService.SetHeatFanHighOutputGroup": {
+      "address": "0xfe2354",
+      "end": "0xfe2378",
+      "sha256": "7828ec5df7dbb8c797b6cd9d087284c2b61a26d9cd2265d1c136d5e5bed28e01"
+    },
+    "CIS_TThermostat.TPlantControlService.SetHeatFanLowOutputGroup": {
+      "address": "0xfe2378",
+      "end": "0xfe239c",
+      "sha256": "0cdd584f0cd0477aa888f313fca0ae0a12d65b3dbb3b7157f3aadd9e5a9966e8"
+    },
+    "CIS_TThermostat.TPlantControlService.SetHeatFanMediumOutputGroup": {
+      "address": "0xfe239c",
+      "end": "0xfe23c0",
+      "sha256": "a946f9d148f0a2f44525fb3bb3831ea53e1c8e849f597540254304b06680e38d"
+    },
+    "CIS_TThermostat.TPlantControlService.SetHeatStage1OutputGroup": {
+      "address": "0xfe24dc",
+      "end": "0xfe2500",
+      "sha256": "5bc7ac04f6bf244580d6a0d8949857522093eb099f871b0ea5d42490ab23944e"
+    },
+    "CIS_TThermostat.TPlantControlService.SetHeatStage2OutputGroup": {
+      "address": "0xfe2500",
+      "end": "0xfe2524",
+      "sha256": "ec6ffa5be961b3835434dcee8f4b5793656f21f741a58036ace5e824a974691f"
+    },
+    "CIS_TThermostat.TPlantControlService.SetHeatStage3OutputGroup": {
+      "address": "0xfe2524",
+      "end": "0xfe2548",
+      "sha256": "ce404d04bca02a103a9e6c63f239c78ee81b1569fbf929391229f6fb17aeb36d"
+    },
+    "CIS_TThermostat.TPlantControlService.SetInternalRelay1Group": {
+      "address": "0xfe25a8",
+      "end": "0xfe25cc",
+      "sha256": "26bc7dcfad8bfdb652bdbb35e5339dac75d37d3f032f0226638a0a740fac0bdc"
+    },
+    "CIS_TThermostat.TPlantControlService.SetInternalRelay2Group": {
+      "address": "0xfe25cc",
+      "end": "0xfe25f0",
+      "sha256": "a9923c23cf85f0b9b41dfc030868a46231748916d0ac33186ea141272cc358af"
+    },
+    "CIS_TThermostat.TPlantControlService.SetInternalRelay3Group": {
+      "address": "0xfe25f0",
+      "end": "0xfe2614",
+      "sha256": "66498c04f1dc7b5344e1a49290c34f9396351c6c3ff494694593eda16b45b086"
+    },
+    "CIS_TThermostat.TPlantControlService.SetInternalRelay4Group": {
+      "address": "0xfe2614",
+      "end": "0xfe2638",
+      "sha256": "0ce49343e74e2d2b6a934b5db289d1ff733669632fb61fe3f9ad079b0dde18c0"
+    },
+    "CIS_TThermostat.TPlantControlService.SetInternalRelay5Group": {
+      "address": "0xfe2638",
+      "end": "0xfe265c",
+      "sha256": "74734098a3ff2828b7f3d7228d8d7711becb7ea2e2180fc0709567a1572389d8"
+    },
+    "CIS_TThermostat.TPlantControlService.UnhookEvents": {
+      "address": "0xfe16b0",
+      "end": "0xfe16f0",
+      "sha256": "ebb124cd9b388d150cd990828a93e2d2282f2f3a284b0a8ce1173d12f7d29fdf"
+    },
+    "CIS_TThermostat.TThermostat.GetACApplicationObject": {
+      "address": "0xfea744",
+      "end": "0xfea768",
+      "sha256": "224a2b154db08b6d5c4846458da1bf64f505422cfb91d379397862fd573a8ec7"
+    },
+    "CIS_TThermostat.TThermostat.GetUnitHasRelays": {
+      "address": "0xfecc9c",
+      "end": "0xfeccb0",
+      "sha256": "62ae9580b4d1ae91a6c77eda02ec0fadbb29ba672392fe7c8790fc0c5e5a15f4"
+    },
+    "CIS_TThermostat.TThermostat.GetUsedZones": {
+      "address": "0xfeccb0",
+      "end": "0xfeccd4",
+      "sha256": "95fd0372ae8fb08a7367cecec5fb58ff10f7dfe25723060ccbd787c3c71279b3"
+    },
+    "CIS_TThermostat.TThermostat.InternalCreate": {
+      "address": "0xfea134",
+      "end": "0xfea404",
+      "sha256": "c295d6af4e272c8e00994ff747e39ab3d790e8fcd360a371dbe4e920f213f0da"
+    },
+    "CIS_TThermostat.UpdateInternalRelayGroup": {
+      "address": "0xfebd50",
+      "end": "0xfebe48",
+      "sha256": "c0be66c64786986a5cc641f8909597ccf5bd0f3d78039e721270505ea0612350"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.EnableControlsForMasterDisableForSlave": {
+      "address": "0x1129154",
+      "end": "0x11293e0",
+      "sha256": "229303c1e0dc35e1965cf5ae4ec6a3af4c3177b0c353336b0dfc99d4aefd9298"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.EnableDisableZone": {
+      "address": "0x1126f1c",
+      "end": "0x1127000",
+      "sha256": "f25c6f4819ad68bd93b9f3a93acb3156aa4c540b06635df9a5fdbe20ac2508a1"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.HandleCoolingGroupsUpdate": {
+      "address": "0x1128d74",
+      "end": "0x1128dbc",
+      "sha256": "2a705374964cbe8bb1d6624287bcdc7023e532d37aba3982be1e90fbae9ec9e9"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.HandleDamperGroupsUpdate": {
+      "address": "0x1129970",
+      "end": "0x1129a00",
+      "sha256": "865d0d4f174241f616ec5660e990e3484a65575f6baa9e4dc64569be10cfb807"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.HandleHeatingGroupsUpdate": {
+      "address": "0x1128dec",
+      "end": "0x1128e34",
+      "sha256": "6f1c8aea982f2167816786841b9dc3b5716d7b32fa548cf5707a343d610acbde"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.SetupComponents": {
+      "address": "0x11289e4",
+      "end": "0x1128ba0",
+      "sha256": "373777b230d098569b2d73ceac0fe5e595772bcb6c51bf5da630508dc226b0b7"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.SetupFlashComponents": {
+      "address": "0x1127424",
+      "end": "0x1127fd0",
+      "sha256": "bfc4bd26f3a1f1d42513a6f8fa29b769498d01f03c290d677da7c09ddcf24cea"
+    },
+    "CIS_TcdThermostatPlant.TcdThermostatPlant.UpdateApplicationLink": {
+      "address": "0x1127390",
+      "end": "0x11273dc",
+      "sha256": "746a5a28f90773bbbd7424b3ce04587094542544f2d6557c839fc044ff6e89f8"
+    },
+    "CIS_TddThermostat.TddThermostat.BeforeSaveProgramming": {
+      "address": "0x1131668",
+      "end": "0x11318bc",
+      "sha256": "8a5016a3950078fd4ef298c0cd6c037ae5b35e5523c9c816212e2381489113b6"
+    },
+    "CIS_TddThermostat.TddThermostat.SameGroups": {
+      "address": "0x1131ad0",
+      "end": "0x1131b70",
+      "sha256": "73a741e6d3216fa89b7d838792226b4b99b5cf65c7a2b7db7aa634f567e3e37e"
+    },
+    "CIS_TddThermostat.TddThermostat.ValidateCoolingGroups": {
+      "address": "0x1131b70",
+      "end": "0x1131c28",
+      "sha256": "1bc62d2f33711f59c97705eefe3ec4b1c1dc4311e9c9576ae8ceea01e6653500"
+    },
+    "CIS_TddThermostat.TddThermostat.ValidateDamperGroups": {
+      "address": "0x1131ce0",
+      "end": "0x1131d58",
+      "sha256": "97dab710d55c4a3aa3261c049d614ad8269d23fb777f1aa9f2d0f6168efc38f9"
+    },
+    "CIS_TddThermostat.TddThermostat.ValidateFanOffDelay": {
+      "address": "0x1131fa4",
+      "end": "0x11320c0",
+      "sha256": "ae87526eedd8eb4aa6a7a7a29ae95df8609ef75b80e22660b2c2b291a9045c9c"
+    },
+    "CIS_TddThermostat.TddThermostat.ValidateFanOnDelay": {
+      "address": "0x1131e88",
+      "end": "0x1131fa4",
+      "sha256": "727e213ab69d242800d38252075c3a241db42afed3cdad3912b1a6845a68d9b0"
+    },
+    "CIS_TddThermostat.TddThermostat.ValidateHeatingGroups": {
+      "address": "0x1131c28",
+      "end": "0x1131ce0",
+      "sha256": "5aec950f12849eae9a26811a676480a848f831396c4c42e6e28dc48c80f6e832"
+    },
+    "CIS_TddThermostat.TddThermostat.ValidateProgramming": {
+      "address": "0x11320c0",
+      "end": "0x1132744",
+      "sha256": "f25e710535850c8e9fe51a1509d19163215e969938828cec20c1794912eb3b54"
+    },
+    "CIS_TfrmThermostatCoolingGroups.TfrmCoolingGroups.FormShow": {
+      "address": "0x1124b24",
+      "end": "0x1124be8",
+      "sha256": "7d2b9d3669d0c70380ebe466dbfbddcd76a1fd0f3318223427a7da29522baed9"
+    },
+    "CIS_TfrmThermostatCoolingGroups.TfrmCoolingGroups.HandleFanHighGroupIncludeItem": {
+      "address": "0x1125024",
+      "end": "0x1125094",
+      "sha256": "08c438e18664e117b14b363587f1252f8a3354baa50f873e62c7a27dc84c2df6"
+    },
+    "CIS_TfrmThermostatCoolingGroups.TfrmCoolingGroups.HandleFanLowGroupIncludeItem": {
+      "address": "0x1125094",
+      "end": "0x1125104",
+      "sha256": "982819b36c9f0ae528d80d4fcdc88590de559a605b0a749566abea417209709d"
+    },
+    "CIS_TfrmThermostatCoolingGroups.TfrmCoolingGroups.HandleFanMediumGroupIncludeItem": {
+      "address": "0x1125104",
+      "end": "0x1125174",
+      "sha256": "0a9de4afed731fde1bba01411661e2ecd05be047076a33dfddc19699c449834a"
+    },
+    "CIS_TfrmThermostatCoolingGroups.TfrmCoolingGroups.SetupComponents": {
+      "address": "0x11252e0",
+      "end": "0x1125474",
+      "sha256": "954cab0b78a498041fbd05cf9ff0a8da80125e1883ed01627734e3c957c69ed8"
+    },
+    "CIS_TfrmThermostatCoolingGroups.TfrmCoolingGroups.SetupFlashComponents": {
+      "address": "0x1124be8",
+      "end": "0x1124fb8",
+      "sha256": "221820a49552d15fd27bda84e0af8be96e0e7403fbbd7de26b02eb4a469a2bd9"
+    },
+    "CIS_TfrmThermostatCoolingGroups.TfrmCoolingGroups.cmbGroupChange": {
+      "address": "0x1125174",
+      "end": "0x11252e0",
+      "sha256": "c93386478b00f74452b017f00105e94d20cb99d13e1195450e816961d1e4711c"
+    },
+    "CIS_TfrmThermostatDamperGroups.TfrmDamperGroups.FormShow": {
+      "address": "0x1126710",
+      "end": "0x112679c",
+      "sha256": "78597bbdd7bee9b18b6ea9dfa6e7e3928af5c36129d3579df1967cc94f52b450"
+    },
+    "CIS_TfrmThermostatDamperGroups.TfrmDamperGroups.SetupFlashComponents": {
+      "address": "0x112679c",
+      "end": "0x1126a10",
+      "sha256": "935789c07db1c599fad4686b8838094ab76c75e302d9b785375765dcedf9961d"
+    },
+    "CIS_TfrmThermostatDamperGroups.TfrmDamperGroups.cmbGroupChange": {
+      "address": "0x1126ad4",
+      "end": "0x1126d0c",
+      "sha256": "680ad5971107afb95ef5e68230043f180c382fa8e1b12258e70dd43ab14a0435"
+    },
+    "CIS_TfrmThermostatHeatingGroups.TfrmHeatingGroups.EnableDisableCombos": {
+      "address": "0x1125a40",
+      "end": "0x1125aec",
+      "sha256": "830ade659ae38be9a872d20bb0b7184c404bd217a53f81a28b510a906df620e1"
+    },
+    "CIS_TfrmThermostatHeatingGroups.TfrmHeatingGroups.FormShow": {
+      "address": "0x1125974",
+      "end": "0x1125a40",
+      "sha256": "73d76f1ff2f5767bf24cee8c31ae8eb6d99c7a8f1f13df0592d6c5e26095f613"
+    },
+    "CIS_TfrmThermostatHeatingGroups.TfrmHeatingGroups.HandleFanHighGroupIncludeItem": {
+      "address": "0x1125ff0",
+      "end": "0x1126060",
+      "sha256": "9b326bf96c3fbc9e6c34bb411286b8a99dd013685d895f58c46c90215018e6a3"
+    },
+    "CIS_TfrmThermostatHeatingGroups.TfrmHeatingGroups.HandleFanLowGroupIncludeItem": {
+      "address": "0x1126060",
+      "end": "0x11260d0",
+      "sha256": "f03e2724773be84e5e7fc95f24dd3d34301f3d1a5bfefe58d4d77f7ae8b6d17d"
+    },
+    "CIS_TfrmThermostatHeatingGroups.TfrmHeatingGroups.HandleFanMediumGroupIncludeItem": {
+      "address": "0x11260d0",
+      "end": "0x1126140",
+      "sha256": "ff0b9716ac00b4272ebed0cf282b6b3d09bd44a6e17cdc0d02e5e446040db3c7"
+    },
+    "CIS_TfrmThermostatHeatingGroups.TfrmHeatingGroups.SetupComponents": {
+      "address": "0x1125aec",
+      "end": "0x1125bb4",
+      "sha256": "97a46405a8dd0f020aa305aba9f01be119dc8060c68726725d3eaceee4da2770"
+    },
+    "CIS_TfrmThermostatHeatingGroups.TfrmHeatingGroups.SetupFlashComponents": {
+      "address": "0x1125bb4",
+      "end": "0x1125f84",
+      "sha256": "ece66a510ad819d5cff4fbb7786276afb8d9e2abbd5797eea8e5ca3aa3f2f65f"
+    },
+    "CIS_TfrmThermostatHeatingGroups.TfrmHeatingGroups.cmbGroupChange": {
+      "address": "0x1126140",
+      "end": "0x11262ac",
+      "sha256": "e2f6e8834d6b2bceff0b2228e1f3c23a26a0e085e9ae3f03dfd996fd248f259a"
+    }
+  },
+  "original_exe_sha256": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
+  "original_executed": false,
+  "original_map_sha256": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
+  "physical_io": false,
+  "published_control_fields": {
+    "TFRMCOOLINGGROUPS": {
+      "0x390": "pnlButtons",
+      "0x394": "Panel3",
+      "0x398": "btnOK",
+      "0x39c": "btnCancel",
+      "0x3a0": "pnlWhiteBox",
+      "0x3a4": "lblDescription",
+      "0x3a8": "lblTitle",
+      "0x3ac": "bevButtons",
+      "0x3b0": "bvlHeaderBevel",
+      "0x3b4": "imgLogo",
+      "0x3b8": "Label72",
+      "0x3bc": "lblStage1Group",
+      "0x3c0": "lblStage2Group",
+      "0x3c4": "lblStage3Group",
+      "0x3c8": "Label21",
+      "0x3cc": "Label22",
+      "0x3d0": "Label23",
+      "0x3d4": "Image1",
+      "0x3d8": "Image2",
+      "0x3dc": "Image3",
+      "0x3e0": "Image4",
+      "0x3e4": "Image5",
+      "0x3e8": "Image6",
+      "0x3ec": "Image7",
+      "0x3f0": "btnHelp",
+      "0x3f4": "frmThermostatExternalRelays1",
+      "0x3f8": "Bevel1",
+      "0x3fc": "cmbActivationGroup",
+      "0x400": "cmbStage1Group",
+      "0x404": "cmbStage2Group",
+      "0x408": "cmbStage3Group",
+      "0x40c": "cmbFanLowGroup",
+      "0x410": "cmbFanMediumGroup",
+      "0x414": "cmbFanHighGroup"
+    },
+    "TFRMDAMPERGROUPS": {
+      "0x390": "pnlButtons",
+      "0x394": "Panel3",
+      "0x398": "btnOK",
+      "0x39c": "btnCancel",
+      "0x3a0": "pnlWhiteBox",
+      "0x3a4": "lblDescription",
+      "0x3a8": "lblTitle",
+      "0x3ac": "bevButtons",
+      "0x3b0": "bvlHeaderBevel",
+      "0x3b4": "imgLogo",
+      "0x3b8": "Label1",
+      "0x3bc": "Label2",
+      "0x3c0": "Label3",
+      "0x3c4": "Label4",
+      "0x3c8": "chbEnableDamperModulation",
+      "0x3cc": "Image1",
+      "0x3d0": "Image2",
+      "0x3d4": "Image3",
+      "0x3d8": "Image4",
+      "0x3dc": "btnHelp",
+      "0x3e0": "frmThermostatExternalRelays1",
+      "0x3e4": "Bevel1",
+      "0x3e8": "cmbZone1Group",
+      "0x3ec": "cmbZone2Group",
+      "0x3f0": "cmbZone3Group",
+      "0x3f4": "cmbZone4Group"
+    },
+    "TFRMHEATINGGROUPS": {
+      "0x390": "pnlButtons",
+      "0x394": "Panel3",
+      "0x398": "btnOK",
+      "0x39c": "btnCancel",
+      "0x3a0": "pnlWhiteBox",
+      "0x3a4": "lblDescription",
+      "0x3a8": "lblTitle",
+      "0x3ac": "bevButtons",
+      "0x3b0": "bvlHeaderBevel",
+      "0x3b4": "imgLogo",
+      "0x3b8": "lblActivationGroup",
+      "0x3bc": "lblStage1Group",
+      "0x3c0": "lblStage2Group",
+      "0x3c4": "lblStage3Group",
+      "0x3c8": "lblLowFanGroup",
+      "0x3cc": "lblMediumFanGroup",
+      "0x3d0": "lblHighFanGroup",
+      "0x3d4": "Bevel1",
+      "0x3d8": "Image1",
+      "0x3dc": "Image2",
+      "0x3e0": "Image3",
+      "0x3e4": "Image4",
+      "0x3e8": "Image5",
+      "0x3ec": "Image6",
+      "0x3f0": "Image7",
+      "0x3f4": "btnHelp",
+      "0x3f8": "frmThermostatExternalRelays1",
+      "0x3fc": "Bevel2",
+      "0x400": "cmbActivationGroup",
+      "0x404": "cmbStage1Group",
+      "0x408": "cmbStage2Group",
+      "0x40c": "cmbStage3Group",
+      "0x410": "cmbFanLowGroup",
+      "0x414": "cmbFanMediumGroup",
+      "0x418": "cmbFanHighGroup"
+    },
+    "TFRMTHERMOSTATPLANT": {
+      "0x390": "gbPlantZones",
+      "0x394": "chbPlantZone1",
+      "0x398": "chbPlantZone2",
+      "0x39c": "chbPlantZone3",
+      "0x3a0": "chbPlantZone4",
+      "0x3a4": "btnFanControl",
+      "0x3a8": "Label2",
+      "0x3ac": "cmbInternalPlantType",
+      "0x3b0": "chbPlantUnswitchedZone",
+      "0x3b4": "gbPlantModes",
+      "0x3b8": "chbPlantModeHeat",
+      "0x3bc": "chbPlantModeCool",
+      "0x3c0": "chbPlantModeHeatCool",
+      "0x3c4": "chbPlantModeVent",
+      "0x3c8": "gbCycleLimiting",
+      "0x3cc": "lblPlantOnTime",
+      "0x3d0": "lblPlantOffTime",
+      "0x3d4": "cmbPlantMinimumOnTime",
+      "0x3d8": "cmbPlantMinimumOffTime",
+      "0x3dc": "gbPlantStages",
+      "0x3e0": "lblCoolingStages",
+      "0x3e4": "lblHeatingStages",
+      "0x3e8": "cmbCoolingPlantStages",
+      "0x3ec": "cmbHeatingPlantStages",
+      "0x3f0": "lblCyclesPerHour",
+      "0x3f4": "cmbPlantCycleTime",
+      "0x3f8": "gbRelayGroups",
+      "0x3fc": "lblRelay1",
+      "0x400": "lblRelay2",
+      "0x404": "lblRelay3",
+      "0x408": "lblRelay4",
+      "0x40c": "lblRelay5",
+      "0x410": "btnEvaporativeCooling",
+      "0x414": "btnCoolingGroups",
+      "0x418": "btnHeatingGroups",
+      "0x41c": "btnDamperGroups",
+      "0x420": "chbEnableHVACRelayDrive",
+      "0x424": "lblVentPlantType",
+      "0x428": "cmbVentPlantType",
+      "0x42c": "btnFanCoil",
+      "0x430": "ActionList2",
+      "0x434": "actEvaporativeCooling",
+      "0x438": "actHeatingGroups",
+      "0x43c": "actFanCoil",
+      "0x440": "actFanControl",
+      "0x444": "actDamperGroups",
+      "0x448": "actCoolingGroups",
+      "0x44c": "cmbInternalRelay1Group",
+      "0x450": "cmbInternalRelay2Group",
+      "0x454": "cmbInternalRelay3Group",
+      "0x458": "cmbInternalRelay4Group",
+      "0x45c": "cmbInternalRelay5Group"
+    }
+  },
+  "resources": {
+    "TFRMCOOLINGGROUPS": {
+      "bytes": 18312,
+      "sha256": "109476bdd712164d4ca87d6169853179f917d9942ce32d40453c66598a239411"
+    },
+    "TFRMDAMPERGROUPS": {
+      "bytes": 11353,
+      "sha256": "c72c47427e0081398916158ad9d5c99efac59ef4478ea520ca2b8d2d51bd2a80"
+    },
+    "TFRMHEATINGGROUPS": {
+      "bytes": 18497,
+      "sha256": "71334ef180569268b0222e12e34f1ca3cc342c5ad4014ac3c4ac14fc72320507"
+    },
+    "TFRMTHERMOSTATPLANT": {
+      "bytes": 11312,
+      "sha256": "a5e27c916fd893329c2e47f28064b4862ae10d20e00550cfbb513aabae682a2c"
+    }
+  },
+  "selector_bindings": {
+    "TFRMCOOLINGGROUPS": {
+      "cmbActivationGroup": {
+        "FlashController.UpdateMode": "umChange",
+        "Properties.DropDownListStyle": "lsEditFixedList",
+        "Properties.ImmediatePost": true,
+        "Properties.OnChange": "cmbGroupChange"
+      },
+      "cmbFanHighGroup": {
+        "FlashController.UpdateMode": "umChange",
+        "Properties.DropDownListStyle": "lsEditFixedList",
+        "Properties.ImmediatePost": true,
+        "Properties.OnChange": "cmbGroupChange"
+      },
+      "cmbFanLowGroup": {
+        "FlashController.UpdateMode": "umChange",
+        "Properties.DropDownListStyle": "lsEditFixedList",
+        "Properties.ImmediatePost": true,
+        "Properties.OnChange": "cmbGroupChange"
+      },
+      "cmbFanMediumGroup": {
+        "FlashController.UpdateMode": "umChange",
+        "Properties.DropDownListStyle": "lsEditFixedList",
+        "Properties.ImmediatePost": true,
+        "Properties.OnChange": "cmbGroupChange"
+      },
+      "cmbStage1Group": {
+        "FlashController.UpdateMode": "umChange",
+        "Properties.DropDownListStyle": "lsEditFixedList",
+        "Properties.ImmediatePost": true,
+        "Properties.OnChange": "cmbGroupChange"
+      },
+      "cmbStage2Group": {
+        "FlashController.UpdateMode": "umChange",
+        "Properties.DropDownListStyle": "lsEditFixedList",
+        "Properties.ImmediatePost": true,
+        "Properties.OnChange": "cmbGroupChange"
+      },
+      "cmbStage3Group": {
+        "FlashController.UpdateMode": "umChange",
+        "Properties.DropDownListStyle": "lsEditFixedList",
+        "Properties.ImmediatePost": true,
+        "Properties.OnChange": "cmbGroupChange"
+      }
+    },
+    "TFRMDAMPERGROUPS": {
+      "cmbZone1Group": {
+        "FlashController.UpdateMode": "umChange",
+        "Properties.DropDownListStyle": "lsEditFixedList",
+        "Properties.ImmediatePost": true,
+        "Properties.OnChange": "cmbGroupChange"
+      },
+      "cmbZone2Group": {
+        "FlashController.UpdateMode": "umChange",
+        "Properties.DropDownListStyle": "lsEditFixedList",
+        "Properties.ImmediatePost": true,
+        "Properties.OnChange": "cmbGroupChange"
+      },
+      "cmbZone3Group": {
+        "FlashController.UpdateMode": "umChange",
+        "Properties.DropDownListStyle": "lsEditFixedList",
+        "Properties.ImmediatePost": true,
+        "Properties.OnChange": "cmbGroupChange"
+      },
+      "cmbZone4Group": {
+        "FlashController.UpdateMode": "umChange",
+        "Properties.DropDownListStyle": "lsEditFixedList",
+        "Properties.ImmediatePost": true,
+        "Properties.OnChange": "cmbGroupChange"
+      }
+    },
+    "TFRMHEATINGGROUPS": {
+      "cmbActivationGroup": {
+        "FlashController.UpdateMode": "umChange",
+        "Properties.DropDownListStyle": "lsEditFixedList",
+        "Properties.ImmediatePost": true,
+        "Properties.OnChange": "cmbGroupChange"
+      },
+      "cmbFanHighGroup": {
+        "FlashController.UpdateMode": "umChange",
+        "Properties.DropDownListStyle": "lsEditFixedList",
+        "Properties.ImmediatePost": true,
+        "Properties.OnChange": "cmbGroupChange"
+      },
+      "cmbFanLowGroup": {
+        "FlashController.UpdateMode": "umChange",
+        "Properties.DropDownListStyle": "lsEditFixedList",
+        "Properties.ImmediatePost": true,
+        "Properties.OnChange": "cmbGroupChange"
+      },
+      "cmbFanMediumGroup": {
+        "FlashController.UpdateMode": "umChange",
+        "Properties.DropDownListStyle": "lsEditFixedList",
+        "Properties.ImmediatePost": true,
+        "Properties.OnChange": "cmbGroupChange"
+      },
+      "cmbStage1Group": {
+        "FlashController.UpdateMode": "umChange",
+        "Properties.DropDownListStyle": "lsEditFixedList",
+        "Properties.ImmediatePost": true,
+        "Properties.OnChange": "cmbGroupChange"
+      },
+      "cmbStage2Group": {
+        "FlashController.UpdateMode": "umChange",
+        "Properties.DropDownListStyle": "lsEditFixedList",
+        "Properties.ImmediatePost": true,
+        "Properties.OnChange": "cmbGroupChange"
+      },
+      "cmbStage3Group": {
+        "FlashController.UpdateMode": "umChange",
+        "Properties.DropDownListStyle": "lsEditFixedList",
+        "Properties.ImmediatePost": true,
+        "Properties.OnChange": "cmbGroupChange"
+      }
+    },
+    "TFRMTHERMOSTATPLANT": {
+      "cmbInternalRelay1Group": {
+        "FlashController.UpdateMode": "umChange",
+        "Properties.DropDownListStyle": "lsEditFixedList",
+        "Properties.ImmediatePost": true
+      },
+      "cmbInternalRelay2Group": {
+        "FlashController.UpdateMode": "umChange",
+        "Properties.DropDownListStyle": "lsEditFixedList",
+        "Properties.ImmediatePost": true
+      },
+      "cmbInternalRelay3Group": {
+        "FlashController.UpdateMode": "umChange",
+        "Properties.DropDownListStyle": "lsEditFixedList",
+        "Properties.ImmediatePost": true
+      },
+      "cmbInternalRelay4Group": {
+        "FlashController.UpdateMode": "umChange",
+        "Properties.DropDownListStyle": "lsEditFixedList",
+        "Properties.ImmediatePost": true
+      },
+      "cmbInternalRelay5Group": {
+        "FlashController.UpdateMode": "umChange",
+        "Properties.DropDownListStyle": "lsEditFixedList",
+        "Properties.ImmediatePost": true
+      }
+    }
+  }
+}

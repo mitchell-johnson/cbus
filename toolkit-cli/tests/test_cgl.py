@@ -10,6 +10,7 @@ from cbus_toolkit.cgate import CGateClient, CGateResponse
 from cbus_toolkit.cgl import NativeCGL, parse_document, summary
 from cbus_toolkit.native import NativeDatabase, NativeProjects
 from research import native_cgl_routes as routes
+from research import cgl_application_order_vectors as order_vectors
 
 
 DOCUMENT = {"cglVersion": "1.1", "localNetwork": 254, "networks": [
@@ -141,7 +142,45 @@ class CommittedNativeCaptureTests(unittest.TestCase):
         for private in ("127.0.0.1", "/Users/", "/Volumes/", "/private/"):
             self.assertNotIn(private, text)
         rows = [json.loads(line) for line in VECTORS.read_text().splitlines()]
-        self.assertEqual(rows, routes.vectors(committed))
+        self.assertEqual(rows, order_vectors.vectors(committed))
+
+    def test_application_order_projection_is_bound_to_unchanged_native_bytes(self):
+        self.assertEqual(hashlib.sha256(FIXTURE.read_bytes()).hexdigest(),
+                         "3a818506368c6eb6311125cb7f5a1272b5de6526b653d67b7ae197e043369490")
+        captured = fixture()
+        scenario = next(item for item in captured["scenarios"] if item["name"] == "validation")
+        raw = json.loads(scenario["steps"][23]["reply"][1][4:])
+        self.assertEqual([app["address"] for app in raw["networks"][0]["applications"]],
+                         [72, 0, 71, 66])
+        current = {row["id"]: row for row in order_vectors.vectors(captured)}
+        apps = current["cgl-validation-23"]["expect_export"]["document"]["networks"][0]["applications"]
+        self.assertEqual([app["address"] for app in apps], [72, 0, 71, 66])
+
+    def test_current_comparator_rejects_numeric_application_sorting(self):
+        captured = fixture()
+        scenario = next(item for item in captured["scenarios"] if item["name"] == "validation")
+        line = scenario["steps"][23]["reply"][1]
+        native = order_vectors.canonical_export(line)
+        wrongly_sorted = json.loads(line[4:])
+        wrongly_sorted["networks"][0]["applications"].sort(key=lambda app: app["address"])
+        actual = order_vectors.canonical_export("347-" + json.dumps(wrongly_sorted))
+        self.assertEqual([app["address"] for app in actual["networks"][0]["applications"]],
+                         [0, 66, 71, 72])
+        self.assertNotEqual(actual, native)
+
+    def test_application_order_successor_preserves_every_other_vector_field(self):
+        captured = fixture()
+        old = routes.vectors(captured)
+        current = order_vectors.vectors(captured)
+        self.assertEqual(len(current), 158)
+        self.assertEqual([row["id"] for row in current], [row["id"] for row in old])
+        changed = [new["id"] for before, new in zip(old, current, strict=True) if before != new]
+        self.assertEqual(changed, ["cgl-validation-23"])
+        before = next(row for row in old if row["id"] == "cgl-validation-23")
+        after = copy.deepcopy(next(row for row in current if row["id"] == "cgl-validation-23"))
+        after["expect_export"]["document"]["networks"][0]["applications"].sort(
+            key=lambda application: application["address"])
+        self.assertEqual(after, before)
 
     def test_routes_follow_bridge_units_up_to_six_hops_and_last_selected_network_is_local(self):
         exports = {command: reply for command, _, reply in replies("export_routes")}
