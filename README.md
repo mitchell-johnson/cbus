@@ -19,6 +19,11 @@ The Rust workspace also provides protocol tools, a PCI simulator, and a C-Gate c
 
 Raw `cgate exec` and `cgate run` can forward the command surface exposed by the selected server. That reach does not create a typed Toolkit workflow, reproduce Toolkit GUI state, prove native-server semantics, or verify a physical effect.
 
+Thermostat settings combine supported quick-zone, plant, output and damper
+histories through one database transaction. Its [temperature model](toolkit-cli/docs/thermostat-temperature-model.md)
+keeps all 15 raw, live and saved fields distinct; broader initialization,
+original GUI scheduling and physical thermostat acceptance remain open.
+
 The Toolkit CLI also renders saved multisensor, thermostat, wireless input,
 gateway and remote-control report tables from explicit supported snapshots.
 Architectural dimmer reports include 128 sparse scenes, DMX mappings and
@@ -396,6 +401,11 @@ Its [release report](toolkit-cli/docs/feature-batch-2026-10-04-thermostat-quick-
 separate source pure/model and backend epochs, and 199 passing installed-wheel
 tests plus five passing subtest events. Broader initialization, automatic
 Windows dispatch, full GUI and physical thermostat acceptance remain open.
+The [detailed zone controls](toolkit-cli/docs/thermostat-zone-controls.md) add all
+34 prepared Boolean bindings to the same ordered settings transaction: UI,
+internal plant, measured and heating/cooling/venting zones, plus four plant
+modes. Use `zone-checkbox-binding` with an exact binding name and JSON Boolean;
+its source callbacks and family save rules run through the same fresh owner.
 
 The [Toolkit conversion API and CLI](toolkit-cli/docs/toolkit-conversion-tweakers.md)
 admits 288 of 292 registered source/target pairs. The earlier 123 have historical
@@ -411,6 +421,12 @@ deletion/readdressing and save/reopen, use the separately guarded
 `cgate conversion tweak-replace` workflow with a distinct backup and new
 journal; `tweak-recover` observes an interrupted attempt without replay. Read
 [its metadata, persistence and recovery boundaries](toolkit-cli/docs/toolkit-tweaker-lifecycle.md).
+[Conversion XML checks](toolkit-cli/docs/conversion-xml-preservation.md) preserve
+inherited `xml:space`, mixed-content separators, CDATA and whitespace-only leaf
+values through creation, replacement, backup and recovery. Legacy journals
+remain read-only observations under their recorded policy. After a cmqttd
+restart, retain the same durable state file and journal endpoint; matching
+readback never resolves a lost SAVE reply by itself.
 Physical programming remains separate work. The [firmware recovery contract](toolkit-cli/docs/firmware-update-recovery.md)
 also separates image verification from USB cleanup and explains explicit
 resume after a release failure. Full GUI and physical acceptance remain open
@@ -488,6 +504,11 @@ interface exists. `cbus-tools cni-scan` supports explicit and OS-derived
 multi-route scans with the same bounded result envelope; `cni-discover` exposes
 the single-route wire codec and JSON boundary;
 see the [discovery contract](toolkit-cli/docs/cni-discovery.md).
+
+The CLI's `cgate cgl import` and `cgate cgl export` exchange CGL label graphs
+with either Rust service. Applications retain recorded creation order across
+edits, copies and durable reloads. See [CGL exchange and order](toolkit-cli/docs/cgl-application-order.md)
+for commands, old-repository fallback and remaining native-order gaps.
 
 ### Toolkit compatibility and current status
 

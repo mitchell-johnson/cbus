@@ -3514,6 +3514,10 @@ impl Service {
             // controller software's job and the native import sends no PCI traffic.
             capabilities["cgl_controller_side_effects"] = serde_json::Value::Bool(false);
             capabilities["cgl_pci_traffic"] = serde_json::Value::Bool(false);
+            capabilities["cgl_application_export_order"] =
+                serde_json::Value::String("tracked-creation-with-unknown-legacy-prefix".into());
+            capabilities["cgl_group_level_export_order"] =
+                serde_json::Value::String("address-order-native-order-unverified".into());
             capabilities["applications_catalog"] = serde_json::Value::String(
                 "configured-unitspec-directory-applications.xml".to_string(),
             );
@@ -18146,6 +18150,8 @@ fn import_project(xml: &str, network_name: Option<&str>) -> io::Result<(Server, 
                 retries: 2,
                 units,
                 unit_xml_order: Vec::new(),
+                // File XML supplies list order, not prior creation history.
+                application_creation_order: Default::default(),
                 // The project file lists Networks in native list order.
                 created_seq: network_index as u64 + 1,
                 physical: HashMap::new(),
