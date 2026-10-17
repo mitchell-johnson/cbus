@@ -51,14 +51,14 @@
   },
   "summary": {
     "test_modules": 817,
-    "modules_without_skip_sites": 490,
-    "modules_with_skip_sites": 327,
+    "modules_without_skip_sites": 489,
+    "modules_with_skip_sites": 328,
     "modules_by_category": {
       "cgate_test_host": 133,
       "external_cgate_project": 1,
       "hardware": 1,
       "host_platform": 17,
-      "host_tool": 11,
+      "host_tool": 12,
       "native_cgate_local": 79,
       "native_opt_in": 2,
       "original_model_runtime": 4,
@@ -75,7 +75,7 @@
     "native_modules": {
       "all": 140,
       "partial": 20,
-      "none": 167
+      "none": 168
     },
     "native_runnable_tests": 259,
     "native_selected_required_tests": 259,
@@ -6862,6 +6862,29 @@
             "unit_specs"
           ],
           "offline": "skips",
+          "native": "runs"
+        }
+      ]
+    },
+    "tests/test_installed_rust_interop.py": {
+      "categories": [
+        "host_tool"
+      ],
+      "native": "none",
+      "gated_tests": 0,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_installed_rust_interop.py::test_actual_unobserved_spawn_bypasses_popen_record_and_refuses",
+          "kind": "decorator.skipif",
+          "condition": "not hasattr(os, 'posix_spawn') or not hasattr(os, 'waitpid')",
+          "reason": "POSIX spawn is required for the unobserved-launch probe",
+          "environment": [],
+          "categories": [
+            "host_tool"
+          ],
+          "offline": "runs",
           "native": "runs"
         }
       ]
