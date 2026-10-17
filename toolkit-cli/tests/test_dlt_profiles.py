@@ -228,6 +228,149 @@ class RoutedGateTests(unittest.TestCase):
         self.assertFalse((source / 'dlt_variant_guard.py').exists())
 
 
+class P603RemainingSliceBoundaryTests(unittest.TestCase):
+    """Issue #47 remaining slice: non-database eDLT revisions and legacy DLT controls.
+
+    No committed fixture or sanitized spec fact proves per-operation
+    equivalence for non-database eDLT workflows beyond 5.5.00, admits another
+    KEYGL5 catalogue number, exposes classic label-variant fields below
+    I_DLT.xml MinVersion 2.0 or on an IsInternal revision, or gates the saved
+    native-XML classic editors (``dlt text``, ``text-dialog``,
+    ``icon-dialog``, ``broadcast``, ``unit-delivery``), which carry no unit
+    identity to check. The registry must not extrapolate KEYGL5 5.5.00
+    evidence to those branches, infer rendering or physical label reads, or
+    claim the XML-target editors are profile-gated. These pins lock the
+    refusal and unmodeled surface and name the next file to change; they
+    establish no original GUI, display, transfer, power-cycle or hardware
+    acceptance (#48/#50 stay open).
+    """
+
+    # Database-admitted revisions whose non-database operations still lack
+    # per-operation equivalence evidence.
+    DATABASE_ONLY_REVISIONS = ('1.6.00', '1.6.99', '1.7.00', '1.7.99', '5.4.00', '5.4.99', '5.5.99')
+
+    def test_non_database_edlt_operations_stay_at_550_only(self):
+        # Next: extend _EDLT_FULL/_EDLT_FIRMWARE in dlt_profiles.py only with a
+        # committed per-operation native equivalence receipt at each range
+        # boundary (parent-metadata save/close/reload hashes, global-source
+        # export hashes, label-clear runs, physical label reads, on the model
+        # of research/fixtures/edlt-revision-native-acceptance.json, which
+        # covers database Lighting/Page Control only), then regenerate
+        # rust/cbus-cgate/src/dlt_profiles.json and the decision vectors with
+        # research/export_dlt_admission.py.
+        for firmware in self.DATABASE_ONLY_REVISIONS:
+            with self.subTest(firmware=firmware):
+                for workflow in ('edlt-parent-metadata', 'edlt-global-source'):
+                    self.assertIn('evidence is retained only for 5.5.00 and it is not extrapolated',
+                                  refusal(workflow, 'KEYGL5', firmware, '5055EDL'))
+                self.assertIn('edlt-label-clear evidence is retained only for 5.5.00',
+                              refusal('edlt-label-clear', 'KEYGL5', firmware))
+                physical = '.'.join(f'{int(part):02d}' for part in firmware.split('.'))
+                self.assertIn('edlt-physical-labels evidence is retained only for 5.5.00',
+                              refusal('edlt-physical-labels', 'KEYGL5', physical))
+        # The 5.5.00 baseline stays admitted, and the lookup surface agrees.
+        self.assertIsNone(refusal('edlt-parent-metadata', 'KEYGL5', '5.5.00', '5055EDL'))
+        self.assertIsNone(refusal('edlt-label-clear', 'KEYGL5', '5.5.00'))
+        self.assertIsNone(refusal('edlt-physical-labels', 'KEYGL5', '05.05.00'))
+        view = lookup('KEYGL5', '1.6.00', '5055EDL')
+        self.assertTrue(view['workflows']['edlt-database-widgets']['admitted'])
+        for workflow in ('edlt-parent-metadata', 'edlt-global-source', 'edlt-label-clear'):
+            decision = view['workflows'][workflow]
+            self.assertFalse(decision['admitted'])
+            self.assertIn('not extrapolated', decision['reason'])
+
+    def test_other_keygl5_catalogues_stay_refused_at_every_public_revision(self):
+        # Next: per-catalogue native equivalence at one admitted revision
+        # before dlt_profiles.py admits any catalogue number beside 5055EDL.
+        # Firmware is checked before catalogue number, so non-5.5.00 firmware
+        # reports the firmware reason first in the non-database workflows.
+        for firmware in ('1.6.00', '1.7.00', '5.4.00', '5.5.00', '5.5.99'):
+            for catalog in ('5085EDL', '5085EDLB', 'R5045EDL', 'R5045EDLW'):
+                with self.subTest(firmware=firmware, catalog=catalog):
+                    self.assertIn('only 5055EDL evidence',
+                                  refusal('edlt-database-widgets', 'KEYGL5', firmware, catalog))
+                    for workflow in ('edlt-parent-metadata', 'edlt-global-source'):
+                        reason = refusal(workflow, 'KEYGL5', firmware, catalog)
+                        self.assertIn('only 5055EDL evidence' if firmware == '5.5.00' else 'not extrapolated',
+                                      reason)
+
+    def test_classic_types_stay_outside_every_edlt_workflow(self):
+        # Vendor capability fact, not CLI support: classic Saturn/Neo/
+        # Decorator units have no eDLT widgets or unit-resident static label
+        # text. No new evidence can admit them; the model must keep refusing.
+        for unit_type in ('KEYBL5', 'KEYML5', 'KEYDL4'):
+            for workflow in ('edlt-database-widgets', 'edlt-parent-metadata', 'edlt-global-source'):
+                with self.subTest(unit_type=unit_type, workflow=workflow):
+                    self.assertIn('without eDLT widgets or unit-resident static label text',
+                                  refusal(workflow, unit_type, '2.1.00', PROFILES[unit_type].catalog_numbers[0]))
+            with self.subTest(unit_type=unit_type):
+                self.assertIn('without eDLT widgets or unit-resident static label text',
+                              refusal('edlt-label-clear', unit_type, '2.1.00'))
+                self.assertIn('without eDLT widgets or unit-resident static label text',
+                              refusal('edlt-physical-labels', unit_type, '02.01.00'))
+
+    def test_keygl5_stays_outside_the_classic_label_variant_workflow(self):
+        # KEYGL5.xml declares no LabelFlavour fields; the classic I_DLT.xml
+        # fields must not be extrapolated to the eDLT.
+        self.assertIn('LabelFlavour', refusal('classic-dlt-label-variants', 'KEYGL5', '5.5.00', '5055EDL'))
+
+    def test_internal_and_below_min_version_classic_revisions_stay_refused(self):
+        # Next: a catalogue or specification flag change in the vendor data,
+        # re-derived through research/dlt_profile_facts.py (IsInternal
+        # cleared, or I_DLT.xml MinVersion lowered), or native PP evidence
+        # that such a unit exposes the LabelFlavour fields. 1.4.x reports the
+        # MinVersion branch because it is checked before the internal branch.
+        cases = (
+            (('KEYBL5', '1.4.00', '5085DL'), 'MinVersion 2.0'),
+            (('KEYML5', '1.4.08', '5055DL'), 'MinVersion 2.0'),
+            (('KEYBL5', '2.0.50', '5085DL'), 'IsInternal'),
+            (('KEYML5', '2.5.00', '5055DL'), 'IsInternal'),
+            (('KEYDL4', '2.0.00', 'E5084DL'), 'IsInternal'),
+            (('KEYGL5', '1.5.99', '5055EDL'), 'IsInternal'),
+            (('KEYGL5', '5.6.00', '5055EDL'), 'IsInternal'),
+        )
+        for args, pattern in cases:
+            with self.subTest(args=args):
+                workflow = 'edlt-database-widgets' if args[0] == 'KEYGL5' else 'classic-dlt-label-variants'
+                self.assertIn(pattern, refusal(workflow, *args))
+
+    def test_admission_table_keeps_the_narrow_rows(self):
+        # A registry edit that widens admission must update these literals
+        # deliberately; the committed Rust table and decision vectors stay
+        # byte-identical until research/export_dlt_admission.py regenerates
+        # them from an evidenced change.
+        table = registry.admission_table()
+        rows = {row['name']: [tuple(item) for item in row['admitted']] for row in table['workflows']}
+        self.assertEqual(rows['edlt-parent-metadata'], [('KEYGL5', '5.5.00', '5055EDL')])
+        self.assertEqual(rows['edlt-global-source'], [('KEYGL5', '5.5.00', '5055EDL')])
+        self.assertEqual(rows['edlt-label-clear'], [('KEYGL5', '5.5.00', None)])
+        self.assertEqual(rows['edlt-physical-labels'], [('KEYGL5', '5.5.00', None)])
+        self.assertEqual(rows['edlt-database-widgets'],
+                         [('KEYGL5', '1.6.00..1.6.99', '5055EDL'), ('KEYGL5', '1.7.00..1.7.99', '5055EDL'),
+                          ('KEYGL5', '5.4.00..5.4.99', '5055EDL'), ('KEYGL5', '5.5.00..5.5.99', '5055EDL')])
+        self.assertEqual(rows['classic-dlt-label-variants'],
+                         [(unit_type, firmware, '*') for unit_type in ('KEYBL5', 'KEYML5')
+                          for firmware in ('2.0.00', '2.1.00', '3.0.00..3.0.99')]
+                         + [('KEYDL4', firmware, '*') for firmware in ('2.1.00', '3.0.00..3.0.99')])
+
+    def test_xml_target_classic_editors_stay_outside_the_registry(self):
+        # Next: bounded original-runtime comparison of the label-dialog
+        # contract (flavour fallback, FONT/non-FONT truncation, alternate
+        # deletion/preservation) plus per-type native save/close/reload before
+        # any new classic-dlt-* workflow row is added to dlt_profiles.py.
+        # Until then the saved-XML editors below must neither consult the
+        # registry nor be described as profile-gated.
+        self.assertEqual(set(WORKFLOWS),
+                         {'edlt-database-widgets', 'edlt-parent-metadata', 'edlt-global-source', 'edlt-label-clear',
+                          'edlt-physical-labels', 'serial-population', 'classic-dlt-label-variants'})
+        source = ROOT / 'src/cbus_toolkit'
+        for name in ('dlt_project_labels.py', 'dlt_language_dialog.py', 'dlt_icon_dialog.py', 'dlt_broadcast.py',
+                     'dlt_unit_delivery.py', 'dlt_project_cli.py', 'dlt_language_dialog_cli.py',
+                     'dlt_icon_dialog_cli.py', 'dlt_broadcast_cli.py', 'dlt_unit_delivery_cli.py'):
+            with self.subTest(module=name):
+                self.assertNotIn('dlt_profiles', (source / name).read_text(), name)
+
+
 VENDOR = os.environ.get('CBUS_DLT_VENDOR_ROOT')
 
 
