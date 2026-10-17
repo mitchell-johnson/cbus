@@ -15,7 +15,7 @@
     "path": "/private/var/folders/8t/bnm3x3vs64vcv_mfr2ry767m0000gn/T/opencode/verify-145/rust/target/debug/cmqttd",
     "sha256": "ca9abad74d2d58f941169a8097494e5362a80c240901396c40d791216b751be8"
   },
-  "source_revision": "c82166d5835d0f48a0c10c98cdbc10a00d5e50b6",
+  "source_revision": "bfcf47af908e65b9af0958490087f7133a615109",
   "source_fingerprint": {
     ".github/workflows/ci.yml": "1af80cae0dba93ddf30f79907349dd57df3d71f2cbbb9e4438f645441cee5230",
     "docs/cmqttd-cgate.md": "12a6251657c7151b7bb882aa5ba53b1b29dc2f2daf436eff1923684c32e96c99",
