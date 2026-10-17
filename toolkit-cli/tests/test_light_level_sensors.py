@@ -1,4 +1,5 @@
 """ST7 SENLL light-level dialog/forced-save vectors, receipt checks and closed native PP tests."""
+import inspect
 import json
 import os
 from pathlib import Path
@@ -309,10 +310,120 @@ class LightLevelProfileTest(unittest.TestCase):
         self.assertEqual(seen, set(PROFILE['catalog_numbers']))
         for identity, pattern in ((('SENLL', '1.2.68', '5031PE'), 'TSENLL'), (('SENLL', '2.0.00', '5031PE'), 'no Toolkit'),
                                   (('SENLL', '2.5.00', '5031PE'), 'no Toolkit'), (('SENLLA', '2.4.00', '5754PE'), 'TSENLLA'),
+                                  (('SENPILLA', '2.4.00', '5754PE'), 'TSENPILLA'),
+                                  (('SENPIRIC', '2.4.00', '5753L'), 'TSENPIRIC'),
                                   (('SENPILL', '2.3.00', '5753PEIRL'), 'Only SENLL'), (('SENLL', '2.3.00', '5753L'), 'catalogue')):
             with self.subTest(identity=identity):
                 self.assertRegex(profile_refusal(*identity), pattern)
         self.assertIn('light_level_sensors', multisensor_refusal('SENLL', '2.3.00', '5031PE'))
+
+
+class LightLevelUnmodeledBoundaryTests(unittest.TestCase):
+    """Issue #41 remaining item: sensor dialogs beyond the retained SENLL subset.
+
+    The committed source evidence (docs/light-level-sensor-review.json and
+    docs/sensor-profile-review.json) admits only the zero-key SENLL ST7 dialog
+    with its forced save: level/on-off/broadcast/enable groups, the on/off
+    application switch, indicator LED, target/margin, broadcast interval,
+    Power Fail maintenance state and the Global status interval. Every branch
+    below needs original-Toolkit dialog execution (research/
+    light_level_sensor_review.py against the pinned EXE/MAP), native C-Gate
+    acceptance, or optical lux / temperature / current fixtures, so the Python
+    model must not invent it. These pins lock the refusal/unmodeled surface
+    and name the next file or fixture to change; they establish no original
+    GUI, native-service or physical acceptance.
+    """
+
+    def test_surface_mount_families_refuse_with_toolkit_class(self):
+        # Next: research/light_level_sensor_review.py must pin the TSENLLA /
+        # TSENPILLA / TSENPIRIC dialogs (and the SENLLA eight-key ordinary
+        # save lane must admit them) before light_level_sensors models them.
+        import cbus_toolkit.light_level_sensors as light_level
+        for unit_type, firmware, catalog, toolkit_class in (
+                ('SENLLA', '2.4.00', '5754PE', 'TSENLLA'), ('SENLLA', '2.4.99', '5754PE', 'TSENLLA'),
+                ('SENPILLA', '2.4.00', '5754PE', 'TSENPILLA'), ('SENPILLA', '2.4.99', '5753PEIRL', 'TSENPILLA'),
+                ('SENPIRIC', '2.4.00', '5753L', 'TSENPIRIC'), ('SENPIRIC', '2.4.99', '5753L', 'TSENPIRIC')):
+            with self.subTest(unit_type=unit_type, firmware=firmware, catalog=catalog):
+                reason = light_level.profile_refusal(unit_type, firmware, catalog)
+                self.assertTrue(reason)
+                self.assertIn(toolkit_class, reason)
+                # The multisensor side refuses the surface-mount layouts too.
+                self.assertTrue(multisensor_refusal(unit_type, firmware, catalog))
+
+    def test_older_and_other_sensor_classes_stay_refused(self):
+        # Next: original class evidence per family (TSENLL/SENLL.xml 1.x,
+        # TSENPILL/SENPILL_1/2/3, TSENPIR/TSENPIRSS 1.x, TSENTEMP/TSENCT4
+        # temperature/current dialogs) plus temperature/current fixtures
+        # before any new module mirrors pir_sensors.py for them.
+        import cbus_toolkit.light_level_sensors as light_level
+        for identity in (('SENLL', '1.2.68', '5031PE'), ('SENLL', '1.9.99', '5031PEWP'),
+                         ('PE_CELL', '1.00', '5031PE'), ('SENPILL', '1.9.00', '5753PEIRL'),
+                         ('SENPILL', '2.4.00', '5753PEIRL'), ('SENPIR', '1.00', '5753'),
+                         ('SENPIRSS', '1.00', '5753'), ('SENSOR', '1.00', '5753'),
+                         ('SENTEMP', '1.00', '5031TMP'), ('SENCT', '1.00', '5031CT')):
+            with self.subTest(identity=identity):
+                self.assertTrue(light_level.profile_refusal(*identity))
+        self.assertIn('TSENLL', light_level.profile_refusal('SENLL', '1.2.68', '5031PE'))
+
+    def test_no_calibration_ir_corridor_join_maintenance_macro_output_surface(self):
+        # Next: original-instruction evidence for calibration/sensitivity
+        # controls, IR enable/key selection, corridor linking, join mode,
+        # maintenance block/bank editing, custom macros and output
+        # interactions before LightLevelSensor.plan accepts such options.
+        # The receipt pins these unsupported (MaximumKeyCount 0, join/corridor/
+        # infrared flags false, bank/key-function/light-level/occupancy tabs
+        # hidden); the model only forces their stored bytes via FORCED.
+        admitted = {'level_group', 'on_off_group', 'on_off_application', 'broadcast_group',
+                    'enable_group', 'indicator', 'target_lux', 'margin_percent',
+                    'broadcast_interval_seconds', 'power_up', 'status_report_interval',
+                    'identity', 'on_off_controls'}
+        parameters = inspect.signature(LightLevelSensor.plan).parameters
+        self.assertEqual(set(parameters) - {'self', 'current'}, admitted)
+        sensor = LightLevelSensor(fixture())
+        for option in ('calibration_lux', 'sensitivity', 'ir_enable', 'ir_key',
+                       'corridor_group', 'corridor_block', 'join_group', 'join_mode',
+                       'maintenance_block', 'macro', 'output_level'):
+            with self.subTest(option=option), self.assertRaises(TypeError):
+                sensor.plan({}, **{option: 0})
+        forced_ir_corridor_join = {
+            'PIRLightMovement': 0, 'PIRDarkMovement': 0, 'PIRDark': 0, 'DisableIR': 1,
+            'IRBankKeyOffset': 0, 'CorridorLinkOfficeBlock': 0, 'CorridorLinkBlock': 0,
+            'CorridorLinkEnablerGroup': 255, 'CorridorLinkActive': 0,
+            'SingleJoinEnablerGroup': 255, 'SingleJoinEnablerControlGroup': 255,
+            'DualJoinEnablerGroup': 255, 'DualJoinEnablerControlGroup': 255,
+            'PECFunctionActive': 1, 'PECFunctionBlock': 1, 'PECFunctionIRKey': 0,
+            'PECFunctionIRActive': 0, 'PIRFunctionIRKey': 0, 'PIRFunctionIRActive': 0,
+            'PIREnablerGroup': 255, 'PECEnablerGroupLogic': 0, 'PIREnablerGroupLogic': 0,
+            'PIRLevelStore': 0, 'PotentiometerAFunction': 0, 'PotentiometerBFunction': 0,
+            'PotentiometerATimerBlock': 0, 'PotentiometerBTimerBlock': 0,
+            'PotentiometerBBankSwitchEnable': 0}
+        self.assertEqual({name: FORCED[name] for name in forced_ir_corridor_join}, forced_ir_corridor_join)
+        review = json.loads(REVIEW.read_text())
+        self.assertEqual((review['unit']['MaximumKeyCount'], review['unit']['IsJoinModeSupported'],
+                          review['unit']['IsDualJoinModeSupported'],
+                          review['unit']['IsCorridorLinkingSupported'],
+                          review['unit']['IsInfraredNECSupported']), (0, False, False, False, False))
+        for tab in ('tsBankSwitch', 'tsKeyFunctions', 'tsLightLevel', 'tsOccupancy', 'tsScenes'):
+            self.assertIn(tab, review['dialog']['hidden_tabs'])
+
+    def test_no_surface_mount_or_temperature_surface_in_light_level_module(self):
+        # Next: new light_level_sensors routines for those families, only after
+        # original evidence exists; an unbuilt boundary must not imply a surface.
+        import cbus_toolkit.light_level_sensors as light_level
+        leaked = [name for name in dir(light_level)
+                  if 'senpilla' in name.lower() or 'senpiric' in name.lower()
+                  or 'sentemp' in name.lower() or 'senct' in name.lower()
+                  or 'calibrat' in name.lower()]
+        self.assertEqual(leaked, [])
+
+    def test_sensor_docs_record_remaining_dialogs_as_unmodeled(self):
+        # The committed doc keeps these branches in its outside-acceptance
+        # list; implementing them first requires original/physical evidence.
+        text = (ROOT / 'docs/sensors.md').read_text()
+        for phrase in ('lux calibration', 'infrared', 'corridor linking', 'join mode',
+                       'bank-switch editing', 'Custom macros, SENLLA/SENPILLA'):
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, text)
 
 
 class LightLevelReviewTest(unittest.TestCase):

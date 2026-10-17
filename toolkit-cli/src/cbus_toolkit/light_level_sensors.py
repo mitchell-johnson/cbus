@@ -303,6 +303,13 @@ def profile_refusal(unit_type, firmware, catalog_number):
     if unit_type != PROFILE['unit_type']:
         if unit_type == 'SENLLA':
             return 'SENLLA uses the Toolkit surface-mount class TSENLLA and the SENLLA layout'
+        # SENPILLA/SENPIRIC add eleven light-level group parameters to the
+        # ST7 layout and Toolkit selects TSENPILLA/TSENPIRIC (see
+        # docs/sensor-profile-review.json and cbus_toolkit.sensors.REFUSED).
+        if unit_type == 'SENPILLA':
+            return 'SENPILLA uses the Toolkit surface-mount class TSENPILLA and the SENPILLA layout'
+        if unit_type == 'SENPIRIC':
+            return 'SENPIRIC uses the Toolkit surface-mount class TSENPIRIC and the SENPIRIC layout'
         return 'Only SENLL ST7 light-level sensors use this workflow'
     version = _version(firmware)
     if version is None or not any(_version(low) <= version <= _version(high) for low, high in PROFILE['bands']):
