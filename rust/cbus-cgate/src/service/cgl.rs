@@ -12,13 +12,16 @@
 //! first shortest path in database Unit order wins.
 //!
 //! Application export follows retained creation order. Repositories without
-//! that history use the explicit unknown-history numeric fallback. Selected
-//! remaining differences from native are deliberate and documented: groups
-//! and levels export in address order (native keeps creation order),
-//! `createdBy` names cmqttd, Jackson exception detail is not
-//! reproduced after the native prefix, and an import that would create a
-//! nameless object is refused before mutation because native accepts it but
-//! can then never save the project.
+//! that history use the explicit unknown-history numeric fallback. Four
+//! remaining differences from native are explicitly dispositioned in
+//! `cgl_deviation_tests.rs`, not silently accepted: groups and levels export
+//! in address order (no committed native export discriminates creation from
+//! address order, so a resolving change must wait on such a capture),
+//! `createdBy` names cmqttd instead of impersonating the native server,
+//! Jackson exception detail is not reproduced after the shared native
+//! prefix, and an import that would create a nameless object is refused
+//! before mutation because native accepts it but can then never save the
+//! project.
 
 use std::collections::{BTreeMap, BTreeSet, HashMap, VecDeque};
 
@@ -1201,3 +1204,7 @@ pub(crate) mod replay {
 #[cfg(test)]
 #[path = "cgl_application_order_tests.rs"]
 mod application_order_tests;
+
+#[cfg(test)]
+#[path = "cgl_deviation_tests.rs"]
+mod deviation_tests;

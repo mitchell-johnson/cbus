@@ -64,6 +64,12 @@ case. Their existing address-order normalization remains explicit. Nameless new
 objects still refuse rather than reproduce native unsaveable project state;
 Jackson exception detail, broader native identity acceptance and project
 acceptance remain open in [issue 25](https://github.com/mitchell-johnson/cbus/issues/25).
+Rust `service/cgl_deviation_tests.rs` pins each of the four dispositions against
+the committed capture (native-accepted nameless contrast, `cmqttd` identity
+masking, shared failure prefixes without `fasterxml` detail, address-order
+siblings beside creation-order applications), the exact CGL help surface, and a
+two-network import→save→close→load→use→`NET LOAD DB`→export roundtrip from both
+locals with ignored document routes and both skip diagnostics.
 Ordinary numeric whole-Application `DBCOPYSAFE` remains an opaque-success gap,
 tracked separately in [issue 124](https://github.com/mitchell-johnson/cbus/issues/124).
 A passing Network/project copy test does not establish that typed copy workflow.

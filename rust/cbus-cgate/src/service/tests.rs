@@ -2628,6 +2628,10 @@ async fn armed_auth_gate_covers_mutations_but_not_help() {
             "101 Help: syntax: CGL IMPORT <project-name> << <end-tag>>",
         ),
         (
+            "[cgl-export] CGL EXPORT ?",
+            "101 Help: syntax: CGL EXPORT <project-name> [ network_list [application_list] ]",
+        ),
+        (
             "[repository] REPOSITORY USE ?",
             "101 Help: syntax: REPOSITORY USE NUMERIC_INDEX",
         ),
@@ -2639,6 +2643,15 @@ async fn armed_auth_gate_covers_mutations_but_not_help() {
         let response = service.handle(&mut client, line).await;
         assert_eq!(response.status, 101, "{line}: {response:?}");
         assert_eq!(response.final_text, final_text, "{line}");
+        // The CGL surface is exactly project selection plus a label-graph
+        // document: no command syntax reaches CglImportConfiguration, whose
+        // setters are private on the native side.
+        if line.contains("CGL") {
+            assert!(
+                !response.final_text.to_ascii_lowercase().contains("configur"),
+                "{line}: {response:?}"
+            );
+        }
     }
     let mut restricted = ClientState {
         recovery_only: true,
