@@ -91,6 +91,30 @@ class CGLTests(unittest.TestCase):
                 NativeCGL(fake).export("TEST", networks=networks)
         self.assertEqual(len(fake.commands), 1)
 
+    def test_export_preserves_multi_network_routes_array_order_and_identity(self):
+        payload = {"cglVersion": "1.1", "createdBy": "cmqttd",
+                   "createdTime": "2026-10-01T00:00:00.000+00:00", "localNetwork": 254,
+                   "networks": [
+                       {"address": 254, "name": "Local", "applications": [
+                           {"address": 72, "type": 56, "name": "Second"},
+                           {"address": 2, "type": 56, "name": "First"}]},
+                       {"address": 253, "name": "Remote", "route": [253]}]}
+        lines = ("343-Begin CGL snippet", "347-" + json.dumps(payload), "344 End CGL snippet")
+        fake = FakeClient(CGateResponse(lines, lines[-1], 344))
+        # The typed client preserves the received arrays byte for byte: route
+        # hops, non-numeric application order and the writer identity all pass
+        # through unchanged.
+        self.assertEqual(NativeCGL(fake).export("TEST", networks=[254]), payload)
+
+    def test_server_nameless_refusal_is_incomplete_without_raising(self):
+        refusal = ("408 Operation failed: CGL import failed: "
+                   "a new application, group or level needs a name",)
+        fake = FakeClient(CGateResponse(refusal, refusal[0], 408))
+        result = NativeCGL(fake).import_document("TEST", json.dumps(DOCUMENT))
+        self.assertFalse(result["complete"])
+        self.assertIsNone(result["backup_project"])
+        self.assertEqual(fake.commands, [("CGL IMPORT TEST", DOCUMENT)])
+
     def test_import_preflight_and_backup_before_native_mutation(self):
         fake = FakeClient()
         cgl = NativeCGL(fake)
