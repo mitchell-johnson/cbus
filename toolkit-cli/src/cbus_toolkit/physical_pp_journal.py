@@ -13,6 +13,15 @@ The immutable ``plan`` binds the unit identity, method, planned byte ranges
 (logical PP address, length and SHA-256 of the loaded and staged bytes) and
 the captured cmqttd PCI generation.  ``attempt_id`` is SHA-256 over the
 canonical plan, so a reader can detect an edited plan.
+
+Per-range ``store_state`` names which save boundary is still open: ``planned``
+and ``possible`` mean the SAVE was journaled or sent with no per-range
+evidence (sent uncertainty); ``confirmed`` means cmqttd reported both the
+range's tagged STORE acknowledgements and its exact per-range readback;
+``uncertain`` is the boundary range where an ACK may have arrived without a
+proven readback, or nothing is known; ``not-attempted`` ranges were never
+reached.  ``nvm_commit`` tracks the separate C-Bus 3 Save-to-NVM phase the
+same way.  No later observation promotes a range past what the reply proved.
 """
 from __future__ import annotations
 
@@ -41,9 +50,11 @@ PHASES = (
     "readback-unavailable",
     "complete",
 )
-# Per-range store state.  ``possible`` means the SAVE command was sent and the
-# range may have been written; ``confirmed`` means cmqttd reported the range's
-# tagged STORE acknowledgements and its exact per-range readback.
+# Per-range store state.  ``planned``/``possible`` record that the SAVE was
+# journaled/sent with no per-range evidence (sent uncertainty).  ``confirmed``
+# records both tagged STORE acknowledgements and the exact per-range readback.
+# ``uncertain`` is the boundary range: an ACK without a proven readback, or no
+# evidence at all.  ``not-attempted`` ranges were never reached.
 STORE_STATES = ("not-planned", "planned", "possible", "confirmed", "uncertain", "not-attempted")
 NVM_STATES = ("not-required", "planned", "possible", "confirmed", "uncertain", "not-reached")
 _DOCUMENT_KEYS = frozenset({
@@ -136,7 +147,19 @@ def validate(document: Any) -> dict[str, Any]:
         _require(type(row) is dict and set(row) == _PROGRESS_KEYS and row["index"] == index,
                  "range progress fields")
         _require(row["store_state"] in STORE_STATES, "range store state")
+        if ranges[index]["write_planned"]:
+            _require(row["store_state"] != "not-planned",
+                     "range progress contradicts its plan")
+        else:
+            _require(row["store_state"] == "not-planned",
+                     "range progress contradicts its plan")
     _require(document["nvm_commit"] in NVM_STATES, "nvm_commit")
+    if not plan["requires_nvm_commit"] or not any(row["write_planned"] for row in ranges):
+        _require(document["nvm_commit"] == "not-required",
+                 "nvm_commit contradicts its plan")
+    else:
+        _require(document["nvm_commit"] != "not-required",
+                 "nvm_commit contradicts its plan")
     _require(type(document["recoveries"]) is list, "recoveries")
     _require(type(document["complete"]) is bool and type(document["resolved"]) is bool,
              "complete/resolved")
@@ -254,6 +277,36 @@ def _unresolved(document: Mapping[str, Any]) -> bool:
     return not (document.get("complete") is True or document.get("resolved") is True)
 
 
+RANGE_UNCERTAINTY = {
+    "not-planned": "not-applicable",
+    "planned": "sent-uncertain",
+    "possible": "sent-uncertain",
+    "confirmed": "acknowledged-and-read-back",
+    "uncertain": "ack-or-readback-uncertain",
+    "not-attempted": "not-attempted",
+}
+
+
+def range_uncertainty(store_state: str) -> str:
+    """Name which save boundary one journaled per-range state leaves open."""
+    return RANGE_UNCERTAINTY[store_state]
+
+
+def unresolved_range_summary(document: Mapping[str, Any]) -> str:
+    """Compact sent/ACK/readback/NVM uncertainty for refusal messages."""
+    progress = document.get("ranges") or []
+    cells = [
+        f"{row.get('index')}:{row.get('store_state')}/"
+        f"{RANGE_UNCERTAINTY.get(row.get('store_state'), 'unknown')}"
+        for row in progress
+    ]
+    return (
+        f"phase={document.get('phase')!r} "
+        f"ranges=[{', '.join(cells)}] "
+        f"nvm_commit={document.get('nvm_commit')!r}"
+    )
+
+
 def refuse_unresolved(path: str | os.PathLike[str], destination: str) -> None:
     """Refuse a save before any I/O while an attempt needs recovery.
 
@@ -281,9 +334,9 @@ def refuse_unresolved(path: str | os.PathLike[str], destination: str) -> None:
             ) from error
         if _unresolved(existing):
             raise PhysicalPPJournalError(
-                f"Physical PP journal {target} records an incomplete save (phase "
-                f"{existing.get('phase')!r}); run 'physical-pp recover --journal {target}' "
-                "before another save. No PP I/O was attempted"
+                f"Physical PP journal {target} records an incomplete save "
+                f"({unresolved_range_summary(existing)}); run 'physical-pp recover "
+                f"--journal {target}' before another save. No PP I/O was attempted"
             )
         raise PhysicalPPJournalError(
             f"Physical PP journal {target} already holds a finished attempt; choose a new "
@@ -312,6 +365,6 @@ def refuse_unresolved(path: str | os.PathLike[str], destination: str) -> None:
             if document["plan"]["unit"]["destination"] == destination and _unresolved(document):
                 raise PhysicalPPJournalError(
                     f"Physical PP journal {entry.path} records an incomplete save for "
-                    f"{destination} (phase {document.get('phase')!r}); run "
+                    f"{destination} ({unresolved_range_summary(document)}); run "
                     f"'physical-pp recover --journal {entry.path}' first. No PP I/O was attempted"
                 )

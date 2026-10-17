@@ -39,6 +39,7 @@ from .physical_pp_journal import (
     PhysicalPPJournalError,
     byte_digest,
     now as _now,
+    range_uncertainty,
     refuse_unresolved,
 )
 
@@ -1083,11 +1084,16 @@ class PhysicalProgramming:
         This never stages, saves, unlocks a parameter or commits NVM.  The
         journal is marked resolved only when every range is conclusively
         ``expected`` or ``unchanged``; ``mixed`` or ``unreadable`` ranges leave
-        it unresolved so a later save of that unit remains refused.
+        it unresolved so a later save of that unit remains refused.  Each range
+        also reports the save boundary its journaled store state leaves open
+        (sent, ACK/readback, or NVM uncertainty), and the report flags whether
+        the PCI generation changed underneath the attempt, so a stale
+        confirmation from a retired generation can never complete a new one.
         """
         attempt = PhysicalPPJournal.open(journal)
         document = attempt.document
         plan = document["plan"]
+        method = _method(plan["method"])
         target = PhysicalUnitPath.parse(plan["unit"]["destination"], label="destination")
         report: dict[str, Any] = {
             "format": "cbus-physical-pp-recovery-v1",
@@ -1109,7 +1115,7 @@ class PhysicalProgramming:
         fresh: dict[int, bytes | None] = {row["index"]: None for row in plan["ranges"]}
         errors: list[dict[str, Any]] = []
         try:
-            capabilities = _preflight(self.client, plan["method"], saving=False)
+            capabilities = _preflight(self.client, method, saving=False)
             generation = capabilities.get("pci_generation")
             report["fresh_pci_generation"] = generation if type(generation) is int else None
             session_name, lock_name = self._names("recover")
@@ -1153,6 +1159,7 @@ class PhysicalProgramming:
                 "length": row["length"],
                 "write_planned": row["write_planned"],
                 "journaled_store_state": progress["store_state"],
+                "uncertainty": range_uncertainty(progress["store_state"]),
                 "fresh_sha256": digest,
                 "classification": classification,
             })
@@ -1168,11 +1175,18 @@ class PhysicalProgramming:
         else:
             outcome = "observed_partial"
         conclusive = outcome in ("observed_expected", "observed_unchanged", "observed_partial")
+        recorded_generation = plan["pci_generation"]
+        fresh_generation = report["fresh_pci_generation"]
+        if type(recorded_generation) is int and type(fresh_generation) is int:
+            pci_generation_changed: bool | None = recorded_generation != fresh_generation
+        else:
+            pci_generation_changed = None
         report.update({
             "ranges": ranges,
             "errors": errors,
             "outcome": outcome,
             "conclusive": conclusive,
+            "pci_generation_changed": pci_generation_changed,
             # RAM/EEPROM readback cannot observe a C-Bus 3 NVM commit.
             "nvm_commit_uncertain": bool(
                 plan["requires_nvm_commit"] and "expected" in kinds

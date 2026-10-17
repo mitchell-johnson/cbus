@@ -5,13 +5,18 @@ import tempfile
 import unittest
 
 from cbus_toolkit.cgate import CGateError, CGateResponse
-from cbus_toolkit.physical_pp_journal import PhysicalPPJournalError
+from cbus_toolkit.physical_pp_journal import (
+    PhysicalPPJournalError,
+    attempt_id as journal_attempt_id,
+    validate as validate_journal,
+)
 from cbus_toolkit.physical_programming import (
     PhysicalParameter,
     PhysicalProgramming,
     PhysicalProgrammingError,
     PhysicalUnitPath,
     SUPPORTED_METHODS,
+    _method,
     parameter_extent,
 )
 
@@ -651,6 +656,147 @@ class PhysicalProgrammingTests(unittest.TestCase):
         journal.write_text(json.dumps(document))
         with self.assertRaisesRegex(PhysicalPPJournalError, "send_may_have_occurred"):
             PhysicalProgramming(PhysicalService()).recover(journal)
+
+    def test_method_names_are_canonical_and_reject_unknown(self):
+        self.assertEqual(_method("Direct"), "direct")
+        self.assertEqual(_method("  goc2 "), "goc2")
+        for bad in ("bogus", "", "  ", None, 42):
+            with self.subTest(bad=bad), self.assertRaises(ValueError):
+                _method(bad)
+
+    def test_journal_consistency_binds_planned_progress_and_nvm(self):
+        service = PhysicalService()
+        service.schema_method = "direct"
+        service.fail_save = RuntimeError("lost")
+        journal = self.journal()
+        with self.assertRaises(RuntimeError):
+            PhysicalProgramming(service, operation_id="consistency").apply(
+                "//TEST/253/p/4", [("Value_direct", "0x02")], method="direct", journal=journal)
+        document = json.loads(journal.read_text())
+        self.assertEqual(
+            validate_journal(json.loads(json.dumps(document)))["phase"], "save-uncertain"
+        )
+        tampered = json.loads(json.dumps(document))
+        tampered["ranges"][0]["store_state"] = "not-planned"
+        with self.assertRaisesRegex(PhysicalPPJournalError, "contradicts its plan"):
+            validate_journal(tampered)
+        # This all-direct schema requires no NVM commit.
+        tampered = json.loads(json.dumps(document))
+        tampered["nvm_commit"] = "planned"
+        with self.assertRaisesRegex(PhysicalPPJournalError, "contradicts its plan"):
+            validate_journal(tampered)
+
+    def test_over_counted_save_reply_confirms_no_range(self):
+        # A stale or mismatched ACK claiming more than planned confirms nothing.
+        service = PhysicalService()
+        service.schema_method = "direct"
+        final = "[7] 502 Physical PP save failed after 5 confirmed write(s): PCI response stream lost"
+        service.fail_save = CGateError(CGateResponse((final,), final, 502))
+        journal = self.journal()
+        with self.assertRaises(CGateError):
+            PhysicalProgramming(service, operation_id="overcount").apply(
+                "//TEST/253/p/4", [("Value_paged", "0x09"), ("Value_direct", "0x08")],
+                method="direct", journal=journal)
+        document = json.loads(journal.read_text())
+        self.assertEqual(document["phase"], "save-uncertain")
+        self.assertEqual([row["store_state"] for row in document["ranges"]],
+                         ["uncertain", "uncertain"])
+        self.assertEqual(document["save_reply"]["confirmed_writes_reported"], 5)
+        self.assertTrue(document["save_reply"]["server_reply"])
+
+    def test_connection_loss_without_reply_leaves_every_range_uncertain(self):
+        service = PhysicalService()
+        service.schema_method = "direct"
+        service.fail_save = RuntimeError("C-Gate connection lost after send")
+        journal = self.journal()
+        with self.assertRaises(RuntimeError):
+            PhysicalProgramming(service, operation_id="noreply").apply(
+                "//TEST/253/p/4", [("Value_paged", "0x09"), ("Value_direct", "0x08")],
+                method="direct", journal=journal)
+        document = json.loads(journal.read_text())
+        # Without a server reply no range may be marked confirmed or not-attempted.
+        self.assertEqual([row["store_state"] for row in document["ranges"]],
+                         ["uncertain", "uncertain"])
+        self.assertFalse(document["save_reply"]["server_reply"])
+        self.assertIsNone(document["save_reply"]["confirmed_writes_reported"])
+
+    def test_recover_reports_pci_generation_change_and_stays_read_only(self):
+        service = PhysicalService()
+        service.fail_save = RuntimeError("lost")
+        journal = self.journal()
+        with self.assertRaises(RuntimeError):
+            PhysicalProgramming(service, operation_id="stale").apply(
+                "//TEST/253/p/4", [("Value_direct", "0x02")], method="direct", journal=journal)
+        self.assertEqual(json.loads(journal.read_text())["plan"]["pci_generation"], 7)
+        recovery = PhysicalService()
+        recovery.capabilities["pci_generation"] = 9
+        recovery.devices["//TEST/253/p/4"]["Value_direct"] = "0x02"
+        report = PhysicalProgramming(recovery, operation_id="stalerecover").recover(journal)
+        self.assertEqual(report["recorded_pci_generation"], 7)
+        self.assertEqual(report["fresh_pci_generation"], 9)
+        self.assertTrue(report["pci_generation_changed"])
+        # Recovery trusts only its fresh LOAD bytes, never the old store state.
+        self.assertEqual([row["classification"] for row in report["ranges"]], ["expected"])
+        self.assertEqual(report["ranges"][0]["journaled_store_state"], "uncertain")
+        self.assertEqual(report["ranges"][0]["uncertainty"], "ack-or-readback-uncertain")
+        self.assertEqual(report["outcome"], "observed_expected")
+        self.assertFalse(any(command.startswith(("PP SET", "PP SAVE"))
+                             for command in recovery.commands))
+        # The default mixed-method specification requires NVM: RAM readback
+        # cannot observe the commit, so power-cycle acceptance stays open even
+        # though the journal resolves per the accepted interop behavior.
+        self.assertTrue(report["nvm_commit_uncertain"])
+        self.assertTrue(report["conclusive"] and report["resolved"])
+        self.assertFalse(report["power_cycle_persistence_verified"])
+
+        service = PhysicalService()
+        service.schema_method = "direct"
+        service.fail_save = RuntimeError("lost")
+        journal = self.journal()
+        with self.assertRaises(RuntimeError):
+            PhysicalProgramming(service, operation_id="stale2").apply(
+                "//TEST/253/p/4", [("Value_direct", "0x02")], method="direct", journal=journal)
+        recovery = PhysicalService()
+        recovery.schema_method = "direct"
+        recovery.capabilities["pci_generation"] = 9
+        report = PhysicalProgramming(recovery, operation_id="stalerecover2").recover(journal)
+        self.assertTrue(report["pci_generation_changed"])
+        self.assertEqual(report["outcome"], "observed_unchanged")
+        self.assertFalse(report["nvm_commit_uncertain"])
+        self.assertTrue(report["conclusive"] and report["resolved"])
+
+    def test_recover_rejects_unknown_method_before_io(self):
+        service = PhysicalService()
+        service.fail_save = RuntimeError("lost")
+        journal = self.journal()
+        with self.assertRaises(RuntimeError):
+            PhysicalProgramming(service, operation_id="badmethod").apply(
+                "//TEST/253/p/4", [("Value_direct", "0x02")], method="direct", journal=journal)
+        document = json.loads(journal.read_text())
+        document["plan"]["method"] = "bogus"
+        document["attempt_id"] = journal_attempt_id(document["plan"])
+        journal.write_text(json.dumps(document))
+        recovery = PhysicalService()
+        with self.assertRaisesRegex(ValueError, "must be one of"):
+            PhysicalProgramming(recovery, operation_id="badmethodrecover").recover(journal)
+        self.assertEqual(recovery.commands, [])
+
+    def test_refusal_names_range_and_nvm_uncertainty(self):
+        service = PhysicalService()
+        service.fail_save = RuntimeError("lost")
+        first = self.journal("first.json")
+        with self.assertRaises(RuntimeError):
+            PhysicalProgramming(service, operation_id="refuse").apply(
+                "//TEST/253/p/4", [("Value_direct", "0x02")], method="direct", journal=first)
+        repeat = PhysicalService()
+        with self.assertRaisesRegex(PhysicalPPJournalError, "incomplete save") as caught:
+            PhysicalProgramming(repeat, operation_id="refuse2").apply(
+                "//TEST/253/p/4", [("Value_direct", "0x02")], method="direct",
+                journal=self.journal("second.json"))
+        message = str(caught.exception)
+        self.assertIn("ack-or-readback-uncertain", message)
+        self.assertIn("nvm_commit", message)
+        self.assertEqual(repeat.commands, [])
 
     def test_rust_evidence_roster_matches_python_workflow(self):
         fixture = Path(__file__).resolve().parents[2] / "rust/testdata/fixtures/native_cgate_routed_pp_methods.json"

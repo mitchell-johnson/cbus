@@ -150,6 +150,13 @@ the next becomes `uncertain`, and the rest become `not-attempted`. A lost
 C-Gate connection or any other reply leaves every planned range `uncertain`.
 `nvm_commit` follows the same rules. A failed Save-to-NVM, such as a lost
 EXECUTE or a lost POLL after a running EXECUTE, is recorded as `uncertain`.
+A reply claiming more confirmed writes than planned confirms nothing: every
+planned range stays `uncertain`, so a stale or mismatched ACK can never
+complete a save. The journal validates that unwritten ranges stay
+`not-planned` and that `nvm_commit` matches the unit's NVM requirement.
+Refusals name each range's open boundary (`sent-uncertain`,
+`ack-or-readback-uncertain`, `not-attempted`, or `acknowledged-and-read-back`)
+with the NVM state.
 
 The client refuses a save before any C-Gate command in two cases:
 
@@ -179,7 +186,11 @@ The report outcome is `observed_expected`, `observed_unchanged`,
 `observed_partial`, `observed_mixed` or `unreadable`. Recover appends each
 observation to the journal. It marks the journal `resolved` only when every
 range is `expected` or `unchanged`, and then exits 0. A `mixed` or
-`unreadable` result exits 1 and keeps the unit's later saves refused.
+`unreadable` result exits 1 and keeps the unit's later saves refused. The
+report also carries `pci_generation_changed` (the journaled versus fresh PCI
+generation, or null when either is unknown) and each range's open boundary,
+but classifies only from fresh LOAD bytes. A generation change never completes
+an old confirmation; only the fresh readback resolves.
 
 A fresh LOAD cannot observe a C-Bus 3 NVM commit. When the journal does not
 record a confirmed commit, `nvm_commit_uncertain=true` is reported.
