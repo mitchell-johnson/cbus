@@ -282,13 +282,14 @@ transcript of LOAD, one SAVE_TO_SOURCE and the fresh LOAD:
   page-crossing `paged`/`ncc` ranges, fragmented NCC and eDLT replies, and
   the GIU halt/resume bracket. They also check that the DALI settle is at
   least one second.
-- `direct`, `ncc`, `giu` and `gocbyt` through six bridges.
+- All ten methods through six bridges with 23- or 25-byte fields.
 - Every admitted method/protection pair from the matrix, on the local
   network and through one bridge. These include lock UNLOCK counts, factory
   and special skips, and factory-bit writes.
 - Unchanged fields that are pre-read but never stored or committed.
 - The unit-wide NCC rule: a `direct` edit in a specification that declares
-  NCC fields is followed by Save-to-NVM EXECUTE and POLL.
+  NCC fields is followed by Save-to-NVM EXECUTE and POLL. A second profile
+  pins the idle EXECUTE: the save commits with EXECUTE alone and no POLL.
 
 The peer's `drop_on=(phase, range_index)` interrupts a two-range save at each
 uncertain boundary. The boundaries are before a STORE is applied, after a STORE

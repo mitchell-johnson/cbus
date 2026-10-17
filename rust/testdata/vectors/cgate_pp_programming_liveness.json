@@ -212,6 +212,133 @@
       "identify_request": "46FD09052101",
       "execute_request": "46FD0905E3810004",
       "poll_request": "46FD0905E3820004"
+    },
+    {
+      "id": "paged-6-hop",
+      "method": "paged",
+      "route": [
+        253,
+        252,
+        251,
+        250,
+        249,
+        248
+      ],
+      "network": 248,
+      "logical_address": 496,
+      "memory_address": 496,
+      "bytes": 48,
+      "hold": "store-3",
+      "save": "PP SAVE S //HARNESS/248/p/5 Core",
+      "expected_final": "[save] 200 OK",
+      "identify_request": "46FD36FCFBFAF9F8052101",
+      "execute_request": "46FD36FCFBFAF9F805E3810004",
+      "poll_request": "46FD36FCFBFAF9F805E3820004"
+    },
+    {
+      "id": "ncc-1-hop",
+      "method": "ncc",
+      "route": [
+        253
+      ],
+      "network": 253,
+      "logical_address": 496,
+      "memory_address": 496,
+      "bytes": 48,
+      "hold": "nvm-poll",
+      "save": "PP SAVE S //HARNESS/253/p/5 Core",
+      "expected_final": "[save] 200 OK",
+      "identify_request": "46FD09052101",
+      "execute_request": "46FD0905E3810004",
+      "poll_request": "46FD0905E3820004"
+    },
+    {
+      "id": "edlt-6-hop",
+      "method": "edlt",
+      "route": [
+        253,
+        252,
+        251,
+        250,
+        249,
+        248
+      ],
+      "network": 248,
+      "logical_address": 288,
+      "memory_address": 32,
+      "bytes": 48,
+      "hold": "store-3",
+      "save": "PP SAVE S //HARNESS/248/p/5 Core",
+      "expected_final": "[save] 200 OK",
+      "identify_request": "46FD36FCFBFAF9F8052101",
+      "execute_request": "46FD36FCFBFAF9F805E3810004",
+      "poll_request": "46FD36FCFBFAF9F805E3820004"
+    },
+    {
+      "id": "sgiu-6-hop",
+      "method": "sgiu",
+      "route": [
+        253,
+        252,
+        251,
+        250,
+        249,
+        248
+      ],
+      "network": 248,
+      "logical_address": 288,
+      "memory_address": 32,
+      "bytes": 48,
+      "hold": "store-3",
+      "save": "PP SAVE S //HARNESS/248/p/5 Core",
+      "expected_final": "[save] 200 OK",
+      "identify_request": "46FD36FCFBFAF9F8052101",
+      "execute_request": "46FD36FCFBFAF9F805E3810004",
+      "poll_request": "46FD36FCFBFAF9F805E3820004"
+    },
+    {
+      "id": "goc-6-hop",
+      "method": "goc",
+      "route": [
+        253,
+        252,
+        251,
+        250,
+        249,
+        248
+      ],
+      "network": 248,
+      "logical_address": 288,
+      "memory_address": 32,
+      "bytes": 48,
+      "hold": "store-3",
+      "save": "PP SAVE S //HARNESS/248/p/5 Core",
+      "expected_final": "[save] 200 OK",
+      "identify_request": "46FD36FCFBFAF9F8052101",
+      "execute_request": "46FD36FCFBFAF9F805E3810004",
+      "poll_request": "46FD36FCFBFAF9F805E3820004"
+    },
+    {
+      "id": "goc2-6-hop",
+      "method": "goc2",
+      "route": [
+        253,
+        252,
+        251,
+        250,
+        249,
+        248
+      ],
+      "network": 248,
+      "logical_address": 288,
+      "memory_address": 32,
+      "bytes": 48,
+      "hold": "store-3",
+      "save": "PP SAVE S //HARNESS/248/p/5 Core",
+      "expected_final": "[save] 200 OK",
+      "identify_request": "46FD36FCFBFAF9F8052101",
+      "execute_request": "46FD36FCFBFAF9F805E3810004",
+      "poll_request": "46FD36FCFBFAF9F805E3820004"
     }
   ],
   "queued_commands": 64,

@@ -1529,6 +1529,30 @@ routed_liveness_case!(
     routed_goc2_save_keeps_same_socket_events_and_fifo_receipts,
     "goc2-1-hop"
 );
+routed_liveness_case!(
+    routed_paged_six_hops_keeps_same_socket_events_and_fifo_receipts,
+    "paged-6-hop"
+);
+routed_liveness_case!(
+    routed_ncc_nvm_one_hop_keeps_same_socket_events_and_fifo_receipts,
+    "ncc-1-hop"
+);
+routed_liveness_case!(
+    routed_edlt_six_hops_keeps_same_socket_events_and_fifo_receipts,
+    "edlt-6-hop"
+);
+routed_liveness_case!(
+    routed_sgiu_six_hops_keeps_same_socket_events_and_fifo_receipts,
+    "sgiu-6-hop"
+);
+routed_liveness_case!(
+    routed_goc_six_hops_keeps_same_socket_events_and_fifo_receipts,
+    "goc-6-hop"
+);
+routed_liveness_case!(
+    routed_goc2_six_hops_keeps_same_socket_events_and_fifo_receipts,
+    "goc2-6-hop"
+);
 
 #[tokio::test]
 async fn routed_nvm_pci_loss_never_replays_or_accepts_stale_completion() {
