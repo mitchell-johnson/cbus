@@ -82,8 +82,10 @@ ROUTES = {
     "one-bridge": (253,),
     "six-bridges": (253, 252, 251, 250, 249, 248),
 }
-# One representative per method family crosses the longest admitted route.
-SIX_BRIDGE_METHODS = ("direct", "ncc", "giu", "gocbyt")
+# Every admitted method crosses the longest admitted route with a multi-chunk
+# field; the six-bridge envelope is one route shape shared by each family.
+SIX_BRIDGE_METHODS = ("direct", "paged", "ncc", "edlt", "giu", "sgiu", "dali",
+                      "goc", "gocbyt", "goc2")
 
 STORE_LIMIT = {"direct": 12, "paged": 12, "ncc": 12, "edlt": 12, "giu": 12,
                "sgiu": 12, "dali": 12, "goc": 10, "gocbyt": 10, "goc2": 11}
@@ -1184,6 +1186,21 @@ def test_ncc_specification_commits_nvm_after_any_confirmed_change(tmp_path, rout
     assert run.peer.nvm == ["execute", "poll"]
     assert [row["method"] for row in run.peer.stores] == ["direct"]
     assert run.peer.read("paged", 0x300, 2) == b"\x33\x44"
+
+
+@needs_cmqttd
+@pytest.mark.parametrize("route_name", ("local", "one-bridge"))
+def test_ncc_idle_execute_commits_without_poll(tmp_path, route_name):
+    """An idle EXECUTE needs no POLL: the second Save-to-NVM profile."""
+    route = ROUTES[route_name]
+    param, after = method_case("ncc", 2)
+    run = run_apply(tmp_path, route, [param], {param.name: value_text(param, after)},
+                    nvm_running=False)
+    assert_complete(run, "ncc")
+    plan = expected_transcript(route, [param.row], {param.name: (param.before, after)},
+                               nvm_spec=True, nvm_running=False)
+    assert_exchange_shape(run, plan)
+    assert run.peer.nvm == ["execute"]
 
 
 # --------------------------------------------------------------------------
