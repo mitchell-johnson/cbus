@@ -12,10 +12,10 @@
   },
   "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
   "binary": {
-    "path": "/home/claude/cbus/.claude/worktrees/agent-aab27c8d19ec51fd1/rust/target/debug/cmqttd",
-    "sha256": "c6a3cc12625740c11296853cc8a68aecf292971ee3e78f05d14e6c9c8c7a0d6a"
+    "path": "/home/claude/cbus/rust/target/debug/cmqttd",
+    "sha256": "e90e41ac1eb13eea93e2f49fa2309bc628f1bc40e2315bb9934263e8a80f417b"
   },
-  "source_revision": "f1a5e06dbfb828625f729bae173c97cdf3d9e9c5",
+  "source_revision": "2a25dfce10549fa43520a486b30fbdbbbf4d3741",
   "source_fingerprint": {
     ".github/workflows/ci.yml": "1af80cae0dba93ddf30f79907349dd57df3d71f2cbbb9e4438f645441cee5230",
     "docs/cmqttd-cgate.md": "36017b711323416cd484693664fd9018316c964e675bf1810c0d9549c011fa05",
@@ -648,5 +648,5 @@
   "wire_equal": 12,
   "combined_network_passed": 2,
   "result": "passed",
-  "command": "/home/claude/cbus/.claude/worktrees/agent-aab27c8d19ec51fd1/toolkit-cli/.venv/bin/python research/cgate_dbsetxml_unit_differential.py --mock-bin /home/claude/cbus/.claude/worktrees/agent-aab27c8d19ec51fd1/rust/target/debug/cgate-mock --cmqttd-bin /home/claude/cbus/.claude/worktrees/agent-aab27c8d19ec51fd1/rust/target/debug/cmqttd --output-dir research/fixtures"
+  "command": "/home/claude/cbus/toolkit-cli/.venv/bin/python research/cgate_dbsetxml_unit_differential.py --mock-bin /home/claude/cbus/rust/target/debug/cgate-mock --cmqttd-bin /home/claude/cbus/rust/target/debug/cmqttd --output-dir research/fixtures"
 }

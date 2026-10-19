@@ -310,8 +310,11 @@ class WirelessBaseConnectionReceiptTest(unittest.TestCase):
                             'src/cbus_toolkit/wireless_cli.py', 'src/cbus_toolkit/cli.py',
                             'tests/test_wireless_base_connection_native.py'}
         self.assertEqual(set(receipt['source_sha256']), expected_sources)
-        # The receipt predates the merged firmware CLI change. Verify its exact
-        # executed source rather than relabeling its hashes as current evidence.
+        # The receipt predates the merged firmware CLI change and the later
+        # fail-closed scene-offset and unrelated-parameter checks in
+        # wireless_gateway.py. Verify its exact executed source rather than
+        # relabeling its hashes as current evidence; the current gateway
+        # source needs native re-acceptance before this receipt covers it.
         historical = root / 'research/fixtures/wireless-base-connection-native-source.zip'
         self.assertEqual(hashlib.sha256(historical.read_bytes()).hexdigest(),
                          '8e7c0c6e347790c57d82a2dd7984b4c42537c876b5a999c6aeb0eaaa67b0f40b')
@@ -320,7 +323,8 @@ class WirelessBaseConnectionReceiptTest(unittest.TestCase):
             for name, digest in receipt['source_sha256'].items():
                 self.assertLessEqual(archive.getinfo(name).file_size, 1024 * 1024)
                 self.assertEqual(digest, hashlib.sha256(archive.read(name)).hexdigest(), name)
-                if name not in ('src/cbus_toolkit/cli.py', 'tests/test_wireless_base_connection_native.py'):
+                if name not in ('src/cbus_toolkit/cli.py', 'src/cbus_toolkit/wireless_gateway.py',
+                                'tests/test_wireless_base_connection_native.py'):
                     self.assertEqual(digest, hashlib.sha256((root / name).read_bytes()).hexdigest(), name)
         for row in receipt['types']:
             for name in ('staged_verified', 'stale_parameter_refused_without_write',
