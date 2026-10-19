@@ -132,6 +132,10 @@
     "XPS51",
     "XPS55"
   ],
+  "census_disposition_codes": {
+    "absent_in_1_18": "The help names a unit type that Toolkit 1.18.0.2754 cannot statically instantiate or edit; those subjects are outside the 1.18 census scope.",
+    "ledger_owned": "No implemented editor or specific ledger row exists for the subjects; the named feature-ledger obligation owns their unit-parameter editor scope. This routes ownership only and claims no editor."
+  },
   "control_coverage_table": [
     {
       "basis": "no_control_level_receipt",
@@ -614,6 +618,10 @@
   "counts": {
     "catalogued_unit_types": 271,
     "catalogued_unit_types_reached_by_dialogs": 140,
+    "census_dispositions": {
+      "absent_in_1_18": 3,
+      "ledger_owned": 14
+    },
     "controls_in_editor_dialogs": 3946,
     "controls_mapped": 244,
     "dialogs": 118,
@@ -1749,6 +1757,18 @@
       "unresolved_reasons": []
     },
     {
+      "census_disposition": {
+        "code": "absent_in_1_18",
+        "reasons": [
+          {
+            "disposition": "absent_in_1_18",
+            "reason": "help_unit_type_absent_from_executable",
+            "subjects": [
+              "KEYH5"
+            ]
+          }
+        ]
+      },
       "control_coverage": {
         "basis": "no_control_level_receipt",
         "controls_mapped": 0,
@@ -2301,6 +2321,22 @@
       "unresolved_reasons": []
     },
     {
+      "census_disposition": {
+        "code": "ledger_owned",
+        "reasons": [
+          {
+            "disposition": "ledger_owned",
+            "ledger_owner": "ledger:all-unit-parameter-encoding",
+            "reason": "generic_ledger_only",
+            "subjects": [
+              "KEYH1A",
+              "KEYH2A",
+              "KEYH3A",
+              "KEYH4A"
+            ]
+          }
+        ]
+      },
       "dialog_form_classes": [
         "TfrmNCCInputOutputUnit"
       ],
@@ -4662,6 +4698,21 @@
       "unresolved_reasons": []
     },
     {
+      "census_disposition": {
+        "code": "ledger_owned",
+        "reasons": [
+          {
+            "disposition": "ledger_owned",
+            "ledger_owner": "ledger:all-unit-parameter-encoding",
+            "reason": "generic_ledger_only",
+            "subjects": [
+              "KEYB2A",
+              "KEYB4A",
+              "KEYB6A"
+            ]
+          }
+        ]
+      },
       "dialog_form_classes": [
         "TfrmNCCInputOutputUnit"
       ],
@@ -8103,6 +8154,19 @@
       "unresolved_reasons": []
     },
     {
+      "census_disposition": {
+        "code": "ledger_owned",
+        "reasons": [
+          {
+            "disposition": "ledger_owned",
+            "ledger_owner": "ledger:all-unit-parameter-encoding",
+            "reason": "generic_ledger_only",
+            "subjects": [
+              "PC_GIM"
+            ]
+          }
+        ]
+      },
       "dialog_form_classes": [
         "TfrmPC_GIM"
       ],
@@ -11849,6 +11913,19 @@
       "unresolved_reasons": []
     },
     {
+      "census_disposition": {
+        "code": "ledger_owned",
+        "reasons": [
+          {
+            "disposition": "ledger_owned",
+            "ledger_owner": "ledger:all-unit-parameter-encoding",
+            "reason": "generic_ledger_only",
+            "subjects": [
+              "PC_CTB"
+            ]
+          }
+        ]
+      },
       "dialog_form_classes": [
         "TfrmCBusPCI"
       ],
@@ -11925,6 +12002,19 @@
       ]
     },
     {
+      "census_disposition": {
+        "code": "ledger_owned",
+        "reasons": [
+          {
+            "disposition": "ledger_owned",
+            "ledger_owner": "ledger:all-unit-parameter-encoding",
+            "reason": "generic_ledger_only",
+            "subjects": [
+              "PC_CTBL"
+            ]
+          }
+        ]
+      },
       "dialog_form_classes": [
         "TfrmCBusPCI"
       ],
@@ -12001,6 +12091,19 @@
       ]
     },
     {
+      "census_disposition": {
+        "code": "ledger_owned",
+        "reasons": [
+          {
+            "disposition": "ledger_owned",
+            "ledger_owner": "ledger:all-unit-parameter-encoding",
+            "reason": "generic_ledger_only",
+            "subjects": [
+              "PC_CTC"
+            ]
+          }
+        ]
+      },
       "dialog_form_classes": [
         "TfrmCBusPCI"
       ],
@@ -12076,6 +12179,19 @@
       ]
     },
     {
+      "census_disposition": {
+        "code": "ledger_owned",
+        "reasons": [
+          {
+            "disposition": "ledger_owned",
+            "ledger_owner": "ledger:all-unit-parameter-encoding",
+            "reason": "generic_ledger_only",
+            "subjects": [
+              "PC_CTD"
+            ]
+          }
+        ]
+      },
       "dialog_form_classes": [
         "TfrmCBusPCI"
       ],
@@ -12145,6 +12261,19 @@
       ]
     },
     {
+      "census_disposition": {
+        "code": "ledger_owned",
+        "reasons": [
+          {
+            "disposition": "ledger_owned",
+            "ledger_owner": "ledger:all-unit-parameter-encoding",
+            "reason": "generic_ledger_only",
+            "subjects": [
+              "PC_CTDL"
+            ]
+          }
+        ]
+      },
       "dialog_form_classes": [
         "TfrmCBusPCI"
       ],
@@ -12214,6 +12343,19 @@
       ]
     },
     {
+      "census_disposition": {
+        "code": "ledger_owned",
+        "reasons": [
+          {
+            "disposition": "ledger_owned",
+            "ledger_owner": "ledger:all-unit-parameter-encoding",
+            "reason": "generic_ledger_only",
+            "subjects": [
+              "PC_PACA"
+            ]
+          }
+        ]
+      },
       "dialog_form_classes": [
         "TfrmCBusPCI"
       ],
@@ -12295,6 +12437,26 @@
       ]
     },
     {
+      "census_disposition": {
+        "code": "ledger_owned",
+        "reasons": [
+          {
+            "disposition": "ledger_owned",
+            "ledger_owner": "ledger:all-unit-parameter-encoding",
+            "reason": "generic_ledger_only",
+            "subjects": [
+              "PC_AC2",
+              "PC_NAC",
+              "PC_NAC2",
+              "PC_SHAC",
+              "SYS_AC2",
+              "SYS_NAC",
+              "SYS_NAC2",
+              "SYS_SHAC"
+            ]
+          }
+        ]
+      },
       "dialog_form_classes": [
         "TfrmPCSHAC"
       ],
@@ -12560,6 +12722,18 @@
       ]
     },
     {
+      "census_disposition": {
+        "code": "absent_in_1_18",
+        "reasons": [
+          {
+            "disposition": "absent_in_1_18",
+            "reason": "help_unit_type_absent_from_executable",
+            "subjects": [
+              "PC_INTU"
+            ]
+          }
+        ]
+      },
       "dialog_form_classes": [
         "TfrmCBusPCI"
       ],
@@ -13018,6 +13192,19 @@
       "unresolved_reasons": []
     },
     {
+      "census_disposition": {
+        "code": "ledger_owned",
+        "reasons": [
+          {
+            "disposition": "ledger_owned",
+            "ledger_owner": "ledger:all-unit-parameter-encoding",
+            "reason": "generic_ledger_only",
+            "subjects": [
+              "PC_DAL2C"
+            ]
+          }
+        ]
+      },
       "dialog_form_classes": [
         "TfrmPC_DAL2B"
       ],
@@ -13171,6 +13358,19 @@
       "unresolved_reasons": []
     },
     {
+      "census_disposition": {
+        "code": "ledger_owned",
+        "reasons": [
+          {
+            "disposition": "ledger_owned",
+            "ledger_owner": "ledger:all-unit-parameter-encoding",
+            "reason": "generic_ledger_only",
+            "subjects": [
+              "PC_IRT2"
+            ]
+          }
+        ]
+      },
       "dialog_form_classes": [
         "TfrmCBusPCI"
       ],
@@ -13234,6 +13434,19 @@
       ]
     },
     {
+      "census_disposition": {
+        "code": "ledger_owned",
+        "reasons": [
+          {
+            "disposition": "ledger_owned",
+            "ledger_owner": "ledger:all-unit-parameter-encoding",
+            "reason": "generic_ledger_only",
+            "subjects": [
+              "PC_CBTI"
+            ]
+          }
+        ]
+      },
       "dialog_form_classes": [
         "TfrmCBusPCI"
       ],
@@ -13303,6 +13516,36 @@
       ]
     },
     {
+      "census_disposition": {
+        "code": "absent_in_1_18",
+        "reasons": [
+          {
+            "disposition": "absent_in_1_18",
+            "reason": "help_unit_type_absent_from_executable",
+            "subjects": [
+              "WPAD2D1",
+              "WPAD2R1"
+            ]
+          },
+          {
+            "disposition": "ledger_owned",
+            "ledger_owner": "ledger:all-unit-parameter-encoding",
+            "reason": "generic_ledger_only",
+            "subjects": [
+              "WRD0D1",
+              "WRD0R1",
+              "WRD1D1",
+              "WRD1R1",
+              "WRD2D1",
+              "WRD2R1",
+              "WRD3D1",
+              "WRD3R1",
+              "WRD4D1",
+              "WRD4R1"
+            ]
+          }
+        ]
+      },
       "dialog_form_classes": [
         "TfrmWirelessInputUnit"
       ],
@@ -14349,6 +14592,20 @@
       "unresolved_reasons": []
     },
     {
+      "census_disposition": {
+        "code": "ledger_owned",
+        "reasons": [
+          {
+            "disposition": "ledger_owned",
+            "ledger_owner": "ledger:all-unit-parameter-encoding",
+            "reason": "generic_ledger_only",
+            "subjects": [
+              "PC_WHAD",
+              "PC_WHAR"
+            ]
+          }
+        ]
+      },
       "dialog_form_classes": [
         "TfrmCBusPC_WHAA"
       ],

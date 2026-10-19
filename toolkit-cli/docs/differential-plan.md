@@ -12,7 +12,7 @@ audited 0/6 with all slots `unassessed`); every other slot stays
 
 ## Authoritative inputs
 
-- Feature ledger: `../src/cbus_toolkit/capabilities.json` — **39 areas**,
+- Feature ledger: `../src/cbus_toolkit/capabilities.json` — **42 areas**,
   `census_complete: false`. Statuses (`implemented` / `in_progress` /
   `pending`) describe implementation categories, not Toolkit parity. Two
   acceptance IDs remain `pending`: `toolkit-differential-acceptance` and
@@ -30,7 +30,7 @@ audited 0/6 with all slots `unassessed`); every other slot stays
 
 Implemented in `../src/cbus_toolkit/differential.py`:
 
-- One row per ledger area (39 rows), preserving the ledger `status`,
+- One row per ledger area (42 rows), preserving the ledger `status`,
   `limits`, and `evidence` fields verbatim.
 - Per row, three workflow slots (`nominal_workflow`, `error_path`,
   `device_firmware_variation`) and three negative-path slots
@@ -50,12 +50,12 @@ Implemented in `../src/cbus_toolkit/differential.py`:
   Thermostat row's thirty-one, the AllUnitParameterEncoding row's six,
   the PreferencesUpdate row's sixteen, the DatabaseReportExport row's
   twenty-two, and the SceneLive row's six committed paths.
-- Matrix summary: `ledger_areas: 39`, `accepted_areas: 0`,
+- Matrix summary: `ledger_areas: 42`, `accepted_areas: 0`,
   `complete: false`, `census_complete: false`.
 
 ## Honesty gates
 
-- `tests/test_differential_matrix.py` enumerates all 39 areas x
+- `tests/test_differential_matrix.py` enumerates all 42 areas x
   workflow/negative slots and asserts the exact state: only
   `edlt-reset-controls` / `nominal_workflow`,
   `edlt-retained-scene-editing` / `nominal_workflow`,

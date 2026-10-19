@@ -27,6 +27,14 @@ CBUS_CATALOG_PATH or CBUS_LOCAL_CGATE_VENDOR, and CBUS_UNITSPEC_DIR.
 ``--validate`` needs no vendor files: it checks the committed map's input
 digests and rebuilds every dialog row from the committed facts.  ``--refresh``
 re-derives the dialog rows from those facts after an offline input changes.
+
+Census dispositions are a deterministic post-pass over the assembled rows
+(``apply_census_dispositions``) and need no vendor input, so ``--refresh``
+regenerates them.  Every unresolved dialog receives one: ``absent_in_1_18``
+when a help unit type is absent from the executable, otherwise
+``ledger_owned`` with the explicit feature-ledger owner recorded in
+``DISPOSITION_LEDGER_OWNERS``.  A disposition routes census ownership only; it
+does not resolve the dialog or claim that an editor exists.
 """
 from __future__ import annotations
 
@@ -83,6 +91,38 @@ UNRESOLVED = {
     "no_director": "The registered node manager references no dialog-director class and no TUnitDialogFactory registration exists for the unit type.",
     "no_dialog_form": "The dialog director chain or unit-dialog registration references no form present in the executable surface.",
     "generic_ledger_only": "No specific ledger row names the mapped unit types or shares their editor, and the help-branch triage is generic; only the generic differential row applies.",
+}
+
+# Census dispositions for unresolved dialogs (#13 P0.01).  Each unresolved
+# reason receives one; the dialog-level code is ``absent_in_1_18`` when any
+# reason does, else ``ledger_owned``.
+CENSUS_DISPOSITIONS = {
+    "absent_in_1_18": "The help names a unit type that Toolkit 1.18.0.2754 cannot statically instantiate or edit; those subjects are outside the 1.18 census scope.",
+    "ledger_owned": "No implemented editor or specific ledger row exists for the subjects; the named feature-ledger obligation owns their unit-parameter editor scope. This routes ownership only and claims no editor.",
+}
+DISPOSITION_BY_REASON = {
+    "help_unit_type_absent_from_executable": "absent_in_1_18",
+    "generic_ledger_only": "ledger_owned",
+}
+# Explicit owner for every dialog whose unresolved reasons include
+# ``generic_ledger_only``.  Owners must be specific (non-generic) ledger rows;
+# the builder refuses a missing, extra, generic or unknown owner.
+DISPOSITION_LEDGER_OWNERS = {
+    "dialog:12558.htm": "all-unit-parameter-encoding",
+    "dialog:13447.htm": "all-unit-parameter-encoding",
+    "dialog:13617.htm": "all-unit-parameter-encoding",
+    "dialog:13623.htm": "all-unit-parameter-encoding",
+    "dialog:1403.htm": "all-unit-parameter-encoding",
+    "dialog:15488.htm": "all-unit-parameter-encoding",
+    "dialog:1613.htm": "all-unit-parameter-encoding",
+    "dialog:16301.htm": "all-unit-parameter-encoding",
+    "dialog:2215.htm": "all-unit-parameter-encoding",
+    "dialog:40001.htm": "all-unit-parameter-encoding",
+    "dialog:40007.htm": "all-unit-parameter-encoding",
+    "dialog:5392.htm": "all-unit-parameter-encoding",
+    "dialog:5414.htm": "all-unit-parameter-encoding",
+    "dialog:5532.htm": "all-unit-parameter-encoding",
+    "dialog:8321.htm": "all-unit-parameter-encoding",
 }
 
 
@@ -1476,6 +1516,40 @@ def assemble_dialogs(surface: dict, executable: dict, ledger: dict, facts: dict,
     return rows
 
 
+def apply_census_dispositions(rows: list[dict], ledger: dict) -> None:
+    """Attach a census disposition to each unresolved dialog row (offline post-pass).
+
+    A row whose reasons have no disposition rule, or that needs a ledger owner
+    absent from ``DISPOSITION_LEDGER_OWNERS``, is left without one so that
+    ``validate_document`` rejects the map.  A generic or unknown owner is a
+    table error and raises immediately.
+    """
+    features = {feature["id"] for feature in ledger["features"]}
+    for dialog_id, owner in DISPOSITION_LEDGER_OWNERS.items():
+        if owner not in features or owner in GENERIC_LEDGER_IDS:
+            raise ValueError(f"{dialog_id} disposition owner is not a specific ledger row: {owner}")
+    for row in rows:
+        if row["status"] != "unresolved":
+            continue
+        entries = []
+        for reason in row["unresolved_reasons"]:
+            code = DISPOSITION_BY_REASON.get(reason["code"])
+            owner = DISPOSITION_LEDGER_OWNERS.get(row["dialog_id"])
+            if code is None or (code == "ledger_owned" and owner is None):
+                break
+            entry = {"reason": reason["code"], "disposition": code, "subjects": list(reason["subjects"])}
+            if code == "ledger_owned":
+                entry["ledger_owner"] = f"ledger:{owner}"
+            entries.append(entry)
+        if len(entries) != len(row["unresolved_reasons"]):
+            continue
+        codes = {entry["disposition"] for entry in entries}
+        row["census_disposition"] = {
+            "code": "absent_in_1_18" if "absent_in_1_18" in codes else "ledger_owned",
+            "reasons": entries,
+        }
+
+
 def _triage() -> dict[str, str]:
     sys.path.insert(0, str(ROOT / "src"))
     from cbus_toolkit.device_dialogs import list_dialogs
@@ -1500,6 +1574,7 @@ def build_document(facts: dict) -> dict:
     dialogs = assemble_dialogs(surface, executable, ledger, facts, _triage())
     check_editor_paths()
     _link_editors(dialogs, executable)
+    apply_census_dispositions(dialogs, ledger)
     counts = {
         "dialogs": len(dialogs),
         "resolved": sum(row["status"] == "resolved" for row in dialogs),
@@ -1513,6 +1588,11 @@ def build_document(facts: dict) -> dict:
         for reason in row["unresolved_reasons"]:
             reason_counts[reason["code"]] += 1
     counts["unresolved_reasons"] = dict(sorted(reason_counts.items()))
+    disposition_counts: dict[str, int] = defaultdict(int)
+    for row in dialogs:
+        if "census_disposition" in row:
+            disposition_counts[row["census_disposition"]["code"]] += 1
+    counts["census_dispositions"] = dict(sorted(disposition_counts.items()))
     # Catalogued product types that no help dialog candidate reaches are
     # candidate implicit editor branches for the census (P0.01).
     catalogued = sorted(
@@ -1567,6 +1647,7 @@ def build_document(facts: dict) -> dict:
         "inputs": {**committed_inputs(), **facts["inputs"]},
         "ledger_exact_unit_types": {key: list(value) for key, value in LEDGER_EXACT_UNIT_TYPES.items()},
         "unresolved_reason_codes": dict(UNRESOLVED),
+        "census_disposition_codes": dict(CENSUS_DISPOSITIONS),
         "unit_factory": facts["unit_factory"],
         "unit_types": facts["unit_types"],
         "node_managers": facts["node_managers"],
@@ -1627,7 +1708,10 @@ def validate_document(document: dict) -> dict:
     for row in dialogs:
         reasons = row.get("unresolved_reasons")
         if row.get("status") == "resolved":
-            if reasons or not row.get("unit_types") or not row.get("form_resources") or row.get("ledger_basis") == "generic":
+            if (
+                reasons or "census_disposition" in row or not row.get("unit_types")
+                or not row.get("form_resources") or row.get("ledger_basis") == "generic"
+            ):
                 raise ValueError(f"{row['dialog_id']} claims resolution without every facet")
         elif row.get("status") == "unresolved":
             if not reasons or any(
@@ -1637,8 +1721,24 @@ def validate_document(document: dict) -> dict:
                 for reason in reasons
             ):
                 raise ValueError(f"{row['dialog_id']} is unresolved without an explicit reason")
+            disposition = row.get("census_disposition")
+            if (
+                not isinstance(disposition, dict)
+                or disposition.get("code") not in CENSUS_DISPOSITIONS
+                or not isinstance(disposition.get("reasons"), list)
+                or [entry.get("reason") for entry in disposition["reasons"]]
+                != [reason["code"] for reason in reasons]
+            ):
+                raise ValueError(f"{row['dialog_id']} is unresolved without a census disposition")
         else:
             raise ValueError(f"{row['dialog_id']} has an unknown status")
+    generic_dialogs = {
+        row["dialog_id"] for row in dialogs
+        if any(reason["code"] == "generic_ledger_only" for reason in row["unresolved_reasons"])
+    }
+    stale_owners = sorted(set(DISPOSITION_LEDGER_OWNERS) - generic_dialogs)
+    if stale_owners:
+        raise ValueError(f"Disposition ledger owners name no generic-ledger dialog: {stale_owners}")
     facts = {key: document.get(key) for key in FACT_KEYS}
     facts["inputs"] = {key: inputs[key] for key in VENDOR_INPUTS}
     rebuilt = build_document(facts)
