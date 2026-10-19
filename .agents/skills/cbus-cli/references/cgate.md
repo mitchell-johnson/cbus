@@ -1078,10 +1078,15 @@ internal JSON restart. Scalar Value reads/writes through qualified/bare exact
 canonical numeric paths, renamed lexical paths and the Level OID resolve one
 owner; exact completed mirrors are updated together. An existing independent
 numeric-looking Network keeps lexical precedence for successfully resolved objects. Bare numeric object DBGETXML
-remains unsupported with local `404`; uniform Level XML reads use renamed
-qualified/bare paths or OIDs. Qualified numeric object XML is legacy
-owner-dependent projection and remains unaccepted; see
-[issue #73](https://github.com/mitchell-johnson/cbus/issues/73). Byte
+remains unsupported with local `404`; its contract stays blocked on #72.
+Qualified canonical numeric object DBGETXML (`//PROJECT/NET/APP/GROUP/LEVEL`)
+resolves through the exact selected associated owner: plain and completed
+Group children return the issued Level OID `<Level>` snippet (`344`), and
+NetVar children return `500 Internal error.`, matching the retained imported
+originals. This is an owned-model inference for associated renamed owners,
+not native acceptance; padded/signed lexemes keep legacy handling. See
+[issue #73](https://github.com/mitchell-johnson/cbus/issues/73) and
+`rust/testdata/vectors/cgate_associated_numeric_level_object_matrix.jsonl`. Byte
 values keep decimal canonicalization, including `077`/`+77` becoming `77`. SAFE
 recognizes an i64 in byte range and unsafe recognizes a u8; SAFE `-0` becomes `0`
 while unsafe `-0` remains text. Existing tail tokenization folds whitespace to
@@ -1103,8 +1108,9 @@ LOAD mutations are deferred in [issue #74](https://github.com/mitchell-johnson/c
 Use the admitted renamed lexical parent or Group OID for byte copies. Missing
 descendant Value-getter fallback is a source-review hypothesis, unexecuted because
 fixture setup failed. Do not credit the private untested corrections or claim
-unsupported payload LOAD preservation. The raw/renamed numeric object-XML profiles
-remain separate from retained imported-byte Group344/NetVar500 evidence in #73.
+unsupported payload LOAD preservation. The associated qualified numeric
+object-XML split applies the retained imported-byte Group344/NetVar500 evidence
+in #73 to the owned model; it does not prove the renamed original selector.
 Plain legacy NetVars with an acknowledged parent
 Value or retained parent/child XML extras cause atomic local `408` on tag-tree
 resync instead of silent loss; this does not establish native NetVar semantics.
@@ -1829,8 +1835,12 @@ fields and sibling identities before one durable database replacement, returns
 `301 OID=...` for the submitted root, and performs no physical I/O. The
 captured comments, processing instructions and unknown namespaced additions
 are accepted then omitted on readback in the tested combined and direct Unit
-cases. Nested decoration on `Description` and `CatalogNumber` becomes direct
-text or an empty scalar. The captured Application/Unit and two-Unit duplicate
+cases. Nested decoration on Unit `Description` and `CatalogNumber` becomes direct
+text or an empty scalar. Application and Group admit one optional text-only
+`<Description>` (at most 1,024 characters, no control characters, duplicate
+`400`, empty stored as absent); it shares the scalar Description store and is
+exported after `Address`. That order is an owned-model choice: native
+placement and Application XML acceptance remain open in issue 75. The captured Application/Unit and two-Unit duplicate
 OIDs are accepted without sharing Unit scalar/PP metadata; other duplicate
 shapes remain a 409 model-safety boundary.
 Successful single-row `DBGETXML` replies use the original `343/347/344` TCP envelope, including an LF-only XML declaration row; errors remain ordinary status replies. The [fresh original framing capture](../../../../toolkit-cli/docs/native-cgate-dbgetxml-framing-vm.md) and scoped two-server differential pin address/OID reads and pipelined transport. This does not establish multiline XML payloads, broader XML variants, or private Schneider repository formats.

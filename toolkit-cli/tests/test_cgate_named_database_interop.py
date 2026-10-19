@@ -977,7 +977,7 @@ def raw_level_preserved(owner, backend, roles, before, source, literal, null_xml
 
 
 def raw_level_numeric_xml_observation(owner, roles):
-    """Read-only controlled-owner observation; no uniform numeric XML admission."""
+    """Read-only controlled-owner qualified numeric object XML read (owned model, #73)."""
     import hashlib
     from cbus_toolkit.cgate import CGateError
     command = "DBGETXML " + roles["source_numeric"]
@@ -988,7 +988,7 @@ def raw_level_numeric_xml_observation(owner, roles):
     body = "\n".join(response.lines)
     observation = {"command": command, "status": response.code, "final": response.final,
                    "lines": list(response.lines), "body_sha256": hashlib.sha256(body.encode()).hexdigest(),
-                   "scope": "controlled owner read, outside public CLI wire census; no positive uniformity claimed",
+                   "scope": "controlled owner read, outside public CLI wire census; owned-model Group Level / NetVar 500 split",
                    "timing": "initialized byte77 baseline before raw writes"}
     if any(line.startswith(("347 ", "347-")) for line in response.lines):
         document = xml_text(response)
@@ -1071,6 +1071,16 @@ def test_public_associated_raw_level_value_literal_and_preservation(backend, var
                         assert empty_tags_snapshot(owner, backend) == before
                         if observed_state is not None:
                             assert (work / "state.json").read_bytes() == observed_state
+                        # Qualified canonical numeric object XML resolves through the exact
+                        # associated owner (#73): Group children project the issued Level
+                        # OID document; NetVar children keep the retained original 500.
+                        if owner_kind == "Group":
+                            assert observation["status"] == 344, observation
+                            assert observation["xml"] == source, observation
+                        else:
+                            assert (observation["status"], observation["final"]) == (
+                                500, "500 Internal error."), observation
+                            assert "xml" not in observation
                         evidence.setdefault("numeric_object_xml_observations", []).append(
                             dict(owner_kind=owner_kind, completed=has_tags, source_oid=source_oid,
                                  graph_unchanged=True, state_bytes_unchanged=observed_state is not None,

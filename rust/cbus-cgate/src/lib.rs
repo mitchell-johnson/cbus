@@ -1358,6 +1358,32 @@ fn parse_group_tags_dlt(node: roxmltree::Node<'_, '_>) -> Result<String, String>
     Ok(output)
 }
 
+/// Owned-model bound for an Application/Group `<Description>` child (#75).
+const DB_XML_DESCRIPTION_MAX_CHARS: usize = 1024;
+
+/// Admit one text-only Application/Group `<Description>`. Native element
+/// order, default omission and empty-value handling are not captured; this
+/// owned model stores the text in the same canonical field as scalar
+/// `DBSETSAFE .../Description` and treats empty text as absent.
+fn parse_db_xml_description(
+    child: roxmltree::Node<'_, '_>,
+    object: &str,
+) -> Result<Option<String>, String> {
+    if child.attributes().len() != 0 || child.children().any(|node| node.is_element()) {
+        return Err(format!(
+            "DBSETXML {object} Description must be text-only and have no attributes"
+        ));
+    }
+    let text = child
+        .children()
+        .filter_map(|node| node.text())
+        .collect::<String>();
+    if text.chars().count() > DB_XML_DESCRIPTION_MAX_CHARS || text.chars().any(char::is_control) {
+        return Err(format!("DBSETXML {object} has an invalid Description"));
+    }
+    Ok((!text.is_empty()).then_some(text))
+}
+
 fn parse_db_xml_object(node: roxmltree::Node<'_, '_>) -> Result<ParsedDbXmlObject, String> {
     if node.tag_name().namespace().is_some() {
         return Err("DBSETXML complete object root must be unnamespaced".to_string());
@@ -1398,6 +1424,7 @@ fn parse_db_xml_object(node: roxmltree::Node<'_, '_>) -> Result<ParsedDbXmlObjec
     let mut units = Vec::new();
     let mut interface = None;
     let mut extras = DbXmlExtras::default();
+    let mut description: Option<Option<String>> = None;
     for child in node.children().filter(roxmltree::Node::is_element) {
         if child.tag_name().namespace().is_some() {
             if kind == DbXmlKind::Group && child.tag_name().name() == "TagsDLT" {
@@ -1435,6 +1462,15 @@ fn parse_db_xml_object(node: roxmltree::Node<'_, '_>) -> Result<ParsedDbXmlObjec
             continue;
         }
         match (kind, name) {
+            (DbXmlKind::Application | DbXmlKind::Group, "Description") => {
+                if description.is_some() {
+                    return Err(format!(
+                        "DBSETXML {} contains duplicate Description",
+                        kind.element()
+                    ));
+                }
+                description = Some(parse_db_xml_description(child, kind.element())?);
+            }
             (DbXmlKind::Level | DbXmlKind::Group, "TagsDLT") => {
                 if !extras.children.is_empty() {
                     if kind == DbXmlKind::Group {
@@ -1488,6 +1524,7 @@ fn parse_db_xml_object(node: roxmltree::Node<'_, '_>) -> Result<ParsedDbXmlObjec
         }
     }
     let (oid, tag, address) = validate_db_xml_identity(kind.element(), &scalars)?;
+    let description = description.flatten();
     if kind == DbXmlKind::Network {
         let network_number = scalars
             .get("NetworkNumber")
@@ -1532,6 +1569,7 @@ fn parse_db_xml_object(node: roxmltree::Node<'_, '_>) -> Result<ParsedDbXmlObjec
         // The original mapper omits unmodeled namespace/comment/PI markup;
         // captured Level and Group TagsDLT collections survive exact replacement.
         extras,
+        description,
     })
 }
 
@@ -2407,6 +2445,9 @@ struct ParsedDbXmlObject {
     units: Vec<ParsedDbXmlUnit>,
     children: Vec<ParsedDbXmlObject>,
     extras: DbXmlExtras,
+    /// Owned-model Application/Group Description (#75). Empty text is
+    /// normalized to absent, matching the scalar blank-reads-401 rule.
+    description: Option<String>,
 }
 
 #[derive(Debug, Clone)]
@@ -5659,6 +5700,22 @@ impl Server {
                     .unwrap_or("")
             ),
         ));
+        if matches!(object.element.as_str(), "Application" | "Group") {
+            // Owned-model placement after Address (#75); native order is not
+            // captured. The canonical scalar readback wins over creation-time
+            // fields so DBGET and DBGETXML always agree.
+            let description = object
+                .path
+                .as_deref()
+                .and_then(|path| self.db_fields.get(&format!("{path}/Description")))
+                .or_else(|| object.fields.get("Description"))
+                .filter(|value| !value.is_empty());
+            if let Some(description) = description {
+                output.push_str("<Description>");
+                output.push_str(&xml_escape(description));
+                output.push_str("</Description>");
+            }
+        }
         if let Some(path) = object.path.as_deref() {
             let children = match object.element.as_str() {
                 "Application" => self.db_xml_children(project, path, &["Group", "NetVar"]),
@@ -10029,6 +10086,23 @@ impl Server {
         self.objects.insert(path.clone());
         self.db_fields
             .insert(format!("{path}/TagName"), object.tag.clone());
+        // Use the scalar Description store so DBGET, DBGETXML, PROJECT SAVE
+        // and copies observe one value. Replacement already retired the old
+        // subtree fields; an omitted Description therefore stays absent,
+        // while same-path DBADDSAFE re-creation keeps its canonical value.
+        if let Some(description) = &object.description {
+            self.db_fields
+                .insert(format!("{path}/Description"), description.clone());
+            if let Some(pending) = self.db_pending.values_mut().find(|candidate| {
+                candidate.project == project
+                    && candidate.oid == object.oid
+                    && candidate.path.as_deref() == Some(path.as_str())
+            }) {
+                pending
+                    .fields
+                    .insert("Description".to_string(), description.clone());
+            }
+        }
         self.store_db_xml_extras(project, &object.oid, &object.extras);
 
         match object.kind {
@@ -10337,6 +10411,7 @@ impl Server {
                 units: Vec::new(),
                 children: Vec::new(),
                 extras: DbXmlExtras::default(),
+                description: None,
             };
             if let Err((code, message)) =
                 self.insert_db_xml_object(&proj_name, parent, &object, None)
@@ -10487,6 +10562,7 @@ impl Server {
                     units: Vec::new(),
                     children: Vec::new(),
                     extras: DbXmlExtras::default(),
+                    description: None,
                 };
                 if let Err((code, message)) =
                     self.insert_db_xml_object(&proj_name, parent, &copy, None)
@@ -13376,6 +13452,7 @@ mod tests {
             units: Vec::new(),
             children: Vec::new(),
             extras: DbXmlExtras::default(),
+            description: None,
         }
     }
 
@@ -13629,6 +13706,7 @@ mod tests {
             units: Vec::new(),
             children: vec![fresh, child71, child0, moved],
             extras: DbXmlExtras::default(),
+            description: None,
         };
         let owner = server
             .projects
@@ -13703,6 +13781,7 @@ mod tests {
                 order_object(&server, 0),
             ],
             extras: DbXmlExtras::default(),
+            description: None,
         };
         server
             .apply_db_xml_replacement(&target, &replacement)

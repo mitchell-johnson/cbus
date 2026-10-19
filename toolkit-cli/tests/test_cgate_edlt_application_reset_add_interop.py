@@ -87,9 +87,10 @@ def assert_state(before, after, case, call):
     for app, name, description in case.get('applications', []):
         node = network.find(f"Application[Address='{app}']")
         assert node is not None and node.findtext('TagName') == name
-        # The service XML omits Application Description; its independently
-        # bound scalar property is verified below, separate from graph proof.
-        assert node.find('Description') is None
+        # The owned-model export carries the scalar Description after Address
+        # (#75; native placement unproven). Its independently bound scalar
+        # property is still verified below, separate from graph proof.
+        assert node.findtext('Description') == (description or None)
         issued.append(node.findtext('OID'))
     for app, number, name in case.get('groups', []):
         node = network.find(f"Application[Address='{app}']/Group[Address='{number}']")

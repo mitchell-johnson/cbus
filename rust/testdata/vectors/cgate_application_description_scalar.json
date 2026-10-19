@@ -4,7 +4,8 @@
     "original_execution": false,
     "physical_hardware_contact": false,
     "purpose": "Issued-OID Description scalar acknowledgement/readback and saved-image regression on the owned Rust model",
-    "xml_description_admission": false,
+    "xml_description_admission": "owned-model",
+    "xml_roundtrip_vector": "cgate_application_description_xml_roundtrip.jsonl",
     "native_xml_acceptance_issue": 75
   },
   "seed_commands": [
