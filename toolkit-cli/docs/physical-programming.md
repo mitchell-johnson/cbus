@@ -298,7 +298,8 @@ transcript of LOAD, one SAVE_TO_SOURCE and the fresh LOAD:
 - Every admitted method/protection pair from the matrix, on the local
   network and through one bridge. These include lock UNLOCK counts, factory
   and special skips, and factory-bit writes.
-- Unchanged fields that are pre-read but never stored or committed.
+- Unchanged fields that are pre-read but never stored or committed. These
+  cover all 19 admitted method/protection pairs and the edge layouts below.
 - The unit-wide NCC rule: a `direct` edit in a specification that declares
   NCC fields is followed by Save-to-NVM EXECUTE and POLL. A second profile
   pins the idle EXECUTE: the save commits with EXECUTE alone and no POLL.
@@ -322,11 +323,25 @@ before POLL. Each case asserts the following:
 
 A further case shows that an unresolved journal refuses repeat saves before
 I/O, both on the same path and on a new path in the same directory, until
-recovery resolves it. For field preservation, `direct`, `paged`, `ncc`,
-`goc2` and `edlt` saves run with declared neighbour fields on both sides,
-across a page for `paged`/`ncc`, plus undeclared guard bytes and a field in
-another memory space. The test snapshots the peer's complete memory. Only
-the target range's bytes may change. The Rust test
+recovery resolves it. Field preservation covers all 19 admitted
+method/protection pairs and the edge layouts below. Each save runs with
+declared neighbour fields on both sides, plus undeclared guard bytes and a
+field in another memory space. The default layout crosses a page for
+`paged`/`ncc`. The test snapshots the peer's complete memory, and only the
+target range's bytes may change. A lock target needs one UNLOCK per STORE,
+and a GIU save must halt the unit and then resume it. Factory and special
+targets change no byte, and `recover` classifies them `unchanged`.
+
+The edge layouts belong to each admitted method. For `paged` and `ncc` they
+include the last byte of a page, the first byte of the next page and a
+four-byte range across that boundary. Every method also gets fields of exactly
+one native STORE group, one STORE group plus one byte, one RECALL block, and
+one RECALL block plus one byte. The RECALL limits are 255 bytes for
+`ncc`/`goc2` and 128 for eDLT. For `paged`/`ncc`, these block fields start
+at a page start so a page split cannot hide a block edge. All of these cases
+are scripted-PCI evidence only.
+
+The Rust test
 `stale_ack_from_retired_generation_cannot_complete_a_new_generation_store` in
 `cbus-transport` shows the following sequence. An ACK and readback delivered
 by a replacement PCI link before the new STORE exists do not complete it. The

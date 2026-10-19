@@ -151,6 +151,16 @@ def _reply(parameter, data):
     return bytes((0x80 | (len(data) + 1), parameter, *data))
 
 
+# A CAL reply's five-bit length counts the parameter byte: at most 30 data
+# bytes fit one frame. Longer RECALL replies are fragmented by the peer.
+CAL_REPLY_MAX = 0x1F - 1
+
+
+def _stale_reply(parameter, data):
+    """A complete reply for the next parameter, which must never be accepted."""
+    return _reply((parameter + 1) & 0xFF, data[:CAL_REPLY_MAX])
+
+
 def _write(parameter, data):
     return bytes((0xA0 | (len(data) + 1), parameter, *data))
 
@@ -574,7 +584,7 @@ class ProgrammingPCI(PCISimulator):
                 # A complete correlated first byte, then an excess reply.
                 self.overflow_sent = True
                 cals = [_reply(parameter, data[:1]), _reply(parameter, data)]
-            return self._answer(code, cals, _reply((parameter + 1) & 0xFF, data), envelope)
+            return self._answer(code, cals, _stale_reply(parameter, data), envelope)
 
         if opcode == 0x1B:
             if len(cal) != 4 or cal[3] == 0:
@@ -586,7 +596,7 @@ class ProgrammingPCI(PCISimulator):
             method = self._method("paged", address)
             data = self.read("paged", address, count)
             cals = self._fragments(method, parameter, data, advancing=True)
-            return self._answer(code, cals, _reply((parameter + 1) & 0xFF, data), envelope)
+            return self._answer(code, cals, _stale_reply(parameter, data), envelope)
 
         if opcode == 0x39:
             if len(cal) != 2:
@@ -1151,22 +1161,81 @@ def test_admitted_method_protection_pair(tmp_path, pair, route_name, bit):
         assert not run.peer.unlocks
 
 
+# Page and block edges for each admitted method (P4.02/P4.04). ``paged`` and
+# ``ncc`` take the last byte of a page, the first byte of the next page and a
+# range spanning that boundary. Every method also takes exactly one STORE
+# group, one byte past it, exactly one RECALL block and one byte past it, all
+# from a page start so a page split cannot mask the block edge.
+PAGE_START = {"paged": 0x200, "ncc": 0x400}
+
+
+def edge_layouts():
+    """``(method, protection, address, size, label)`` boundary layouts."""
+    protections = {}
+    for pair in ADMITTED:
+        method, protection = pair.split("/")
+        protections.setdefault(method, []).append(protection)
+    cases = []
+    for method in METHODS:
+        if method not in protections:
+            continue
+        protection = "none" if "none" in protections[method] else protections[method][0]
+        if method in PAGED:
+            page = PAGE_START[method]
+            cases += [(method, protection, page - 1, 1, "page-last-byte"),
+                      (method, protection, page, 1, "page-first-byte"),
+                      (method, protection, page - 2, 4, "page-span")]
+        address = PAGE_START.get(method, ADDRESSES[method])
+        sizes = {}
+        for label, limit in (("store-group", STORE_LIMIT[method]),
+                             ("recall-block", RECALL_LIMIT[method])):
+            sizes.setdefault(limit, label)
+            sizes.setdefault(limit + 1, f"{label}-plus-one")
+        cases += [(method, protection, address, size, label) for size, label in sizes.items()]
+    return cases
+
+
+EDGE_LAYOUTS = edge_layouts()
+# Replies longer than one CAL frame arrive in fragments (native L names each
+# paged fragment by its first byte; bj and GOC2 repeat the pointer parameter).
+EDGE_FRAGMENTS = {"ncc": 8, "edlt": 16, "goc2": 16}
+
+UNCHANGED_CASES = [
+    *(pytest.param(*pair.split("/"), None, None, id=pair) for pair in ADMITTED),
+    *(pytest.param(method, protection, address, size, id=f"{method}/{protection}-{label}")
+      for method, protection, address, size, label in EDGE_LAYOUTS),
+]
+
+
+def test_edge_layouts_cover_every_admitted_method():
+    assert {method for method, *_ in EDGE_LAYOUTS} == {pair.split("/")[0] for pair in ADMITTED}
+    labels = {(method, label) for method, _, _, _, label in EDGE_LAYOUTS}
+    for method in PAGED:
+        assert {(method, label) for label in
+                ("page-last-byte", "page-first-byte", "page-span")} <= labels
+
+
 @needs_cmqttd
-@pytest.mark.parametrize("pair", ("direct/none", "paged/lock", "ncc/checksum", "giu/none",
-                                  "goc2/none"))
-def test_unchanged_range_is_read_but_never_stored_or_committed(tmp_path, pair):
-    method, protection = pair.split("/")
-    param, _ = method_case(method, 2, protection=protection)
+@pytest.mark.parametrize("method,protection,address,size", UNCHANGED_CASES)
+def test_unchanged_range_is_read_but_never_stored_or_committed(tmp_path, method, protection,
+                                                               address, size):
+    if address is None:
+        # Lock-protected fields use the multi-group layout so an UNLOCK for
+        # any native group would show; the others use the two-byte layout.
+        address, size = MULTI[method] if protection == "lock" else (ADDRESSES[method], 2)
+    param, _ = method_case(method, size, protection=protection, address=address)
     run = run_apply(tmp_path, ROUTES["one-bridge"], [param],
                     {param.name: value_text(param, param.before)},
-                    nvm_running=method == "ncc")
-    assert_complete(run, method)
+                    nvm_running=method == "ncc", fragment=EDGE_FRAGMENTS)
+    value = assert_complete(run, method)
+    assert value["parameters"][0]["protection"] == protection
     plan = expected_transcript(ROUTES["one-bridge"], [param.row],
                                {param.name: (param.before, param.before)},
                                nvm_spec=method == "ncc", nvm_running=method == "ncc")
     assert_exchange_shape(run, plan)
     assert not run.peer.stores and not run.peer.unlocks and not run.peer.nvm
     assert not run.peer.run_flags
+    assert run.peer.read(param.space, physical(method, address), size) == param.before
 
 
 @needs_cmqttd
@@ -1452,19 +1521,28 @@ def test_completed_save_journal_records_every_phase(tmp_path):
 # Programmed field preservation (P4.04)
 # --------------------------------------------------------------------------
 
-def preservation_case(method):
+def preservation_case(method, protection="none", address=None, size=None):
     """Target field between declared neighbours, plus undeclared guard bytes.
 
-    ``paged``/``ncc`` targets cross a page with one neighbour on each page;
-    another space holds an unrelated declared field.
+    By default the target uses the ``MULTI`` layout: ``paged``/``ncc`` targets
+    cross a page with one neighbour on each page. Another space holds an
+    unrelated declared field.
     """
-    address, size = MULTI[method]
-    target = Param("target", method, address, size, before=pattern(size, 0x10, 3))
+    if address is None:
+        address, size = MULTI[method]
+    target = Param("target", method, address, size, protection,
+                   before=pattern(size, 0x10, 3))
     before = Param("before", method, address - 4, 4, before=b"\x5A\xA5\x5A\xA5")
     after = Param("after", method, address + size, 4, before=b"\x3C\xC3\x3C\xC3")
     other_method = "paged" if method == "direct" else "direct"
-    other = Param("other", other_method, ADDRESSES[other_method] + 0x40
-                  if other_method == "direct" else 0x2F0, 3, before=b"\x01\x02\x03")
+    other_address = ADDRESSES["direct"] + 0x40 if other_method == "direct" else 0x2F0
+    # A paged STORE CAL names only its in-page parameter, and the peer
+    # resolves a parameter covered by a declared standard field as standard.
+    # Long paged targets that reach that offset take an OEM field instead.
+    if method in PAGED and {(address + offset) % 256 for offset in range(size)} & set(
+            range(other_address, other_address + 3)):
+        other_method, other_address = "edlt", ADDRESSES["edlt"]
+    other = Param("other", other_method, other_address, 3, before=b"\x01\x02\x03")
     return [target, before, after, other], pattern(size, 0xA0, 5)
 
 
@@ -1472,11 +1550,20 @@ def snapshot(peer):
     return {space: dict(values) for space, values in peer.memory.items()}
 
 
+PRESERVATION_CASES = [
+    *(pytest.param(*pair.split("/"), None, None, id=pair) for pair in ADMITTED),
+    *(pytest.param(method, protection, address, size, id=f"{method}/{protection}-{label}")
+      for method, protection, address, size, label in EDGE_LAYOUTS),
+]
+
+
 @needs_cmqttd
-@pytest.mark.parametrize("method", ("direct", "paged", "ncc", "goc2", "edlt"))
-def test_save_preserves_every_byte_outside_the_target_range(tmp_path, method):
-    params, new = preservation_case(method)
+@pytest.mark.parametrize("method,protection,address,size", PRESERVATION_CASES)
+def test_save_preserves_every_byte_outside_the_target_range(tmp_path, method, protection,
+                                                            address, size):
+    params, new = preservation_case(method, protection, address, size)
     target = params[0]
+    skipped = protection in ("factory", "special")
     layout, memory = peer_state(params)
     # Undeclared guard bytes on both sides of the neighbours.
     start = physical(method, target.address)
@@ -1498,15 +1585,29 @@ def test_save_preserves_every_byte_outside_the_target_range(tmp_path, method):
     journal = tmp_path / "attempt.json"
     # Contiguous neighbours are read as one range; long replies fragment.
     peer = ProgrammingPCI(ROUTES["one-bridge"], layout, memory, journal_probe=journal,
-                          nvm_running=method == "ncc",
-                          fragment={"ncc": 8, "edlt": 16, "goc2": 16})
+                          nvm_running=method == "ncc", fragment=EDGE_FRAGMENTS)
     with peer.running() as pci, running_daemon(tmp_path, pci, project, specs) as port:
         result = invoke(port, unit, method, [(target.name, value_text(target, new))],
                         journal=journal)
         run = Run(result, peer, unit, journal)
         recover(port, run)
-    assert_complete(run, method)
     expected = {space: dict(values) for space, values in original.items()}
+    report = json.loads(captured["recovery"].stdout)
+    assert [row["parameter"] for row in report["ranges"]] == ["target"]
+    if skipped:
+        # Native lP skips factory/special fields: the confirmed SAVE stores
+        # nothing, no byte anywhere changes, and the reload reports it.
+        assert run.result.returncode == 1
+        evidence = run.document["physical_programming_evidence"]
+        assert evidence["saved"] and not evidence["save_outcome_uncertain"]
+        assert set(evidence["verification_mismatches"]) == {target.name}
+        assert captured["after"] == expected
+        assert not peer.stores and not peer.unlocks and not peer.nvm and not peer.run_flags
+        assert report["outcome"] == "observed_unchanged"
+        assert [row["classification"] for row in report["ranges"]] == ["unchanged"]
+        return
+    document = assert_complete(run, method)
+    assert document["parameters"][0]["protection"] == protection
     for offset, value in enumerate(new):
         expected[target.space][start + offset] = value
     assert captured["after"] == expected
@@ -1518,7 +1619,7 @@ def test_save_preserves_every_byte_outside_the_target_range(tmp_path, method):
     assert {row["method"] for row in peer.stores} == {method}
     assert all(start <= row["address"] and row["address"] + len(row["data"]) <= start + target.size
                for row in peer.stores)
+    assert len(peer.unlocks) == (len(peer.stores) if protection == "lock" else 0)
     assert peer.nvm == (["execute", "poll"] if method == "ncc" else [])
-    report = json.loads(captured["recovery"].stdout)
+    assert [flag for flag, _ in peer.run_flags] == ([0, 1] if method == "giu" else [])
     assert [row["classification"] for row in report["ranges"]] == ["expected"]
-    assert [row["parameter"] for row in report["ranges"]] == ["target"]
