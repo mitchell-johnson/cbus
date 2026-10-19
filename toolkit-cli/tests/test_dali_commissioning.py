@@ -692,5 +692,226 @@ class DaliInputAndCLITests(unittest.TestCase):
             self.assertEqual(receipt["automatic_retries"], 0)
 
 
+PROXY_VECTORS = json.loads((Path(__file__).resolve().parents[1]
+                            / "research/fixtures/dali-ext-proxy-original-vectors.json").read_text())
+LINE_PREFIX = dali_extended_proxy.PREFIX + "line/"
+
+
+def _leaf_shape(path):
+    """Line leaf shape with slot indices abstracted: line/L/family[/S]/field."""
+    parts = path[len(dali_extended_proxy.PREFIX):].split("/")
+    return "/".join("S" if index == 3 and part.isdecimal() else part for index, part in enumerate(parts))
+
+
+def line_proxy(store_a=False, store_b=False, version=(1, 6)):
+    def line():
+        return {
+            "virtualGroups": [{"members": []} for _ in range(16)],
+            "usedDevices": {"members": []}, "remoteOnMask": {"members": []},
+            "remoteOffMask": {"members": []}, "statusCorrectionMask": {"members": []},
+            "objectProperties": [{field: False if kind == "boolean" else 0
+                                  for field, (_, kind, _) in dali_extended_proxy._OBJECT_FIELDS.items()}
+                                 for _ in range(97)],
+            "oidToShortAddress": {"map": [255] * 64, "utilitySaToOidMap": {}},
+            "shortAddressToOid": {"map": {}},
+            "missingDeviceThreshold": {"threshold": 0}, "wboEnableGroup": {"group": 0},
+            "wboEnableGroupRestoreLevel": {"level": 0},
+            "statusCorrectionInterval": {"interval": 0}, "statusUpdatingInterval": {"interval": 0},
+            "lampRunningTime": [{"time": 0} for _ in range(64)],
+            "sceneTriggerMap": [{"triggerGroup": 0, "actionSelector": {}} for _ in range(17)],
+        }
+    return {"configVersion": {"major": version[0], "minor": version[1]},
+            "enableGroupLevelStoreOptions": {"wboEnableA": store_a, "wboEnableB": store_b,
+                                             "errorReportingEnable": False,
+                                             "colourModeA": False, "colourModeB": False},
+            "line": [line(), line()]}
+
+
+class DaliLineProxyAdmissionTests(unittest.TestCase):
+    def setUp(self):
+        self.directory = tempfile.TemporaryDirectory()
+        self.addCleanup(self.directory.cleanup)
+        self.folder = Path(self.directory.name)
+        self.service = ScriptedService()
+        self.service.caps["dali_session_extended_proxy"] = {
+            "families": [], "native_reserved_bits": True, "excluded_bytes": True,
+            "writable_global_fields": [], "line_families": 15, "whole_recalled_families": True}
+        self.workflow = DaliCommissioning(self.service)
+
+    def deploy(self, edits, proxy, name="attempt.json"):
+        self.service.model_transform = lambda model: model["cdg"].update({"extParams": {"proxy": proxy}})
+        return self.workflow.deploy(TARGET, edits, extract_type="EXT_ONLY", deploy_type="EXT_ONLY",
+                                    journal=self.folder / name)
+
+    def test_admitted_line_leaf_shapes_are_exactly_the_original_vector_edits(self):
+        case = PROXY_VECTORS["cases"]["all_line_families"]
+        admitted, refused = [], {}
+        for edit in case["input"]["edits"]:
+            try:
+                admitted.append(dali_extended_proxy.edit_disposition(edit))
+            except ValueError as error:
+                refused[edit["path"]] = str(error)
+        self.assertEqual((len(admitted), len(refused)), (84, 10))
+        self.assertEqual({path.split("/")[6] for path in refused}, set(dali_extended_proxy.LINE_REFUSALS))
+        executed = {_leaf_shape(edit["path"]) for edit in case["input"]["edits"]
+                    if edit["path"] not in refused}
+        table = {_leaf_shape(dali_extended_proxy.PREFIX + suffix) for suffix in dali_extended_proxy.LINE_FIELDS}
+        self.assertEqual(table, executed)
+        # Every executed slot is an endpoint of its indexed family.
+        self.assertEqual(len(dali_extended_proxy.LINE_FIELDS), 2 * (16 + 3 + 97 * 14 + 1 + 4 + 17 * 2))
+
+    def test_line_table_matches_original_line_byte_ownership(self):
+        targets = {int(address) for address in PROXY_VECTORS["cases"]["all_line_families"]["target_bytes"]}
+        globals_ = {address for address in targets if 256 <= address <= 257 or 512 <= address <= 515
+                    or address == 518 or 521 <= address <= 553 or address == 556 or 558 <= address <= 559
+                    or 608 <= address <= 610 or 616 <= address <= 645 or 656 <= address <= 665}
+        refused = set()
+        for line in range(2):
+            refused |= set(range(592 + line * 8, 600 + line * 8)) | {612 + line}
+            refused |= set(range(7424 + line * 256, 7680 + line * 256))
+        owned = set()
+        for suffix, spec in dali_extended_proxy.LINE_FIELDS.items():
+            with self.subTest(suffix=suffix):
+                self.assertTrue(set(spec["addresses"]) <= set(spec["family_addresses"]))
+                self.assertFalse(any(dali_extended_proxy.static_excluded(a) for a in spec["family_addresses"]))
+            owned |= set(spec["family_addresses"])
+        self.assertEqual(owned | refused, targets - globals_)
+        self.assertFalse(owned & refused)
+
+    def test_original_line_values_encode_to_the_executed_target_bytes(self):
+        case = PROXY_VECTORS["cases"]["all_line_families"]
+        targets = case["target_bytes"]
+        for edit in case["input"]["edits"]:
+            suffix = edit["path"][len(dali_extended_proxy.PREFIX):]
+            spec = dali_extended_proxy.LINE_FIELDS.get(suffix)
+            if spec is None or spec["kind"] not in ("integer", "boolean") or len(spec["addresses"]) != 1:
+                continue
+            field = suffix.split("/")[-1]
+            if field in ("groupAddress", "warnBeforeOffLevel", "secondaryGroupAddress", "tertiaryGroupAddress",
+                         "threshold", "group", "level", "interval", "triggerGroup"):
+                with self.subTest(suffix=suffix):
+                    self.assertEqual(targets[str(spec["addresses"][0])], edit["value"])
+
+    def test_unevidenced_ineffective_and_invalid_line_edits_refuse_before_io(self):
+        cases = {
+            "line/0/oidToShortAddress/map": ([255] * 64, "never the effective writer"),
+            "line/0/oidToShortAddress/utilitySaToOidMap": ({}, "computed read-only"),
+            "line/1/lampRunningTime/0/time": (0, "zero reset write"),
+            "line/0/statusCorrectionMask/members": ([1], "statically excluded"),
+            "line/1/statusCorrectionInterval/interval": (1, "statically excluded"),
+            "line/0/usedDevices/members/0": (1, "not an evidenced"),
+            "line/0/objectProperties/0": ({}, "not an evidenced"),
+            "line/0/objectProperties/97/groupAddress": (1, "not an evidenced"),
+            "line/0/virtualGroups/16/members": ([], "not an evidenced"),
+            "line/0/sceneTriggerMap/17/triggerGroup": (1, "not an evidenced"),
+            "line/0/sceneTriggerMap/0/actionSelector/0": (1, "not an evidenced"),
+            "line/0/shortAddressToOid/map/8": (0, "not an evidenced"),
+            "line/2/usedDevices/members": ([], "line index"),
+            "line/0/usedDevices/members#unsorted": ([7, 0], "strictly ascending"),
+            "line/0/usedDevices/members#duplicate": ([0, 0], "strictly ascending"),
+            "line/0/remoteOnMask/members": ([64], "strictly ascending"),
+            "line/0/shortAddressToOid/map": ({"8": 0, "9": 0}, "one-to-one"),
+            "line/0/shortAddressToOid/map#key": ({"08": 0}, "canonical"),
+            "line/0/shortAddressToOid/map#oid": ({"8": 64}, "OIDs"),
+            "line/0/sceneTriggerMap/0/actionSelector": ({"16": 1}, "canonical"),
+            "line/0/sceneTriggerMap/16/actionSelector": ({"0": 256}, "0..255"),
+            "line/0/objectProperties/0/fadeInstantOff": (8, "0..7"),
+            "line/0/objectProperties/0/minLogic": (1, "Boolean"),
+            "line/1/objectProperties/96/applicationIndex": (True, "0..3"),
+            "line/0/wboEnableGroup/group": (256, "0..255"),
+        }
+        for suffix, (value, reason) in cases.items():
+            edit = {"path": dali_extended_proxy.PREFIX + suffix.split("#")[0], "value": value}
+            with self.subTest(suffix=suffix):
+                with self.assertRaisesRegex(ValueError, reason):
+                    deployment_edit_dispositions([edit], "A", None, dry_run=False)
+                with self.assertRaisesRegex(ValueError, reason):
+                    self.workflow.deploy(TARGET, [edit], extract_type="EXT_ONLY", deploy_type="EXT_ONLY",
+                                         journal=self.folder / "unused.json")
+        self.assertEqual(self.service.commands, [])
+        with self.assertRaisesRegex(ValueError, "same native family"):
+            self.workflow.deploy(TARGET, [
+                {"path": LINE_PREFIX + "0/objectProperties/5/groupAddress", "value": 9},
+                {"address": 768 + 3 * 32 + 8, "bytes": [1]}],
+                extract_type="EXT_ONLY", deploy_type="EXT_ONLY", journal=self.folder / "unused.json")
+        with self.assertRaisesRegex(ValueError, "EXT_ONLY/FULL"):
+            self.workflow.deploy(TARGET, [{"path": LINE_PREFIX + "0/usedDevices/members", "value": [1]}],
+                                 journal=self.folder / "unused.json")
+        self.assertEqual(self.service.commands, [])
+
+    def test_line_dispositions_bind_family_compilation_and_reserved_bytes(self):
+        plan = deployment_edit_dispositions([
+            {"path": LINE_PREFIX + "1/objectProperties/96/fadeInstantOff", "value": 5},
+            {"path": LINE_PREFIX + "0/sceneTriggerMap/16/actionSelector", "value": {"0": 11, "15": 22}},
+            {"path": LINE_PREFIX + "0/shortAddressToOid/map", "value": {"8": 0, "63": 63}}], "A", None, dry_run=False)
+        self.assertEqual([row["disposition"] for row in plan], ["planned-native-gateway-proxy-line-field"] * 3)
+        self.assertEqual(plan[0]["addresses"], [3872 + 96 * 32 + 5, 3872 + 96 * 32 + 6])
+        self.assertEqual(len(plan[0]["family_addresses"]), 97 * 9)
+        self.assertNotIn(3872 + 7, plan[0]["family_addresses"])
+        self.assertEqual(plan[1]["family"], "line/0/sceneTriggerMap")
+        self.assertNotIn(7936 + 16 * 20 + 19, plan[1]["addresses"])  # native reserved zero byte
+        self.assertIn(7936 + 16 * 20 + 19, plan[1]["family_addresses"])
+        self.assertEqual(plan[2]["family_addresses"], list(range(7040, 7104)))
+        self.assertTrue(all(row["server_leaf_schema_advertised"] is False for row in plan))
+
+    def test_conditional_line_exclusions_refuse_after_staging_without_deploy(self):
+        level = {"path": LINE_PREFIX + "0/wboEnableGroupRestoreLevel/level", "value": 7}
+        with self.assertRaisesRegex(DaliCommissioningError, "WBO restore level byte is excluded"):
+            self.deploy([level], line_proxy(store_a=True))
+        self.assertFalse(any(" DEPLOY " in command for command in self.service.commands))
+        # Ordered staging owns the effective result: clearing the store
+        # option in the same file makes the restore level writable.
+        option = dali_extended_proxy.PREFIX + "enableGroupLevelStoreOptions/wboEnableA"
+        self.service.caps["dali_session_extended_proxy"].update({
+            "families": ["enableGroupLevelStoreOptions"],
+            "writable_global_fields": [{"path": option, "address": 521, "type": "boolean",
+                                        "minimum": 0, "maximum": 1}]})
+        result = self.deploy([
+            {"path": dali_extended_proxy.PREFIX + "enableGroupLevelStoreOptions/wboEnableA", "value": False},
+            level], line_proxy(store_a=True), "store.json")
+        self.assertTrue(result["complete"])
+        # The other line's option does not gate line A.
+        result = self.deploy([level], line_proxy(store_b=True), "other.json")
+        self.assertTrue(result["complete"])
+        fade = {"path": LINE_PREFIX + "1/objectProperties/0/fadeInstantLvl", "value": 6}
+        self.service.commands.clear()
+        with self.assertRaisesRegex(DaliCommissioningError, "ConfigVersion greater than 1.5"):
+            self.deploy([fade], line_proxy(version=(1, 5)), "old.json")
+        self.assertFalse(any(" DEPLOY " in command for command in self.service.commands))
+        result = self.deploy([fade], line_proxy(version=(1, 6)), "modern.json")
+        self.assertTrue(result["complete"])
+        self.assertEqual(result["staged_edits"][0]["value"], 6)
+
+    def test_line_edits_require_the_advertised_line_serializer(self):
+        edit = {"path": LINE_PREFIX + "0/usedDevices/members", "value": [0, 63]}
+        for change in ({"line_families": 14}, {"whole_recalled_families": False}, {"line_families": None}):
+            with self.subTest(change=change):
+                self.service.commands.clear()
+                self.service.caps["dali_session_extended_proxy"].update(
+                    {"line_families": 15, "whole_recalled_families": True, **change})
+                with self.assertRaisesRegex(DaliCommissioningError, "line serializer is unavailable"):
+                    self.deploy([edit], line_proxy(), "denied.json")
+                self.assertEqual(self.service.commands, ["CMQTT CAPABILITIES"])
+        self.service.caps["dali_session_extended_proxy"].update({"line_families": 15, "whole_recalled_families": True})
+        result = self.deploy([edit], line_proxy(), "allowed.json")
+        self.assertTrue(result["complete"])
+        self.assertTrue(any(command.endswith(" A EXT_ONLY") and " DEPLOY " in command
+                            for command in self.service.commands))
+
+    def test_cli_preconnect_admits_evidenced_line_leaves(self):
+        parser = build_parser()
+        with tempfile.TemporaryDirectory() as folder:
+            edits = Path(folder) / "edits.json"
+            journal = Path(folder) / "attempt.json"
+            value = [{"path": LINE_PREFIX + "1/sceneTriggerMap/0/triggerGroup", "value": 202},
+                     {"path": LINE_PREFIX + "1/virtualGroups/15/members", "value": [0, 7, 8, 63]}]
+            edits.write_text(json.dumps(value))
+            args = parser.parse_args(["cgate", "dali", "deploy", TARGET, "--line", "B",
+                                      "--extract-type", "FULL", "--deploy-type", "FULL",
+                                      "--edits", str(edits), "--journal", str(journal)])
+            self.assertEqual(preconnect(args), value)
+            self.assertFalse(journal.exists())
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -103,11 +103,51 @@ an unknown source family, or overlapping raw and typed ownership is refused
 before deployment. Restore levels and error-reporting mode have conditional
 exclusions depending on their staged enable settings.
 
-The service also decodes and serializes all 15 native line families. Physical
-CLI admission currently covers the global leaves; line edits, whole proxy
-replacement and computed utility edits remain outside that admission. A
-literal raw-only `EXT_ONLY` operation retains its direct-byte behavior without
-implicitly serializing the proxy.
+The service also decodes and serializes all 15 native line families. The CLI
+admits line leaves under `/cdg/extParams/proxy/line/L/`, where `L` is 0 for
+A or 1 for B, only for the leaf shapes the executed original-runtime vector
+(`all_line_families` in
+`research/fixtures/dali-ext-proxy-original-vectors.json`) edited and whose
+dirty write native rules leave effective:
+
+| Leaf | Value |
+| --- | --- |
+| `virtualGroups/0..15/members`, `usedDevices/members`, `remoteOnMask/members`, `remoteOffMask/members` | strictly ascending integers in 0..63 |
+| `objectProperties/0..96/<field>` (the 14 native fields) | integer within the field width, or Boolean for `disableDaliToCbus`/`minLogic` |
+| `shortAddressToOid/map` | object of canonical short address 0..254 → OID 0..63, one-to-one |
+| `missingDeviceThreshold/threshold`, `wboEnableGroup/group`, `wboEnableGroupRestoreLevel/level`, `statusUpdatingInterval/interval` | integer 0..255 |
+| `sceneTriggerMap/0..16/triggerGroup` | integer 0..255 |
+| `sceneTriggerMap/0..16/actionSelector` | object of canonical scene index 0..15 → 0..255 |
+
+The vector edits the first and last slot of each indexed family on both
+lines; whole-family serialization pins the byte ownership of every slot. The
+ascending member order is an owned canonical choice, matching the native
+decoder so staged and recovered values compare exactly. The line serializer
+compiles every whole recalled line family, including native reserved bytes,
+so physical writes can extend beyond the edited leaf.
+
+These are refused before any connection:
+
+- `statusCorrectionMask` and `statusCorrectionInterval`: their bytes are
+  statically excluded from native dirty writes.
+- `oidToShortAddress/map`: native writes `shortAddressToOid` afterwards over
+  the same bytes, so a forward-map edit never takes effect. Edit the inverse
+  map instead. `utilitySaToOidMap` is computed and read-only.
+- `lampRunningTime`: native excludes non-zero targets, and no executed vector
+  establishes a zero-reset write.
+- Sub-leaves such as `members/0` or `actionSelector/3`, whole objects, and
+  any other unevidenced path.
+
+After staging, `wboEnableGroupRestoreLevel` is refused while the line's
+`enableGroupLevelStoreOptions/wboEnableA`/`wboEnableB` stores the level.
+`objectProperties` fade controls are refused unless the staged
+`configVersion` is newer than 1.5. cmqttd advertises its line serializer
+only as `line_families: 15` and `whole_recalled_families: true`; it does not
+publish a per-leaf line schema. The CLI requires both values, and its line
+field table, not server advertisement, binds leaf ownership. Whole proxy
+replacement remains outside admission. A literal raw-only `EXT_ONLY`
+operation retains its direct-byte behavior without implicitly serializing
+the proxy.
 
 Physical typed edits use leaf paths under
 `/cdg/daliLines/L/daliEcgs/E/`, where `L` is 0 for A or 1 for B and `E` is
