@@ -9,6 +9,8 @@ fresh physical LOAD with the values staged before that save.
 Every mutating save first creates a durable attempt journal
 (:mod:`cbus_toolkit.physical_pp_journal`) binding the planned byte ranges, and
 ``recover`` classifies those ranges from a fresh, read-only physical LOAD.
+The cmqttd PCI generation is rechecked before SAVE and after its reply; a
+change leaves the journal ``save-uncertain`` for read-only recovery.
 
 Neither the successful C-Gate reply nor the fresh readback proves persistence
 through a power cycle.  No state-changing command is retried automatically.
@@ -538,6 +540,31 @@ def _attach(error: BaseException, evidence: Mapping[str, Any]) -> None:
         pass
 
 
+def _generation_check(client: CommandClient, expected: int) -> dict[str, Any]:
+    """Re-read cmqttd's PCI generation without raising.
+
+    A generation is only comparable within one connected PCI session.  A
+    changed, missing or disconnected generation, or a failed capability read,
+    means the staged session or SAVE may not belong to the PCI stream that
+    loaded it.
+    """
+    record: dict[str, Any] = {"at": _now(), "expected": expected, "observed": None,
+                              "pci_connected": None, "unchanged": False}
+    try:
+        document = _cmqtt_object(client.command("CMQTT CAPABILITIES"))
+    except Exception as error:
+        record["error"] = {"type": type(error).__name__, "message": str(error)[:4096]}
+        return record
+    generation = document.get("pci_generation")
+    record.update({
+        "observed": generation if type(generation) is int else None,
+        "pci_connected": document.get("pci_connected"),
+        "unchanged": (document.get("pci_connected") is True
+                      and type(generation) is int and generation == expected),
+    })
+    return record
+
+
 class PhysicalProgramming:
     """Execute one topology-resolved physical PP inspection or edit."""
 
@@ -800,6 +827,17 @@ class PhysicalProgramming:
             # in its directory for the same unit still needs recovery.
             refuse_unresolved(journal, destination_path.value)
         capabilities = _preflight(self.client, method, saving=saving)
+        generation = capabilities.get("pci_generation")
+        if saving and (type(generation) is not int or generation < 0):
+            # The save guard compares this generation before SAVE and after
+            # its reply; without one, no change could be detected.
+            raise PhysicalProgrammingError("cmqttd did not report a PCI generation", {
+                "phase": "capability-preflight",
+                "method": method,
+                "capabilities": capabilities,
+                "save_attempted": False,
+                "automatic_write_retries": 0,
+            })
         evidence: dict[str, Any] = {
             "format": "cbus-physical-pp-apply-v1",
             "operation_id": self.operation_id,
@@ -935,6 +973,42 @@ class PhysicalProgramming:
                         1 for row in plan["ranges"] if row["write_planned"]),
                 }
 
+                guard: dict[str, Any] = {"expected": generation}
+                evidence["pci_generation_guard"] = guard
+                guard["before_save"] = _generation_check(self.client, generation)
+                if not guard["before_save"]["unchanged"]:
+                    # No SAVE was sent, but the loaded/staged session may
+                    # belong to an earlier PCI stream.  Keep the journal
+                    # unresolved so only read-only recovery can resolve it.
+                    def mark_refused(document):
+                        for row in document["ranges"]:
+                            if row["store_state"] == "planned":
+                                row["store_state"] = "not-attempted"
+                        if document["nvm_commit"] == "planned":
+                            document["nvm_commit"] = "not-reached"
+                        document["save_reply"] = {
+                            "confirmed": False, "sent": False, "at": _now(),
+                            "reason": "pci-generation-changed-before-save",
+                            "pci_generation_guard": dict(guard),
+                        }
+
+                    evidence.update({
+                        "phase": "save-generation-guard",
+                        "complete": False,
+                        "read_only_recovery_required": True,
+                    })
+                    try:
+                        attempt.advance("save-uncertain", mark_refused)
+                        evidence["journal"]["phase"] = "save-uncertain"
+                    except BaseException as secondary:
+                        evidence["journal"]["update_error"] = {
+                            "type": type(secondary).__name__, "message": str(secondary)}
+                    raise PhysicalProgrammingError(
+                        "PCI generation changed before PP SAVE; no PP SAVE was sent. "
+                        f"Run 'physical-pp recover --journal {attempt.path}'",
+                        evidence,
+                    )
+
                 def mark_sent(document):
                     for row in document["ranges"]:
                         if row["store_state"] == "planned":
@@ -965,6 +1039,42 @@ class PhysicalProgramming:
                     self._journal_save_failure(attempt, error, evidence)
                     _attach(error, evidence)
                     raise
+                guard["after_reply"] = _generation_check(self.client, generation)
+                if not guard["after_reply"]["unchanged"]:
+                    # A success reply from a different PCI stream than the one
+                    # that loaded the session does not confirm this SAVE.
+                    def mark_uncertain(document):
+                        for row in document["ranges"]:
+                            if row["store_state"] == "possible":
+                                row["store_state"] = "uncertain"
+                        if document["nvm_commit"] == "possible":
+                            document["nvm_commit"] = "uncertain"
+                        document["save_reply"] = {
+                            "confirmed": False, "sent": True, "server_reply": True,
+                            "at": _now(),
+                            "reason": "pci-generation-changed-after-save-reply",
+                            "pci_generation_guard": dict(guard),
+                        }
+
+                    evidence.update({
+                        "phase": "save-generation-guard",
+                        "saved": False,
+                        "save_outcome_uncertain": True,
+                        "read_only_recovery_required": True,
+                        "complete": False,
+                    })
+                    try:
+                        attempt.advance("save-uncertain", mark_uncertain)
+                        evidence["journal"]["phase"] = "save-uncertain"
+                    except BaseException as secondary:
+                        evidence["journal"]["update_error"] = {
+                            "type": type(secondary).__name__, "message": str(secondary)}
+                    raise PhysicalProgrammingError(
+                        "PCI generation changed during PP SAVE; the outcome is uncertain "
+                        "and is never replayed. "
+                        f"Run 'physical-pp recover --journal {attempt.path}'",
+                        evidence,
+                    )
                 evidence.update({
                     "saved": True,
                     "save_outcome_uncertain": False,

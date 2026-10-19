@@ -53,6 +53,8 @@ class PhysicalService:
         self.fail_load = False
         self.journal_at_save = None
         self.journal_path = None
+        self.capability_hook = None
+        self.capability_reads = 0
         self.sessions = {}
         self.devices = {
             "//TEST/253/p/4": {
@@ -99,6 +101,9 @@ class PhysicalService:
     def command(self, command):
         self.commands.append(command)
         if command == "CMQTT CAPABILITIES":
+            self.capability_reads += 1
+            if self.capability_hook is not None:
+                self.capability_hook(self)
             payload = json.dumps(self.capabilities, separators=(",", ":"))
             return response("200-" + payload, "200 OK")
         if command.startswith(("PROJECT USE ", "PP LOCK ", "PP UNLOCK ")):
@@ -651,6 +656,127 @@ class PhysicalProgrammingTests(unittest.TestCase):
         journal.write_text(json.dumps(document))
         with self.assertRaisesRegex(PhysicalPPJournalError, "send_may_have_occurred"):
             PhysicalProgramming(PhysicalService()).recover(journal)
+
+    def test_generation_guard_brackets_the_single_save(self):
+        service = PhysicalService()
+        result = PhysicalProgramming(service, operation_id="gen").apply(
+            "//TEST/253/p/4", [("Value_direct", "0x02")], method="direct",
+            journal=self.journal())
+        save = service.commands.index("PP SAVE_TO_SOURCE cbus_pp_gen_write")
+        self.assertEqual(service.commands[save - 1], "CMQTT CAPABILITIES")
+        self.assertEqual(service.commands[save + 1], "CMQTT CAPABILITIES")
+        guard = result["pci_generation_guard"]
+        self.assertEqual(guard["expected"], 7)
+        self.assertTrue(guard["before_save"]["unchanged"] and guard["after_reply"]["unchanged"])
+
+    def test_missing_generation_refuses_a_save_before_physical_load(self):
+        for value in (None, "7", -1, True):
+            with self.subTest(value=value):
+                service = PhysicalService()
+                service.capabilities["pci_generation"] = value
+                journal = self.journal()
+                with self.assertRaisesRegex(PhysicalProgrammingError, "PCI generation"):
+                    PhysicalProgramming(service).apply(
+                        "//TEST/253/p/4", [("Value_direct", "0x02")], method="direct",
+                        journal=journal)
+                self.assertEqual(service.commands, ["CMQTT CAPABILITIES"])
+                self.assertFalse(journal.exists())
+
+    def test_generation_change_before_save_sends_no_save_and_needs_recovery(self):
+        service = PhysicalService()
+
+        def reconnect(peer):
+            if peer.capability_reads == 2:
+                peer.capabilities["pci_generation"] = 8
+        service.capability_hook = reconnect
+        journal = self.journal()
+        with self.assertRaisesRegex(PhysicalProgrammingError, "no PP SAVE was sent") as caught:
+            PhysicalProgramming(service).apply(
+                "//TEST/253/p/4", [("Value_direct", "0x02")], method="direct", journal=journal)
+        self.assertFalse(any("PP SAVE" in command for command in service.commands))
+        evidence = caught.exception.physical_programming_evidence
+        self.assertEqual(evidence["phase"], "save-generation-guard")
+        self.assertFalse(evidence["save_attempted"] or evidence["saved"])
+        self.assertEqual(evidence["save_attempts"], 0)
+        self.assertEqual(evidence["pci_generation_guard"]["before_save"]["observed"], 8)
+        document = json.loads(journal.read_text())
+        self.assertEqual(document["phase"], "save-uncertain")
+        self.assertEqual([row["phase"] for row in document["history"]],
+                         ["planned", "save-uncertain"])
+        self.assertEqual(document["ranges"], [{"index": 0, "store_state": "not-attempted"}])
+        self.assertEqual(document["nvm_commit"], "not-reached")
+        self.assertFalse(document["save_reply"]["sent"])
+        self.assertFalse(document["complete"] or document["resolved"])
+        # The unresolved journal refuses another save before any C-Gate I/O.
+        repeat = PhysicalService()
+        with self.assertRaisesRegex(PhysicalPPJournalError, "incomplete save"):
+            PhysicalProgramming(repeat).apply(
+                "//TEST/253/p/4", [("Value_direct", "0x02")], method="direct",
+                journal=self.journal())
+        self.assertEqual(repeat.commands, [])
+        recovery = PhysicalService()
+        report = PhysicalProgramming(recovery).recover(journal)
+        self.assertEqual(report["outcome"], "observed_unchanged")
+        self.assertTrue(report["read_only"] and report["conclusive"])
+        self.assertFalse(any(command.startswith(("PP SAVE", "PP SET"))
+                             for command in recovery.commands))
+
+    def test_generation_change_after_save_reply_is_uncertain_and_never_completed(self):
+        def changed(peer):
+            peer.capabilities["pci_generation"] = 8
+
+        def disconnected(peer):
+            peer.capabilities["pci_connected"] = False
+
+        def unreadable(peer):
+            raise CGateError(CGateResponse(("[1] 401 Bad object",), "[1] 401 Bad object", 401))
+
+        for name, effect in (("changed", changed), ("disconnected", disconnected),
+                             ("unreadable", unreadable)):
+            with self.subTest(name):
+                service = PhysicalService()
+                saved = {}
+
+                def hook(peer, effect=effect):
+                    if "save" in saved:
+                        effect(peer)
+                service.capability_hook = hook
+                original = service._save
+
+                def save(session, destination):
+                    saved["save"] = True
+                    return original(session, destination)
+                service._save = save
+                (self.journals / name).mkdir()
+                journal = self.journals / name / "attempt.json"
+                with self.assertRaisesRegex(PhysicalProgrammingError, "uncertain") as caught:
+                    PhysicalProgramming(service).apply(
+                        "//TEST/253/p/4", [("Value_direct", "0x02")], method="direct",
+                        journal=journal)
+                self.assertEqual(
+                    len([command for command in service.commands if "PP SAVE" in command]), 1)
+                # No fresh readback LOAD and no completion after an untrusted reply.
+                self.assertEqual(
+                    len([command for command in service.commands
+                         if command.startswith("PP LOAD ")]), 1)
+                evidence = caught.exception.physical_programming_evidence
+                self.assertTrue(evidence["save_attempted"] and evidence["save_outcome_uncertain"])
+                self.assertFalse(evidence["saved"] or evidence["complete"])
+                self.assertFalse(evidence["pci_generation_guard"]["after_reply"]["unchanged"])
+                document = json.loads(journal.read_text())
+                self.assertEqual([row["phase"] for row in document["history"]],
+                                 ["planned", "save-sent", "save-uncertain"])
+                self.assertEqual(document["ranges"], [{"index": 0, "store_state": "uncertain"}])
+                self.assertEqual(document["nvm_commit"], "uncertain")
+                self.assertFalse(document["save_reply"]["confirmed"])
+                self.assertFalse(document["complete"] or document["resolved"])
+                recovery = PhysicalService()
+                recovery.devices = service.devices
+                report = PhysicalProgramming(recovery).recover(journal)
+                self.assertEqual(report["outcome"], "observed_expected")
+                self.assertTrue(report["nvm_commit_uncertain"])
+                self.assertFalse(any(command.startswith(("PP SAVE", "PP SET"))
+                                     for command in recovery.commands))
 
     def test_rust_evidence_roster_matches_python_workflow(self):
         fixture = Path(__file__).resolve().parents[2] / "rust/testdata/fixtures/native_cgate_routed_pp_methods.json"

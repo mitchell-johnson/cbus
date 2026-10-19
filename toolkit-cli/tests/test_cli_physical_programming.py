@@ -69,11 +69,15 @@ class PhysicalProgrammingCLITests(unittest.TestCase):
             tagged(8, "200 OK"),
             tagged(9, "315 Value=0x02"),
             debug,
-            *(tagged(number, "200 OK") for number in range(11, 18)),
-            tagged(18, "343-Begin XML snippet", "347-" + schema, "344 End XML snippet"),
-            tagged(19, "315 Value=0x02"),
-            tagged(20, "200 OK"),
-            tagged(21, "200 OK"),
+            # The PCI generation guard brackets the single SAVE.
+            tagged(11, "200-" + cap, "200 OK"),
+            tagged(12, "200 OK"),
+            tagged(13, "200-" + cap, "200 OK"),
+            *(tagged(number, "200 OK") for number in range(14, 20)),
+            tagged(20, "343-Begin XML snippet", "347-" + schema, "344 End XML snippet"),
+            tagged(21, "315 Value=0x02"),
+            tagged(22, "200 OK"),
+            tagged(23, "200 OK"),
         ]
         journal = Path(self.enterContext(tempfile.TemporaryDirectory())) / "attempt.json"
         with peer(responses) as ((host, port), sent):
@@ -102,20 +106,22 @@ class PhysicalProgrammingCLITests(unittest.TestCase):
         self.assertEqual(commands[7], f'[8] PP SET {session} Value "0x02"')
         self.assertEqual(commands[8], f"[9] PP GET {session} Value")
         self.assertEqual(commands[9], f"[10] PP DEBUG mem {session} 20")
-        self.assertEqual(commands[10], f"[11] PP SAVE_TO_SOURCE {session}")
-        self.assertEqual(commands[11], f"[12] PP END {session}")
-        self.assertEqual(commands[12], f"[13] PP UNLOCK {write_lock}")
-        self.assertEqual(commands[13], "[14] PROJECT USE TEST")
-        verify = re.fullmatch(r"\[15\] PP LOCK (cbus_pp_[0-9a-f]{12}_verify_lock) //TEST/253", commands[14])
+        self.assertEqual(commands[10], "[11] CMQTT CAPABILITIES")
+        self.assertEqual(commands[11], f"[12] PP SAVE_TO_SOURCE {session}")
+        self.assertEqual(commands[12], "[13] CMQTT CAPABILITIES")
+        self.assertEqual(commands[13], f"[14] PP END {session}")
+        self.assertEqual(commands[14], f"[15] PP UNLOCK {write_lock}")
+        self.assertEqual(commands[15], "[16] PROJECT USE TEST")
+        verify = re.fullmatch(r"\[17\] PP LOCK (cbus_pp_[0-9a-f]{12}_verify_lock) //TEST/253", commands[16])
         self.assertIsNotNone(verify)
         verify_lock = verify[1]
         verify_session = verify_lock.removesuffix("_lock")
-        self.assertEqual(commands[15], f"[16] PP START {verify_session} {verify_lock}")
-        self.assertEqual(commands[16], f"[17] PP LOAD {verify_session} //TEST/253/p/4")
-        self.assertEqual(commands[17], f"[18] PP INFO {verify_session} *")
-        self.assertEqual(commands[18], f"[19] PP GET {verify_session} Value")
-        self.assertEqual(commands[19], f"[20] PP END {verify_session}")
-        self.assertEqual(commands[20], f"[21] PP UNLOCK {verify_lock}")
+        self.assertEqual(commands[17], f"[18] PP START {verify_session} {verify_lock}")
+        self.assertEqual(commands[18], f"[19] PP LOAD {verify_session} //TEST/253/p/4")
+        self.assertEqual(commands[19], f"[20] PP INFO {verify_session} *")
+        self.assertEqual(commands[20], f"[21] PP GET {verify_session} Value")
+        self.assertEqual(commands[21], f"[22] PP END {verify_session}")
+        self.assertEqual(commands[22], f"[23] PP UNLOCK {verify_lock}")
 
     def test_help_lists_all_methods_and_invalid_path_stops_before_connect(self):
         process = subprocess.run(

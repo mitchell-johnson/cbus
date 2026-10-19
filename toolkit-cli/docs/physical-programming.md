@@ -151,6 +151,18 @@ C-Gate connection or any other reply leaves every planned range `uncertain`.
 `nvm_commit` follows the same rules. A failed Save-to-NVM, such as a lost
 EXECUTE or a lost POLL after a running EXECUTE, is recorded as `uncertain`.
 
+The client also rechecks cmqttd's `pci_generation` immediately before the
+SAVE and after a 200 SAVE reply; `pci_generation_guard` records both reads.
+A save is refused before LOAD when the preflight reports no integer
+generation. A changed, missing or disconnected generation, or a failed
+capability read, moves the journal to `save-uncertain` with no completion,
+fresh readback or replay. Before the SAVE, nothing is sent: ranges become
+`not-attempted` and `save_reply.sent=false`. After the reply, every
+`possible` range and NVM commit becomes `uncertain`. Either way only
+read-only `recover` can resolve the journal. A failed SAVE reply is not
+rechecked; its cmqttd confirmed count already governs the states. This is
+an owned safety rule, not native C-Gate behavior.
+
 The client refuses a save before any C-Gate command in two cases:
 
 - The selected journal path already exists.
@@ -292,11 +304,14 @@ transcript of LOAD, one SAVE_TO_SOURCE and the fresh LOAD:
   pins the idle EXECUTE: the save commits with EXECUTE alone and no POLL.
 
 The peer's `drop_on=(phase, range_index)` interrupts a two-range save at each
-uncertain boundary. The boundaries are before a STORE is applied, after a STORE
-chunk is applied but before its ACK, after the final ACK but before the exact
-readback, between ranges (`direct` and page-crossing `paged`), at a second
-`goc2` range, at NVM EXECUTE, and after a running EXECUTE but before POLL.
-Each case asserts the following:
+uncertain boundary, for all ten methods: before a STORE is applied, after a
+multi-group STORE chunk is applied but before its ACK, after the final ACK
+but before the exact readback, between ranges (page-crossing for `paged`),
+and after the second range's STORE is applied. GIU resumes after each range
+before its readback, so its between-range drop lands on that resume and
+leaves range 0 unconfirmed. NCC cases also check that NVM is `not-reached`.
+Separate `ncc` cases drop at NVM EXECUTE, and after a running EXECUTE but
+before POLL. Each case asserts the following:
 
 - The peer captures the journal when the first STORE arrives, and it already
   says `save-sent`.

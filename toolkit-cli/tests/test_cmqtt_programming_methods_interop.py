@@ -1267,28 +1267,46 @@ def assert_read_only_recovery(run):
     assert len({row["connection"] for row in run.peer.wire_log}) >= 2
 
 
+# Every admitted method at every range boundary the scripted peer supports.
+# NVM EXECUTE/POLL boundaries apply only to an NCC specification and are
+# covered by the dedicated NVM test below.
+JOURNAL_BOUNDARIES = {
+    # boundary: (drop_on, multi-chunk first range, store states, classes, outcome)
+    "pre-send": (("pre-send", 0), False, ["uncertain", "not-attempted"],
+                 ["unchanged", "unchanged"], "observed_unchanged"),
+    # A multi-chunk first range applies only its first chunk.
+    "post-send-before-ack": (("post-send", 0), True, ["uncertain", "not-attempted"],
+                             ["mixed", "unchanged"], "observed_mixed"),
+    "post-ack-before-readback": (("post-ack", 0), False, ["uncertain", "not-attempted"],
+                                 ["expected", "unchanged"], "observed_partial"),
+    "between-ranges": (("between", 0), False, ["confirmed", "uncertain"],
+                       ["expected", "unchanged"], "observed_partial"),
+    "post-send-second-range": (("post-send", 1), False, ["confirmed", "uncertain"],
+                               ["expected", "expected"], "observed_expected"),
+}
+
+
+# GIU resumes (FC 03 01) after each range's final STORE and before its exact
+# readback, so the between-range trigger drops that resume: range 0 is
+# applied but unconfirmed, as at post-ack.
+JOURNAL_OVERRIDES = {
+    ("giu", "between-ranges"): (["uncertain", "not-attempted"], ["expected", "unchanged"],
+                                "observed_partial"),
+}
+
+
 def journal_cases():
-    return [
-        # (id, method, drop_on, first_size, expected store states, classifications)
-        pytest.param("direct", ("pre-send", 0), 2,
-                     ["uncertain", "not-attempted"], ["unchanged", "unchanged"],
-                     "observed_unchanged", id="pre-send"),
-        pytest.param("direct", ("post-send", 0), MULTI["direct"][1],
-                     ["uncertain", "not-attempted"], ["mixed", "unchanged"],
-                     "observed_mixed", id="post-send-before-ack"),
-        pytest.param("direct", ("post-ack", 0), 2,
-                     ["uncertain", "not-attempted"], ["expected", "unchanged"],
-                     "observed_partial", id="post-ack-before-readback"),
-        pytest.param("direct", ("between", 0), 2,
-                     ["confirmed", "uncertain"], ["expected", "unchanged"],
-                     "observed_partial", id="between-ranges"),
-        pytest.param("paged", ("between", 0), MULTI["paged"][1],
-                     ["confirmed", "uncertain"], ["expected", "unchanged"],
-                     "observed_partial", id="paged-between-ranges"),
-        pytest.param("goc2", ("post-send", 1), 2,
-                     ["confirmed", "uncertain"], ["expected", "expected"],
-                     "observed_expected", id="goc2-post-send-second-range"),
-    ]
+    cases = []
+    for method in METHODS:
+        for boundary, (drop_on, multi, states, classes, outcome) in JOURNAL_BOUNDARIES.items():
+            states, classes, outcome = JOURNAL_OVERRIDES.get(
+                (method, boundary), (states, classes, outcome))
+            # Paged between-range drops keep the page-crossing first range.
+            multi = multi or (method == "paged" and boundary == "between-ranges")
+            first_size = MULTI[method][1] if multi else 2
+            cases.append(pytest.param(method, drop_on, first_size, states, classes, outcome,
+                                      id=f"{method}-{boundary}"))
+    return cases
 
 
 @needs_cmqttd
@@ -1311,7 +1329,8 @@ def test_interrupted_save_journal_and_read_only_recovery(
     assert [row["store_state"] for row in document["ranges"]] == states
     assert document["save_reply"]["server_reply"]
     assert document["save_reply"]["confirmed_writes_reported"] == states.count("confirmed")
-    assert document["nvm_commit"] == "not-required"
+    # An NCC specification needs Save-to-NVM, which no range boundary reaches.
+    assert document["nvm_commit"] == ("not-reached" if method == "ncc" else "not-required")
     ranges = document["plan"]["ranges"]
     assert [row["parameter"] for row in ranges] == [param.name for param in params]
     assert [(row["logical_address"], row["length"]) for row in ranges] == [
