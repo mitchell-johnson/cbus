@@ -12,13 +12,13 @@
   },
   "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
   "binary": {
-    "path": "/private/var/folders/8t/bnm3x3vs64vcv_mfr2ry767m0000gn/T/opencode/verify-145/rust/target/debug/cgate-mock",
-    "sha256": "d8533ca288b80806e8bc70302502604e3bc88c5ccefc2f7ab642138096ce76f2"
+    "path": "/home/claude/cbus/rust/target/debug/cgate-mock",
+    "sha256": "cc75caf821dcaab17a7eb846675b7d475123f72ccc2242237f9b81a080aad0fe"
   },
-  "source_revision": "bfcf47af908e65b9af0958490087f7133a615109",
+  "source_revision": "5dd64deb826605a27521ea121b159cde68cb39d3",
   "source_fingerprint": {
     ".github/workflows/ci.yml": "1af80cae0dba93ddf30f79907349dd57df3d71f2cbbb9e4438f645441cee5230",
-    "docs/cmqttd-cgate.md": "12a6251657c7151b7bb882aa5ba53b1b29dc2f2daf436eff1923684c32e96c99",
+    "docs/cmqttd-cgate.md": "36017b711323416cd484693664fd9018316c964e675bf1810c0d9549c011fa05",
     "rust/Cargo.lock": "c137cde220381baa85eb156702e7bad75c3793410d9ce2e67cef6bf7f289aea0",
     "rust/Cargo.toml": "94a27eaadadeb233c09fb3fb65980d26cbfdb13df8f69c4573e5244f904c8e99",
     "rust/cbus-cgate/Cargo.toml": "8c41eff6ed4981efdb5af9dc83244b88f856121e5bd5b3bea5f4ad90c8a5fb33",
@@ -44,7 +44,7 @@
     "rust/cbus-cgate/src/dlt_profiles.rs": "80f501361559e3a4fe05b9362886085262b33099065c2311e26f04ce2df7456a",
     "rust/cbus-cgate/src/etherlite.rs": "434bfa85e3455e97a2ac5990489a23b79dd6bdae3fb41a89adc423c2ffed0381",
     "rust/cbus-cgate/src/file.rs": "fa7bf61d164bac03db899af81fa7685a9e95c1e05ffb9ae93ade0514f9095d7a",
-    "rust/cbus-cgate/src/lib.rs": "db73dbd81e8b6ad8c91b0d9afeefd0d11f218f4f7f2860bcddaa82c7762a5572",
+    "rust/cbus-cgate/src/lib.rs": "993babb4e8c52997f768be21b3cf196d22c8bc72564766d5c5d4e23ff527f83b",
     "rust/cbus-cgate/src/main.rs": "d779d68863b8b4533d47e1cf7b42387fc9c88666bf41297c0b3e358f0854a799",
     "rust/cbus-cgate/src/manual.rs": "11d52212e2f4eebc90a0c5d517d6f75d2db52fcfe2b7f637eda635be7c910c59",
     "rust/cbus-cgate/src/mock_delivery.rs": "bff9e04be12189de046207f3fde661b33521736587985757b6c47a3bc78d738e",
@@ -72,7 +72,7 @@
     "rust/cbus-cgate/src/service/pp_patch.rs": "6a1dc32d0dd359b0c11268cf717275bddf6fac2652ad40b87cc7756c9fb05aa3",
     "rust/cbus-cgate/src/service/repository_io.rs": "b7308178b6c1644b0006f26537c9bd734b4e7d8db1ce8c85a55a5f37a4e312a6",
     "rust/cbus-cgate/src/service/tests/issue74_associated_corrections.rs": "5d3da5d9f7f03de2cb73edb8f51b87651727e22cdd37486d32b2314d82602842",
-    "rust/cbus-cgate/src/service/tests/named_database_workflows.rs": "6e20d4c5afb23e26f9f51d67b706840aa420325f73314c8570a45fdb4688b9e5",
+    "rust/cbus-cgate/src/service/tests/named_database_workflows.rs": "0785312b42875527bc56e71a65f914172ba74e4a6d7571a5719b9846a0635138",
     "rust/cbus-cgate/src/service/tests/net_db_load.rs": "fa730221703ca30dd4d625c261fa0797ac3167c6d8c28d4861b8dccd66b3ef96",
     "rust/cbus-cgate/src/service/tests/net_save_db.rs": "44299f74768feff37e6b757e19f5c8f6d8460a6a37f62e3825847700c4e59c0d",
     "rust/cbus-cgate/src/service/tests/net_save_db_physical_alias.rs": "9094fd8d28a5b21edf163d77702888b88e54551fb5c26dd2d35515346e269ca5",
@@ -85,7 +85,7 @@
     "rust/cbus-cgate/src/service/unravel_plan.rs": "943e0edea7e23ce0a5b33851f09dbf595570562bb1247d23b66503bd1a3661eb",
     "rust/cbus-cgate/src/service.rs": "b9205f218241b57869530ea5bf276a301429a389fb40090474841586c75ad9ed",
     "rust/cbus-cgate/src/show.rs": "9e9b0aa36c826acd780f3c5f4f23c3b4c02ac097f76f22dc5daddcb074afdb0c",
-    "rust/cbus-cgate/src/tag_network.rs": "d1a441c660d06f81664f91f112810e369de1cc5fdf7a74268610299333cee766",
+    "rust/cbus-cgate/src/tag_network.rs": "4e49785d77b98d7b5335109ebd6a8cd22cfdf7ff158d708a5b1a642eb82f046b",
     "rust/cbus-cgate/src/unitspec.rs": "cff5a484bd15d2fc3c94d5b14a0075f10c3eca76a25d39fdd60f27e17276a539",
     "rust/cbus-cgate/tests/server.rs": "5b1cd6bd965e5affafbb1e54734289ba72fa64d75f7297ca201c76d2a851eddf",
     "rust/cbus-cgate/tests/tcp.rs": "4ac01905b998ff0b8a8bc8a77e0974ecaebb9f6023fa5a38e96d8c3bbb71e0db",
@@ -193,6 +193,7 @@
     "rust/testdata/fixtures/project.xml": "15eb06a6ce7c96b88baa77d240e66b90559bb85f5f594e454b7cd18fd8a1c9c1",
     "rust/testdata/vectors/cgate_application_safe_set.json": "5898d50fd7dd161cd50d27dc68cbe603274493b455c821b66428bbbd044e1ad1",
     "rust/testdata/vectors/cgate_associated_numeric_copy.jsonl": "1fbe5fa741ba58775902a7f48fa7e819c9d01a6f06bd73e4956c25f4c20bf619",
+    "rust/testdata/vectors/cgate_associated_numeric_level_object_matrix.jsonl": "666f7dd65910056aa31a82a76addbfec5dc2346f1b57d88c98b5eee33d0284b6",
     "rust/testdata/vectors/cgate_associated_raw_level_value.json": "909bf2fbba2997f62f5b0b07d4f4f8ddcc3e4764caa4837e90cbf593946138e5",
     "rust/testdata/vectors/cgate_barcode_unit_initialization.json": "bbc057dd7cb695daf4c0cd5086e74376e4a4a6ccd0e55ddb315a829c352f5ada",
     "rust/testdata/vectors/cgate_convertunit_database.json": "0c7f8754fd16075c19581c24848e5dd9d8068e554d9c927756b03e14dfaf5ca2",
@@ -627,5 +628,5 @@
   "wire_equal": 12,
   "combined_network_passed": 2,
   "result": "passed",
-  "command": "/private/var/folders/8t/bnm3x3vs64vcv_mfr2ry767m0000gn/T/opencode/verify-145/toolkit-cli/.venv/bin/python research/cgate_dbsetxml_unit_differential.py --mock-bin /private/var/folders/8t/bnm3x3vs64vcv_mfr2ry767m0000gn/T/opencode/verify-145/rust/target/debug/cgate-mock --cmqttd-bin /private/var/folders/8t/bnm3x3vs64vcv_mfr2ry767m0000gn/T/opencode/verify-145/rust/target/debug/cmqttd --output-dir research/fixtures"
+  "command": "/home/claude/cbus/toolkit-cli/.venv/bin/python research/cgate_dbsetxml_unit_differential.py --mock-bin /home/claude/cbus/rust/target/debug/cgate-mock --cmqttd-bin /home/claude/cbus/rust/target/debug/cmqttd --output-dir research/fixtures"
 }

@@ -50,9 +50,9 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 822,
-    "modules_without_skip_sites": 493,
-    "modules_with_skip_sites": 329,
+    "test_modules": 824,
+    "modules_without_skip_sites": 494,
+    "modules_with_skip_sites": 330,
     "modules_by_category": {
       "cgate_test_host": 133,
       "external_cgate_project": 1,
@@ -66,7 +66,7 @@
       "private_evidence_input": 4,
       "private_vendor_tree": 8,
       "runtime_capability": 6,
-      "rust_binaries": 15,
+      "rust_binaries": 16,
       "unclassified": 41,
       "unit_specs": 148,
       "vendor_firmware": 4,
@@ -75,7 +75,7 @@
     "native_modules": {
       "all": 140,
       "partial": 20,
-      "none": 169
+      "none": 170
     },
     "native_runnable_tests": 259,
     "native_selected_required_tests": 259,
@@ -308,6 +308,42 @@
           ],
           "offline": "skips",
           "native": "runs"
+        }
+      ]
+    },
+    "tests/test_cgate_application_description_interop.py": {
+      "categories": [
+        "rust_binaries"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_cgate_application_description_interop.py::test_application_description_xml_roundtrip_vector",
+          "kind": "body.call",
+          "condition": "not supplied",
+          "reason": "Select  for the owned Application Description XML round trip",
+          "environment": [
+            "CBUS_CGATE_MOCK_BIN",
+            "CBUS_CMQTTD_BIN"
+          ],
+          "categories": [
+            "rust_binaries"
+          ],
+          "offline": "unknown",
+          "native": "unknown"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "rust_binaries"
+          ],
+          "tests": [
+            "test_application_description_xml_roundtrip_vector"
+          ]
         }
       ]
     },
