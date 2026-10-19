@@ -80,6 +80,7 @@ LOCAL_PCI = 16
 ROUTES = {
     "local": (),
     "one-bridge": (253,),
+    "two-bridges": (253, 252),
     "six-bridges": (253, 252, 251, 250, 249, 248),
 }
 # Every admitted method crosses the longest admitted route with a multi-chunk
@@ -929,6 +930,15 @@ ROUTE_CASES = [
       for method in METHODS),
     *(pytest.param(method, "six-bridges", MULTI[method][1], id=f"{method}-six-bridges-multi")
       for method in SIX_BRIDGE_METHODS),
+    # Narrow P4.01 slice: intermediate two-bridge routing for one GOC-family
+    # method; scripted peer only, no hardware.
+    pytest.param("gocbyt", "two-bridges", MULTI["gocbyt"][1],
+                 id="gocbyt-two-bridges-multi"),
+    # P4.01 single: GOC over the longest admitted route. Wire behavior
+    # matches the gocbyt family representative, pinning the goc
+    # address/CAL-selector path instead; scripted peer only, no hardware.
+    pytest.param("goc", "six-bridges", MULTI["goc"][1],
+                 id="goc-six-bridges-multi"),
 ]
 
 
@@ -1017,10 +1027,15 @@ DISCONNECT_CASES = [
     pytest.param("direct", "one-bridge", 2, id="direct"),
     pytest.param("paged", "one-bridge", MULTI["paged"][1], id="paged-multi"),
     pytest.param("ncc", "local", MULTI["ncc"][1], id="ncc-local-multi"),
+    pytest.param("ncc", "one-bridge", MULTI["ncc"][1], id="ncc-one-bridge-multi"),
     pytest.param("giu", "one-bridge", MULTI["giu"][1], id="giu-multi"),
+    pytest.param("dali", "one-bridge", MULTI["dali"][1], id="dali-one-bridge-multi"),
     pytest.param("edlt", "local", MULTI["edlt"][1], id="edlt-local-multi"),
     pytest.param("gocbyt", "six-bridges", MULTI["gocbyt"][1], id="gocbyt-six-bridges-multi"),
     pytest.param("goc2", "one-bridge", MULTI["goc2"][1], id="goc2-multi"),
+    pytest.param("gocbyt", "one-bridge", MULTI["gocbyt"][1], id="gocbyt-one-bridge-multi"),
+    pytest.param("gocbyt", "two-bridges", MULTI["gocbyt"][1], id="gocbyt-two-bridges-multi"),
+    pytest.param("goc", "six-bridges", MULTI["goc"][1], id="goc-six-bridges-multi"),
 ]
 
 

@@ -267,5 +267,177 @@ class KeyglHydraBoundaryTests(unittest.TestCase):
                 self.assertEqual(leaked, [])
 
 
+class SoftwareConfigGuardTests(unittest.TestCase):
+    def test_split_software_config_length_guard(self):
+        short = "5031NL" + " " * 10 + "12345678901"  # 27 chars: one below the 28-char minimum
+        self.assertEqual(len(short), model.SOFTWARE_CONFIG_MIN_LENGTH - 1)
+        with self.assertRaises(BarcodeError) as caught:
+            model.split_software_config(short)
+        self.assertEqual(caught.exception.details["code"], "wrong_barcode")
+        with self.assertRaises(BarcodeError) as empty:
+            model.split_software_config("")
+        self.assertEqual(empty.exception.details["code"], "wrong_barcode")
+        config = model.split_software_config(CONFIG)
+        self.assertEqual(len(CONFIG), model.SOFTWARE_CONFIG_MIN_LENGTH)
+        self.assertEqual((config.catalog_field, config.serial), ("5031NL", "123456789012"))
+        self.assertEqual(config.as_dict()["barcode"], CONFIG)
+
+
+class FormatSerialDirectTests(unittest.TestCase):
+    def test_format_serial_dotted_and_undotted_padding(self):
+        # CIS_CBus.FormatSerialNumber (barcode_scanner.py:format_serial): keep
+        # digits/dots only, then pad. Dotless inputs pad to 12 and split 8.4
+        # when dotted; dotted inputs pad left to 8 and right to 4 separately
+        # (split on the first dot only, no truncation). Expectations below are
+        # computed from the recovered routine and cross-checked against the
+        # displayable/set-serial original vectors.
+        cases = [
+            ("123456789012", "123456789012", "12345678.9012"),
+            ("0", "000000000000", "00000000.0000"),
+            ("", "000000000000", "00000000.0000"),
+            ("1234.5", "000012340005", "00001234.0005"),
+            ("1.2", "000000010002", "00000001.0002"),
+            ("1048575.4095", "010485754095", "01048575.4095"),
+            ("12.34.56", "0000001234.56", "00000012.34.56"),
+            ("abc12x", "000000000012", "00000000.0012"),
+            ("  12-34  ", "000000001234", "00000000.1234"),
+            ("12345678901234", "12345678901234", "1234567890.1234"),
+            ("123456789.12345", "12345678912345", "123456789.12345"),
+            (".", "000000000000", "00000000.0000"),
+            ("00000000.0000", "000000000000", "00000000.0000"),
+        ]
+        for text, undotted, dotted in cases:
+            with self.subTest(text=text):
+                self.assertEqual(model.format_serial(text, dotted=False), undotted)
+                self.assertEqual(model.format_serial(text, dotted=True), dotted)
+        with self.assertRaises(TypeError):
+            model.format_serial(b"123456789012", dotted=False)
+        with self.assertRaises(BarcodeError) as caught:
+            model.format_serial("123\U0001F600", dotted=True)
+        self.assertEqual(caught.exception.details["code"], "non_bmp_input")
+
+
+class DelphiTrimAsciiUpperDirectTests(unittest.TestCase):
+    def test_delphi_trim_and_ascii_upper_match_sysutils_not_python(self):
+        # SysUtils.Trim (barcode_scanner.py:_delphi_trim): every code unit
+        # <= U+0020 is stripped from both ends, nothing above. Python
+        # str.strip() also strips U+00A0 and other Unicode whitespace, so a
+        # naive refactor to .strip() breaks catalogue/serial parity.
+        # SysUtils.UpperCase (barcode_scanner.py:_ascii_upper): ASCII a-z only;
+        # Python .upper() would also fold e.g. e-acute and sharp-s.
+        trim_cases = [
+            ("", ""),
+            ("Hello", "Hello"),
+            ("  Hello  ", "Hello"),
+            ("\x00\x01 \t\n\x1fHello\x20\x1f\t \x00", "Hello"),
+            ("\x0b\x0cHello\x0b\x0c", "Hello"),
+            ("\x00 \t\n\r\x1f ", ""),
+            ("  A\x00B  ", "A\x00B"),
+            ("\xa0Hello\xa0", "\xa0Hello\xa0"),
+            ("  \xa0Hello\xa0  ", "\xa0Hello\xa0"),
+            ("\u2003Hello\u2003", "\u2003Hello\u2003"),
+        ]
+        for text, expected in trim_cases:
+            with self.subTest(text=text):
+                self.assertEqual(model._delphi_trim(text), expected)
+        # The NBSP case is the load-bearing divergence: str.strip() disagrees.
+        self.assertEqual("\xa0Hello\xa0".strip(), "Hello")
+        self.assertNotEqual(model._delphi_trim("\xa0Hello\xa0"), "\xa0Hello\xa0".strip())
+        upper_cases = [
+            ("", ""),
+            ("5031nl", "5031NL"),
+            ("aBcZ09-*;", "ABCZ09-*;"),
+            ("ABCZ", "ABCZ"),
+            ("caf\u00e9", "CAF\u00e9"),
+            ("\u00e9\u00c9\u00df", "\u00e9\u00c9\u00df"),
+        ]
+        for text, expected in upper_cases:
+            with self.subTest(text=text):
+                self.assertEqual(model._ascii_upper(text), expected)
+        # Non-ASCII fold is the divergence: str.upper() would change e-acute/sharp-s.
+        self.assertEqual("caf\u00e9".upper(), "CAF\u00c9")
+        self.assertNotEqual(model._ascii_upper("caf\u00e9"), "caf\u00e9".upper())
+        self.assertEqual("\u00df".upper(), "SS")
+        self.assertEqual(model._ascii_upper("\u00df"), "\u00df")
+
+
+class TitleValueOwnMatchCheckTextDirectTests(unittest.TestCase):
+    def test_title_value_own_match_check_text_pure_string_rules(self):
+        # Direct pins for barcode_scanner.py:_check_text (line 110),
+        # _title_value (line 280) and _own_match (line 288): pure string
+        # logic with no catalogue/project fixtures. Previously only
+        # _alternates_match plus trim/upper were directly pinned; these
+        # three were covered only indirectly via parse/find/family.
+        # _check_text: identity for BMP str, TypeError otherwise, BarcodeError
+        # for any non-BMP character (Delphi UTF-16 model rejects them).
+        for text in ("", "abc", "  12-34  ", "\uffff", "Family=Wired;X"):
+            with self.subTest(check_text=text):
+                self.assertEqual(model._check_text(text), text)
+        for bad, name in ((b"x", "bytes"), (None, "NoneType"), (123, "int"), (["x"], "list")):
+            with self.subTest(bad=name):
+                with self.assertRaises(TypeError):
+                    model._check_text(bad)
+        for text in ("\U0001F600", "\U00010000", "a\U0001F600b"):
+            with self.subTest(non_bmp=text):
+                with self.assertRaises(BarcodeError) as caught:
+                    model._check_text(text)
+                self.assertEqual(caught.exception.details["code"], "non_bmp_input")
+        # _title_value: case-insensitive key search, value is the original
+        # slice after len(key), truncated at the first ';', Delphi-trimmed.
+        title_cases = [
+            (("Family=Wired;Category=Test", "Family="), "Wired"),
+            (("family=wired;Category=Test", "Family="), "wired"),
+            (("FAMILY=Wired", "family="), "Wired"),
+            (("Category=Test", "Family="), ""),
+            (("", "Family="), ""),
+            (("Family=  Wired  ;Category=X", "Family="), "Wired"),
+            (("Family=\x00 Wired \x1f;Q=1", "Family="), "Wired"),
+            (("Family=\xa0Wired\xa0;Category=X", "Family="), "\xa0Wired\xa0"),
+            (("Family=Wired extra", "Family="), "Wired extra"),
+            (("Family=;Category=X", "Family="), ""),
+            (("XFamily=Y", "Family="), "Y"),
+            (("Family=A;Family=B", "Family="), "A"),
+        ]
+        for (title, key), expected in title_cases:
+            with self.subTest(title=title, key=key):
+                self.assertEqual(model._title_value(title, key), expected)
+        # NBSP is the load-bearing trim divergence: str.strip() would remove
+        # it, Delphi trim preserves it.
+        self.assertEqual("\xa0Wired\xa0".strip(), "Wired")
+        self.assertNotEqual(model._title_value("Family=\xa0Wired\xa0;Q=1", "Family="),
+                            "\xa0Wired\xa0;Q=1".strip().split(";")[0].strip())
+        # _own_match: catalogue side is ASCII-folded and truncated; the code
+        # side is compared as-is (callers such as BarcodeCatalog.find fold it
+        # first). ',' wins over '-' wins over '*'; only '*' allows a prefix
+        # match and only when the truncated prefix is nonempty.
+        own_cases = [
+            (("5031NL", "5031NL"), True),
+            (("5031nl", "5031NL"), True),
+            (("5031NL", "5031nl"), False),
+            (("L5504D1A,B", "L5504D1A"), True),
+            (("L5504D1A,B", "L5504D1A,B"), False),
+            (("5500SHAC-2", "5500SHAC"), True),
+            (("5500SHAC-2", "5500SHAC-2"), False),
+            (("5500SHAC-*", "5500SHAC"), True),
+            (("E3031D*", "E3031DZZ"), True),
+            (("E3031D*", "E3031D"), True),
+            (("E3031D*", "E3031"), False),
+            (("A-B,C", "A-B"), True),
+            (("A-B,C", "A"), False),
+            (("5500SHAC-*,X", "5500SHAC"), False),
+            (("5500SHAC-*,X", "5500SHAC-*"), True),
+            (("*", ""), True),
+            (("*", "X"), False),
+            (("caf\u00e9", "CAF\u00e9"), True),
+            (("caf\u00e9", "CAF\u00c9"), False),
+            (("5031NL", "5031NLX"), False),
+            (("", ""), True),
+            (("", "X"), False),
+        ]
+        for (catalog, code), expected in own_cases:
+            with self.subTest(catalog=catalog, code=code):
+                self.assertEqual(model._own_match(catalog, code), expected)
+
+
 if __name__ == "__main__":
     unittest.main()

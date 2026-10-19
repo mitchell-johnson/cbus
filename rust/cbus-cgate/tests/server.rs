@@ -6534,3 +6534,63 @@ mod native_project_archive {
         );
     }
 }
+
+/// Owned refusal (#24): one Group OID reused under two Applications of a
+/// complete Network replacement is an unsupported duplicate typed-container
+/// shape. The whole document refuses with 409 and leaves the graph intact.
+#[test]
+fn dbsetxml_duplicate_group_oid_across_applications_refuses_atomically() {
+    let vector: serde_json::Value = serde_json::from_str(
+        include_str!("../../testdata/vectors/cgate_dbsetxml_duplicate_group_oid_refusal.jsonl")
+            .lines()
+            .next()
+            .unwrap(),
+    )
+    .unwrap();
+    assert_eq!(vector["shape"], "duplicate-group-oid-across-applications");
+    let mut server = Server::new(AccessLevel::Program);
+    assert_eq!(server.handle("[1] PROJECT NEW XDUPG").status, 200);
+    assert_eq!(
+        server
+            .handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:1")
+            .status,
+        200
+    );
+    let initial = server.handle("[3] DBGETXML //XDUPG/254");
+    assert_eq!(initial.status, 200, "{initial:?}");
+    let network = initial.lines[0].strip_prefix("347-").unwrap().to_string();
+    let duplicate = vector["duplicate_oid"].as_str().unwrap();
+    let group = vector["group_address"].as_u64().unwrap();
+    let applications = vector["application_addresses"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .enumerate()
+        .map(|(index, address)| {
+            format!(
+                "<Application><OID>7777777{index}-7777-4777-8777-777777777777</OID><TagName>App{address}</TagName><Address>{address}</Address><Group><OID>{duplicate}</OID><TagName>Shared</TagName><Address>{group}</Address></Group></Application>"
+            )
+        })
+        .collect::<String>();
+    let document = network.replacen("</Network>", &format!("{applications}</Network>"), 1);
+    assert_ne!(document, network);
+    let refused = server.handle_document(
+        &format!("[4] DBSETXML {}", vector["target"].as_str().unwrap()),
+        &document,
+    );
+    assert_eq!(
+        u64::from(refused.status),
+        vector["expected_status"].as_u64().unwrap(),
+        "{refused:?}"
+    );
+    assert!(
+        refused
+            .final_text
+            .contains(vector["error"].as_str().unwrap()),
+        "{refused:?}"
+    );
+    assert_eq!(
+        server.handle("[5] DBGETXML //XDUPG/254").lines,
+        initial.lines
+    );
+}

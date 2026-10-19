@@ -1,9 +1,13 @@
-"""Consume the associated numeric Level object-XML matrix (#73).
+"""Numeric Level vector contracts (#73, #74, #131) stay pinned.
 
-The matrix is an owned-model contract inferred from retained imported
-original shapes. These checks pin its internal consistency and bind every
-cited original case to its committed fixture bytes; they do not establish
-renamed-associated, bare-selector or hardware acceptance.
+The associated numeric Level object-XML matrix is an owned-model contract
+inferred from retained imported original shapes. These checks pin its
+internal consistency and bind every cited original case to its committed
+fixture bytes; they do not establish renamed-associated, bare-selector or
+hardware acceptance. The remaining checks validate the checked-in JSONL wire
+vectors without a backend: ordinary typed SAFE ownership (#131), the
+associated qualified/bare Level matrix and parent-object rename controls
+(#73), and canonical numeric COPY (#74).
 """
 
 from __future__ import annotations
@@ -91,3 +95,70 @@ def test_cited_original_cases_match_committed_fixture_bytes():
             assert lines == [f"[{tag}] 500 Internal error.\r\n"]
         by_kind[kind] += 1
     assert by_kind == {"Group": 10, "NetVar": 4}
+
+
+ORDINARY = ROOT / "rust/testdata/vectors/cgate_ordinary_numeric_level_value.jsonl"
+LEVEL_MATRIX = ROOT / "rust/testdata/vectors/cgate_associated_numeric_level_matrix.jsonl"
+PARENT_OBJECT_MATRIX = ROOT / "rust/testdata/vectors/cgate_associated_numeric_level_parent_object_matrix.jsonl"
+COPY = ROOT / "rust/testdata/vectors/cgate_associated_numeric_copy.jsonl"
+
+
+def _rows(path):
+    return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+
+
+def test_ordinary_numeric_level_value_vector_pins_typed_owner():
+    rows = _rows(ORDINARY)
+    assert len(rows) == 13
+    assert all(row["format"] == "cbus-ordinary-numeric-level-value-v1" for row in rows)
+    assert all(row["issue"] == 131 for row in rows)
+    by_request = {row["request"]: row for row in rows}
+    assert by_request["DBSETSAFE //T131/254/80/8/4/Value 99"]["status"] == 200
+    assert by_request["DBSETSAFE //T131/254/80/8/4/Value oops"]["status"] == 400
+    assert by_request["DBSET //T131/254/80/8/4/Value oops"]["status"] == 408
+    assert by_request["DBSETSAFE //T131/254/80/8/9/Value 99"]["status"] == 401
+    assert "no unique owner" in by_request["DBSETSAFE //T131/254/80/8/9/Value 99"]["body"]
+    assert by_request["DBSETSAFE //OTHER/254/80/8/4/Value 99"]["status"] == 404
+    assert "Project not selected" in by_request["DBSETSAFE //OTHER/254/80/8/4/Value 99"]["body"]
+    assert by_request["DBSETSAFE //T131/254/81/8/4/Value 99"]["status"] == 200
+
+
+def test_associated_level_matrix_pins_qualified_bare_contract():
+    rows = _rows(LEVEL_MATRIX)
+    assert len(rows) == 8
+    qualified = [row for row in rows if row["form"] == "qualified"]
+    bare = [row for row in rows if row["form"] == "bare"]
+    assert len(qualified) == 4 and len(bare) == 4
+    assert all(row["status"] == 404 and row["wire"] == 404 for row in bare)
+    group = [row for row in qualified if "group" in row["owner"]]
+    netvar = [row for row in qualified if "netvar" in row["owner"]]
+    assert all(row["status"] == 200 and row["wire"] == 344 for row in group)
+    assert all(row["status"] == 500 and row["wire"] == 500 for row in netvar)
+
+
+def test_associated_object_matrix_pins_rename_controls():
+    rows = _rows(PARENT_OBJECT_MATRIX)
+    assert len(rows) == 12
+    assert all(row["format"] == "cbus-associated-numeric-level-object-matrix-v1" for row in rows)
+    lexical = [row for row in rows if row["form"] == "qualified-lexical"]
+    assert len(lexical) == 4
+    assert all(row["status"] == 200 and row["wire"] == 344 for row in lexical)
+    assert {(row["request"], row["owner"]) for row in lexical} == {
+        ("DBGETXML //ASSOC/Renamed/56/1", "plain-group"),
+        ("DBGETXML //ASSOC/Renamed/56/1", "completed-group"),
+        ("DBGETXML //ASSOC/Renamed/56/4", "plain-netvar"),
+        ("DBGETXML //ASSOC/Renamed/56/4", "completed-netvar"),
+    }
+
+
+def test_associated_numeric_copy_pins_canonical_destinations():
+    rows = _rows(COPY)
+    assert len(rows) == 8
+    assert all(row["format"] == "cbus-associated-numeric-copy-v1" for row in rows)
+    assert all(row["issue"] == 74 for row in rows)
+    by_request = {row["request"]: row for row in rows}
+    assert by_request["DBCOPYSAFE !<source-Level-OID> //LAB/11/56/1 12 NumericCopy"]["status"] == 301
+    assert by_request["DBCOPY !<source-Level-OID> //LAB/11/56/1"]["status"] == 301
+    assert by_request["DBCOPYSAFE //LAB/Renamed/56/1/9 //LAB/11/56/1 13 NumericLexicalCopy"]["status"] == 301
+    assert by_request["DBCOPYSAFE !<source-Level-OID> //LAB/11/56/9 15 Ghost"]["status"] == 401
+    assert by_request["DBCOPYSAFE !<raw-Level-OID> //LAB/11/56/1 16 RawCopy"]["status"] == 408

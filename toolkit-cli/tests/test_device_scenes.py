@@ -121,6 +121,23 @@ class DeviceSceneTest(unittest.TestCase):
             with self.subTest(table=table[:4]),self.assertRaises(DeviceSceneError):
                 self.editor.plan(dict(self.current,SceneTable=table),scene=1,entries=[])
 
+    def test_compact_packed_few_scenes_require_explicit_migration(self):
+        # P7.02 resident-scene codec edge: at most four populated scenes must
+        # use the fixed 20-byte stride. A compact-packed two-scene image is
+        # well-formed per-slot but noncanonical; it needs explicit migration
+        # and is never silently normalized. Synthetic peer only, no I/O.
+        table = (10, 100, 11, 101) + (255,) * 76
+        compact = (162, 164) + (255,) * 6
+        with self.assertRaisesRegex(DeviceSceneError, 'explicit migration'):
+            self.editor.inspect(dict(self.current, SceneTable=table, SceneTablePointer=compact))
+        with self.assertRaisesRegex(DeviceSceneError, 'explicit migration'):
+            self.editor.plan(dict(self.current, SceneTable=table, SceneTablePointer=compact), scene=1, entries=[])
+        canonical = after(self.editor.plan(self.current, scene=1, entries=[SceneEntry(10, 100)]))
+        canonical = after(self.editor.plan(canonical, scene=2, entries=[SceneEntry(11, 101)]))
+        self.assertEqual(canonical['SceneTable'][:4], (10, 100) + (255,) * 2)
+        self.assertEqual(canonical['SceneTablePointer'], (162, 182, 202, 222, 255, 255, 255, 255))
+        self.assertEqual(self.editor.inspect(canonical)['commands_used'], 2)
+
     def test_block_join_and_shared_trigger_dependencies(self):
         opts={'scene':1,'key':1,'ramp_rate':0,'action_selector':0}
         with self.assertRaisesRegex(DeviceSceneError,'relocation'):

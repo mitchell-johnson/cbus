@@ -189,6 +189,9 @@ def verify_journal(path):
     if value.get("format") == "cbus-selected-serial-apply-v2":
         from .rust_serial_reconcile import verify_rust_journal
         return verify_rust_journal(path, raw, value)
+    if value.get("format") == "cbus-legacy-address-result-v1":
+        from .legacy_reconcile import verify_legacy_journal
+        return verify_legacy_journal(path, raw, value)
     if value.get("format") != "cbus-selected-serial-result-v1":
         raise ReconcileError("Unsupported selected-serial journal format")
     try:
@@ -856,7 +859,12 @@ class CGateDatabase:
             document = ProjectDocument.from_bytes(text.encode())
             if _field(document.project, "Address") not in (backup, self.project):
                 raise ReconcileError("Backup readback names a different project")
-            document.update("/", {"Address": self.project})
+            names = {"Address": self.project}
+            if _field(document.project, "TagName") == backup:
+                # PROJECT COPY renames the repository identity (TagName and
+                # Address); normalize both back before comparing content.
+                names["TagName"] = self.project
+            document.update("/", names)
             self._closed(document, project=backup)
             digest = _project_digest(document)
             if digest != record.value["cgate"]["before_project_sha256"]:

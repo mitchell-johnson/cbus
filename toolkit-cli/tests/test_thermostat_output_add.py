@@ -126,6 +126,17 @@ class OutputAddTests(unittest.TestCase):
         self.assertEqual(p.output_expected['HeatStage2Output'], 2)
         self.assertEqual(validate_remote_plan(self.store, p), p)
 
+    def test_inherited_special_applications_stay_outside_output_lane(self):
+        # thermostat_output_groups.py:130-134 admits only 48..95 or 203;
+        # research/thermostat_quick_zone_initialization_static.py:117 records
+        # the bare ('115', '116') relay-tag literals for the quick-zone lane.
+        for application in (115, 116):
+            with self.subTest(application=application), self.assertRaisesRegex(
+                    ThermostatTemplateError,
+                    'Output groups admit selected Lighting applications 48..95 or Enable Control 203'):
+                self.plan([add(outcome='cancel')], raw=raw_values(ApplicationNumber=application),
+                    apps={56: {255: '<Unused>'}, 172: {7: 'Zone'}, 203: {}})
+
     def test_cancel_noop_and_slave_damper_add_graph_only(self):
         cancel = self.plan([add(outcome='cancel')])
         self.assertFalse(cancel.apply_would_mutate)

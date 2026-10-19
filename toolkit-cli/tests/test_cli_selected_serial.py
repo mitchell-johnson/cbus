@@ -5,15 +5,17 @@ import io
 import json
 import os
 from pathlib import Path
+import signal
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 from unittest.mock import patch
 
 from cbus_toolkit import cli
 from cbus_toolkit.commissioning_lease import EndpointLease
-from cbus_toolkit.pci_selected_serial import SelectedSerialCoordinator, SelectedSerialPlan
+from cbus_toolkit.pci_selected_serial import SelectedSerialCoordinator, SelectedSerialPlan, _inventory_proof
 from cbus_toolkit.pci_serial_address_transport import PCISerialAddressTransport
 from cbus_toolkit.simulator_duplicate_addressing import SerialAddressFixture, SerialAddressFault
 from tests.test_simulator_duplicate_addressing import fixture,A,B,CO_A,RECEIPT_A
@@ -239,6 +241,87 @@ class SelectedSerialCLITests(unittest.TestCase):
                 self.assertFalse(any(call[0]=='recv' for call in sock.calls));self.assertEqual(sim.co_operations,[])
                 self.assertEqual(len(requests(sim))-previous,6)  # Fresh inventory, local identity and options only.
                 self.assertEqual(SelectedSerialCoordinator.load_recovery(journal).as_dict(),plan.as_dict())
+
+    @unittest.skipUnless(os.name=='posix','SIGKILL crash recovery needs a POSIX process signal')
+    def test_sigkill_mid_apply_resumes_from_journal_without_readdressing(self):
+        # P3.04: the write-ahead plan-attempt record (canonical-plan attempt
+        # marker plus fsynced recovery journal, both durable before the one
+        # address request) must survive SIGKILL. A restarted process resumes
+        # with read-only recovery only: no duplicate address request, pre/post
+        # inventory preserved, and no claim beyond cooperating processes naming
+        # one host endpoint or shared store (a foreign controller stays outside
+        # the guard).
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp=Path(tmp);path=tmp/'plan.json';journal=tmp/'journal.json';second=tmp/'second.json'
+            sim=fixture(response_delay=0.02)
+            with sim.running() as endpoint:
+                plan=manager(endpoint).plan(A,6);path.write_text(json.dumps(plan.as_dict()))
+                plan_bytes=path.read_bytes()
+                child=subprocess.Popen([sys.executable,'-m','cbus_toolkit','serial-address','apply',
+                                        str(path),'--recovery',str(journal)],
+                                       stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
+                try:
+                    deadline=time.monotonic()+30
+                    while True:
+                        if child.poll() is not None:
+                            raise AssertionError('Apply exited %s before its address request reached the fixture'
+                                                 % child.returncode)
+                        if any(CO_A in item for item in requests(sim)):
+                            break
+                        if time.monotonic()>=deadline:
+                            raise AssertionError('Address request never reached the fixture')
+                        time.sleep(0.005)
+                    os.kill(child.pid,signal.SIGKILL)
+                    self.assertEqual(child.wait(timeout=15),-signal.SIGKILL)
+                finally:
+                    if child.poll() is None:child.kill();child.wait()
+                killed_requests=list(requests(sim))
+                self.assertIn(CO_A,killed_requests)
+                # The write-ahead record precedes the send, so both halves survive the kill.
+                record=json.loads(journal.read_text())
+                self.assertTrue(record['attempt_recorded'])
+                self.assertEqual(record['operation'],'apply')
+                self.assertEqual(record['plan'],plan.as_dict())
+                # The restart re-collects its own timings, so raw captures
+                # differ; the parsed pre-inventory proof (states/identities)
+                # is what apply compares and what recovery preserves.
+                endpoint_document={'host':endpoint[0],'port':endpoint[1]}
+                self.assertEqual(_inventory_proof(record['before'],endpoint_document,16,False),
+                                 _inventory_proof(plan.as_dict()['before'],endpoint_document,16,False))
+                self.assertIsNone(record['after'])  # Killed before any post-move observation.
+                marker=Path(record['attempt_identity']);self.assertTrue(marker.is_file())
+                self.assertEqual(marker.parent,journal.resolve().parent)
+                envelope=json.loads(marker.read_text())
+                self.assertEqual(envelope['format'],'cbus-selected-serial-attempt-v1')
+                self.assertEqual(envelope['plan'],plan.as_dict())
+                self.assertTrue(envelope['send_may_have_occurred']);self.assertTrue(envelope['read_only_recovery_only'])
+                self.assertEqual(SelectedSerialCoordinator.load_recovery(journal).as_dict(),plan.as_dict())
+                self.assertEqual(SelectedSerialCoordinator.load_recovery(marker).as_dict(),plan.as_dict())
+                # Restart with a fresh journal path: the durable marker refuses
+                # before any PCI I/O, so the address request is never repeated.
+                repeat=self.subprocess_cli('serial-address','apply',path,'--recovery',second,status=1)
+                self.assertIn('read-only recovery only',repeat['error'])
+                self.assertFalse(repeat['selected_serial_evidence']['transport_invoked'])
+                self.assertFalse(second.exists());self.assertEqual(list(requests(sim)),killed_requests)
+                # Read-only resume from the journal in another new process:
+                # a fresh post inventory without re-addressing.
+                journal_bytes=journal.read_bytes()
+                resumed=self.subprocess_cli('serial-address','verify','--recovery',journal)
+                self.assertEqual(resumed['outcome'],'observed_expected_change')
+                self.assertTrue(resumed['expected_identity_change']);self.assertFalse(resumed['send_attempted'])
+                self.assertIsNone(resumed['exchange']);self.assertTrue(resumed['after_collection_complete'])
+                self.assertTrue(resumed['after']['complete'])
+                self.assertEqual(journal.read_bytes(),journal_bytes);self.assertEqual(path.read_bytes(),plan_bytes)
+                self.assertEqual(len(sim.co_operations),1)
+                operation=sim.co_operations[0]
+                self.assertEqual((operation['serial'],operation['requested_destination'],operation['outcome']),(A,6,'moved'))
+                # Recovery keeps the cooperating-process scope explicit: the
+                # marker and journal never claim to exclude a foreign controller.
+                for evidence in (record,resumed):
+                    self.assertTrue(evidence['exclusive_ownership_required']);self.assertFalse(evidence['atomic_observation'])
+                    self.assertFalse(evidence['firmware_persistence_verified'])
+                    self.assertFalse(evidence['physical_compatibility_verified'])
+                    self.assertEqual(evidence['automatic_retries'],0);self.assertFalse(evidence['automatic_rollback'])
 
     def test_oversized_or_nonserializable_error_evidence_retains_original_error_and_journal(self):
         with tempfile.TemporaryDirectory() as tmp:

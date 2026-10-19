@@ -508,3 +508,624 @@ def test_issue36_first_two_controls_wfdlt_unit4_complete_public_journey(tmp_path
             "requests": peer.requests, "stores": peer.stores, "unlocks": peer.unlocks,
             "nvm": peer.nvm, "noise_frames": peer.noise_frames,
         }, indent=2, default=serializable))
+
+
+@needs_cmqttd
+def test_issue36_first_three_controls_wfdlt_unit4_complete_public_journey(tmp_path):
+    """The issue's first edit plus one distinct-PP-byte third control (pressed_level).
+
+    Narrow P4.04 increment over the bounded two-field journey: ordered
+    ``page_fallback=yes``, ``duration_seconds=5``, ``pressed_level=12`` covers
+    both nibbles of PP 0x33 plus bit 2 of PP 0x34, while every unrelated bit,
+    memory byte and project field must stay unchanged. Typed edit, save/close/
+    load, dry-run preview, one physical SAVE, distinct fresh LOAD and read-only
+    recovery are all exercised through public CLI commands only.
+    """
+    target = "//WFDLT/254/p/4"
+    specs, project, original_peer = setup(tmp_path)
+    document = ET.parse(project)
+    document.find(".//Project/TagName").text = "WFDLT"
+    node = document.find(".//Unit[@oid='target']")
+    node.find("Address").text = "4"
+    next(row for row in node.findall("PP") if row.get("Name") == "EnablePageFallback").set("Value", "0")
+    document.write(project, encoding="utf-8")
+    original_memory = deepcopy(original_peer.memory)
+    original_memory["standard"][0x34] = 0x8A
+    assert bytes(original_memory["standard"][address] for address in (0x33, 0x34)) == b"\xaf\x8a"
+    peer = FirstEditPCI((), [("direct", 0, 128)], original_memory)
+    transcript = []
+    journal = tmp_path / "first-three-controls-attempt.json"
+
+    def public(*arguments, status=0):
+        argv = [sys.executable, "-m", "cbus_toolkit", *map(str, arguments)]
+        result = subprocess.run(argv, capture_output=True, text=True, timeout=60)
+        transcript.append({"argv": argv, "exit": result.returncode,
+                           "stdout": result.stdout, "stderr": result.stderr})
+        (tmp_path / "public-command-transcript.json").write_text(json.dumps(transcript, indent=2))
+        assert result.returncode == status, result.stdout + result.stderr
+        return json.loads(result.stdout if status == 0 else result.stderr)
+
+    def unit_metadata(raw):
+        root = ET.fromstring(raw)
+        for child in list(root):
+            if child.tag == "PP":
+                root.remove(child)
+        return ET.tostring(root, encoding="unicode")
+
+    try:
+        with peer.running() as pci, running_daemon(tmp_path, pci, project, specs) as port:
+            def remote(*arguments, status=0):
+                return public("cgate", "--host", "127.0.0.1", "--port", str(port),
+                              "--timeout", "8", *arguments, status=status)
+
+            def db_unit(*arguments):
+                return remote("unit", "--lock-address", "//WFDLT/254",
+                              "--source", "/db" + target, *arguments)
+
+            def snapshot(name):
+                remote("database", "get-xml", "//WFDLT", "--output", tmp_path / (name + "-project.xml"))
+                remote("database", "get-xml", target, "--output", tmp_path / (name + "-unit.xml"))
+
+            snapshot("before")
+            before_file = tmp_path / "before-parameters.json"
+            db_unit("export", before_file)
+            before = json.loads(before_file.read_text())["parameters"]
+            planned = public("dlt", "--spec-dir", specs, "indicators", "plan", "--file", before_file,
+                             "--indicator-control", "page_fallback=yes",
+                             "--indicator-control", "duration_seconds=5",
+                             "--indicator-control", "pressed_level=12")
+            assert [(row["control"], row["value"]) for row in planned["requested"]] == [
+                ("page_fallback", True), ("duration_seconds", 5), ("pressed_level", 12)]
+            plan_path = tmp_path / "first-three-controls-plan.json"
+            plan_path.write_text(json.dumps(planned, indent=2))
+            edited = db_unit("dlt-labels", "--spec-dir", specs, "--plan", plan_path)
+            assert edited["saved"] and edited["verified"]
+            db_unit("export", tmp_path / "edited-parameters.json")
+            after = json.loads((tmp_path / "edited-parameters.json").read_text())["parameters"]
+            assert {key: value for key, value in before.items() if key not in FIELDS} == {
+                key: value for key, value in after.items() if key not in FIELDS}
+            assert {key for key in before if before[key] != after[key]} == {
+                "EnablePageFallback", "TimerDuration", "IndicatorPressedLevel"}
+            snapshot("edited")
+            def project_without_target_pp(filename):
+                tree = ET.parse(filename)
+                selected = [row for row in tree.findall(".//Network") if row.findtext("Address") == "254"]
+                assert len(selected) == 1
+                units = [row for row in selected[0].findall("Unit") if row.findtext("Address") == "4"]
+                assert len(units) == 1
+                for child in list(units[0]):
+                    if child.tag == "PP":
+                        units[0].remove(child)
+                return ET.tostring(tree.getroot())
+
+            assert project_without_target_pp(tmp_path / "before-project.xml") == project_without_target_pp(
+                tmp_path / "edited-project.xml")
+            for action in ("save", "close", "load"):
+                remote("project", action, "WFDLT")
+            snapshot("reopened")
+            db_unit("export", tmp_path / "reopened-parameters.json")
+            assert json.loads((tmp_path / "reopened-parameters.json").read_text())["parameters"] == after
+            assert unit_metadata((tmp_path / "before-unit.xml").read_text()) == unit_metadata(
+                (tmp_path / "reopened-unit.xml").read_text())
+            assert ET.tostring(ET.parse(tmp_path / "edited-project.xml").getroot()) == ET.tostring(
+                ET.parse(tmp_path / "reopened-project.xml").getroot())
+            preview = remote("physical-pp", "dlt-indicators", target, "--plan", plan_path, "--dry-run")
+            assert not preview["saved"] and peer.memory == original_memory and not peer.stores
+            result = remote("physical-pp", "dlt-indicators", target, "--plan", plan_path, "--journal", journal)
+            assert result["saved"] and result["fresh_physical_readback_verified"] and result["save_attempts"] == 1
+            assert result["typed_validation"]["loaded"]["raw_hex"] == "af8a"
+            assert result["typed_validation"]["fresh"]["raw_hex"] == "c58e"
+            for phase in ("loaded", "staged", "fresh"):
+                assert result["typed_validation"][phase]["loaded_identity"] == {
+                    "UnitType": "KEYML5", "FirmwareVersion": "2.1.00", "Source": target}
+            expected_memory = deepcopy(original_memory)
+            expected_memory["standard"].update({0x33: 0xC5, 0x34: 0x8E})
+            assert peer.memory == expected_memory
+            check = remote("physical-pp", "inspect", target, "--method", "direct",
+                           *[word for name in FIELDS for word in ("--parameter", name)])
+            assert {key: int(value, 0) for key, value in check["values"].items()} == {
+                key: int(after[key], 0) for key in FIELDS}
+            assert json.loads(journal.read_text())["complete"]
+            stores_before_recovery = len(peer.stores)
+            request_boundary = len(peer.requests)
+            recovery = remote("physical-pp", "recover", "--journal", journal)
+            assert recovery["resolved"] and recovery["outcome"] == "observed_expected"
+            assert len(peer.stores) == stores_before_recovery
+            assert all(bytes.fromhex(row["cal_hex"])[0] in (0x21, 0x1A)
+                       for row in peer.requests[request_boundary:])
+            snapshot("after-physical")
+            assert ET.tostring(ET.parse(tmp_path / "reopened-project.xml").getroot()) == ET.tostring(
+                ET.parse(tmp_path / "after-physical-project.xml").getroot())
+            assert peer.noise_frames > 0 and not peer.unlocks and not peer.nvm
+            (tmp_path / "first-three-controls-result.json").write_text(json.dumps({
+                "profile": {"project": "WFDLT", "network": 254, "unit": 4},
+                "operations": planned["requested"], "literal_before": "af8a", "literal_after": "c58e",
+                "all_other_parameters_and_metadata_preserved": True,
+                "full_128_byte_memory_preserved_except_two_indicator_bytes": True,
+                "project_save_close_load_verified": True, "result": result, "recovery": recovery,
+            }, indent=2))
+    finally:
+        serializable = lambda value: value.hex() if isinstance(value, bytes) else str(value)
+        (tmp_path / "peer-memory-before.json").write_text(json.dumps(original_memory, indent=2))
+        (tmp_path / "peer-memory-after.json").write_text(json.dumps(peer.memory, indent=2))
+        (tmp_path / "peer-wire-and-stores.json").write_text(json.dumps({
+            "requests": peer.requests, "stores": peer.stores, "unlocks": peer.unlocks,
+            "nvm": peer.nvm, "noise_frames": peer.noise_frames,
+        }, indent=2, default=serializable))
+
+
+@needs_cmqttd
+def test_issue36_first_four_controls_wfdlt_unit4_complete_public_journey(tmp_path):
+    """The issue's first edit plus two distinct-PP-byte follow-ons (pressed + nightlight).
+
+    Narrow P4.04 increment over the bounded three-field journey: ordered
+    ``page_fallback=yes``, ``duration_seconds=5``, ``pressed_level=12``,
+    ``nightlight_keys=yes`` covers both nibbles of PP 0x33 plus bits 2 and 5
+    of PP 0x34 (EnablePageFallback and EnableNightlightOnUserKeys from
+    LAYOUT), while every unrelated bit, memory byte and project field must
+    stay unchanged. Typed edit, save/close/load, dry-run preview, one physical
+    SAVE, distinct fresh LOAD and read-only recovery are all exercised through
+    public CLI commands only. Literal bytes are derived from LAYOUT: 0x33 low
+    nibble TimerDuration 15->5 and high nibble IndicatorPressedLevel 10->12,
+    0x34 bit 2 set plus bit 5 set, so af8a->c5ae.
+    """
+    target = "//WFDLT/254/p/4"
+    specs, project, original_peer = setup(tmp_path)
+    document = ET.parse(project)
+    document.find(".//Project/TagName").text = "WFDLT"
+    node = document.find(".//Unit[@oid='target']")
+    node.find("Address").text = "4"
+    next(row for row in node.findall("PP") if row.get("Name") == "EnablePageFallback").set("Value", "0")
+    document.write(project, encoding="utf-8")
+    original_memory = deepcopy(original_peer.memory)
+    original_memory["standard"][0x34] = 0x8A
+    assert bytes(original_memory["standard"][address] for address in (0x33, 0x34)) == b"\xaf\x8a"
+    peer = FirstEditPCI((), [("direct", 0, 128)], original_memory)
+    transcript = []
+    journal = tmp_path / "first-four-controls-attempt.json"
+
+    def public(*arguments, status=0):
+        argv = [sys.executable, "-m", "cbus_toolkit", *map(str, arguments)]
+        result = subprocess.run(argv, capture_output=True, text=True, timeout=60)
+        transcript.append({"argv": argv, "exit": result.returncode,
+                           "stdout": result.stdout, "stderr": result.stderr})
+        (tmp_path / "public-command-transcript.json").write_text(json.dumps(transcript, indent=2))
+        assert result.returncode == status, result.stdout + result.stderr
+        return json.loads(result.stdout if status == 0 else result.stderr)
+
+    def unit_metadata(raw):
+        root = ET.fromstring(raw)
+        for child in list(root):
+            if child.tag == "PP":
+                root.remove(child)
+        return ET.tostring(root, encoding="unicode")
+
+    try:
+        with peer.running() as pci, running_daemon(tmp_path, pci, project, specs) as port:
+            def remote(*arguments, status=0):
+                return public("cgate", "--host", "127.0.0.1", "--port", str(port),
+                              "--timeout", "8", *arguments, status=status)
+
+            def db_unit(*arguments):
+                return remote("unit", "--lock-address", "//WFDLT/254",
+                              "--source", "/db" + target, *arguments)
+
+            def snapshot(name):
+                remote("database", "get-xml", "//WFDLT", "--output", tmp_path / (name + "-project.xml"))
+                remote("database", "get-xml", target, "--output", tmp_path / (name + "-unit.xml"))
+
+            snapshot("before")
+            before_file = tmp_path / "before-parameters.json"
+            db_unit("export", before_file)
+            before = json.loads(before_file.read_text())["parameters"]
+            planned = public("dlt", "--spec-dir", specs, "indicators", "plan", "--file", before_file,
+                             "--indicator-control", "page_fallback=yes",
+                             "--indicator-control", "duration_seconds=5",
+                             "--indicator-control", "pressed_level=12",
+                             "--indicator-control", "nightlight_keys=yes")
+            assert [(row["control"], row["value"]) for row in planned["requested"]] == [
+                ("page_fallback", True), ("duration_seconds", 5), ("pressed_level", 12),
+                ("nightlight_keys", True)]
+            plan_path = tmp_path / "first-four-controls-plan.json"
+            plan_path.write_text(json.dumps(planned, indent=2))
+            edited = db_unit("dlt-labels", "--spec-dir", specs, "--plan", plan_path)
+            assert edited["saved"] and edited["verified"]
+            db_unit("export", tmp_path / "edited-parameters.json")
+            after = json.loads((tmp_path / "edited-parameters.json").read_text())["parameters"]
+            assert {key: value for key, value in before.items() if key not in FIELDS} == {
+                key: value for key, value in after.items() if key not in FIELDS}
+            assert {key for key in before if before[key] != after[key]} == {
+                "EnablePageFallback", "TimerDuration", "IndicatorPressedLevel",
+                "EnableNightlightOnUserKeys"}
+            snapshot("edited")
+            def project_without_target_pp(filename):
+                tree = ET.parse(filename)
+                selected = [row for row in tree.findall(".//Network") if row.findtext("Address") == "254"]
+                assert len(selected) == 1
+                units = [row for row in selected[0].findall("Unit") if row.findtext("Address") == "4"]
+                assert len(units) == 1
+                for child in list(units[0]):
+                    if child.tag == "PP":
+                        units[0].remove(child)
+                return ET.tostring(tree.getroot())
+
+            assert project_without_target_pp(tmp_path / "before-project.xml") == project_without_target_pp(
+                tmp_path / "edited-project.xml")
+            for action in ("save", "close", "load"):
+                remote("project", action, "WFDLT")
+            snapshot("reopened")
+            db_unit("export", tmp_path / "reopened-parameters.json")
+            assert json.loads((tmp_path / "reopened-parameters.json").read_text())["parameters"] == after
+            assert unit_metadata((tmp_path / "before-unit.xml").read_text()) == unit_metadata(
+                (tmp_path / "reopened-unit.xml").read_text())
+            assert ET.tostring(ET.parse(tmp_path / "edited-project.xml").getroot()) == ET.tostring(
+                ET.parse(tmp_path / "reopened-project.xml").getroot())
+            preview = remote("physical-pp", "dlt-indicators", target, "--plan", plan_path, "--dry-run")
+            assert not preview["saved"] and peer.memory == original_memory and not peer.stores
+            result = remote("physical-pp", "dlt-indicators", target, "--plan", plan_path, "--journal", journal)
+            assert result["saved"] and result["fresh_physical_readback_verified"] and result["save_attempts"] == 1
+            assert result["typed_validation"]["loaded"]["raw_hex"] == "af8a"
+            assert result["typed_validation"]["fresh"]["raw_hex"] == "c5ae"
+            for phase in ("loaded", "staged", "fresh"):
+                assert result["typed_validation"][phase]["loaded_identity"] == {
+                    "UnitType": "KEYML5", "FirmwareVersion": "2.1.00", "Source": target}
+            expected_memory = deepcopy(original_memory)
+            expected_memory["standard"].update({0x33: 0xC5, 0x34: 0xAE})
+            assert peer.memory == expected_memory
+            assert set(peer.memory["standard"]) == set(range(128))
+            assert {address for address in range(128)
+                    if peer.memory["standard"][address] != original_memory["standard"][address]} == {0x33, 0x34}
+            check = remote("physical-pp", "inspect", target, "--method", "direct",
+                           *[word for name in FIELDS for word in ("--parameter", name)])
+            assert {key: int(value, 0) for key, value in check["values"].items()} == {
+                key: int(after[key], 0) for key in FIELDS}
+            assert json.loads(journal.read_text())["complete"]
+            stores_before_recovery = len(peer.stores)
+            request_boundary = len(peer.requests)
+            recovery = remote("physical-pp", "recover", "--journal", journal)
+            assert recovery["resolved"] and recovery["outcome"] == "observed_expected"
+            assert len(peer.stores) == stores_before_recovery
+            assert all(bytes.fromhex(row["cal_hex"])[0] in (0x21, 0x1A)
+                       for row in peer.requests[request_boundary:])
+            snapshot("after-physical")
+            assert ET.tostring(ET.parse(tmp_path / "reopened-project.xml").getroot()) == ET.tostring(
+                ET.parse(tmp_path / "after-physical-project.xml").getroot())
+            assert peer.noise_frames > 0 and not peer.unlocks and not peer.nvm
+            (tmp_path / "first-four-controls-result.json").write_text(json.dumps({
+                "profile": {"project": "WFDLT", "network": 254, "unit": 4},
+                "operations": planned["requested"], "literal_before": "af8a", "literal_after": "c5ae",
+                "all_other_parameters_and_metadata_preserved": True,
+                "full_128_byte_memory_preserved_except_two_indicator_bytes": True,
+                "project_save_close_load_verified": True, "result": result, "recovery": recovery,
+            }, indent=2))
+    finally:
+        serializable = lambda value: value.hex() if isinstance(value, bytes) else str(value)
+        (tmp_path / "peer-memory-before.json").write_text(json.dumps(original_memory, indent=2))
+        (tmp_path / "peer-memory-after.json").write_text(json.dumps(peer.memory, indent=2))
+        (tmp_path / "peer-wire-and-stores.json").write_text(json.dumps({
+            "requests": peer.requests, "stores": peer.stores, "unlocks": peer.unlocks,
+            "nvm": peer.nvm, "noise_frames": peer.noise_frames,
+        }, indent=2, default=serializable))
+
+
+@needs_cmqttd
+def test_issue36_first_five_controls_wfdlt_unit4_complete_public_journey(tmp_path):
+    """The issue's first edit plus three distinct-PP-byte follow-ons (pressed + nightlight + throwaway).
+
+    Narrow P4.04 increment over the bounded four-field journey: ordered
+    ``page_fallback=yes``, ``duration_seconds=5``, ``pressed_level=12``,
+    ``nightlight_keys=yes``, ``first_key_throwaway=yes`` covers both nibbles
+    of PP 0x33 plus bits 2, 5 and 4 of PP 0x34 (EnablePageFallback,
+    EnableNightlightOnUserKeys and FirstKeyThrowAway from LAYOUT), while every
+    unrelated bit, memory byte and project field must stay unchanged. The fifth
+    control is next in prepare() order and depends on this journey's
+    nightlight_keys (first_key_throwaway is enabled by nightlight_keys or
+    nightlight_toggle). Typed edit, save/close/load, dry-run preview, one
+    physical SAVE, distinct fresh LOAD and read-only recovery are all exercised
+    through public CLI commands only. Literal bytes are derived offline via
+    ClassicDltIndicators.plan(): 0x33 low nibble TimerDuration 15->5 and high
+    nibble IndicatorPressedLevel 10->12, 0x34 bit 2 set plus bit 5 set plus bit
+    4 set, so af8a->c5be (0x34 0xAE->0xBE).
+    """
+    target = "//WFDLT/254/p/4"
+    specs, project, original_peer = setup(tmp_path)
+    document = ET.parse(project)
+    document.find(".//Project/TagName").text = "WFDLT"
+    node = document.find(".//Unit[@oid='target']")
+    node.find("Address").text = "4"
+    next(row for row in node.findall("PP") if row.get("Name") == "EnablePageFallback").set("Value", "0")
+    document.write(project, encoding="utf-8")
+    original_memory = deepcopy(original_peer.memory)
+    original_memory["standard"][0x34] = 0x8A
+    assert bytes(original_memory["standard"][address] for address in (0x33, 0x34)) == b"\xaf\x8a"
+    peer = FirstEditPCI((), [("direct", 0, 128)], original_memory)
+    transcript = []
+    journal = tmp_path / "first-five-controls-attempt.json"
+
+    def public(*arguments, status=0):
+        argv = [sys.executable, "-m", "cbus_toolkit", *map(str, arguments)]
+        result = subprocess.run(argv, capture_output=True, text=True, timeout=60)
+        transcript.append({"argv": argv, "exit": result.returncode,
+                           "stdout": result.stdout, "stderr": result.stderr})
+        (tmp_path / "public-command-transcript.json").write_text(json.dumps(transcript, indent=2))
+        assert result.returncode == status, result.stdout + result.stderr
+        return json.loads(result.stdout if status == 0 else result.stderr)
+
+    def unit_metadata(raw):
+        root = ET.fromstring(raw)
+        for child in list(root):
+            if child.tag == "PP":
+                root.remove(child)
+        return ET.tostring(root, encoding="unicode")
+
+    try:
+        with peer.running() as pci, running_daemon(tmp_path, pci, project, specs) as port:
+            def remote(*arguments, status=0):
+                return public("cgate", "--host", "127.0.0.1", "--port", str(port),
+                              "--timeout", "8", *arguments, status=status)
+
+            def db_unit(*arguments):
+                return remote("unit", "--lock-address", "//WFDLT/254",
+                              "--source", "/db" + target, *arguments)
+
+            def snapshot(name):
+                remote("database", "get-xml", "//WFDLT", "--output", tmp_path / (name + "-project.xml"))
+                remote("database", "get-xml", target, "--output", tmp_path / (name + "-unit.xml"))
+
+            snapshot("before")
+            before_file = tmp_path / "before-parameters.json"
+            db_unit("export", before_file)
+            before = json.loads(before_file.read_text())["parameters"]
+            planned = public("dlt", "--spec-dir", specs, "indicators", "plan", "--file", before_file,
+                             "--indicator-control", "page_fallback=yes",
+                             "--indicator-control", "duration_seconds=5",
+                             "--indicator-control", "pressed_level=12",
+                             "--indicator-control", "nightlight_keys=yes",
+                             "--indicator-control", "first_key_throwaway=yes")
+            assert [(row["control"], row["value"]) for row in planned["requested"]] == [
+                ("page_fallback", True), ("duration_seconds", 5), ("pressed_level", 12),
+                ("nightlight_keys", True), ("first_key_throwaway", True)]
+            plan_path = tmp_path / "first-five-controls-plan.json"
+            plan_path.write_text(json.dumps(planned, indent=2))
+            edited = db_unit("dlt-labels", "--spec-dir", specs, "--plan", plan_path)
+            assert edited["saved"] and edited["verified"]
+            db_unit("export", tmp_path / "edited-parameters.json")
+            after = json.loads((tmp_path / "edited-parameters.json").read_text())["parameters"]
+            assert {key: value for key, value in before.items() if key not in FIELDS} == {
+                key: value for key, value in after.items() if key not in FIELDS}
+            assert {key for key in before if before[key] != after[key]} == {
+                "EnablePageFallback", "TimerDuration", "IndicatorPressedLevel",
+                "EnableNightlightOnUserKeys", "FirstKeyThrowAway"}
+            snapshot("edited")
+            def project_without_target_pp(filename):
+                tree = ET.parse(filename)
+                selected = [row for row in tree.findall(".//Network") if row.findtext("Address") == "254"]
+                assert len(selected) == 1
+                units = [row for row in selected[0].findall("Unit") if row.findtext("Address") == "4"]
+                assert len(units) == 1
+                for child in list(units[0]):
+                    if child.tag == "PP":
+                        units[0].remove(child)
+                return ET.tostring(tree.getroot())
+
+            assert project_without_target_pp(tmp_path / "before-project.xml") == project_without_target_pp(
+                tmp_path / "edited-project.xml")
+            for action in ("save", "close", "load"):
+                remote("project", action, "WFDLT")
+            snapshot("reopened")
+            db_unit("export", tmp_path / "reopened-parameters.json")
+            assert json.loads((tmp_path / "reopened-parameters.json").read_text())["parameters"] == after
+            assert unit_metadata((tmp_path / "before-unit.xml").read_text()) == unit_metadata(
+                (tmp_path / "reopened-unit.xml").read_text())
+            assert ET.tostring(ET.parse(tmp_path / "edited-project.xml").getroot()) == ET.tostring(
+                ET.parse(tmp_path / "reopened-project.xml").getroot())
+            preview = remote("physical-pp", "dlt-indicators", target, "--plan", plan_path, "--dry-run")
+            assert not preview["saved"] and peer.memory == original_memory and not peer.stores
+            result = remote("physical-pp", "dlt-indicators", target, "--plan", plan_path, "--journal", journal)
+            assert result["saved"] and result["fresh_physical_readback_verified"] and result["save_attempts"] == 1
+            assert result["typed_validation"]["loaded"]["raw_hex"] == "af8a"
+            assert result["typed_validation"]["fresh"]["raw_hex"] == "c5be"
+            for phase in ("loaded", "staged", "fresh"):
+                assert result["typed_validation"][phase]["loaded_identity"] == {
+                    "UnitType": "KEYML5", "FirmwareVersion": "2.1.00", "Source": target}
+            expected_memory = deepcopy(original_memory)
+            expected_memory["standard"].update({0x33: 0xC5, 0x34: 0xBE})
+            assert peer.memory == expected_memory
+            assert set(peer.memory["standard"]) == set(range(128))
+            assert {address for address in range(128)
+                    if peer.memory["standard"][address] != original_memory["standard"][address]} == {0x33, 0x34}
+            check = remote("physical-pp", "inspect", target, "--method", "direct",
+                           *[word for name in FIELDS for word in ("--parameter", name)])
+            assert {key: int(value, 0) for key, value in check["values"].items()} == {
+                key: int(after[key], 0) for key in FIELDS}
+            assert json.loads(journal.read_text())["complete"]
+            stores_before_recovery = len(peer.stores)
+            request_boundary = len(peer.requests)
+            recovery = remote("physical-pp", "recover", "--journal", journal)
+            assert recovery["resolved"] and recovery["outcome"] == "observed_expected"
+            assert len(peer.stores) == stores_before_recovery
+            assert all(bytes.fromhex(row["cal_hex"])[0] in (0x21, 0x1A)
+                       for row in peer.requests[request_boundary:])
+            snapshot("after-physical")
+            assert ET.tostring(ET.parse(tmp_path / "reopened-project.xml").getroot()) == ET.tostring(
+                ET.parse(tmp_path / "after-physical-project.xml").getroot())
+            assert peer.noise_frames > 0 and not peer.unlocks and not peer.nvm
+            (tmp_path / "first-five-controls-result.json").write_text(json.dumps({
+                "profile": {"project": "WFDLT", "network": 254, "unit": 4},
+                "operations": planned["requested"], "literal_before": "af8a", "literal_after": "c5be",
+                "all_other_parameters_and_metadata_preserved": True,
+                "full_128_byte_memory_preserved_except_two_indicator_bytes": True,
+                "project_save_close_load_verified": True, "result": result, "recovery": recovery,
+            }, indent=2))
+    finally:
+        serializable = lambda value: value.hex() if isinstance(value, bytes) else str(value)
+        (tmp_path / "peer-memory-before.json").write_text(json.dumps(original_memory, indent=2))
+        (tmp_path / "peer-memory-after.json").write_text(json.dumps(peer.memory, indent=2))
+        (tmp_path / "peer-wire-and-stores.json").write_text(json.dumps({
+            "requests": peer.requests, "stores": peer.stores, "unlocks": peer.unlocks,
+            "nvm": peer.nvm, "noise_frames": peer.noise_frames,
+        }, indent=2, default=serializable))
+
+
+@needs_cmqttd
+def test_issue36_first_six_controls_wfdlt_unit4_complete_public_journey(tmp_path):
+    """The issue's first edit plus four distinct-PP-byte follow-ons (pressed + both nightlights + throwaway).
+
+    Narrow P4.04 increment over the bounded five-field journey: ordered
+    ``page_fallback=yes``, ``duration_seconds=5``, ``pressed_level=12``,
+    ``nightlight_keys=yes``, ``first_key_throwaway=yes``,
+    ``nightlight_toggle=yes`` covers both nibbles of PP 0x33 plus bits 2, 5,
+    4 and 6 of PP 0x34 (EnablePageFallback, EnableNightlightOnUserKeys,
+    FirstKeyThrowAway and EnableNightlightOnToggleKey from LAYOUT), while
+    every unrelated bit, memory byte and project field must stay unchanged.
+    The sixth control is next after first_key_throwaway and is enabled by this
+    journey's pressed state (nightlight_toggle is enabled by pressed_enabled,
+    which stays True throughout); appending it leaves first_key_throwaway
+    intact via _nightlight (keys or toggle true keeps it), whereas
+    pressed_enabled=yes alone is a verified no-op and cannot extend the
+    journey. Typed edit, save/close/load, dry-run preview, one physical SAVE,
+    distinct fresh LOAD and read-only recovery are all exercised through
+    public CLI commands only. Literal bytes are derived offline via
+    ClassicDltIndicators.plan(): 0x33 low nibble TimerDuration 15->5 and high
+    nibble IndicatorPressedLevel 10->12, 0x34 bit 2 set plus bit 5 set plus bit
+    4 set plus bit 6 set, so af8a->c5fe (0x34 0xBE->0xFE).
+    """
+    target = "//WFDLT/254/p/4"
+    specs, project, original_peer = setup(tmp_path)
+    document = ET.parse(project)
+    document.find(".//Project/TagName").text = "WFDLT"
+    node = document.find(".//Unit[@oid='target']")
+    node.find("Address").text = "4"
+    next(row for row in node.findall("PP") if row.get("Name") == "EnablePageFallback").set("Value", "0")
+    document.write(project, encoding="utf-8")
+    original_memory = deepcopy(original_peer.memory)
+    original_memory["standard"][0x34] = 0x8A
+    assert bytes(original_memory["standard"][address] for address in (0x33, 0x34)) == b"\xaf\x8a"
+    peer = FirstEditPCI((), [("direct", 0, 128)], original_memory)
+    transcript = []
+    journal = tmp_path / "first-six-controls-attempt.json"
+
+    def public(*arguments, status=0):
+        argv = [sys.executable, "-m", "cbus_toolkit", *map(str, arguments)]
+        result = subprocess.run(argv, capture_output=True, text=True, timeout=60)
+        transcript.append({"argv": argv, "exit": result.returncode,
+                           "stdout": result.stdout, "stderr": result.stderr})
+        (tmp_path / "public-command-transcript.json").write_text(json.dumps(transcript, indent=2))
+        assert result.returncode == status, result.stdout + result.stderr
+        return json.loads(result.stdout if status == 0 else result.stderr)
+
+    def unit_metadata(raw):
+        root = ET.fromstring(raw)
+        for child in list(root):
+            if child.tag == "PP":
+                root.remove(child)
+        return ET.tostring(root, encoding="unicode")
+
+    try:
+        with peer.running() as pci, running_daemon(tmp_path, pci, project, specs) as port:
+            def remote(*arguments, status=0):
+                return public("cgate", "--host", "127.0.0.1", "--port", str(port),
+                              "--timeout", "8", *arguments, status=status)
+
+            def db_unit(*arguments):
+                return remote("unit", "--lock-address", "//WFDLT/254",
+                              "--source", "/db" + target, *arguments)
+
+            def snapshot(name):
+                remote("database", "get-xml", "//WFDLT", "--output", tmp_path / (name + "-project.xml"))
+                remote("database", "get-xml", target, "--output", tmp_path / (name + "-unit.xml"))
+
+            snapshot("before")
+            before_file = tmp_path / "before-parameters.json"
+            db_unit("export", before_file)
+            before = json.loads(before_file.read_text())["parameters"]
+            planned = public("dlt", "--spec-dir", specs, "indicators", "plan", "--file", before_file,
+                             "--indicator-control", "page_fallback=yes",
+                             "--indicator-control", "duration_seconds=5",
+                             "--indicator-control", "pressed_level=12",
+                             "--indicator-control", "nightlight_keys=yes",
+                             "--indicator-control", "first_key_throwaway=yes",
+                             "--indicator-control", "nightlight_toggle=yes")
+            assert [(row["control"], row["value"]) for row in planned["requested"]] == [
+                ("page_fallback", True), ("duration_seconds", 5), ("pressed_level", 12),
+                ("nightlight_keys", True), ("first_key_throwaway", True), ("nightlight_toggle", True)]
+            plan_path = tmp_path / "first-six-controls-plan.json"
+            plan_path.write_text(json.dumps(planned, indent=2))
+            edited = db_unit("dlt-labels", "--spec-dir", specs, "--plan", plan_path)
+            assert edited["saved"] and edited["verified"]
+            db_unit("export", tmp_path / "edited-parameters.json")
+            after = json.loads((tmp_path / "edited-parameters.json").read_text())["parameters"]
+            assert {key: value for key, value in before.items() if key not in FIELDS} == {
+                key: value for key, value in after.items() if key not in FIELDS}
+            assert {key for key in before if before[key] != after[key]} == {
+                "EnablePageFallback", "TimerDuration", "IndicatorPressedLevel",
+                "EnableNightlightOnUserKeys", "FirstKeyThrowAway", "EnableNightlightOnToggleKey"}
+            snapshot("edited")
+            def project_without_target_pp(filename):
+                tree = ET.parse(filename)
+                selected = [row for row in tree.findall(".//Network") if row.findtext("Address") == "254"]
+                assert len(selected) == 1
+                units = [row for row in selected[0].findall("Unit") if row.findtext("Address") == "4"]
+                assert len(units) == 1
+                for child in list(units[0]):
+                    if child.tag == "PP":
+                        units[0].remove(child)
+                return ET.tostring(tree.getroot())
+
+            assert project_without_target_pp(tmp_path / "before-project.xml") == project_without_target_pp(
+                tmp_path / "edited-project.xml")
+            for action in ("save", "close", "load"):
+                remote("project", action, "WFDLT")
+            snapshot("reopened")
+            db_unit("export", tmp_path / "reopened-parameters.json")
+            assert json.loads((tmp_path / "reopened-parameters.json").read_text())["parameters"] == after
+            assert unit_metadata((tmp_path / "before-unit.xml").read_text()) == unit_metadata(
+                (tmp_path / "reopened-unit.xml").read_text())
+            assert ET.tostring(ET.parse(tmp_path / "edited-project.xml").getroot()) == ET.tostring(
+                ET.parse(tmp_path / "reopened-project.xml").getroot())
+            preview = remote("physical-pp", "dlt-indicators", target, "--plan", plan_path, "--dry-run")
+            assert not preview["saved"] and peer.memory == original_memory and not peer.stores
+            result = remote("physical-pp", "dlt-indicators", target, "--plan", plan_path, "--journal", journal)
+            assert result["saved"] and result["fresh_physical_readback_verified"] and result["save_attempts"] == 1
+            assert result["typed_validation"]["loaded"]["raw_hex"] == "af8a"
+            assert result["typed_validation"]["fresh"]["raw_hex"] == "c5fe"
+            for phase in ("loaded", "staged", "fresh"):
+                assert result["typed_validation"][phase]["loaded_identity"] == {
+                    "UnitType": "KEYML5", "FirmwareVersion": "2.1.00", "Source": target}
+            expected_memory = deepcopy(original_memory)
+            expected_memory["standard"].update({0x33: 0xC5, 0x34: 0xFE})
+            assert peer.memory == expected_memory
+            assert set(peer.memory["standard"]) == set(range(128))
+            assert {address for address in range(128)
+                    if peer.memory["standard"][address] != original_memory["standard"][address]} == {0x33, 0x34}
+            check = remote("physical-pp", "inspect", target, "--method", "direct",
+                           *[word for name in FIELDS for word in ("--parameter", name)])
+            assert {key: int(value, 0) for key, value in check["values"].items()} == {
+                key: int(after[key], 0) for key in FIELDS}
+            assert json.loads(journal.read_text())["complete"]
+            stores_before_recovery = len(peer.stores)
+            request_boundary = len(peer.requests)
+            recovery = remote("physical-pp", "recover", "--journal", journal)
+            assert recovery["resolved"] and recovery["outcome"] == "observed_expected"
+            assert len(peer.stores) == stores_before_recovery
+            assert all(bytes.fromhex(row["cal_hex"])[0] in (0x21, 0x1A)
+                       for row in peer.requests[request_boundary:])
+            snapshot("after-physical")
+            assert ET.tostring(ET.parse(tmp_path / "reopened-project.xml").getroot()) == ET.tostring(
+                ET.parse(tmp_path / "after-physical-project.xml").getroot())
+            assert peer.noise_frames > 0 and not peer.unlocks and not peer.nvm
+            (tmp_path / "first-six-controls-result.json").write_text(json.dumps({
+                "profile": {"project": "WFDLT", "network": 254, "unit": 4},
+                "operations": planned["requested"], "literal_before": "af8a", "literal_after": "c5fe",
+                "all_other_parameters_and_metadata_preserved": True,
+                "full_128_byte_memory_preserved_except_two_indicator_bytes": True,
+                "project_save_close_load_verified": True, "result": result, "recovery": recovery,
+            }, indent=2))
+    finally:
+        serializable = lambda value: value.hex() if isinstance(value, bytes) else str(value)
+        (tmp_path / "peer-memory-before.json").write_text(json.dumps(original_memory, indent=2))
+        (tmp_path / "peer-memory-after.json").write_text(json.dumps(peer.memory, indent=2))
+        (tmp_path / "peer-wire-and-stores.json").write_text(json.dumps({
+            "requests": peer.requests, "stores": peer.stores, "unlocks": peer.unlocks,
+            "nvm": peer.nvm, "noise_frames": peer.noise_frames,
+        }, indent=2, default=serializable))

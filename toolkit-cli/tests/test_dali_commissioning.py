@@ -913,5 +913,80 @@ class DaliLineProxyAdmissionTests(unittest.TestCase):
             self.assertFalse(journal.exists())
 
 
+class ExtendedProxyByteExclusionTests(unittest.TestCase):
+    def model(self, targets=None, values=None):
+        return {"extParams": {"targetValues": targets or {}, "values": values or {}}}
+
+    def test_config_version_gate_prefers_staged_targets(self):
+        proxy = dali_extended_proxy
+        old = self.model(values={"256": 1, "257": 5})
+        self.assertTrue(proxy.byte_excluded(old, 774))
+        self.assertFalse(proxy.byte_excluded(self.model(values={"256": 1, "257": 6}), 774))
+        self.assertFalse(proxy.byte_excluded(self.model(values={"256": 2, "257": 0}), 774))
+        staged = self.model(targets={"256": 2, "257": 0}, values={"256": 1, "257": 5})
+        self.assertFalse(proxy.byte_excluded(staged, 774))
+        self.assertTrue(proxy.byte_excluded(self.model(values={}), 774))
+        self.assertFalse(proxy.byte_excluded(self.model(values={"256": 1, "257": 6}), 768))
+
+    def test_static_reserved_ranges(self):
+        proxy = dali_extended_proxy
+        for address in (557, 646, 666, 775, 778):
+            with self.subTest(address=address):
+                self.assertTrue(proxy.static_excluded(address))
+        self.assertFalse(proxy.static_excluded(768))
+
+
+class ExtendedProxyEffectiveFieldTests(unittest.TestCase):
+    def disposition(self, suffix, value):
+        return dali_extended_proxy.edit_disposition(
+            {"path": dali_extended_proxy.PREFIX + suffix, "value": value})
+
+    def test_error_reporting_mode_excluded_while_enable_group_stores_mode(self):
+        model = {"cdg": {"extParams": {"proxy": {
+            "errorReportingEnableGroup": {"group": 0},
+            "enableGroupLevelStoreOptions": {"errorReportingEnable": True},
+        }}}}
+        disposition = self.disposition("errorReportingMode/mode", 1)
+        with self.assertRaises(ValueError):
+            dali_extended_proxy.check_effective_field(model, disposition)
+
+    def test_error_reporting_mode_passes_when_group_unassigned_or_store_cleared(self):
+        disposition = self.disposition("errorReportingMode/mode", 1)
+        unassigned = {"cdg": {"extParams": {"proxy": {
+            "errorReportingEnableGroup": {"group": 255},
+            "enableGroupLevelStoreOptions": {"errorReportingEnable": True},
+        }}}}
+        cleared = {"cdg": {"extParams": {"proxy": {
+            "errorReportingEnableGroup": {"group": 0},
+            "enableGroupLevelStoreOptions": {"errorReportingEnable": False},
+        }}}}
+        absent = {"cdg": {"extParams": {"proxy": {}}}}
+        for model in (unassigned, cleared, absent):
+            with self.subTest(model=model):
+                self.assertIsNone(dali_extended_proxy.check_effective_field(model, disposition))
+
+    def test_logic_restore_level_excluded_unless_indexed_group_disables_restore(self):
+        disposition = self.disposition("logicGroupRestoreLevel/3/level", 100)
+        short = {"cdg": {"extParams": {"proxy": {"logicGroups": [{}, {}, {}]}}}}
+        enabled = {"cdg": {"extParams": {"proxy": {"logicGroups": [
+            {}, {}, {}, {"restoreToPreviousLevel": True}]}}}}
+        missing = {"cdg": {"extParams": {"proxy": {"logicGroups": [
+            {}, {}, {}, {}]}}}}
+        for model in (short, enabled, missing):
+            with self.subTest(model=model):
+                with self.assertRaises(ValueError):
+                    dali_extended_proxy.check_effective_field(model, disposition)
+        disabled = {"cdg": {"extParams": {"proxy": {"logicGroups": [
+            {"restoreToPreviousLevel": True}, {}, {},
+            {"restoreToPreviousLevel": False}]}}}}
+        self.assertIsNone(dali_extended_proxy.check_effective_field(disabled, disposition))
+
+    def test_unrelated_proxy_fields_pass_without_proxy_state(self):
+        disposition = self.disposition("deviceID/id", 17)
+        self.assertIsNone(dali_extended_proxy.check_effective_field({}, disposition))
+        self.assertIsNone(dali_extended_proxy.check_effective_field(
+            {"cdg": {"extParams": {"proxy": {}}}}, disposition))
+
+
 if __name__ == "__main__":
     unittest.main()

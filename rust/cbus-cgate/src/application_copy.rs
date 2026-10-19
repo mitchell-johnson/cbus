@@ -1072,16 +1072,21 @@ mod tests {
             let target = "//COPY/253/80";
             match kind {
                 0 => {
-                    // Existing SAFE scalar fallback accepts this field without
-                    // creating an Application. It must not be overwritten.
+                    // The typed SAFE selector now refuses a missing
+                    // Application instead of storing a phantom field (#125).
+                    // A retained orphan field from older state must still
+                    // never be overwritten by a copy.
                     assert_eq!(
                         server
                             .handle("[orphan] DBSETSAFE //COPY/253/80/Description Retained")
                             .status,
-                        200
+                        401
                     );
+                    assert!(!server.db_fields.contains_key("//COPY/253/80/Description"));
+                    server
+                        .db_fields
+                        .insert("//COPY/253/80/Description".into(), "Retained".into());
                     assert!(!server.database_address_exists(target));
-                    assert_eq!(server.db_fields["//COPY/253/80/Description"], "Retained");
                 }
                 1 => {
                     server

@@ -17,6 +17,12 @@ fn vector() -> serde_json::Value {
         value["scope"]["xml_roundtrip_vector"],
         "cgate_application_description_xml_roundtrip.jsonl"
     );
+    // Scalar acknowledgement is unchanged by the XML round-trip work; the
+    // live XML contract moved to cgate_application_description_xml_roundtrip.
+    assert_eq!(
+        value["scope"]["native_xml_acceptance_issue"], 75,
+        "{value:?}"
+    );
     value
 }
 
@@ -370,5 +376,33 @@ fn application_description_xml_survives_project_copy_and_application_copy() {
     assert_eq!(
         server.handle("[net] DBGETXML //DESC/254").lines,
         vec![format!("347-{edited}")]
+    );
+}
+
+#[test]
+fn application_xml_description_is_exported_and_reimports_stably() {
+    // Issue #75: supersedes the former refusal pin. The scalar vector's
+    // `xml_description_admission` scope moved to the xml-roundtrip vector;
+    // this asserts the live contract from the service side of the boundary.
+    let value = vector();
+    let (mut server, issued) = seed(&value);
+    let initial = xml(&mut server);
+    let body = format!(
+        "<Application><OID>{}</OID><TagName>Fresh Application</TagName><Address>48</Address><Description>Proved XML</Description></Application>",
+        issued[0]
+    );
+    let admitted = server.handle_document("[xml] DBSETXML //DESC/254/48", &body);
+    assert_eq!(admitted.status, 301, "{admitted:?}");
+    assert_eq!(
+        read(&mut server, &issued[0]),
+        format!("[read] 342 !{}/Description=Proved XML\n", issued[0])
+    );
+    let described = xml(&mut server);
+    assert_ne!(described, initial);
+    assert!(
+        described
+            .join("\n")
+            .contains("<Description>Proved XML</Description>"),
+        "{described:?}"
     );
 }

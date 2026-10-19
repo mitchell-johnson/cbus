@@ -149,6 +149,41 @@ class RoutedWriteTests(unittest.TestCase):
                     RoutedWriteClient("127.0.0.1").exchange(command, expected=expected,
                                                                   expected_ack_tag=0x55)
 
+    def test_preflight_refuses_non_exact_expected_and_route_entry_terminal_before_socket(self):
+        # P3.01 routed-WRITE refusal path: a non-exact expected envelope and a
+        # declared ACK path whose terminal route entry is not the addressed
+        # unit are both refused before any socket exists. Canned fixtures only.
+        class ExactSubclass(RoutedReplyPath):
+            pass
+        non_exact = (
+            None,
+            {"outer_source_byte": 4, "destination_byte": 16, "route_entries": []},
+            (4, 16),
+            "RoutedReplyPath(4, 16)",
+            ExactSubclass(4, 16),
+        )
+        terminal_mismatches = (
+            RoutedReplyPath(20, 16, (21, 5)),
+            RoutedReplyPath(4, 16, (21, 5)),
+            RoutedReplyPath(4, 16, (4, 5)),
+        )
+        with patch.object(module.socket, "socket", side_effect=AssertionError("No socket")), \
+             patch.object(module.socket, "getaddrinfo", side_effect=AssertionError("No resolver")):
+            for expected in non_exact:
+                with self.subTest(expected=repr(expected)):
+                    client = RoutedWriteClient("127.0.0.1")
+                    with self.assertRaisesRegex(ValueError, "expected must be an exact RoutedReplyPath"):
+                        client.exchange(COMMAND, expected=expected, expected_ack_tag=0x55)
+                    self.assertFalse(client.last_evidence["connect_attempted"])
+                    self.assertFalse(client.last_evidence["send_attempted"])
+            for expected in terminal_mismatches:
+                with self.subTest(expected=expected.as_dict()):
+                    client = RoutedWriteClient("127.0.0.1")
+                    with self.assertRaisesRegex(ValueError, "Final declared ACK path byte"):
+                        client.exchange(COMMAND, expected=expected, expected_ack_tag=0x55)
+                    self.assertFalse(client.last_evidence["connect_attempted"])
+                    self.assertFalse(client.last_evidence["send_attempted"])
+
     def test_send_or_receive_failure_is_uncertain_and_single_use(self):
         for stage in ("send", "recv"):
             original = OSError(stage)

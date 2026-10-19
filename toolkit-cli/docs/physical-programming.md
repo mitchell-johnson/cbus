@@ -146,7 +146,11 @@ sent, and to `confirmed` after cmqttd's 200 reply. That reply covers each
 range's tagged STORE acknowledgements and its exact per-range readback. After
 a failed SAVE, the client reads cmqttd's reply
 `after N confirmed write(s)`. The first N planned ranges become `confirmed`,
-the next becomes `uncertain`, and the rest become `not-attempted`. A lost
+the next becomes `uncertain`, and the rest become `not-attempted`. When the
+failed reply also carries per-range continuation rows and the PCI generation
+is unchanged, each planned range instead follows its row outcome: `confirmed`
+stays `confirmed`, `uncertain` and `not-attempted` stay `uncertain`, and
+`skipped-unchanged` becomes `skipped`. A lost
 C-Gate connection or any other reply leaves every planned range `uncertain`.
 `nvm_commit` follows the same rules. A failed Save-to-NVM, such as a lost
 EXECUTE or a lost POLL after a running EXECUTE, is recorded as `uncertain`.

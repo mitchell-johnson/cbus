@@ -362,6 +362,80 @@ def _session_memory(session: Any, start: int, length: int) -> dict[str, list[Any
 
 
 _CONFIRMED_WRITES = re.compile(r"after (\d+) confirmed write\(s\)")
+_SAVE_RANGE_OUTCOMES = frozenset(
+    {"confirmed", "uncertain", "not-attempted", "skipped-unchanged"}
+)
+# Journal store_state per parsed SAVE row outcome.  An explicit
+# not-attempted row is still unverified (uncertain); only a row the server
+# confirms, or reports skipped-unchanged, leaves the uncertain state.
+_SAVE_ROW_STORE_STATE = {
+    "confirmed": "confirmed",
+    "uncertain": "uncertain",
+    "not-attempted": "uncertain",
+    "skipped-unchanged": "skipped",
+}
+_SAVE_RANGE_ROW = re.compile(
+    r"range (\d+) (?:([A-Za-z0-9]+) )?(\d+)\+(\d+) "
+    r"stores=(\d+)/(\d+) readback=([01]) ([A-Za-z-]+)"
+)
+
+
+def _save_range_rows(lines: Any) -> list[dict[str, Any]]:
+    """Parse cmqttd's per-range SAVE continuation rows as evidence only.
+
+    Each row names one pending range in unit-specification order
+    (``range <index> [<method> ]<start>+<len> stores=<acked>/<planned>
+    readback=<0|1> <outcome>``) on the logical PP session-memory address
+    basis that the journal plans (OEM/GOC rows already add back the 256
+    transport offset).  Unreadable lines are skipped: absent or
+    malformed rows never refuse and never change the confirmed-write
+    final handling.
+    """
+    rows: list[dict[str, Any]] = []
+    if not isinstance(lines, (tuple, list)):
+        return rows
+    for line in lines:
+        if not isinstance(line, str):
+            continue
+        status = re.match(r"(?:\[[^\]]+\]\s*)?(\d{3})[- ](.*)", line)
+        message = status.group(2) if status else line
+        match = _SAVE_RANGE_ROW.fullmatch(message.strip())
+        if match is None:
+            continue
+        index_text, _, start_text, len_text, acked_text, planned_text, readback_text, outcome = match.groups()
+        if outcome not in _SAVE_RANGE_OUTCOMES:
+            continue
+        try:
+            row = {
+                "index": int(index_text),
+                "start": int(start_text),
+                "len": int(len_text),
+                "acked": int(acked_text),
+                "planned": int(planned_text),
+                "readback": int(readback_text),
+                "outcome": outcome,
+            }
+        except ValueError:
+            continue
+        rows.append(row)
+    return rows
+
+
+def _consume_range_row(plan_range: Mapping[str, Any], rows: list[dict[str, Any]]) -> dict[str, Any] | None:
+    """Remove and return the first SAVE row covering one journal range.
+
+    The server names every pending range in unit-specification order,
+    including staged-but-unchanged ranges (``skipped-unchanged``), while the
+    journal only maps rows onto write-planned ranges.  Matching by logical
+    (address, length) in journal order keeps a leading skipped row from being
+    attributed to a later changed range; a range without a matching row stays
+    uncertain for read-only recovery.  Shared-byte neighbors match in order.
+    """
+    target = (plan_range.get("logical_address"), plan_range.get("length"))
+    for position, row in enumerate(rows):
+        if (row.get("start"), row.get("len")) == target:
+            return rows.pop(position)
+    return None
 
 
 def _save_reply_evidence(error: BaseException) -> dict[str, Any]:
@@ -370,18 +444,32 @@ def _save_reply_evidence(error: BaseException) -> dict[str, Any]:
     Only a complete server reply is interpreted.  cmqttd stores changed
     ranges in unit-specification order and stops at the first fault, naming
     how many ranges it confirmed (tagged ACKs plus exact per-range readback).
-    Any other failure leaves every planned range uncertain.
+    Any other failure leaves every planned range uncertain.  Per-range
+    continuation rows are parsed here for both evidence and the failure
+    journal: when rows are present and the PCI generation is unchanged, the
+    journal derives per-range store_state from the row outcomes instead of
+    the confirmed-write count.  The ``200 OK`` and
+    ``after N confirmed write(s)`` finals keep their existing handling and
+    unreadable or absent rows simply yield an empty list.
     """
     from .cgate import CGateError
     server_reply = isinstance(error, (CGateError, ProgrammingCommandError))
     text = str(error)
     match = _CONFIRMED_WRITES.search(text) if server_reply else None
+    raw_lines: Any = ()
+    response = getattr(error, "response", None)
+    reply = getattr(error, "reply", None)
+    if response is not None and isinstance(getattr(response, "lines", None), (tuple, list)):
+        raw_lines = response.lines
+    elif reply is not None and isinstance(getattr(reply, "lines", None), (tuple, list)):
+        raw_lines = reply.lines
     return {
         "server_reply": server_reply,
         "error": text[:4096],
         "type": type(error).__name__,
         "confirmed_writes_reported": int(match[1]) if match else None,
         "nvm_commit_failed": bool(server_reply and "Save-to-NVM failed" in text),
+        "ranges": _save_range_rows(raw_lines) if server_reply else [],
     }
 
 
@@ -522,6 +610,11 @@ def _preflight(client: CommandClient, method: str, *, saving: bool) -> dict[str,
                 },
             )
     return evidence
+
+
+def _pci_generation(capabilities: Mapping[str, Any]) -> int | None:
+    generation = capabilities.get("pci_generation")
+    return generation if type(generation) is int else None
 
 
 def _attach(error: BaseException, evidence: Mapping[str, Any]) -> None:
@@ -751,25 +844,90 @@ class PhysicalProgramming:
 
     @staticmethod
     def _journal_save_failure(
-        attempt: PhysicalPPJournal, error: BaseException, evidence: dict[str, Any]
+        attempt: PhysicalPPJournal,
+        error: BaseException,
+        evidence: dict[str, Any],
+        *,
+        recorded_generation: int | None = None,
+        fresh_generation: int | None = None,
+        generation_readable: bool = True,
     ) -> None:
         reply = _save_reply_evidence(error)
+        # Per-range confirmations are bound to the PCI generation that
+        # produced them.  A reconnect retires outstanding tagged
+        # acknowledgements, so a confirmed-write count followed by a
+        # positively observed new generation must never confirm an old
+        # range.  ``None`` as the recorded generation means the server did
+        # not bind one; older servers keep the previous count handling.  An
+        # unreadable re-read preserves the server's own count as unverified
+        # evidence (recovery re-observes every range read-only); only a
+        # proven move retires it.
+        if recorded_generation is None:
+            generation_changed = False
+            generation_verified = True
+            confirmed_override = reply["confirmed_writes_reported"]
+        elif not generation_readable:
+            generation_changed = False
+            generation_verified = False
+            confirmed_override = reply["confirmed_writes_reported"]
+        elif fresh_generation is None:
+            generation_changed = True
+            generation_verified = True
+            confirmed_override = None
+        elif fresh_generation != recorded_generation:
+            generation_changed = True
+            generation_verified = True
+            confirmed_override = None
+        else:
+            generation_changed = False
+            generation_verified = True
+            confirmed_override = reply["confirmed_writes_reported"]
+        reply = {
+            **reply,
+            "recorded_pci_generation": recorded_generation,
+            "fresh_pci_generation": fresh_generation,
+            "generation_readable": generation_readable,
+            "generation_verified": generation_verified,
+            "generation_changed": generation_changed,
+        }
         evidence["save_reply"] = reply
 
         def mutate(document: dict[str, Any]) -> None:
-            confirmed = reply["confirmed_writes_reported"]
+            confirmed = confirmed_override
             planned = [row for row in document["ranges"] if row["store_state"] == "possible"]
-            if confirmed is not None and confirmed > len(planned):
-                confirmed = None
-            for position, row in enumerate(planned):
-                if confirmed is None:
-                    row["store_state"] = "uncertain"
-                elif position < confirmed:
-                    row["store_state"] = "confirmed"
-                elif position == confirmed:
-                    row["store_state"] = "uncertain"
-                else:
-                    row["store_state"] = "not-attempted"
+            rows = reply["ranges"]
+            if rows and not generation_changed:
+                # Row-driven: cmqttd names every pending range in
+                # unit-specification order, including staged-but-unchanged
+                # ranges as skipped-unchanged, while only write-planned
+                # ranges are possible here.  Rows are therefore matched by
+                # logical (address, length): a leading skipped row must never
+                # confirm or clear a later changed range positionally.  A row
+                # outcome replaces the confirmed-write count; ranges without
+                # a matching row stay uncertain for read-only recovery.  A
+                # proven generation move retires every row and keeps the
+                # count path's all-uncertain handling below.
+                remaining = list(rows)
+                plan_ranges = document["plan"]["ranges"]
+                for row in planned:
+                    hit = _consume_range_row(plan_ranges[row["index"]], remaining)
+                    if hit is None:
+                        row["store_state"] = "uncertain"
+                        continue
+                    row["store_state"] = _SAVE_ROW_STORE_STATE.get(
+                        hit.get("outcome"), "uncertain")
+            else:
+                if confirmed is not None and confirmed > len(planned):
+                    confirmed = None
+                for position, row in enumerate(planned):
+                    if confirmed is None:
+                        row["store_state"] = "uncertain"
+                    elif position < confirmed:
+                        row["store_state"] = "confirmed"
+                    elif position == confirmed:
+                        row["store_state"] = "uncertain"
+                    else:
+                        row["store_state"] = "not-attempted"
             if document["nvm_commit"] == "possible":
                 document["nvm_commit"] = (
                     "not-reached"
@@ -838,6 +996,7 @@ class PhysicalProgramming:
                 "save_attempted": False,
                 "automatic_write_retries": 0,
             })
+        initial_generation = _pci_generation(capabilities)
         evidence: dict[str, Any] = {
             "format": "cbus-physical-pp-apply-v1",
             "operation_id": self.operation_id,
@@ -1026,9 +1185,9 @@ class PhysicalProgramming:
                 })
                 try:
                     if destination is None:
-                        session.save_to_source()
+                        save_response = session.save_to_source()
                     else:
-                        session.save(destination_path.value)
+                        save_response = session.save(destination_path.value)
                 except BaseException as error:
                     evidence.update({
                         "phase": "save",
@@ -1036,7 +1195,29 @@ class PhysicalProgramming:
                         "save_outcome_uncertain": True,
                         "complete": False,
                     })
-                    self._journal_save_failure(attempt, error, evidence)
+                    try:
+                        # Re-bind the generation with a raw capabilities read:
+                        # unlike the preflight, this imposes no pci_connected
+                        # or lane requirement, so a PCI drop on the same
+                        # generation still trusts the server's own count while
+                        # a proven new generation retires it.
+                        fresh_document = _cmqtt_object(
+                            self.client.command("CMQTT CAPABILITIES"))
+                        fresh_generation = _pci_generation(fresh_document)
+                        generation_readable = True
+                    except BaseException:
+                        fresh_generation = None
+                        generation_readable = False
+                    evidence["recorded_pci_generation"] = initial_generation
+                    evidence["fresh_pci_generation_after_save_failure"] = fresh_generation
+                    self._journal_save_failure(
+                        attempt,
+                        error,
+                        evidence,
+                        recorded_generation=initial_generation,
+                        fresh_generation=fresh_generation,
+                        generation_readable=generation_readable,
+                    )
                     _attach(error, evidence)
                     raise
                 guard["after_reply"] = _generation_check(self.client, generation)
@@ -1075,19 +1256,46 @@ class PhysicalProgramming:
                         f"Run 'physical-pp recover --journal {attempt.path}'",
                         evidence,
                     )
+                save_ranges = _save_range_rows(getattr(save_response, "lines", ()))
                 evidence.update({
                     "saved": True,
                     "save_outcome_uncertain": False,
                     "phase": "fresh-physical-verification",
+                    "save_reply": {
+                        "confirmed": True,
+                        "at": _now(),
+                        "ranges": save_ranges,
+                    },
                 })
 
                 def mark_confirmed(document):
-                    for row in document["ranges"]:
-                        if row["store_state"] == "possible":
-                            row["store_state"] = "confirmed"
+                    planned = [row for row in document["ranges"]
+                               if row["store_state"] == "possible"]
+                    if save_ranges:
+                        # Row-driven: match each possible range to its own
+                        # (address, length) row, mirroring the failure-path
+                        # mapping, so a leading skipped-unchanged row for a
+                        # staged-but-unchanged range is never attributed to a
+                        # later changed range.  Ranges without a row stay
+                        # uncertain for read-only recovery.
+                        remaining = list(save_ranges)
+                        plan_ranges = document["plan"]["ranges"]
+                        for row in planned:
+                            hit = _consume_range_row(
+                                plan_ranges[row["index"]], remaining)
+                            if hit is None:
+                                row["store_state"] = "uncertain"
+                                continue
+                            row["store_state"] = _SAVE_ROW_STORE_STATE.get(
+                                hit.get("outcome"), "uncertain")
+                    else:
+                        for row in document["ranges"]:
+                            if row["store_state"] == "possible":
+                                row["store_state"] = "confirmed"
                     if document["nvm_commit"] == "possible":
                         document["nvm_commit"] = "confirmed"
-                    document["save_reply"] = {"confirmed": True, "at": _now()}
+                    document["save_reply"] = {
+                        "confirmed": True, "at": _now(), "ranges": save_ranges}
 
                 attempt.advance("save-confirmed", mark_confirmed)
                 evidence["journal"]["phase"] = "save-confirmed"
@@ -1244,6 +1452,26 @@ class PhysicalProgramming:
         except Exception as error:
             errors.append({"phase": "physical-load", "type": type(error).__name__,
                            "message": str(error)[:4096]})
+        # A reconnect during the fresh LOAD retires the observation it was
+        # read on.  Re-bind the generation before trusting any conclusive
+        # classification; a move (or an unreadable re-check) downgrades to
+        # an inconclusive report that leaves the journal unresolved.
+        generation_stable = True
+        try:
+            post_capabilities = _preflight(self.client, plan["method"], saving=False)
+            post_generation = _pci_generation(post_capabilities)
+            report["post_pci_generation"] = post_generation
+            initial_generation = report["fresh_pci_generation"]
+            if initial_generation is not None and post_generation != initial_generation:
+                generation_stable = False
+                errors.append({"phase": "pci-generation",
+                               "message": "PCI generation changed during recovery observation"})
+        except Exception as error:
+            generation_stable = False
+            report["post_pci_generation"] = None
+            errors.append({"phase": "pci-generation", "type": type(error).__name__,
+                           "message": str(error)[:4096]})
+        report["pci_generation_stable_during_recovery"] = generation_stable
         ranges = []
         for row, progress in zip(plan["ranges"], document["ranges"]):
             data = fresh[row["index"]]
@@ -1278,6 +1506,9 @@ class PhysicalProgramming:
         else:
             outcome = "observed_partial"
         conclusive = outcome in ("observed_expected", "observed_unchanged", "observed_partial")
+        if not generation_stable:
+            outcome = "uncertain"
+            conclusive = False
         report.update({
             "ranges": ranges,
             "errors": errors,
@@ -1295,6 +1526,8 @@ class PhysicalProgramming:
             "outcome": outcome,
             "conclusive": conclusive,
             "fresh_pci_generation": report["fresh_pci_generation"],
+            "post_pci_generation": report.get("post_pci_generation"),
+            "pci_generation_stable_during_recovery": generation_stable,
             "classifications": [row["classification"] for row in ranges],
             "fresh_sha256": [row["fresh_sha256"] for row in ranges],
             "errors": errors,

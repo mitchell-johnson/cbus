@@ -2,7 +2,6 @@
 from contextlib import contextmanager
 import hashlib
 import json
-import sys
 import uuid
 from xml.etree import ElementTree as ET
 

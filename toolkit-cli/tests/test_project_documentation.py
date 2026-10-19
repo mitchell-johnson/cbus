@@ -543,3 +543,114 @@ def test_din_missing_displayed_group_is_partial_not_a_fabricated_address_label()
     assert 'Output channel group labels (missing project groups): not documented (unrecovered)<br />' in lines
     assert summary['units'][0]['status'] == 'partial'
     assert '<a href="#254_56_72">72</a>' not in lines
+
+
+def test_delphi_date_uses_english_short_month_and_zero_padding():
+    assert doc.delphi_date(datetime(2024, 1, 5, 9, 7)) == "05 Jan 2024 09:07"
+    assert doc.delphi_date(WHEN) == "30 Sep 2026 07:05"
+
+
+def test_format_html_string_escapes_angle_brackets_only():
+    assert doc.format_html_string("") == ""
+    assert doc.format_html_string("plain & \"quotes\"") == "plain & \"quotes\""
+    assert doc.format_html_string("A<B>") == "A&#60;B&#62;"
+    assert doc.format_html_string("<>") == "&#60;&#62;"
+    assert doc.format_html_string("x<y>z & w") == "x&#60;y&#62;z & w"
+
+
+def test_parse_report_network_selector_retains_exact_lexical_identity():
+    from argparse import ArgumentTypeError
+    assert doc.parse_report_network_selector("254") == "254"
+    assert type(doc.parse_report_network_selector("254")) is str
+    assert doc.parse_report_network_selector("Local") == "Local"
+    assert doc.parse_report_network_selector(" House ") == " House "
+    with pytest.raises(ArgumentTypeError) as excinfo:
+        doc.parse_report_network_selector("")
+    assert "path component" in str(excinfo.value)
+    for bad in ("a/b", "a\nb", "a\x1fb"):
+        with pytest.raises(ArgumentTypeError):
+            doc.parse_report_network_selector(bad)
+
+
+def test_network_by_number_resolves_physical_number_only():
+    """network_by_number had zero test references; bridge adjacent/remote lookups consume it."""
+    def net(address, number):
+        return doc.Network(address, f"N{address}", "", "", [], [], number)
+    local, remote = net(254, 10), net(1, 20)
+    # Exact physical NetworkNumber wins even though database addresses differ.
+    assert doc.network_by_number([local, remote], 10) is local
+    assert doc.network_by_number([local, remote], 20) is remote
+    # Absent number with all numbers known stays unknown (None), never fabricated.
+    assert doc.network_by_number([local, remote], 30) is None
+    # Without legacy fallback the database Address is ignored: every number is
+    # unknown so the absent lookup must raise instead of resolving or returning None.
+    db_only = [net(254, None), net(1, None)]
+    with pytest.raises(ValueError, match="Unresolved NetworkNumber 254"):
+        doc.network_by_number(db_only, 254)
+    # Legacy fallback resolves the database Address explicitly.
+    assert doc.network_by_number(db_only, 254, legacy_address=True) is db_only[0]
+    assert doc.network_by_number(db_only, 1, legacy_address=True) is db_only[1]
+    # Duplicate physical numbers are ambiguous, never first-wins.
+    with pytest.raises(ValueError, match="ambiguous NetworkNumber 10"):
+        doc.network_by_number([net(254, 10), net(2, 10)], 10)
+    # One unknown number poisons an otherwise absent lookup.
+    with pytest.raises(ValueError, match="Unresolved NetworkNumber 30"):
+        doc.network_by_number([local, net(2, None)], 30)
+
+
+def test_documentor_naming_links_encoding_and_default_output_are_pinned():
+    """documentor_class/html_*/encode/default_output_name had zero direct test references."""
+    # TProjectDocumentorFactory naming: "T<short>Documentor", including the base.
+    assert doc.documentor_class("Output") == "TOutputDocumentor"
+    assert doc.documentor_class("Bridge") == "TBridgeDocumentor"
+    assert doc.documentor_class("UnitType") == "TUnitTypeDocumentor"
+    # Link anchors consumed by contents/network/unit sections.
+    net = doc.Network(254, "Local", "", "", [doc.Application(56, "Lighting", "", [])], [])
+    assert doc.html_network(net) == '<a href="#254">Local</a>'
+    assert doc.html_application(net, 56) == '<a href="#254_56">Lighting</a>'
+    bare = doc.Network(254, "Local", "", "", [], [])
+    assert doc.html_application(bare, 56) == '<a href="#254_56">Lighting</a>'
+    assert doc.html_application(bare, 99) == '<a href="#254_99">99</a>'
+    assert doc.html_application(bare, 255) == "<Unused>"
+    assert 'href' not in doc.html_application(bare, 255)
+    assert doc.html_group(net, 56, doc.Group(1, "Kitchen", "", [])) == '<a href="#254_56_1">Kitchen</a>'
+    assert doc.html_group(net, 56, doc.Group(255, "A<B>", "", [])) == "A&#60;B&#62;"
+    unit = doc.Unit(12, "Gim", "PC_GIM", "", "", "", "", {}, {})
+    assert doc.html_unit(net, unit) == '<a href="#254_unit_12">Gim - PC_GIM</a>'
+    # TStringList.SaveToFile(TEncoding.UTF8): BOM prefix, UTF-8 body.
+    assert doc.encode("") == b"\xef\xbb\xbf"
+    assert doc.encode("A<B>") == b"\xef\xbb\xbfA<B>"
+    assert doc.encode("Ü") == "Ü".encode("utf-8").join((b"\xef\xbb\xbf", b""))
+    # TProjectNodeHelper.DocumentProject default name; unsafe names must pass --output.
+    assert doc.default_output_name("HOUSE") == Path("HOUSE.html")
+    for bad in ("", ".", "..", "a/b", "a\\b", "a:b", "a*b", 'a"b', "a<b", "a>b", "a|b", "a?b", "a\x00b"):
+        with pytest.raises(ValueError, match="pass --output"):
+            doc.default_output_name(bad)
+
+
+def test_version_tokens_non_numeric_become_zero():
+    """_version_tokens (project_documentation.py:_version_tokens): StrToIntDef per "." token."""
+    # CIS_Strings.VersionStringCompare parses each dot-separated token with
+    # StrToIntDef (base 10, whitespace trimmed); failures become 0. Empty
+    # input still yields one token, so "" maps to [0], not [].
+    assert doc._version_tokens("") == [0]
+    assert doc._version_tokens("  ") == [0]
+    assert doc._version_tokens("a") == [0]
+    assert doc._version_tokens("x.y.z") == [0, 0, 0]
+    assert doc._version_tokens("1.a.3") == [1, 0, 3]
+    assert doc._version_tokens("1..2") == [1, 0, 2]
+    assert doc._version_tokens("1.2a") == [1, 0]
+    assert doc._version_tokens("0x10") == [0]
+    assert doc._version_tokens(" 1 . 2 ") == [1, 2]
+    assert doc._version_tokens("1.02") == [1, 2]
+    # version_compare pads the shorter side with zeros, so non-numeric
+    # tokens compare equal to explicit zeros.
+    assert doc.version_compare("1.a", "1.0") == 0
+    assert doc.version_compare("x", "0") == 0
+    assert doc.version_compare("", "0") == 0
+    assert doc.version_compare("1.02", "1.2") == 0
+    assert doc.version_compare("1.a", "1.1") < 0
+    # Garbage firmware therefore matches a 0..9 registration (as 0) but
+    # misses a 1.3.01-bounded one and falls back to the base documentor.
+    assert doc.select_documentor("BCI4A", "oops") == "NeoProInput"
+    assert doc.select_documentor("KEYA1", "oops") == "UnitType"

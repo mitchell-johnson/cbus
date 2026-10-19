@@ -1772,3 +1772,216 @@ async fn net_save_db_unrelated_application_scalar_preserves_admitted_legacy_pp_d
     no_io(&mut remote).await;
     std::fs::remove_file(path).unwrap();
 }
+
+#[tokio::test]
+async fn net_save_db_numeric_application_copy_survives_save_close_load_and_restart() {
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    for text in [
+        "PROJECT NEW NCOPY",
+        "PROJECT USE NCOPY",
+        "DBCREATENET 254 Local Cni 127.0.0.1:10001",
+        "DBADDSAFE //NCOPY/254 Application 56 Lighting",
+        "DBADDSAFE //NCOPY/254/56 Group 1 Main",
+    ] {
+        let reply = run(&service, &mut client, text).await;
+        assert_eq!(
+            reply.status,
+            if text.starts_with("DBADD") { 301 } else { 200 },
+            "{text}: {reply:?}"
+        );
+    }
+    let level = run(
+        &service,
+        &mut client,
+        "DBADDSAFE //NCOPY/254/56/1 Level 7 Evening",
+    )
+    .await;
+    assert_eq!(level.status, 301, "{level:?}");
+    let level_oid = level
+        .final_text
+        .strip_prefix("301 OID=")
+        .unwrap()
+        .to_string();
+    for text in [
+        "DBADDSAFE //NCOPY/254/56 NetVar 4 Variable",
+        "DBADDSAFE //NCOPY/254/56/4 Level 42 High",
+    ] {
+        let reply = run(&service, &mut client, text).await;
+        assert_eq!(reply.status, 301, "{text}: {reply:?}");
+    }
+    for text in [
+        format!("DBSETSAFE !{level_oid}/Value 77"),
+        "DBADDSAFE //NCOPY/254 Application 71 Other".to_string(),
+    ] {
+        let reply = run(&service, &mut client, &text).await;
+        assert_eq!(
+            reply.status,
+            if text.starts_with("DBSET") { 200 } else { 301 },
+            "{text}: {reply:?}"
+        );
+    }
+    // Durable creation-order roster from #123 tracks admitted Applications.
+    {
+        let model = service.model.lock().await;
+        let order = &model.projects["NCOPY"].networks[&254].application_creation_order;
+        assert_eq!(order.addresses, vec![56, 71]);
+        assert!(!order.historical_prefix_unknown);
+    }
+    let source = run(&service, &mut client, "DBGETXML //NCOPY/254/56").await;
+    assert_eq!(source.status, 200);
+    let copied = run(
+        &service,
+        &mut client,
+        "DBCOPYSAFE //NCOPY/254/56 //NCOPY/254 57 Copy",
+    )
+    .await;
+    assert_eq!(copied.status, 301, "{copied:?}");
+    assert!(copied.lines.is_empty());
+    let copied_oid = copied
+        .final_text
+        .strip_prefix("301 OID=")
+        .unwrap()
+        .to_string();
+    let copied_xml = run(&service, &mut client, &format!("DBGETXML !{copied_oid}")).await;
+    assert_eq!(copied_xml.status, 200, "{copied_xml:?}");
+    let copied_document: String = copied_xml
+        .lines
+        .iter()
+        .filter_map(|line| line.strip_prefix("347-"))
+        .collect();
+    for fragment in [
+        "<TagName>Copy</TagName>",
+        "<Address>57</Address>",
+        "<TagName>Main</TagName>",
+        "Value=\"77\"",
+        "<TagName>Variable</TagName>",
+    ] {
+        assert!(
+            copied_document.contains(fragment),
+            "{fragment}: {copied_document}"
+        );
+    }
+    // Fresh identities throughout: the copy carries its own root OID and
+    // no source descendant OID.
+    assert!(copied_document.contains(&copied_oid));
+    assert!(!copied_document.contains(&level_oid));
+    assert_eq!(
+        run(&service, &mut client, "DBGETXML //NCOPY/254/56")
+            .await
+            .lines,
+        source.lines
+    );
+    // The copy appends to the durable creation-order roster without
+    // disturbing the source prefix.
+    {
+        let model = service.model.lock().await;
+        let order = &model.projects["NCOPY"].networks[&254].application_creation_order;
+        assert_eq!(order.addresses, vec![56, 71, 57]);
+        assert!(!order.historical_prefix_unknown);
+    }
+    // A conflicting copy refuses with 409 and persists nothing, including
+    // the repository file.
+    let bytes = std::fs::read(&path).unwrap();
+    let clash = run(
+        &service,
+        &mut client,
+        "DBCOPYSAFE //NCOPY/254/56 //NCOPY/254 71 Clash",
+    )
+    .await;
+    assert_eq!(clash.status, 409, "{clash:?}");
+    assert_eq!(
+        clash.final_text,
+        "409 Application destination contains retained state"
+    );
+    assert_eq!(std::fs::read(&path).unwrap(), bytes);
+    {
+        let model = service.model.lock().await;
+        let order = &model.projects["NCOPY"].networks[&254].application_creation_order;
+        assert_eq!(order.addresses, vec![56, 71, 57]);
+    }
+    // A copy onto a missing network refuses without mutation.
+    let before_network = run(&service, &mut client, "DBGETXML //NCOPY/254").await;
+    let missing_parent = run(
+        &service,
+        &mut client,
+        "DBCOPYSAFE //NCOPY/254/56 //NCOPY/999 60 Ghost",
+    )
+    .await;
+    // Network 999 is not a byte, so the destination parse refuses first.
+    assert_eq!(missing_parent.status, 400, "{missing_parent:?}");
+    assert_eq!(
+        run(&service, &mut client, "DBGETXML //NCOPY/254")
+            .await
+            .lines,
+        before_network.lines
+    );
+    {
+        let model = service.model.lock().await;
+        let order = &model.projects["NCOPY"].networks[&254].application_creation_order;
+        assert_eq!(order.addresses, vec![56, 71, 57]);
+    }
+    for text in [
+        "PROJECT SAVE NCOPY",
+        "PROJECT CLOSE NCOPY",
+        "PROJECT LOAD NCOPY",
+        "PROJECT USE NCOPY",
+    ] {
+        let reply = run(&service, &mut client, text).await;
+        assert_eq!(reply.status, 200, "{text}: {reply:?}");
+    }
+    // LOAD may materialize the admitted empty Level collection; identities
+    // and values are otherwise unchanged.
+    let strip = |lines: Vec<String>| -> Vec<String> {
+        lines
+            .into_iter()
+            .map(|line| line.replace("<TagsDLT/>", ""))
+            .collect()
+    };
+    assert_eq!(
+        strip(
+            run(&service, &mut client, &format!("DBGETXML !{copied_oid}"))
+                .await
+                .lines
+        ),
+        strip(copied_xml.lines.clone())
+    );
+    {
+        let model = service.model.lock().await;
+        let order = &model.projects["NCOPY"].networks[&254].application_creation_order;
+        assert_eq!(order.addresses, vec![56, 71, 57]);
+        assert!(!order.historical_prefix_unknown);
+    }
+    no_io(&mut remote).await;
+    drop(service);
+    let (pci_client, mut remote) = pci();
+    let restarted = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let reply = run(&restarted, &mut client, "PROJECT USE NCOPY").await;
+    assert_eq!(reply.status, 200, "{reply:?}");
+    assert_eq!(
+        strip(
+            run(&restarted, &mut client, &format!("DBGETXML !{copied_oid}"))
+                .await
+                .lines
+        ),
+        strip(copied_xml.lines.clone())
+    );
+    assert_eq!(
+        strip(
+            run(&restarted, &mut client, "DBGETXML //NCOPY/254/56")
+                .await
+                .lines
+        ),
+        strip(source.lines.clone())
+    );
+    {
+        let model = restarted.model.lock().await;
+        let order = &model.projects["NCOPY"].networks[&254].application_creation_order;
+        assert_eq!(order.addresses, vec![56, 71, 57]);
+        assert!(!order.historical_prefix_unknown);
+    }
+    no_io(&mut remote).await;
+    std::fs::remove_file(path).unwrap();
+}
