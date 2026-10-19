@@ -1,9 +1,12 @@
 """CLI boundary for strict, one-shot routed WRITE."""
 import contextlib
+import hashlib
 import io
 import json
 from pathlib import Path
+import socket
 import tempfile
+import threading
 import unittest
 from unittest.mock import patch
 
@@ -12,6 +15,8 @@ from cbus_toolkit import pci_routed_write as core
 from cbus_toolkit import pci_routed_write_cli as helper
 from cbus_toolkit.project import ProjectError
 from tests.test_pci_routed_recall import Peer, SocketFixture
+from tests.test_pci_routed_recall import literal_command as recall_literal_command
+from tests.test_pci_routed_recall import literal_frame as recall_literal_frame
 
 
 class RoutedWriteCLITests(unittest.TestCase):
@@ -180,6 +185,210 @@ class RoutedWriteCLITests(unittest.TestCase):
         self.assertEqual(evidence["error"]["type"], "KeyboardInterrupt")
         self.assertTrue(evidence["write_outcome_uncertain"])
         self.assertEqual(len(fixture.sent), 1)
+
+
+RAW_RECALL = recall_literal_command(unit=4, parameter=7, count=2, bridges=(20, 21))
+RAW_WRITE = b"\\4614121504A40755AABBg\r"
+RAW_ACK = b"861410021504320755AD\r"
+TYPED_RECALL = recall_literal_command(unit=4, parameter=7, count=2, bridges=(253, 252))
+TYPED_WRITE = b"\\46FD12FC04A40755AABBg\r"
+
+
+def raw_reply(data):
+    return recall_literal_frame(outer=20, destination=16, route=(21, 4), parameter=7, data=data)
+
+
+def typed_reply(data):
+    return recall_literal_frame(outer=253, destination=16, route=(252, 4), parameter=7, data=data)
+
+
+class SequencePeer:
+    """Owned loopback peer serving one exact command per sequential connection."""
+
+    def __init__(self, exchanges):
+        self.exchanges = list(exchanges)
+        self.received = []
+        self.error = None
+        self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server.settimeout(3)
+        self.server.bind(("127.0.0.1", 0))
+        self.server.listen(1)
+        self.port = self.server.getsockname()[1]
+        self.thread = threading.Thread(target=self.run, daemon=True)
+        self.thread.start()
+
+    def run(self):
+        try:
+            for command, chunks, *disconnect in self.exchanges:
+                connection, _ = self.server.accept()
+                with connection:
+                    connection.settimeout(3)
+                    received = bytearray()
+                    while not received.endswith(b"\r"):
+                        data = connection.recv(256)
+                        if not data:
+                            raise AssertionError("EOF before intended command")
+                        received.extend(data)
+                    self.received.append(bytes(received))
+                    if bytes(received) != command:
+                        raise AssertionError((bytes(received), command))
+                    for chunk in chunks:
+                        connection.sendall(chunk)
+                    if not disconnect and connection.recv(256):
+                        raise AssertionError("A second command was sent")
+        except BaseException as error:
+            self.error = error
+        finally:
+            self.server.close()
+
+    def finish(self):
+        self.thread.join(4)
+        if self.thread.is_alive():
+            raise AssertionError("Owned peer did not stop")
+        if self.error is not None:
+            raise self.error
+
+
+class RoutedWriteJournalCLITests(unittest.TestCase):
+    invoke = RoutedWriteCLITests.invoke
+    project = RoutedWriteCLITests.project
+    typed_arguments = RoutedWriteCLITests.typed_arguments
+
+    def raw(self, port, journal, data="55AABB"):
+        return ["--compact", "pci", "--host", "127.0.0.1", "--port", str(port), "routed-write",
+                "4", "7", data, "--expected-ack-tag", "0x55", "--bridge", "20", "--bridge", "21",
+                "--expected-source", "20", "--expected-destination", "16", "--expected-route", "21",
+                "--expected-route", "4", "--journal", str(journal)]
+
+    def recover(self, port, journal, extra=()):
+        return ["--compact", "pci", "--host", "127.0.0.1", "--port", str(port), "routed-write",
+                "--recover", "--journal", str(journal), *extra]
+
+    def test_journaled_raw_write_then_recover_expected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            journal = Path(directory) / "attempt.json"
+            peer = SequencePeer([(RAW_RECALL, [b"g." + raw_reply(b"\x11\x22")]),
+                                 (RAW_WRITE, [b"g." + RAW_ACK])])
+            try:
+                code, stdout, stderr = self.invoke(self.raw(peer.port, journal))
+            finally:
+                peer.finish()
+            self.assertEqual((code, stderr), (0, ""))
+            result = json.loads(stdout)
+            self.assertEqual(result["journal"]["phase"], "acknowledged")
+            self.assertEqual(result["journal"]["baseline_hex"], "1122")
+            self.assertFalse(result["journal"]["recovery_required"])
+            self.assertEqual(result["journal"]["pci_generation_source"], "unavailable")
+            # Recovery must target the journaled endpoint; a different port is refused.
+            with patch.object(core.socket, "socket", side_effect=AssertionError("No socket")):
+                code, stdout, stderr = self.invoke(self.recover(peer.port + 1, journal))
+            self.assertEqual((code, stdout), (1, ""))
+            self.assertIn("endpoint", json.loads(stderr)["error"])
+            recall = SocketFixture([b"g." + raw_reply(b"\xaa\xbb")])
+            with patch.object(core.RoutedWriteClient, "exchange", side_effect=AssertionError("No WRITE")), \
+                 patch.object(core.socket, "socket", side_effect=[recall]):
+                code, stdout, stderr = self.invoke(self.recover(peer.port, journal))
+            self.assertEqual((code, stderr), (0, ""))
+            report = json.loads(stdout)
+            self.assertEqual(report["classification"], "expected")
+            self.assertFalse(report["writes_attempted"])
+            self.assertEqual(recall.sent, [RAW_RECALL])
+
+    def test_lost_reply_is_uncertain_and_recover_reports_mixed_without_resolving(self):
+        with tempfile.TemporaryDirectory() as directory:
+            journal = Path(directory) / "attempt.json"
+            peer = SequencePeer([(RAW_RECALL, [b"g." + raw_reply(b"\x11\x22")]),
+                                 (RAW_WRITE, [b"g."], "disconnect")])
+            try:
+                code, stdout, stderr = self.invoke(self.raw(peer.port, journal))
+            finally:
+                peer.finish()
+            self.assertEqual((code, stdout), (1, ""))
+            error = json.loads(stderr)
+            self.assertEqual(error["pci_routed_write_journal"]["phase"], "uncertain")
+            self.assertTrue(error["pci_routed_write_journal"]["recovery_required"])
+            self.assertTrue(error["pci_routed_write_evidence"]["write_outcome_uncertain"])
+            self.assertTrue(error["pci_routed_write_baseline_evidence"]["complete"])
+            # A second WRITE to the same target is refused before any I/O.
+            with patch.object(core.socket, "socket", side_effect=AssertionError("No socket")):
+                code, stdout, stderr = self.invoke(self.raw(peer.port, Path(directory) / "next.json"))
+            self.assertEqual((code, stdout), (1, ""))
+            self.assertIn("unresolved", json.loads(stderr)["error"])
+            recall = SocketFixture([b"g." + raw_reply(b"\xaa\x22")])
+            with patch.object(core.socket, "socket", side_effect=[recall]):
+                code, stdout, stderr = self.invoke(self.recover(peer.port, journal))
+            self.assertEqual((code, stderr), (1, ""))
+            self.assertEqual(recall.sent, [RAW_RECALL])
+            report = json.loads(stdout)
+            self.assertEqual((report["classification"], report["resolved"]), ("mixed", False))
+
+    def test_recover_rejects_write_options_and_needs_journal(self):
+        with patch.object(core.socket, "socket", side_effect=AssertionError("No socket")):
+            for args in (self.recover(10001, "x.json", ("--expected-ack-tag", "1")),
+                         ["--compact", "pci", "routed-write", "--recover"],
+                         self.recover(10001, "x.json", ("--bridge", "1"))):
+                code, stdout, _ = self.invoke(args)
+                self.assertEqual((code, stdout), (2, ""))
+
+    def test_typed_journal_binds_project_and_refuses_handoff_change_before_send(self):
+        with tempfile.TemporaryDirectory() as directory:
+            project = self.project(directory)
+            journal = Path(directory) / "attempt.json"
+            args = self.typed_arguments(project, extra=("--journal", str(journal)))
+            args[args.index("AABB")] = "55AABB"
+            recall = SocketFixture([b"g." + typed_reply(b"\x11\x22")])
+            write = SocketFixture([])
+            real = helper.assert_fresh_project
+            calls = []
+
+            def stale(*values):
+                calls.append(values)
+                if len(calls) == 3:
+                    raise ProjectError("project changed at handoff")
+                return real(*values)
+
+            with patch.object(helper, "assert_fresh_project", side_effect=stale), \
+                 patch.object(core.socket, "socket", side_effect=[recall, write]):
+                code, stdout, stderr = self.invoke(args)
+            self.assertEqual((code, stdout), (1, ""))
+            self.assertEqual((recall.sent, write.sent), ([TYPED_RECALL], []))
+            error = json.loads(stderr)
+            self.assertEqual(error["type"], "RoutedWriteRefused")
+            self.assertEqual(error["pci_routed_write_journal"]["phase"], "not-sent")
+            self.assertFalse(error["pci_routed_write_evidence"]["send_attempted"])
+            document = json.loads(journal.read_text(encoding="utf-8"))
+            self.assertEqual(document["plan"]["mode"], "typed")
+            self.assertEqual(document["plan"]["project_sha256"],
+                             hashlib.sha256(project.read_bytes()).hexdigest())
+
+    def test_typed_recover_rechecks_project_route_before_recall(self):
+        with tempfile.TemporaryDirectory() as directory:
+            project = self.project(directory)
+            journal = Path(directory) / "attempt.json"
+            args = self.typed_arguments(project, extra=("--journal", str(journal)))
+            args[args.index("AABB")] = "55AABB"
+            with patch.object(core.socket, "socket", side_effect=[
+                    SocketFixture([b"g." + typed_reply(b"\x11\x22")]), SocketFixture([b"g."])]):
+                code, _, stderr = self.invoke(args)
+            self.assertEqual(code, 1)
+            self.assertEqual(json.loads(stderr)["pci_routed_write_journal"]["phase"], "uncertain")
+            project.write_text(project.read_text(encoding="utf-8").replace("<TagName>Local<", "<TagName>Local2<"),
+                               encoding="utf-8")
+            with patch.object(core.socket, "socket", side_effect=AssertionError("No socket")):
+                code, stdout, stderr = self.invoke(
+                    self.recover(10001, journal, ("--project-file", str(project))))
+            self.assertEqual((code, stdout), (1, ""))
+            self.assertIn("differs from the journaled route plan", json.loads(stderr)["error"])
+            project.write_text(project.read_text(encoding="utf-8").replace("<TagName>Local2<", "<TagName>Local<"),
+                               encoding="utf-8")
+            recall = SocketFixture([b"g." + typed_reply(b"\x11\x22")])
+            with patch.object(core.socket, "socket", side_effect=[recall]):
+                code, stdout, stderr = self.invoke(
+                    self.recover(10001, journal, ("--project-file", str(project))))
+            self.assertEqual((code, stderr), (0, ""))
+            report = json.loads(stdout)
+            self.assertEqual((report["classification"], report["topology_rechecked"]), ("unchanged", True))
+            self.assertEqual(recall.sent, [TYPED_RECALL])
 
 
 if __name__ == "__main__":

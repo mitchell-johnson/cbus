@@ -7,15 +7,19 @@ turns an ACK into a claim about nonvolatile device state.
 from __future__ import annotations
 
 from dataclasses import dataclass
+import hashlib
 import ipaddress
 import math
 import socket
 import threading
 import time
 
-from .pci import AcknowledgeCAL, PCIRejected, ProtocolError, WriteCAL
+from .pci import AcknowledgeCAL, PCIRejected, ProtocolError, RecallCAL, WriteCAL
 from .pci_routing import RoutedCALCommand, ReceivedCALRoute, inspect_received_cal_route
-from .pci_routed_recall import RoutedReplyPath, _Stream, _path, _integer, _copy, _error
+from .pci_routed_recall import (
+    RoutedRecallClient, RoutedReplyPath, _Stream, _path, _integer, _copy, _error,
+)
+from . import pci_routed_write_journal as journal_module
 
 
 @dataclass(frozen=True)
@@ -167,7 +171,15 @@ class RoutedWriteClient:
             raise ValueError("Final declared ACK path byte must equal the requested unit")
         return canonical, path, expected_ack_tag
 
-    def exchange(self, command, *, expected, expected_ack_tag):
+    def exchange(self, command, *, expected, expected_ack_tag, before_send=None):
+        """Run the one-shot exchange.
+
+        ``before_send``, when given, is called after connect and immediately
+        before the WRITE bytes are handed to the socket. If it raises, nothing
+        is sent and the error propagates with ``send_attempted=false``.
+        """
+        if before_send is not None and not callable(before_send):
+            raise ValueError("before_send must be callable")
         if not self._lock.acquire(blocking=False):
             raise RuntimeError("A routed WRITE exchange is already active")
         self.last_error = self.last_evidence = None
@@ -233,6 +245,11 @@ class RoutedWriteClient:
             endpoint = ((settings.host, settings.port) if settings.family == socket.AF_INET
                         else (settings.host, settings.port, 0, 0))
             sock.connect(endpoint)
+            if before_send is not None:
+                evidence["stage"] = "handoff_check"
+                evidence["handoff_check_passed"] = False
+                before_send()
+                evidence["handoff_check_passed"] = True
             evidence["stage"] = "send"
             sock.settimeout(remaining())
             evidence["send_attempted"] = True
@@ -337,3 +354,332 @@ class RoutedWriteClient:
         if first is not None:
             raise BaseException.with_traceback(first, traceback)
         return result
+
+
+class RoutedWriteRefused(RuntimeError):
+    """A journaled WRITE was refused before any WRITE byte reached the socket."""
+
+
+class RoutedWriteUncertain(RuntimeError):
+    """A journaled WRITE was sent and its outcome is not established."""
+
+
+def recovery_contract(command, expected_ack_tag):
+    """Return the read-only RECALL range that can observe this WRITE.
+
+    Owned model, matching the original ACK matcher (the ACK tag is the first
+    WRITE byte after the parameter) and the Rust simulator fixture: the first
+    data byte is the tag and the remaining bytes are the parameter values a
+    RECALL of ``parameter`` returns. This is not a device programming method.
+    """
+    data = command.cal.data
+    if len(data) < 2:
+        raise ValueError(
+            "A journaled routed WRITE needs the tag byte plus 1..29 parameter bytes "
+            "so recovery can RECALL them"
+        )
+    if data[0] != expected_ack_tag:
+        raise ValueError("A journaled routed WRITE's first data byte must equal the expected ACK tag")
+    return command.cal.parameter, len(data) - 1, bytes(data[1:])
+
+
+def _probe(generation_probe):
+    if generation_probe is None:
+        return None
+    value = generation_probe()
+    if type(value) is not int:
+        raise ValueError("PCI generation probe must return an integer")
+    return value
+
+
+def _recall(factory, *, host, port, timeout, command_checksum, max_events, max_received_bytes,
+            unit, parameter, count, bridges, expected):
+    client = factory(host, port, timeout=timeout, command_checksum=command_checksum,
+                     max_events=max_events, max_received_bytes=max_received_bytes)
+    command = RoutedCALCommand(unit, RecallCAL(parameter, count), bridges=tuple(bridges),
+                               addressing="direct")
+    try:
+        result = client.exchange(command, expected=expected)
+    except Exception as error:
+        return None, client.last_evidence, error
+    return result, client.last_evidence, None
+
+
+def journal_summary(attempt):
+    """Compact JSON view of one journal's current state."""
+    document = None if attempt is None else attempt.document
+    if document is None:
+        return {"path": None if attempt is None else str(attempt.path), "created": False}
+    return {
+        "path": str(attempt.path),
+        "created": True,
+        "attempt_id": document["attempt_id"],
+        "phase": document["phase"],
+        "complete": document["complete"],
+        "resolved": document["resolved"],
+        "recovery_required": not (document["complete"] or document["resolved"]),
+        "topology_sha256": document["plan"]["topology_sha256"],
+        "project_sha256": document["plan"]["project_sha256"],
+        "pci_generation": document["plan"]["pci_generation"],
+        "pci_generation_source": document["plan"]["pci_generation_source"],
+        "baseline_hex": document["plan"]["recovery_read"]["baseline_hex"],
+    }
+
+
+def journaled_write(command, *, expected, expected_ack_tag, journal, host, port=10001,
+                    timeout=5.0, command_checksum=False, max_events=256,
+                    max_received_bytes=32768, project_sha256=None, route_plan=None,
+                    handoff_check=None, generation_probe=None,
+                    write_client_factory=None, recall_client_factory=None, observer=None):
+    """Baseline RECALL, exclusive fsynced journal, then one routed WRITE.
+
+    Order: refuse an existing path or an unresolved same-target journal; read
+    the PCI generation; perform one read-only baseline RECALL of the recovery
+    range; rerun ``handoff_check`` and the generation probe; exclusively create
+    and fsync the journal; connect; immediately before the send rerun both
+    checks again (any change refuses with nothing sent); send once; re-probe
+    the generation. A changed generation after send, or any post-send fault,
+    is ``uncertain`` and leaves the journal unresolved for ``recover_write``.
+    Nothing is retried.
+    """
+    write_client_factory = write_client_factory or RoutedWriteClient
+    recall_client_factory = recall_client_factory or RoutedRecallClient
+    if observer is None:
+        observer = {}
+    canonical_command, expected, expected_ack_tag = RoutedWriteClient._preflight(
+        command, expected, expected_ack_tag)
+    parameter, count, written = recovery_contract(canonical_command, expected_ack_tag)
+    if (route_plan is None) != (project_sha256 is None):
+        raise ValueError("project_sha256 and route_plan must be supplied together")
+    if handoff_check is not None and not callable(handoff_check):
+        raise ValueError("handoff_check must be callable")
+    if generation_probe is not None and not callable(generation_probe):
+        raise ValueError("generation_probe must be callable")
+    settings = write_client_factory(host, port, timeout=timeout, command_checksum=command_checksum,
+                                    max_events=max_events, max_received_bytes=max_received_bytes)
+    observer["write_client"] = settings
+    journal_module.refuse_unresolved(journal, journal_module.target_key({
+        "endpoint": {"host": settings.host, "port": settings.port},
+        "bridges": list(canonical_command.bridges),
+        "unit": canonical_command.unit,
+    }))
+    generation = _probe(generation_probe)
+    baseline, baseline_evidence, baseline_error = _recall(
+        recall_client_factory, host=settings.host, port=settings.port, timeout=settings.timeout,
+        command_checksum=settings.command_checksum, max_events=settings.max_events,
+        max_received_bytes=settings.max_received_bytes, unit=canonical_command.unit,
+        parameter=parameter, count=count, bridges=canonical_command.bridges, expected=expected)
+    observer["baseline_evidence"] = baseline_evidence
+    if baseline_error is not None:
+        raise RoutedWriteRefused(
+            f"Baseline RECALL failed ({type(baseline_error).__name__}: {baseline_error}); "
+            "no journal was created and no WRITE was sent") from baseline_error
+    if handoff_check is not None:
+        handoff_check()
+    if _probe(generation_probe) != generation:
+        raise RoutedWriteRefused(
+            "PCI generation changed during the baseline RECALL; no journal was created and no WRITE was sent")
+    expected_dict = expected.as_dict()
+    mode = "raw" if route_plan is None else "typed"
+    plan = {
+        "endpoint": {"host": settings.host, "port": settings.port},
+        "command_checksum": settings.command_checksum,
+        "unit": canonical_command.unit,
+        "parameter": parameter,
+        "data_hex": canonical_command.cal.data.hex().upper(),
+        "expected_ack_tag": expected_ack_tag,
+        "bridges": list(canonical_command.bridges),
+        "expected": expected_dict,
+        "mode": mode,
+        "project_sha256": project_sha256,
+        "route_plan": None if route_plan is None else _copy(route_plan),
+        "topology_sha256": journal_module.topology_sha256(
+            mode=mode, bridges=canonical_command.bridges, expected=expected_dict,
+            project_sha256=project_sha256, route_plan=route_plan),
+        "pci_generation": generation,
+        "pci_generation_source": "unavailable" if generation_probe is None else "caller-probe",
+        "recovery_read": {
+            "parameter": parameter,
+            "count": count,
+            "expected_hex": written.hex().upper(),
+            "baseline_hex": baseline.data.hex().upper(),
+        },
+    }
+    attempt = journal_module.RoutedWriteJournal.create(journal, plan)
+    observer["journal"] = attempt
+
+    def before_send():
+        if handoff_check is not None:
+            try:
+                handoff_check()
+            except Exception as error:
+                raise RoutedWriteRefused(
+                    f"Topology changed at handoff ({error}); no WRITE was sent") from error
+        if _probe(generation_probe) != generation:
+            raise RoutedWriteRefused("PCI generation changed at handoff; no WRITE was sent")
+
+    client = write_client_factory(settings.host, settings.port, timeout=settings.timeout,
+                                  command_checksum=settings.command_checksum,
+                                  max_events=settings.max_events,
+                                  max_received_bytes=settings.max_received_bytes)
+    observer["write_client"] = client
+    try:
+        receipt = client.exchange(canonical_command, expected=expected,
+                                  expected_ack_tag=expected_ack_tag, before_send=before_send)
+    except BaseException as error:
+        evidence = client.last_evidence if type(client.last_evidence) is dict else {}
+        # Only an explicit false proves no WRITE byte reached the socket.
+        sent = evidence.get("send_attempted") is not False
+        record = {"send_attempted": sent, "error": _error(error),
+                  "handoff_check_passed": evidence.get("handoff_check_passed")}
+        try:
+            if sent:
+                attempt.advance("uncertain", lambda doc: doc.update(send=record))
+            else:
+                def not_sent(doc):
+                    doc.update(send=record, complete=True, resolved=True,
+                               resolution={"by": "writer", "outcome": "not-sent",
+                                           "at": journal_module.now()})
+                attempt.advance("not-sent", not_sent)
+        except BaseException as journal_error:
+            observer["journal_update_error"] = _error(journal_error)
+        raise
+    observer["receipt"] = receipt
+    record = {"send_attempted": True, "confirmation_received": True,
+              "acknowledgement_received": True, "sent_hex": receipt.sent.hex().upper(),
+              "generation_changed_after_send": False}
+    try:
+        changed = _probe(generation_probe) != generation
+    except Exception as error:
+        record["generation_probe_error"] = _error(error)
+        changed = True
+    if changed:
+        record["generation_changed_after_send"] = True
+        try:
+            attempt.advance("uncertain", lambda doc: doc.update(send=record))
+        except BaseException as journal_error:
+            observer["journal_update_error"] = _error(journal_error)
+        raise RoutedWriteUncertain(
+            "PCI generation changed after the routed WRITE was sent; the acknowledgement is "
+            "not accepted and the outcome is uncertain. Run recovery; nothing was retried")
+
+    def finished(doc):
+        doc.update(send=record, complete=True, resolved=True,
+                   resolution={"by": "writer", "outcome": "acknowledged", "at": journal_module.now()})
+
+    try:
+        attempt.advance("acknowledged", finished)
+    except BaseException as journal_error:
+        observer["journal_update_error"] = _error(journal_error)
+        raise RoutedWriteUncertain(
+            "The routed WRITE was acknowledged but its journal could not be finalized; "
+            "run recovery before another WRITE. Nothing was retried") from journal_error
+    return receipt, attempt
+
+
+def recover_write(journal, *, host, port, timeout=5.0, max_events=256, max_received_bytes=32768,
+                  route_check=None, generation_probe=None, recall_client_factory=None):
+    """Classify a journaled attempt by one fresh read-only routed RECALL.
+
+    This never constructs a WRITE client or sends a WRITE. The journal is
+    marked resolved only for ``expected`` or ``unchanged``; ``mixed`` and
+    ``unreadable`` leave it unresolved so a later same-target WRITE stays
+    refused. A matching readback does not establish which writer caused it,
+    persistence or a physical effect.
+    """
+    recall_client_factory = recall_client_factory or RoutedRecallClient
+    attempt = journal_module.RoutedWriteJournal.open(journal)
+    document = attempt.document
+    plan = document["plan"]
+    requested = RoutedRecallClient(host, port)
+    if (requested.host, requested.port) != (plan["endpoint"]["host"], plan["endpoint"]["port"]):
+        raise ValueError("Recovery endpoint differs from the journaled endpoint; no PCI I/O was attempted")
+    if route_check is not None:
+        route_check(plan)
+    read = plan["recovery_read"]
+    report = {
+        "format": "cbus-pci-routed-write-recovery-v1",
+        "journal": str(attempt.path),
+        "journal_sha256": hashlib.sha256(attempt.raw).hexdigest(),
+        "attempt_id": document["attempt_id"],
+        "journal_phase": document["phase"],
+        "journal_resolved_before": document["resolved"],
+        "mode": plan["mode"],
+        "project_sha256": plan["project_sha256"],
+        "topology_sha256": plan["topology_sha256"],
+        "topology_rechecked": route_check is not None,
+        "recorded_pci_generation": plan["pci_generation"],
+        "fresh_pci_generation": None,
+        "pci_generation_changed": None,
+        "read": {"parameter": read["parameter"], "count": read["count"]},
+        "expected_hex": read["expected_hex"],
+        "baseline_hex": read["baseline_hex"],
+        "fresh_hex": None,
+        "classification": "unreadable",
+        "conclusive": False,
+        "read_only": True,
+        "writes_attempted": False,
+        "write_resubmitted": False,
+        "automatic_retries": 0,
+        "attempt_replay_authorized": False,
+        "indistinguishable_from_unchanged": read["expected_hex"] == read["baseline_hex"],
+        "writer_identity_verified": False,
+        "physical_delivery_verified": False,
+        "nonvolatile_persistence_verified": False,
+        "original_cached_object_correlation_verified": False,
+    }
+    errors = []
+    try:
+        fresh_generation = _probe(generation_probe)
+        report["fresh_pci_generation"] = fresh_generation
+        if generation_probe is not None:
+            report["pci_generation_changed"] = fresh_generation != plan["pci_generation"]
+    except Exception as error:
+        errors.append({"phase": "generation", **_error(error)})
+    expected = RoutedReplyPath(plan["expected"]["outer_source_byte"],
+                               plan["expected"]["destination_byte"],
+                               tuple(plan["expected"]["route_entries"]))
+    result, evidence, error = _recall(
+        recall_client_factory, host=plan["endpoint"]["host"], port=plan["endpoint"]["port"],
+        timeout=timeout, command_checksum=plan["command_checksum"], max_events=max_events,
+        max_received_bytes=max_received_bytes, unit=plan["unit"], parameter=read["parameter"],
+        count=read["count"], bridges=plan["bridges"], expected=expected)
+    report["recall_evidence"] = evidence
+    if error is not None:
+        errors.append({"phase": "recall", **_error(error)})
+    else:
+        fresh = result.data.hex().upper()
+        report["fresh_hex"] = fresh
+        if fresh == read["expected_hex"]:
+            report["classification"] = "expected"
+        elif fresh == read["baseline_hex"]:
+            report["classification"] = "unchanged"
+        else:
+            report["classification"] = "mixed"
+        report["conclusive"] = True
+    report["errors"] = errors
+    resolves = report["classification"] in ("expected", "unchanged")
+    record = {
+        "at": journal_module.now(),
+        "classification": report["classification"],
+        "fresh_hex": report["fresh_hex"],
+        "fresh_pci_generation": report["fresh_pci_generation"],
+        "errors": errors,
+    }
+
+    def mutate(updated):
+        updated["recoveries"].append(record)
+        if resolves and not updated["resolved"]:
+            updated["resolved"] = True
+            updated["resolution"] = {"by": "recover", "outcome": report["classification"],
+                                     "at": record["at"]}
+
+    try:
+        attempt.advance(None, mutate)
+        report["journal_updated"] = True
+    except BaseException as journal_error:
+        report["journal_updated"] = False
+        report["journal_update_error"] = _error(journal_error)
+    report["resolved"] = attempt.document["resolved"]
+    report["resolution"] = attempt.document["resolution"]
+    return report

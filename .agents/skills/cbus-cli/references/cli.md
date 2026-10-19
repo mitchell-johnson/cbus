@@ -142,7 +142,16 @@ topology before sending, and transmits once. Raw `--bridge` plus
 `--expected-source/--expected-destination/--expected-route` remains available.
 Neither successful form proves live bridge delivery or device origin. WRITE
 does not prove parameter commit, readback, reboot behavior or nonvolatile
-persistence. See `toolkit-cli/docs/pci-routed-recall.md`,
+persistence. Add `--journal NEW.json` to a WRITE whose first data byte is the
+ACK tag. It takes a read-only baseline RECALL, then exclusively creates and
+fsyncs a journal bound to the plan, route/topology digest, project SHA-256 and
+PCI generation (`null` in the direct CLI). It rechecks topology at the send
+handoff and refuses later same-target WRITEs while an attempt is unresolved.
+After any uncertain or interrupted WRITE, run
+`routed-write --recover --journal NEW.json [--project-file PROJECT]` against
+the same endpoint. It RECALLs once and classifies the result as
+`expected`/`unchanged` (resolved, exit 0) or `mixed`/`unreadable` (unresolved,
+exit 1). It never writes or resends. See `toolkit-cli/docs/pci-routed-recall.md`,
 `toolkit-cli/docs/pci-routed-identify.md` and
 `toolkit-cli/docs/pci-routed-write.md`.
 
