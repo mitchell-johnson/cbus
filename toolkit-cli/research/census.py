@@ -704,7 +704,9 @@ def markdown(data):
                  "executable surface and the most specific ledger row. Dialogs with implemented CLI editors also list the editor modules and the form controls "
                  "their committed static source reviews bind to unit parameters. "
                  "It binds the help census, executable surface, original EXE/MAP, unit catalogue and decoded-specification directory by SHA-256 and records "
-                 "identifiers only. A dialog that does not resolve on every facet carries explicit reason codes and keeps generic parity routing; "
+                 "identifiers only. A dialog that does not resolve on every facet carries explicit reason codes and keeps generic parity routing, plus a census "
+                 "disposition: `absent_in_1_18` when a help unit type is absent from the executable, otherwise `ledger_owned` with an explicit "
+                 "feature-ledger owner; a disposition routes ownership and claims no editor. "
                  "`--validate` and `--refresh` work offline from the recorded facts. The map identifies scope; a mapped control is not "
                  "original-differential, GUI or physical acceptance."])
     rows.extend(["", "The JSON also contains the full macro/micro-function reference tree with **" + str(counts["macro_reference_leaves"]) +
