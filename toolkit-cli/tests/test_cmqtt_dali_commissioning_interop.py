@@ -611,6 +611,52 @@ def test_typed_cli_all_global_proxy_families_match_executed_original_final_memor
         assert not peer.setters
 
 
+def test_typed_cli_evidenced_line_leaves_match_executed_original_final_memory(tmp_path):
+    from cbus_toolkit import dali_extended_proxy
+    original = PROXY_NATIVE["cases"]["all_line_families"]
+    admitted = []
+    for edit in original["input"]["edits"]:
+        try:
+            dali_extended_proxy.edit_disposition(edit)
+        except ValueError:
+            continue
+        admitted.append(edit)
+    # The ten refused original edits are excluded or overwritten natively,
+    # so the admitted subset must reproduce the original final memory.
+    assert len(admitted) == 84
+    peer = ScriptedDaliPCI()
+    initial = {int(address): value for address, value in original["input"]["current_overrides"].items()}
+    peer.extended_memory.update(initial)
+    edits = tmp_path / "line-edits.json"
+    edits.write_text(json.dumps(admitted), encoding="utf-8")
+    journal = tmp_path / "line-attempt.json"
+    with service(tmp_path, peer) as port:
+        result = invoke(port, "deploy", TARGET, "--line", "BOTH", "--deploy-type", "EXT_ONLY",
+                        "--extract-type", "EXT_ONLY", "--edits", str(edits),
+                        "--journal", str(journal), command_timeout=180)
+        assert result.returncode == 0, result.stderr
+        document = json.loads(result.stdout)
+        assert_receipt_boundary(document)
+        assert document["complete"] and not document["outcome_uncertain"]
+        assert {row["disposition"] for row in document["edit_dispositions"]} == {
+            "planned-native-gateway-proxy-line-field"}
+        expected = dict(initial)
+        for relative, values in original["dirty_chunks"].items():
+            expected.update({256 + int(relative) + index: value for index, value in enumerate(values)})
+        assert [peer.extended_memory.get(address, 0) for address in range(256, 11376)] == [
+            expected.get(address, 0) for address in range(256, 11376)]
+        assert not peer.setters
+        before = journal.read_bytes()
+        writes = [row for row in peer.exchanges if row["kind"] == "paged_store"]
+        recovered = invoke(port, "recover", "--journal", str(journal), command_timeout=180)
+        assert recovered.returncode == 0, recovered.stderr
+        recovery = json.loads(recovered.stdout)
+        assert recovery["classification"] == "expected" and recovery["conclusive"]
+        assert recovery["writes_attempted"] is False
+        assert [row for row in peer.exchanges if row["kind"] == "paged_store"] == writes
+        assert journal.read_bytes() == before
+
+
 @pytest.mark.parametrize("create_scene", [False, True])
 def test_typed_cli_scene_activation_requires_and_deploys_an_actual_scene_level(tmp_path, create_scene):
     peer = ScriptedDaliPCI()

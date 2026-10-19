@@ -2665,7 +2665,7 @@
         "rust_binaries"
       ],
       "native": "none",
-      "gated_tests": 16,
+      "gated_tests": 17,
       "native_runnable_tests": 0,
       "native_selected_tests": 0,
       "sites": [
@@ -2701,6 +2701,7 @@
             "test_typed_api_ext_only_deploy_stores_changed_bytes_once_and_verifies_readback",
             "test_typed_cli_all_global_proxy_families_match_executed_original_final_memory",
             "test_typed_cli_dry_run_reads_and_stages_but_never_deploys",
+            "test_typed_cli_evidenced_line_leaves_match_executed_original_final_memory",
             "test_typed_cli_ext_only_extraction_decodes_current_native_proxy_fields",
             "test_typed_cli_ext_only_extraction_reads_complete_gateway_memory_without_writes",
             "test_typed_cli_extracts_native_model_without_dali_configuration_writes",
