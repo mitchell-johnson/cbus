@@ -365,7 +365,10 @@ literal bridge/reply bytes or a typed legacy XML/CBZ route. The typed form
 takes `--project-file`, `--source-network`, `--target-network`, and the global
 `--local-unit`; it binds the file digest and derives the exact return path
 before one send. WRITE additionally requires an ACK tag and never replays an
-uncertain mutation. Use these only for bounded CAL transport. Saved-project
+uncertain mutation. WRITE `--journal` adds a baseline RECALL and an exclusive
+fsynced attempt journal before the send. `--recover` classifies that journal
+from one fresh RECALL and never resends. Use these only for bounded CAL
+transport. Saved-project
 resolution does not authenticate live bridge topology; device programming
 methods, readback, commit and persistence remain separate.
 

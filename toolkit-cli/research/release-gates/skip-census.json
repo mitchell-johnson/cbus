@@ -10375,7 +10375,7 @@
         "rust_binaries"
       ],
       "native": "none",
-      "gated_tests": 2,
+      "gated_tests": 3,
       "native_runnable_tests": 0,
       "native_selected_tests": 0,
       "sites": [
@@ -10400,6 +10400,7 @@
             "rust_binaries"
           ],
           "tests": [
+            "RustRoutedCalSimulatorTests::test_journaled_write_binds_baseline_and_recovery_reads_expected",
             "RustRoutedCalSimulatorTests::test_project_bound_write_then_independent_recall_direct_through_six_bridges",
             "RustRoutedCalSimulatorTests::test_wrong_outbound_route_never_mutates_the_simulated_parameter"
           ]

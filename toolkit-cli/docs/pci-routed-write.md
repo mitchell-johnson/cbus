@@ -63,8 +63,8 @@ no DNS lookup. The client revalidates mutable settings before opening the
 socket, sends one command, and never reconnects or retries. One monotonic
 deadline covers connect, send and receive. A timeout, disconnect, rejection,
 malformed response, interrupt or cleanup failure after send is retained as an
-uncertain write outcome. Recovery is read-only and belongs to the calling
-workflow.
+uncertain write outcome. Without `--journal`, recovery is read-only and belongs
+to the calling workflow; with it, use `--recover` as described below.
 
 The stream accepts explicit two-byte confirmations, CR-terminated ASCII hex
 frames and idle CR/LF. Incoming frames use the strict addressed-route decoder:
@@ -77,6 +77,79 @@ A successful receipt proves the resolved or declared wire match. It sets
 `physical_delivery_verified`, `parameter_commit_verified` and
 `nonvolatile_persistence_verified` to false. A device-specific programming
 workflow must add its own schema, protection, readback and persistence rules.
+
+## Attempt journal and read-only recovery
+
+Add `--journal PATH` (a new file) to either mode:
+
+```sh
+cbus-toolkit pci --host 127.0.0.1 --local-unit 16 routed-write \
+  4 7 55AABB --expected-ack-tag 0x55 --project-file house.cbz \
+  --source-network 254 --target-network 252 --journal write-attempt.json
+cbus-toolkit pci --host 127.0.0.1 routed-write --recover \
+  --journal write-attempt.json [--project-file house.cbz]
+```
+
+A journaled WRITE needs a recallable payload: the first data byte must equal
+`--expected-ack-tag`, followed by 1..29 parameter bytes. This is an owned
+model. It matches the original matcher (the ACK tag is the first WRITE byte
+after the parameter) and the Rust simulator fixture's tagged STORE form, and
+recovery RECALLs `PARAMETER` for the remaining byte count. It is not a device
+programming method, and a device whose RECALL does not return the written
+bytes will be classified `mixed`.
+
+The order is fixed:
+
+1. Before any I/O, refuse an existing journal path and any valid unresolved
+   routed-WRITE journal in the same directory for the same endpoint, outgoing
+   route and unit.
+2. Run one read-only routed RECALL of the recovery range on its own
+   connection and keep it as the baseline. A failure sends no WRITE and
+   creates no journal.
+3. Repeat the typed-mode topology check (exact project bytes plus an equal
+   fresh route plan) and the generation check, then exclusively create
+   (`O_EXCL`, mode 0600) and fsync the journal file and directory. From
+   creation it records `send_may_have_occurred=true` and
+   `read_only_recovery_only=true`.
+4. Connect, rerun both checks immediately before the send, and send once. A
+   change at this point gives `RoutedWriteRefused` with no WRITE byte sent
+   (journal phase `not-sent`, resolved).
+5. Record `acknowledged` (resolved) after an exact confirmation and ACK on an
+   unchanged generation. Record `uncertain` (unresolved) after any post-send
+   fault, or when the generation changed after the send even if the ACK
+   matched. A crash leaves `planned`, which is also unresolved.
+
+The immutable `plan` binds the endpoint, checksum mode, WRITE bytes, ACK tag
+and path, mode, project SHA-256 and route plan (typed mode), a
+`topology_sha256` over those route facts, the PCI generation, and the baseline.
+`attempt_id` is SHA-256 over the canonical plan, and a reader rejects an
+edited plan. Later updates are atomic fsynced replacements that first prove the
+file still holds this writer's bytes.
+
+The direct PCI CLI has no PCI generation source. It records
+`pci_generation: null` with `pci_generation_source: "unavailable"` and relies
+on the topology recheck. Library callers of `journaled_write` with a live
+generation can pass `generation_probe`. Its value is bound in the plan and
+compared after the baseline, at the handoff, and after the send.
+
+`--recover` reads every WRITE and route fact from the journal and accepts only
+the same `--host`/`--port`. With `--project-file`, it first re-plans the
+journaled route from that file and refuses before I/O if the project digest or
+plan differs. It then sends one routed RECALL and never constructs a WRITE.
+The fresh bytes are classified as `expected` (the written values), `unchanged`
+(the baseline), `mixed` (neither) or `unreadable` (the RECALL failed).
+`expected` and `unchanged` mark the journal resolved and exit 0. `mixed` and
+`unreadable` leave it unresolved and exit 1, so later same-target WRITEs remain
+refused. When the written values equal the baseline,
+`indistinguishable_from_unchanged` is true. Each recovery is appended to
+`recoveries`. The report keeps `writes_attempted`, `write_resubmitted` and
+`attempt_replay_authorized` false. A match does not identify the writer or
+prove physical delivery, commit or persistence.
+
+On failure, the stderr JSON adds `pci_routed_write_journal` (path, phase,
+`recovery_required`) and `pci_routed_write_baseline_evidence`. When a matching
+ACK was rejected because the generation changed, it also adds
+`pci_routed_write_unaccepted_receipt`.
 
 ## Evidence
 
@@ -102,6 +175,19 @@ See
 The retained acceptance fixture covers the earlier raw checkpoint. No physical
 bridge or device acceptance, physical readback, commit, reboot or power-cycle
 persistence is claimed by the typed addition.
+
+`RoutedWriteJournalTests` in `tests/test_pci_routed_write.py` cover:
+
+- planned-before-send ordering and path and same-target exclusivity;
+- creation races, crash-before-send and lost replies, with recovery
+  classified as `expected`, `unchanged`, `mixed` and `unreadable`;
+- generation changes during the baseline, at the handoff and after the send;
+- topology change at the handoff, tampered plans and endpoint mismatch;
+- a recovery that never constructs a WRITE.
+
+`RoutedWriteJournalCLITests` add loopback raw and typed CLI paths. The
+simulator gate adds journaled typed WRITE and recovery at depths 0, 1 and 6.
+This is scripted-peer and synthetic simulator evidence only.
 
 ## Original ACK correlation matrix
 
