@@ -50,37 +50,37 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 877,
-    "modules_without_skip_sites": 541,
-    "modules_with_skip_sites": 336,
+    "test_modules": 931,
+    "modules_without_skip_sites": 592,
+    "modules_with_skip_sites": 339,
     "modules_by_category": {
-      "cgate_test_host": 133,
+      "cgate_test_host": 136,
       "external_cgate_project": 1,
       "hardware": 1,
       "host_platform": 20,
       "host_tool": 13,
-      "native_cgate_local": 79,
+      "native_cgate_local": 80,
       "native_opt_in": 2,
       "original_model_runtime": 4,
       "original_toolkit": 118,
       "private_evidence_input": 4,
-      "private_vendor_tree": 8,
+      "private_vendor_tree": 9,
       "runtime_capability": 6,
       "rust_binaries": 20,
       "unclassified": 41,
-      "unit_specs": 148,
+      "unit_specs": 150,
       "vendor_firmware": 4,
       "windows": 12
     },
     "native_modules": {
-      "all": 140,
+      "all": 142,
       "partial": 20,
-      "none": 176
+      "none": 177
     },
-    "native_runnable_tests": 259,
-    "native_selected_required_tests": 259,
+    "native_runnable_tests": 261,
+    "native_selected_required_tests": 261,
     "native_excluded": 0,
-    "native_selection_selectors": 162
+    "native_selection_selectors": 164
   },
   "modules": {
     "tests/test_addressing.py": {
@@ -10638,6 +10638,39 @@
         }
       ]
     },
+    "tests/test_sensor_p504_senpill_subset.py": {
+      "categories": [
+        "cgate_test_host",
+        "native_cgate_local",
+        "unit_specs"
+      ],
+      "native": "all",
+      "gated_tests": 1,
+      "native_runnable_tests": 1,
+      "native_selected_tests": 1,
+      "sites": [
+        {
+          "scope": "tests/test_sensor_p504_senpill_subset.py::FocusedSenpillNativeTest",
+          "kind": "decorator.skipUnless",
+          "condition": "native_backend() and os.environ.get('CBUS_UNITSPEC_DIR')",
+          "reason": "Select native C-Gate and unit specs for the focused SENPILL case",
+          "environment": [
+            "CBUS_CGATE_JAVA",
+            "CBUS_CGATE_TEST_HOST",
+            "CBUS_LOCAL_CGATE_VENDOR",
+            "CBUS_NATIVE_SERVICE_BACKEND",
+            "CBUS_UNITSPEC_DIR"
+          ],
+          "categories": [
+            "cgate_test_host",
+            "native_cgate_local",
+            "unit_specs"
+          ],
+          "offline": "skips",
+          "native": "runs"
+        }
+      ]
+    },
     "tests/test_sensors.py": {
       "categories": [
         "cgate_test_host",
@@ -10738,7 +10771,7 @@
       "native": "all",
       "gated_tests": 3,
       "native_runnable_tests": 3,
-      "native_selected_tests": 10,
+      "native_selected_tests": 15,
       "sites": [
         {
           "scope": "tests/test_serial_commissioning.py::NativeSerialCommissioningTests",
@@ -11092,7 +11125,7 @@
       "native": "all",
       "gated_tests": 1,
       "native_runnable_tests": 1,
-      "native_selected_tests": 9,
+      "native_selected_tests": 17,
       "sites": [
         {
           "scope": "tests/test_simulator_duplicates.py::NativeDuplicateDiscoveryTests",
@@ -11490,6 +11523,58 @@
           ],
           "tests": [
             "OriginalThermostatTests::test_all_28840_fresh_original_instruction_cases"
+          ]
+        }
+      ]
+    },
+    "tests/test_thermostat_template_creation.py": {
+      "categories": [
+        "cgate_test_host",
+        "private_vendor_tree"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_thermostat_template_creation.py::NativeTemplateGroupCreationTests",
+          "kind": "decorator.skipUnless",
+          "condition": "os.environ.get('CBUS_CGATE_TEST_HOST')",
+          "reason": "Set CBUS_CGATE_TEST_HOST for native template group creation",
+          "environment": [
+            "CBUS_CGATE_TEST_HOST"
+          ],
+          "categories": [
+            "cgate_test_host"
+          ],
+          "offline": "skips",
+          "native": "runs"
+        },
+        {
+          "scope": "tests/test_thermostat_template_creation.py::NativeTemplateGroupCreationTests::test_ordered_creation_with_tag_name_and_save_reload",
+          "kind": "body.call",
+          "condition": "tag is None",
+          "reason": "Native fresh project has no scalar Project.TagName",
+          "environment": [
+            "CBUS_CGATE_TEST_HOST",
+            "CBUS_CGATE_TEST_PORT"
+          ],
+          "categories": [
+            "cgate_test_host",
+            "private_vendor_tree"
+          ],
+          "offline": "unknown",
+          "native": "unknown"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "private_vendor_tree"
+          ],
+          "tests": [
+            "NativeTemplateGroupCreationTests::test_ordered_creation_with_tag_name_and_save_reload"
           ]
         }
       ]
@@ -12724,6 +12809,34 @@
           "categories": [
             "cgate_test_host",
             "native_cgate_local",
+            "unit_specs"
+          ],
+          "offline": "skips",
+          "native": "runs"
+        }
+      ]
+    },
+    "tests/test_wireless_gateway_p507_host.py": {
+      "categories": [
+        "cgate_test_host",
+        "unit_specs"
+      ],
+      "native": "all",
+      "gated_tests": 1,
+      "native_runnable_tests": 1,
+      "native_selected_tests": 1,
+      "sites": [
+        {
+          "scope": "tests/test_wireless_gateway_p507_host.py::WirelessGatewayP507HostTest",
+          "kind": "decorator.skipUnless",
+          "condition": "native_enabled()",
+          "reason": "Set CBUS_CGATE_TEST_HOST and CBUS_UNITSPEC_DIR for P5.07 gateway acceptance",
+          "environment": [
+            "CBUS_CGATE_TEST_HOST",
+            "CBUS_UNITSPEC_DIR"
+          ],
+          "categories": [
+            "cgate_test_host",
             "unit_specs"
           ],
           "offline": "skips",

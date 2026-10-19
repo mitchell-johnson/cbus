@@ -210,6 +210,8 @@
     "tests/test_wireless_project_remotes_native.py::WirelessProjectRemotesNativeTest::test_owned_metadata_creation_save_boundaries_and_preservation",
     "tests/test_wireless_scenes_native.py::WirelessScenesNativeTest::test_native_scene_arrays_editor_preservation_and_reload",
     "tests/test_wireless_unit_globals.py",
-    "tests/test_edlt_template_reset_prelude_original.py::TemplateResetPreludeOriginalTests::test_all44_retained_original_resets_through_after_reset_only"
+    "tests/test_edlt_template_reset_prelude_original.py::TemplateResetPreludeOriginalTests::test_all44_retained_original_resets_through_after_reset_only",
+    "tests/test_sensor_p504_senpill_subset.py::FocusedSenpillNativeTest",
+    "tests/test_wireless_gateway_p507_host.py::WirelessGatewayP507HostTest"
   ]
 }

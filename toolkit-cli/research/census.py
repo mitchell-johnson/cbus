@@ -857,6 +857,73 @@ def self_test():
     return result.wasSuccessful()
 
 
+def _tree_leaves(tree):
+    leaves = []
+
+    def walk(node):
+        children = node.get("children", [])
+        if not children:
+            leaves.append(node["topic_id"])
+        for child in children:
+            walk(child)
+
+    walk(tree)
+    return leaves
+
+
+def menu_leaf_roster(tree):
+    """Main-menu leaf topic IDs in surface (depth-first) order."""
+    return _tree_leaves(tree)
+
+
+_MACRO_MAPPED_KINDS = {"preset": "mapped_preset", "custom": "mapped_custom",
+                       "micro_function": "mapped_micro_function"}
+
+
+def validate_macro_menu_maps(surface, macro, menu):
+    """Bind the committed macro-leaf and menu-option maps to this census.
+
+    Each map must list exactly the census leaves in surface order, and its
+    declared counts must agree with its rows. Returns the per-map summary.
+    """
+    macro_roster = _tree_leaves(surface["macro_reference"]["tree"])
+    macro_rows = macro["leaves"]
+    if [row["leaf_id"] for row in macro_rows] != macro_roster:
+        raise ValueError("Macro leaf map roster differs from the census macro_reference tree")
+    if surface["counts"].get("macro_reference_leaves") != len(macro_roster):
+        raise ValueError("Macro leaf map roster differs from the census macro leaf count")
+    kinds = Counter()
+    for row in macro_rows:
+        if row["status"] == "mapped":
+            kinds[_MACRO_MAPPED_KINDS.get(row.get("kind"), "unknown")] += 1
+        else:
+            kinds["pending"] += 1
+    counts = macro["counts"]
+    expected = {name: kinds.get(name, 0) for name in (*_MACRO_MAPPED_KINDS.values(), "pending")}
+    if kinds.get("unknown") or counts.get("leaves") != len(macro_rows) or any(
+            counts.get(name) != value for name, value in expected.items()):
+        raise ValueError("Macro leaf map kind counts disagree with its rows")
+    menu_roster = menu_leaf_roster(surface["main_menu_tree"])
+    menu_rows = menu["leaves"]
+    if [row["leaf_id"] for row in menu_rows] != menu_roster:
+        raise ValueError("Menu option map roster differs from the census main_menu_tree")
+    statuses = Counter(row["status"] for row in menu_rows)
+    menu_counts = menu["counts"]
+    if (set(statuses) - {"mapped", "pending"} or menu_counts.get("leaves") != len(menu_rows)
+            or menu_counts.get("mapped") != statuses["mapped"]
+            or menu_counts.get("pending") != statuses["pending"]):
+        raise ValueError("Menu option map status counts disagree with its rows")
+    mapped = sum(expected[name] for name in _MACRO_MAPPED_KINDS.values())
+    return {
+        "macro_leaves": len(macro_rows),
+        "macro_mapped": mapped,
+        "macro_pending": expected["pending"],
+        "menu_leaves": len(menu_rows),
+        "menu_mapped": statuses["mapped"],
+        "menu_pending": statuses["pending"],
+    }
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--check", action="store_true", help="fail if checked-in ledger differs from current source snapshot")

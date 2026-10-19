@@ -30,8 +30,8 @@ from .addressing import NetworkAddressing, _container
 from .classic_replacement import _document, _path
 from .native import NativeDatabase, NativeProjects, _project
 from .programming import Programmer, xml_text
-from .thermostat_post_load import (PostLoadReplay, ThermostatPostLoadError, replay_post_load,
-                                   validate_group_sort)
+from .thermostat_post_load import (GroupOperation, PostLoadReplay, ThermostatPostLoadError,
+                                   replay_post_load, validate_group_sort)
 from .unitspec import UnitSpecError, UnitSpecStore, _integer, version_matches
 
 
@@ -235,6 +235,121 @@ class ThermostatTemplateCatalog:
 
 
 @dataclass(frozen=True)
+class TemplateGroupCreationPlan:
+    """One ordered, audited template group-creation history.
+
+    ``operations`` is the replayed post-load creation order.  ``expected``
+    is the exact output-application inventory after every receipt and is the
+    reference for the save/reload preservation check.  Creation never invents
+    addresses: every ``create`` address is an explicitly declared byte that is
+    still free at its ordered position, and every ``rename`` keeps its
+    declared address.
+    """
+
+    project_tag_name: str
+    application: int
+    base_groups: tuple[tuple[int, str], ...]
+    operations: tuple[GroupOperation, ...]
+    expected: tuple[tuple[int, str], ...]
+
+    @property
+    def expected_map(self) -> dict[int, str]:
+        return dict(self.expected)
+
+    def check_reloaded(self, reloaded: Mapping[int, str]) -> dict[int, str]:
+        """Admit one reloaded inventory only when it preserves this plan exactly."""
+        if not isinstance(reloaded, Mapping) or any(
+                type(address) is not int or type(tag) is not str
+                for address, tag in reloaded.items()):
+            raise ThermostatTemplateError('Reloaded groups must map byte addresses to tag text')
+        expected = self.expected_map
+        if dict(reloaded) != expected:
+            missing = sorted(address for address in expected if address not in reloaded)
+            extra = sorted(address for address in reloaded if address not in expected)
+            changed = sorted(address for address in expected
+                             if address in reloaded and reloaded[address] != expected[address])
+            raise ThermostatTemplateError(
+                'Saved/reloaded output groups differ from the creation plan: '
+                + _json({'missing': missing, 'extra': extra, 'changed': changed}))
+        return expected
+
+    def as_dict(self):
+        evolving = dict(self.base_groups)
+        receipts = []
+        for position, operation in enumerate(self.operations, 1):
+            receipts.append({'position': position, 'action': operation.action,
+                             'address': operation.address, 'tag': operation.tag,
+                             'previous_tag': evolving.get(operation.address),
+                             'expected_tag_after': operation.tag})
+            evolving[operation.address] = operation.tag
+        return {'project_tag_name': self.project_tag_name, 'application': self.application,
+                'base_groups': dict(self.base_groups), 'ordered_operations': receipts,
+                'expected_groups': self.expected_map}
+
+
+def require_template_project_tag_name(project_tag_name: Any) -> str:
+    """Admit one explicit scalar Project.TagName for template group creation.
+
+    Accepted creation binds the owning project's display name exactly, like
+    the ordered output Add/Edit dialogs.  Anything else fails before any
+    allocation or native write.
+    """
+    if type(project_tag_name) is not str:
+        raise ThermostatTemplateError(
+            'Template group creation requires an explicit scalar Project.TagName')
+    return project_tag_name
+
+
+def plan_template_group_creation(operations, base_groups, *, project_tag_name, application):
+    """Order and audit one template group-creation history with exact allocation.
+
+    ``operations`` is the replayed post-load ``GroupOperation`` order and
+    ``base_groups`` maps each existing output-application address to its tag.
+    Every create address must be an explicitly declared byte in 0..255 that is
+    still free at its ordered position, including the reserved 255 unused
+    slot; every rename keeps a declared, already allocated address and must
+    apply to the tag currently recorded for it.  Accepted creation requires
+    an explicit scalar Project.TagName.
+    """
+    tag = require_template_project_tag_name(project_tag_name)
+    if type(application) is not int or not 0 <= application <= 255:
+        raise ThermostatTemplateError('Template group creation requires a byte application address')
+    if not isinstance(base_groups, Mapping) or any(
+            type(address) is not int or not 0 <= address <= 255 or type(name) is not str
+            for address, name in base_groups.items()):
+        raise ThermostatTemplateError('Base groups must map byte addresses to tag text')
+    if type(operations) not in (list, tuple):
+        raise ThermostatTemplateError('Template group creation requires an ordered operation history')
+    if len(operations) > 256:
+        raise ThermostatTemplateError('Template group creation history exceeds 256 operations')
+    evolving = dict(base_groups)
+    checked = []
+    for operation in operations:
+        if type(operation) is not GroupOperation or operation.action not in ('create', 'rename'):
+            raise ThermostatTemplateError('Unknown template group creation operation')
+        if type(operation.address) is not int or not 0 <= operation.address <= 255:
+            raise ThermostatTemplateError('Template group address must be an integer byte')
+        if type(operation.tag) is not str or not operation.tag:
+            raise ThermostatTemplateError('Template group tag must be nonempty text')
+        if operation.action == 'create':
+            if operation.address in evolving:
+                raise ThermostatTemplateError('Template group address ' + str(operation.address)
+                                              + ' is already allocated')
+            if operation.previous_tag is not None:
+                raise ThermostatTemplateError('Template group creation carries no previous tag')
+        else:
+            if operation.address not in evolving:
+                raise ThermostatTemplateError('Template group rename requires an existing group: '
+                                              + str(operation.address))
+            if operation.previous_tag != evolving[operation.address]:
+                raise ThermostatTemplateError('Template group operations do not apply to this inventory')
+        evolving[operation.address] = operation.tag
+        checked.append(operation)
+    return TemplateGroupCreationPlan(tag, application, tuple(sorted(base_groups.items())),
+                                     tuple(checked), tuple(sorted(evolving.items())))
+
+
+@dataclass(frozen=True)
 class TemplateOverlay:
     template: ThermostatTemplate
     unit_type: str
@@ -244,6 +359,8 @@ class TemplateOverlay:
     post_load: PostLoadReplay | None = None
     groups: tuple[tuple[int, str], ...] = ()
     application: int | None = None
+    project_tag_name: str | None = None
+    creation_plan: TemplateGroupCreationPlan | None = None
 
     @property
     def overlay(self) -> dict[str, int]:
@@ -279,18 +396,28 @@ class TemplateOverlay:
         if self.post_load is not None:
             result['post_load'] = {**self.post_load.as_dict(), 'output_application': self.application,
                                    'parameters_changed_after_overlay': self.post_load_changes,
-                                   'untouched_field_normalization_replayed': False}
+                                   'untouched_field_normalization_replayed': False,
+                                   'project_tag_name': self.project_tag_name}
+            if self.creation_plan is not None:
+                result['group_creation_plan'] = self.creation_plan.as_dict()
         return result
 
 
 def plan_overlay(template: ThermostatTemplate, unit_type: str, firmware: str,
                  snapshot: Mapping[str, str], *, groups: Mapping[int, str] | None = None,
-                 application: int | None = None, group_sort: str | None = None) -> TemplateOverlay:
+                 application: int | None = None, group_sort: str | None = None,
+                 project_tag_name: str | None = None) -> TemplateOverlay:
     """Plan the byte overlay of one template onto a complete PP snapshot.
 
     With ``groups`` (the output application's address -> tag inventory) the
-    original post-load pipeline and form save are replayed as well.
+    original post-load pipeline and form save are replayed as well.  With an
+    explicit scalar ``project_tag_name``, the replayed group-creation history
+    is additionally bound to one ordered, exact-allocation creation plan whose
+    expected inventory is the save/reload preservation reference.  Omitting
+    the tag keeps the legacy replay-only plan.
     """
+    if project_tag_name is not None:
+        require_template_project_tag_name(project_tag_name)
     try:
         validate_group_sort(group_sort, post_load=groups is not None)
     except ThermostatPostLoadError as error:
@@ -334,8 +461,14 @@ def plan_overlay(template: ThermostatTemplate, unit_type: str, firmware: str,
         current = _native_integer(snapshot[name], name)
         if current != value:
             changes.append((name, current, value))
+    creation_plan = None
+    if replay is not None and replay.group_operations and project_tag_name is not None:
+        creation_plan = plan_template_group_creation(
+            replay.group_operations, dict(groups or {}),
+            project_tag_name=project_tag_name, application=application)
     return TemplateOverlay(template, unit_type, firmware, tuple(sorted(snapshot.items())), tuple(changes),
-                           replay, tuple(sorted((groups or {}).items())), application)
+                           replay, tuple(sorted((groups or {}).items())), application,
+                           project_tag_name, creation_plan)
 
 
 def compare_overlay(overlay: TemplateOverlay, actual: Mapping[str, str], *,

@@ -15,7 +15,7 @@
     "path": "/home/claude/cbus/.claude/worktrees/agent-aab27c8d19ec51fd1/rust/target/debug/cmqttd",
     "sha256": "c6a3cc12625740c11296853cc8a68aecf292971ee3e78f05d14e6c9c8c7a0d6a"
   },
-  "source_revision": "b3133edd6042b92bea2879d5deaf25c4f2c4e06f",
+  "source_revision": "f1a5e06dbfb828625f729bae173c97cdf3d9e9c5",
   "source_fingerprint": {
     ".github/workflows/ci.yml": "1af80cae0dba93ddf30f79907349dd57df3d71f2cbbb9e4438f645441cee5230",
     "docs/cmqttd-cgate.md": "36017b711323416cd484693664fd9018316c964e675bf1810c0d9549c011fa05",
@@ -80,7 +80,7 @@
     "rust/cbus-cgate/src/service/tests/repository_capacity.rs": "13e901cf7a5e4b6b13b9bf68a65cc3d824eec5b9ee789a2c903b4f1ff3a3059f",
     "rust/cbus-cgate/src/service/tests/repository_uncertainty.rs": "0b55c95a8421d4324ec0651dcdfc7e71477a4f085c8af0d8b714f1670d3ff120",
     "rust/cbus-cgate/src/service/tests/secondary_authorization.rs": "7182d1fb4ca22d01657e8557344b727a29eced49bf1a1760bdc143c267b79fbd",
-    "rust/cbus-cgate/src/service/tests.rs": "89e2f4e816a87fc1f9bbceb648d1dcec04e6fbab19d2c9abd9790b7b6d659bda",
+    "rust/cbus-cgate/src/service/tests.rs": "04fa24323dec06ee4c3931affa59fb4237f57c81c23f6f2b5b2db9c9c9f552d0",
     "rust/cbus-cgate/src/service/transform.rs": "0c65e71c8bf2527c688bd211c2ddb45aeb8d6734436dd8fe0ef3cb09a03fd501",
     "rust/cbus-cgate/src/service/unravel_plan.rs": "963c84d8a1a310c74899a230b119aae344916725ac7c4fd70c4edefaf093ea6a",
     "rust/cbus-cgate/src/service.rs": "b9205f218241b57869530ea5bf276a301429a389fb40090474841586c75ad9ed",

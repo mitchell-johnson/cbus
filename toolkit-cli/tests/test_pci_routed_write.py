@@ -477,5 +477,61 @@ class RoutedWriteJournalTests(unittest.TestCase):
         self.assertFalse(self.path.exists())
 
 
+class RoutedWriteJournalIntegrityTests(unittest.TestCase):
+    """Tampered, oversize and nonregular journals refuse before any I/O.
+
+    Ported from the 2026-10-19 Mac mini WIP snapshot onto
+    ``pci_routed_write_journal.RoutedWriteJournal``.
+    """
+
+    def setUp(self):
+        self.directory = tempfile.TemporaryDirectory()
+        self.addCleanup(self.directory.cleanup)
+        self.path = Path(self.directory.name) / "attempt.json"
+        with patch.object(module.socket, "socket",
+                          side_effect=[SocketFixture([b"g." + j_reply(b"\x11\x22")]),
+                                       SocketFixture([b"g." + J_ACK])]):
+            module.journaled_write(J_COMMAND, expected=J_PATH, expected_ack_tag=0x55,
+                                   journal=self.path, host="127.0.0.1", port=10001)
+        self.raw = self.path.read_bytes()
+
+    def refused(self, path):
+        with patch.object(module.socket, "socket", side_effect=AssertionError("No socket")):
+            with self.assertRaises(journal_module.RoutedWriteJournalError):
+                journal_module.RoutedWriteJournal.open(path)
+            with self.assertRaises((journal_module.RoutedWriteJournalError, ValueError)):
+                module.recover_write(path, host="127.0.0.1", port=10001)
+
+    def test_tampered_plan_and_safety_flags_refuse(self):
+        for mutate in (lambda d: d["plan"].__setitem__("parameter", 8),
+                       lambda d: d.__setitem__("read_only_recovery_only", False),
+                       lambda d: d.__setitem__("send_may_have_occurred", False),
+                       lambda d: d.__setitem__("unexpected", 1)):
+            document = json.loads(self.raw)
+            mutate(document)
+            self.path.write_bytes((json.dumps(document) + "\n").encode())
+            self.refused(self.path)
+        self.path.write_bytes(self.raw)
+        self.assertEqual(journal_module.RoutedWriteJournal.open(self.path).document["phase"],
+                         "acknowledged")
+
+    def test_oversize_missing_and_nonregular_journals_refuse(self):
+        with open(self.path, "wb") as stream:
+            stream.truncate(journal_module.MAX_ROUTED_WRITE_JOURNAL_BYTES + 1)
+        self.refused(self.path)
+        self.refused(Path(self.directory.name) / "missing.json")
+        if hasattr(os, "mkfifo"):
+            fifo = Path(self.directory.name) / "fifo.json"
+            os.mkfifo(fifo)
+            self.refused(fifo)
+        self.path.write_bytes(self.raw)
+        link = Path(self.directory.name) / "link.json"
+        try:
+            link.symlink_to(self.path)
+        except OSError:
+            return
+        self.refused(link)
+
+
 if __name__ == "__main__":
     unittest.main()

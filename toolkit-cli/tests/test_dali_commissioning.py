@@ -1,4 +1,5 @@
 from contextlib import redirect_stderr, redirect_stdout
+import copy
 import io
 import json
 import os
@@ -68,6 +69,10 @@ class ScriptedService:
         self.ignore_set = False
         self.journal = None
         self.journal_at_write = None
+        # Opt-in device-side gateway-proxy persistence across DEPLOY/EXTRACT;
+        # other tests keep their per-extract proxy fixtures authoritative.
+        self.persist_device_proxy = False
+        self.device_proxy = {}
         self.advance_generation_on_set = False
         self.advance_generation_on_extract = False
         self.end_failure = None
@@ -78,6 +83,14 @@ class ScriptedService:
 
     def __exit__(self, *_):
         self.connected = False
+
+    @staticmethod
+    def _merge_proxy(base, overlay):
+        for key, value in overlay.items():
+            if isinstance(value, dict) and isinstance(base.get(key), dict):
+                ScriptedService._merge_proxy(base[key], value)
+            else:
+                base[key] = copy.deepcopy(value)
 
     @staticmethod
     def decode(value):
@@ -115,6 +128,10 @@ class ScriptedService:
             self.sessions[session]["extParams"]["values"] = dict(self.device_ext)
             if self.model_transform is not None:
                 self.model_transform(self.sessions[session])
+            if self.persist_device_proxy and self.device_proxy:
+                proxy = (self.sessions[session].setdefault("cdg", {})
+                         .setdefault("extParams", {}).setdefault("proxy", {}))
+                self._merge_proxy(proxy, self.device_proxy)
             if tokens[6] in CONDITIONAL_EXTRACT_TYPES and self.failure:
                 raise self.failure
             if self.advance_generation_on_extract:
@@ -144,6 +161,9 @@ class ScriptedService:
                 raise self.failure
             self.device_level = self.sessions[session]["cdg"]["daliLines"][0]["daliEcgs"][3]["commonParams102"]["minimumLevel"]
             self.device_ext.update(self.sessions[session]["extParams"]["targetValues"])
+            proxy = self.sessions[session].get("cdg", {}).get("extParams", {}).get("proxy")
+            if self.persist_device_proxy and isinstance(proxy, dict):
+                self.device_proxy = copy.deepcopy(proxy)
             return response("120-start deploy", "120-progress: 1/4, plan: SET_COMMON_PARAMS_ECG", "200 OK.")
         raise AssertionError(command)
 
@@ -451,6 +471,97 @@ class DaliCommissioningTests(unittest.TestCase):
         recovered = self.workflow.recover(self.journal())
         self.assertEqual(recovered["fresh_extraction"]["extract_type"], "EXT_ONLY")
         self.assertFalse(any(" DEPLOY " in command for command in self.service.commands))
+
+    def test_ext_only_combined_proxy_and_raw_deployment_validates_order_journal_and_recovery(self):
+        """P7.01 slice: one EXT_ONLY deployment of combined extended state.
+
+        A typed gateway-proxy field and raw extended bytes deploy together in
+        one owned session: staging follows the reviewed edit order, the single
+        DEPLOY carries the whole native plan (device steps first, then
+        ascending gateway-ext chunks, stopping at the first fault), the
+        attempt is fsynced before the command is sent, and read-only recovery
+        classifies every reviewed field without replay.
+        """
+        proxy_path = dali_extended_proxy.PREFIX + "deviceID/id"
+        edits = [{"path": proxy_path, "value": 42}, {"address": 560, "bytes": [9]}]
+        self.service.persist_device_proxy = True
+        self.service.caps["dali_session_extended_proxy"] = {
+            "families": ["deviceID"], "native_reserved_bits": True, "excluded_bytes": True,
+            "writable_global_fields": [{"path": proxy_path, "address": 556,
+                                        "type": "integer", "minimum": 0, "maximum": 255}]}
+        self.service.model_transform = lambda model: model["cdg"].update(
+            {"extParams": {"proxy": {"deviceID": {"id": 17}}}})
+        path = self.journal()
+        self.service.journal = path
+        result = self.workflow.deploy(TARGET, edits, extract_type="EXT_ONLY",
+                                      deploy_type="EXT_ONLY", journal=path)
+        self.assertTrue(result["complete"])
+        self.assertTrue(result["session_ended"])
+        self.assertEqual(result["automatic_retries"], 0)
+        proxy, raw = result["edit_dispositions"]
+        self.assertEqual(proxy["disposition"], "planned-native-gateway-proxy-field")
+        self.assertEqual(proxy["step"], "WRITE_GATEWAY_EXT_FULL")
+        self.assertEqual(proxy["family_addresses"], [556])
+        self.assertEqual(raw["disposition"], "planned-extended-device-bytes")
+        self.assertEqual(result["before_edits"], [
+            {"kind": "property", "path": proxy_path, "value": 17},
+            {"kind": "extended", "address": 560, "value": [None]}])
+        self.assertEqual(result["staged_edits"], [
+            {"kind": "property", "path": proxy_path, "value": 42},
+            {"kind": "extended", "address": 560, "value": [9]}])
+        staged_set = next(index for index, command in enumerate(self.service.commands)
+                          if " SESSION SET " in command)
+        staged_raw = next(index for index, command in enumerate(self.service.commands)
+                          if " SESSION SET_EXT_PARAMS " in command)
+        deploys = [command for command in self.service.commands if " DEPLOY " in command]
+        self.assertLess(staged_set, staged_raw)
+        self.assertEqual(len(deploys), 1)
+        self.assertTrue(deploys[0].endswith(" A EXT_ONLY"))
+        attempted = self.service.journal_at_write
+        self.assertEqual(attempted["phase"], "deploy-attempt")
+        self.assertTrue(attempted["send_may_have_occurred"])
+        self.assertTrue(attempted["outcome_uncertain"])
+        self.assertTrue(attempted["journal_update"]["file_synced"])
+        self.assertTrue(attempted["journal_update"]["directory_synced"])
+        self.assertEqual(self.service.device_proxy, {"deviceID": {"id": 42}})
+        self.assertEqual(self.service.device_ext.get("560"), 9)
+        self.assertFalse(result["physical_write_readback_verified"])
+        self.assertFalse(result["persistence_verified"])
+        journal_bytes = path.read_bytes()
+        sent = len(self.service.commands)
+        recovered = self.workflow.recover(path)
+        self.assertEqual(recovered["classification"], "expected")
+        self.assertTrue(recovered["conclusive"])
+        self.assertEqual([row["classification"] for row in recovered["observations"]],
+                         ["expected", "expected"])
+        self.assertEqual(recovered["fresh_extraction"]["extract_type"], "EXT_ONLY")
+        fresh = self.service.commands[sent:]
+        self.assertFalse(any(" DEPLOY " in command or " SET " in command
+                             or " SET_EXT_PARAMS " in command for command in fresh))
+        self.assertEqual(path.read_bytes(), journal_bytes)
+        self.service.device_proxy = {"deviceID": {"id": 17}}
+        mixed = self.workflow.recover(path)
+        self.assertEqual(mixed["classification"], "mixed")
+        self.assertTrue(mixed["conclusive"])
+        self.assertEqual([row["classification"] for row in mixed["observations"]],
+                         ["unchanged", "expected"])
+        self.assertEqual(path.read_bytes(), journal_bytes)
+        self.service.failure = CGateError(response(
+            "502 reply status error: error response: FAIL_INVALID_COMMAND during SET_COMMON_PARAMS_ECG",
+            status=502))
+        fault_path = self.journal("fault.json")
+        with self.assertRaises(CGateError) as caught:
+            self.workflow.deploy(TARGET, edits, extract_type="EXT_ONLY",
+                                 deploy_type="EXT_ONLY", journal=fault_path)
+        evidence = caught.exception.dali_commissioning_evidence
+        self.assertFalse(evidence["outcome_uncertain"])
+        self.assertTrue(evidence["mutation_terminal_received"])
+        self.assertFalse(evidence["complete"])
+        self.assertFalse(evidence["rolled_back"])
+        self.assertEqual(evidence["phase"], "failed")
+        self.assertEqual(evidence["automatic_retries"], 0)
+        self.assertEqual(sum(" DEPLOY " in command for command in self.service.commands), 2)
+        self.assertFalse(json.loads(fault_path.read_text())["outcome_uncertain"])
 
     def test_scene_membership_creation_needs_a_scene_object_with_representable_level(self):
         mask = PROPERTY.rsplit("/", 1)[0] + "/sceneMembershipBitmask16"

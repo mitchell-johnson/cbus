@@ -12,6 +12,8 @@ from cbus_toolkit.commissioning_route import (
     plan_commissioning_route,
     project_sha256,
     read_project_snapshot,
+    revalidate_route_plan,
+    route_plan_generation_id,
 )
 from cbus_toolkit.project import MAX_DOCUMENT_BYTES, ProjectDocument, ProjectError
 
@@ -278,3 +280,78 @@ def test_cbz_plan_parses_the_exact_bytes_bound_by_the_digest():
     assert result.project_format == "legacy-cbz"
     assert result.project_sha256 == project_sha256(snapshot)
     assert project.to_xml_bytes() == xml
+
+
+def test_route_plan_generation_id_is_stable_and_bound():
+    raw, project = line()
+    first = plan(raw, project)
+    second = plan(raw, project)
+    first_id = route_plan_generation_id(first)
+    assert first_id == route_plan_generation_id(second)
+    assert first_id.startswith("sha256:")
+    assert len(first_id) == 7 + 64
+    # Any bridge, expected-path or digest edit changes the generation.
+    altered_bridges = plan(raw, project)
+    object.__setattr__(altered_bridges, "bridges", (253,))
+    assert route_plan_generation_id(altered_bridges) != first_id
+    with tempfile.TemporaryDirectory() as directory:
+        path = Path(directory) / "house.xml"
+        path.write_bytes(raw)
+        fresh = revalidate_route_plan(first, path)
+        assert fresh.bridges == first.bridges
+        assert fresh.expected == first.expected
+        assert route_plan_generation_id(fresh) == first_id
+    with pytest.raises(TypeError, match="exact CommissioningRoutePlan"):
+        route_plan_generation_id("not-a-plan")
+    with pytest.raises(TypeError, match="exact CommissioningRoutePlan"):
+        revalidate_route_plan("not-a-plan", Path("/nonexistent"))
+
+
+def test_revalidate_refuses_stale_digest_and_route_mismatch_before_journal():
+    raw, project = line()
+    result = plan(raw, project)
+    with tempfile.TemporaryDirectory() as directory:
+        path = Path(directory) / "house.xml"
+        path.write_bytes(raw)
+        assert revalidate_route_plan(result, path).bridges == (253, 252)
+        path.write_bytes(raw.replace(b"KEYGL5", b"KEYE1 "))
+        with pytest.raises(ProjectError, match="stale or was substituted"):
+            revalidate_route_plan(result, path)
+    # A plan whose bridges do not match the fresh file refuses even when the
+    # digest is rebound by hand: exact Reply Network revalidation is separate
+    # from the digest check.
+    raw2, project2 = line()
+    victim = plan(raw2, project2)
+    tampered = plan_commissioning_route(
+        project2,
+        project_digest=victim.project_sha256,
+        source_network=victim.source_network,
+        target_network=victim.target_network,
+        target_unit=victim.target_unit,
+        local_unit=victim.local_unit,
+        expected_ack_tag=victim.expected_ack_tag,
+        expected_project_name=victim.project_name,
+    )
+    object.__setattr__(tampered, "bridges", (253,))
+    with tempfile.TemporaryDirectory() as directory:
+        path = Path(directory) / "house.xml"
+        path.write_bytes(raw2)
+        with pytest.raises(ProjectError, match="differs from project route|reply path"):
+            revalidate_route_plan(tampered, path)
+
+
+def test_revalidate_covers_direct_through_six_bridges():
+    for depth in (0, 1, 2, 6):
+        raw, project = line(depth)
+        target = 254 - depth
+        result = plan_commissioning_route(
+            project, project_digest=project_sha256(raw), source_network=254,
+            target_network=target, target_unit=5, local_unit=16,
+            expected_ack_tag=0x55, expected_project_name="HOUSE",
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "house.xml"
+            path.write_bytes(raw)
+            fresh = revalidate_route_plan(result, path)
+            assert fresh.bridges == result.bridges
+            assert fresh.expected == result.expected

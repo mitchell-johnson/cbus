@@ -391,5 +391,95 @@ class RoutedWriteJournalCLITests(unittest.TestCase):
             self.assertEqual(recall.sent, [TYPED_RECALL])
 
 
+
+def _line_project(directory, depth, unit=5):
+    """One CNI root (254) and a linear chain of ``depth`` bridged networks."""
+    addresses = tuple(range(254, 254 - depth - 1, -1))
+    networks = []
+    for index, address in enumerate(addresses):
+        units = []
+        if index + 1 < len(addresses):
+            units.append(f"<Unit><Address>{addresses[index + 1]}</Address><UnitType>BRIDGE2N</UnitType></Unit>")
+        if index == len(addresses) - 1:
+            units.append(f"<Unit><Address>{unit}</Address><UnitType>KEYGL5</UnitType></Unit>")
+        interface = ("<Interface><InterfaceType>CNI</InterfaceType>"
+                     "<InterfaceAddress>owned</InterfaceAddress></Interface>"
+                     if index == 0 else
+                     "<Interface><InterfaceType>Bridge</InterfaceType>"
+                     f"<InterfaceAddress>{addresses[index - 1]}/p/{address}</InterfaceAddress></Interface>")
+        networks.append(f"<Network><TagName>N{address}</TagName><Address>{address}</Address>"
+                        f"{interface}{''.join(units)}</Network>")
+    path = Path(directory) / "house.xml"
+    path.write_text("<Installation><Project><TagName>HOUSE</TagName>"
+                    f"{''.join(networks)}</Project></Installation>", encoding="utf-8")
+    return path, addresses[1:]
+
+
+def _literal_write(unit, parameter, data, bridges):
+    addresses = (*bridges, unit)
+    raw = bytes((0x46, addresses[0], 9 * len(bridges), *addresses[1:],
+                 0xA0 | (len(data) + 1), parameter, *data))
+    return b"\\" + raw.hex().upper().encode() + b"g\r"
+
+
+def _literal_ack(outer, route, parameter, tag):
+    raw = bytes((0x86, outer, 16, len(route), *route, 0x32, parameter, tag))
+    return (raw + bytes((-sum(raw) & 255,))).hex().upper().encode() + b"\r"
+
+
+class RoutedWriteJournaledDepthTests(unittest.TestCase):
+    """Typed journaled WRITE and read-only recovery at one, two and six bridges.
+
+    Ported from the 2026-10-19 Mac mini WIP snapshot and adapted to the
+    baseline-RECALL journal: every literal is derived independently here.
+    """
+    invoke = RoutedWriteCLITests.invoke
+
+    def test_journaled_peer_covers_one_two_and_six_bridges(self):
+        unit = 5
+        for depth in (1, 2, 6):
+            with self.subTest(depth=depth), tempfile.TemporaryDirectory() as directory:
+                project, bridges = _line_project(directory, depth, unit)
+                outer, route = bridges[0], (*bridges[1:], unit)
+                recall = recall_literal_command(unit=unit, parameter=7, count=2, bridges=bridges)
+                reply = lambda data: recall_literal_frame(
+                    outer=outer, destination=16, route=route, parameter=7, data=data)
+                write = _literal_write(unit, 7, b"\x55\xaa\xbb", bridges)
+                peer = SequencePeer([(recall, [b"g." + reply(b"\x11\x22")]),
+                                     (write, [b"g." + _literal_ack(outer, route, 7, 0x55)])])
+                journal = Path(directory) / "attempt.json"
+                arguments = ["--compact", "pci", "--host", "127.0.0.1", "--port", str(peer.port),
+                             "--local-unit", "16", "routed-write", str(unit), "7", "55AABB",
+                             "--expected-ack-tag", "0x55", "--project-file", str(project),
+                             "--source-network", "254", "--target-network", str(254 - depth),
+                             "--journal", str(journal)]
+                try:
+                    code, stdout, stderr = self.invoke(arguments)
+                finally:
+                    peer.finish()
+                self.assertEqual((code, stderr), (0, ""))
+                self.assertEqual(peer.received, [recall, write])
+                result = json.loads(stdout)
+                self.assertEqual(result["journal"]["phase"], "acknowledged")
+                document = json.loads(journal.read_text(encoding="utf-8"))
+                self.assertEqual(document["plan"]["bridges"], list(bridges))
+                self.assertEqual(document["plan"]["mode"], "typed")
+                self.assertTrue(document["complete"])
+                # Recovery reads once and never writes.
+                fixture = SocketFixture([b"g." + reply(b"\xaa\xbb")])
+                with patch.object(core.RoutedWriteClient, "exchange",
+                                  side_effect=AssertionError("Recovery must never WRITE")), \
+                     patch.object(core.socket, "socket", side_effect=[fixture]):
+                    code, stdout, stderr = self.invoke(
+                        ["--compact", "pci", "--host", "127.0.0.1", "--port", str(peer.port),
+                         "routed-write", "--recover", "--journal", str(journal),
+                         "--project-file", str(project)])
+                self.assertEqual((code, stderr), (0, ""))
+                self.assertEqual(fixture.sent, [recall])
+                report = json.loads(stdout)
+                self.assertEqual(report["classification"], "expected")
+                self.assertFalse(report["writes_attempted"])
+
+
 if __name__ == "__main__":
     unittest.main()

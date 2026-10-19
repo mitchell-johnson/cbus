@@ -1,0 +1,305 @@
+{
+  "schema_version": 1,
+  "format": "cbus-toolkit-menu-option-map-v1",
+  "target": "C-Bus Toolkit 1.18.0.2754",
+  "purpose": "Deterministic map from each main-menu leaf to its implemented CLI capability, or its explicit gap.",
+  "inputs": {
+    "surface": {
+      "path": "docs/toolkit-surface.json",
+      "sha256": "2cd1dd61f80a34ff14aebcfb44e131aa0ab738856a5073342bc3aac5a3494401"
+    },
+    "capabilities": {
+      "path": "src/cbus_toolkit/capabilities.json",
+      "sha256": "664438a2bb5cad160da788a2339c329acf3851905df51e71c9f4ccde7b8e86e1"
+    }
+  },
+  "leaves": [
+    {
+      "leaf_id": "help:6803.htm",
+      "title": "Connect to local C-Gate option",
+      "status": "mapped",
+      "kind": "cgate_connection",
+      "capability": "cgate-command-transport",
+      "reasons": []
+    },
+    {
+      "leaf_id": "help:6808.htm",
+      "title": "Manipulating existing remote C-Gate connection",
+      "status": "mapped",
+      "kind": "cgate_connection",
+      "capability": "cgate-command-transport",
+      "reasons": []
+    },
+    {
+      "leaf_id": "help:6804.htm",
+      "title": "Setting up a new remote projects connection",
+      "status": "mapped",
+      "kind": "cgate_connection",
+      "capability": "cgate-command-transport",
+      "reasons": []
+    },
+    {
+      "leaf_id": "help:6805.htm",
+      "title": "Disconnect from C-Gate",
+      "status": "mapped",
+      "kind": "cgate_connection",
+      "capability": "cgate-command-transport",
+      "reasons": []
+    },
+    {
+      "leaf_id": "help:6816.htm",
+      "title": "Set default interface option",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "interface_setup",
+          "detail": "Interface setup owned by the unfinished interface discovery workflow; physical interface acceptance remains unassessed.",
+          "subjects": [
+            "Set default interface option"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:5704.htm",
+      "title": "Features tab",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "preference_scope",
+          "detail": "A preference tab owned by the unfinished preferences workflow; preference runtime behavior remains unassessed.",
+          "subjects": [
+            "Features tab"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:5705.htm",
+      "title": "Behaviour tab",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "preference_scope",
+          "detail": "A preference tab owned by the unfinished preferences workflow; preference runtime behavior remains unassessed.",
+          "subjects": [
+            "Behaviour tab"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:5706.htm",
+      "title": "Units dialog tab",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "preference_scope",
+          "detail": "A preference tab owned by the unfinished preferences workflow; preference runtime behavior remains unassessed.",
+          "subjects": [
+            "Units dialog tab"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:5707.htm",
+      "title": "Advanced tab",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "preference_scope",
+          "detail": "A preference tab owned by the unfinished preferences workflow; preference runtime behavior remains unassessed.",
+          "subjects": [
+            "Advanced tab"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:5708.htm",
+      "title": "Compatibility tab",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "preference_scope",
+          "detail": "A preference tab owned by the unfinished preferences workflow; preference runtime behavior remains unassessed.",
+          "subjects": [
+            "Compatibility tab"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:5709.htm",
+      "title": "C-Bus tag names tab",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "preference_scope",
+          "detail": "A preference tab owned by the unfinished preferences workflow; preference runtime behavior remains unassessed.",
+          "subjects": [
+            "C-Bus tag names tab"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:6821.htm",
+      "title": "Restore projects... menu option",
+      "status": "mapped",
+      "kind": "project_operation",
+      "capability": "native-cgate3-projects",
+      "reasons": []
+    },
+    {
+      "leaf_id": "help:6822.htm",
+      "title": "Backup Projects... menu option",
+      "status": "mapped",
+      "kind": "project_operation",
+      "capability": "native-cgate3-projects",
+      "reasons": []
+    },
+    {
+      "leaf_id": "help:6836.htm",
+      "title": "Add project option",
+      "status": "mapped",
+      "kind": "project_operation",
+      "capability": "native-cgate3-projects",
+      "reasons": []
+    },
+    {
+      "leaf_id": "help:6837.htm",
+      "title": "Delete project option",
+      "status": "mapped",
+      "kind": "project_operation",
+      "capability": "native-cgate3-projects",
+      "reasons": []
+    },
+    {
+      "leaf_id": "help:6839.htm",
+      "title": "Find C-Bus Networks... option",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "network_discovery",
+          "detail": "Network discovery owned by the unfinished scan/commissioning workflows; discovery acceptance remains unassessed.",
+          "subjects": [
+            "Find C-Bus Networks... option"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:11083.htm",
+      "title": "Repair project option",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "project_repair",
+          "detail": "Project repair owned by the unfinished native repair workflow; repair acceptance remains unassessed.",
+          "subjects": [
+            "Repair project option"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:6840.htm",
+      "title": "Refresh option",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "uncertain_cli_mapping",
+          "detail": "No certain CLI command maps to this menu option; claiming coverage would be speculation.",
+          "subjects": [
+            "Refresh option"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:6841.htm",
+      "title": "Import projects option",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "uncertain_cli_mapping",
+          "detail": "No certain CLI command maps to this menu option; claiming coverage would be speculation.",
+          "subjects": [
+            "Import projects option"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:6842.htm",
+      "title": "Export projects option",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "uncertain_cli_mapping",
+          "detail": "No certain CLI command maps to this menu option; claiming coverage would be speculation.",
+          "subjects": [
+            "Export projects option"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:6849.htm",
+      "title": "Go menu options",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "empty_menu_branch",
+          "detail": "A menu branch with no documented leaf options; its contents remain unassessed.",
+          "subjects": [
+            "Go menu options"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:1300.htm",
+      "title": "Help menu options",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "empty_menu_branch",
+          "detail": "A menu branch with no documented leaf options; its contents remain unassessed.",
+          "subjects": [
+            "Help menu options"
+          ]
+        }
+      ]
+    }
+  ],
+  "counts": {
+    "leaves": 22,
+    "mapped": 8,
+    "pending": 14,
+    "pending_reasons": {
+      "empty_menu_branch": 2,
+      "interface_setup": 1,
+      "network_discovery": 1,
+      "preference_scope": 6,
+      "project_repair": 1,
+      "uncertain_cli_mapping": 3
+    }
+  }
+}

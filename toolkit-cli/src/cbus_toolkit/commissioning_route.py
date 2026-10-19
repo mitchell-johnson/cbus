@@ -14,6 +14,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import hashlib
+import json
 import os
 from pathlib import Path
 import re
@@ -413,3 +414,73 @@ def plan_commissioning_route(
         bridges=bridges,
         expected=expected,
     )
+
+
+def route_plan_generation_id(plan: CommissioningRoutePlan) -> str:
+    """Bind one planned topology to a stable generation handle.
+
+    The handle is SHA-256 over the canonical JSON of ``plan.as_dict()``.
+    It changes with any bridge, expected-path, unit or digest edit and lets
+    a journal prove which exact generation it attempted. No I/O occurs.
+    """
+    if type(plan) is not CommissioningRoutePlan:
+        raise TypeError("plan must be an exact CommissioningRoutePlan")
+    canonical = json.dumps(
+        plan.as_dict(), sort_keys=True, separators=(",", ":"),
+        ensure_ascii=False, allow_nan=False,
+    ).encode("utf-8")
+    return "sha256:" + hashlib.sha256(canonical).hexdigest()
+
+
+def revalidate_route_plan(plan: CommissioningRoutePlan, project_path: Path) -> CommissioningRoutePlan:
+    """Re-derive the exact route from fresh project bytes before any journal or send.
+
+    Checks the bound digest, re-resolves the bridge bytes and rebuilds the
+    independent Reply Network expectation from the current file. Any digest,
+    bridge or reply-path difference refuses without opening an endpoint or
+    creating a journal. Returns the freshly derived plan, which must equal
+    the supplied one.
+    """
+    if type(plan) is not CommissioningRoutePlan:
+        raise TypeError("plan must be an exact CommissioningRoutePlan")
+    if not isinstance(project_path, Path):
+        raise TypeError("project path must be a pathlib.Path")
+    snapshot = read_project_snapshot(project_path)
+    digest = project_sha256(snapshot)
+    if digest != plan.project_sha256:
+        raise ProjectError(
+            f"Project topology is stale or was substituted: expected {plan.project_sha256}, got {digest}"
+        )
+    project = ProjectDocument.from_snapshot(snapshot, source=project_path)
+    derived = resolve_network_route(
+        project, source_network=plan.source_network, target_network=plan.target_network
+    )
+    if tuple(derived) != tuple(plan.bridges):
+        raise ProjectError(
+            f"Plan route {list(plan.bridges)} differs from project route {list(derived)} "
+            f"for networks {plan.source_network}->{plan.target_network}; "
+            "refused before any journal or send"
+        )
+    fresh = plan_commissioning_route(
+        project,
+        project_digest=digest,
+        source_network=plan.source_network,
+        target_network=plan.target_network,
+        target_unit=plan.target_unit,
+        local_unit=plan.local_unit,
+        expected_ack_tag=plan.expected_ack_tag,
+        expected_project_name=plan.project_name,
+    )
+    if (
+        fresh.bridges != plan.bridges
+        or fresh.expected != plan.expected
+        or fresh.project_name != plan.project_name
+        or fresh.target_unit_type != plan.target_unit_type
+        or fresh.project_format != plan.project_format
+        or fresh.project_sha256 != plan.project_sha256
+    ):
+        raise ProjectError(
+            "Project reply path no longer matches the planned generation; "
+            "refused before any journal or send"
+        )
+    return fresh

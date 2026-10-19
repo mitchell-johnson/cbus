@@ -30,11 +30,16 @@ native_cgate_unravel_cases.json``); tests replay every captured case:
   database address in deepest-first order, preserving physical identity.
   When the occupant's own database target is vacant or absent, the occupant
   is displaced to the lowest free address, matching the observed native
-  single-link captures. Longer cycles are refused.
+  single-link captures. Longer chains recurse deepest-first with the same
+  rule; each database move names the occupant its preceding displacement
+  cleared (``displaced``) so an executor can sequence through a durable
+  journal with an independent vacancy check before every write. Longer
+  cycles and multi-occupant destinations are refused.
 
 ``refusal`` names topologies outside that observed subset (for example an
-occupied database target with several occupants, or a cyclic displacement
-chain); they are not predicted.
+occupied database target with several occupants, an occupant that arrived
+via an earlier planned move rather than the original inventory, or a cyclic
+displacement chain); they are not predicted.
 """
 from __future__ import annotations
 
@@ -67,6 +72,7 @@ class UnravelMove:
     destination: int
     reason: str  # database_match | free_address | displacement
     native_method: str
+    displaced: str | None = None
 
 
 @dataclass(frozen=True)
@@ -134,7 +140,8 @@ def plan_unravel(physical: Mapping[int, Iterable[str]], database: Mapping[int, s
                     return candidate
         return None
 
-    def move(serial: str, destination: int, reason: str, method: str) -> None:
+    def move(serial: str, destination: int, reason: str, method: str,
+             displaced: str | None = None) -> None:
         source = location[serial]
         occupants[source].remove(serial)
         if not occupants[source]:
@@ -142,9 +149,9 @@ def plan_unravel(physical: Mapping[int, Iterable[str]], database: Mapping[int, s
         occupants.setdefault(destination, []).append(serial)
         location[serial] = destination
         moved.add(serial)
-        moves.append(UnravelMove(serial, source, destination, reason, method))
+        moves.append(UnravelMove(serial, source, destination, reason, method, displaced))
 
-    def plan(refusal: str) -> UnravelPlan:
+    def plan(refusal: str | None) -> UnravelPlan:
         return UnravelPlan(tuple(moves), tuple(kept), dict(location), refusal)
 
     def db_single(serial: str, exclude: int) -> int | None:
@@ -156,50 +163,57 @@ def plan_unravel(physical: Mapping[int, Iterable[str]], database: Mapping[int, s
         return None
 
     def ensure_vacant(destination: int, serial_stack: tuple[str, ...],
-                      addr_stack: tuple[int, ...]) -> str | None:
+                      addr_stack: tuple[int, ...]) -> tuple[str | None, str | None]:
         """Clear a single-occupant database target, pushing chain moves.
 
-        Returns a refusal string or ``None``. ``"several"`` is a sentinel for
-        a multi-occupant target that the caller formats with serial context.
-        When the occupant's own database target is itself occupied, it is
-        cleared recursively first so each link lands on its own database
-        address (deepest first). When it is vacant or absent the occupant
-        goes to free, matching observed native single-link behavior.
+        Returns ``(refusal, displaced)``. ``refusal`` is a refusal string or
+        ``None``; ``"several"`` is a sentinel for a multi-occupant target
+        that the caller formats with serial context. ``displaced`` is the
+        occupant cleared from ``destination`` (or ``None`` when it was
+        already vacant) so a database move can name the serial its preceding
+        displacement removed for journal/vacancy sequencing. When the
+        occupant's own database target is itself occupied, it is cleared
+        recursively first so each link lands on its own database address
+        (deepest first). When it is vacant or absent the occupant goes to
+        free, matching observed native single-link behavior. An occupant
+        that arrived via an earlier planned move (absent from the original
+        ``network`` inventory at that address) is refused rather than
+        displaced again.
         """
         if destination in addr_stack:
-            return f"Database displacement chain is cyclic at address {destination}"
+            return (f"Database displacement chain is cyclic at address {destination}", None)
         blocking = occupants.get(destination, [])
         if not blocking:
-            return None
+            return (None, None)
         if len(blocking) > 1:
-            return "several"
+            return ("several", None)
         occupant = blocking[0]
         if occupant in serial_stack:
-            return f"Database displacement chain is cyclic at serial {occupant}"
-        if occupant in moved:
-            return f"Database address {destination} cannot be cleared unambiguously"
+            return (f"Database displacement chain is cyclic at serial {occupant}", None)
+        if occupant in moved or occupant not in network.get(destination, ()):
+            return (f"Database address {destination} cannot be cleared unambiguously", None)
         own = db_single(occupant, location[occupant])
         if own is not None:
             if own == local_unit:
-                return f"Database address {own} for {occupant} is the local PCI"
+                return (f"Database address {own} for {occupant} is the local PCI", None)
             if own in addr_stack:
-                return f"Database displacement chain is cyclic at address {own}"
+                return (f"Database displacement chain is cyclic at address {own}", None)
             occupying = occupants.get(own, [])
             if occupying:
                 if len(occupying) > 1:
-                    return f"Database address {own} for {occupant} holds several units"
-                refusal = ensure_vacant(own, serial_stack + (occupant,), addr_stack + (destination,))
+                    return (f"Database address {own} for {occupant} holds several units", None)
+                refusal, deep = ensure_vacant(own, serial_stack + (occupant,), addr_stack + (destination,))
                 if refusal is not None:
                     if refusal == "several":
-                        return f"Database address {own} for {occupant} holds several units"
-                    return refusal
-                move(occupant, own, "displacement", LEGACY_ADDRESS)
-                return None
+                        return (f"Database address {own} for {occupant} holds several units", None)
+                    return (refusal, None)
+                move(occupant, own, "displacement", LEGACY_ADDRESS, deep)
+                return (None, occupant)
         spare = free_address()
         if spare is None:
-            return "No free address to displace the database target occupant"
-        move(occupant, spare, "displacement", LEGACY_ADDRESS)
-        return None
+            return ("No free address to displace the database target occupant", None)
+        move(occupant, spare, "displacement", LEGACY_ADDRESS, None)
+        return (None, occupant)
 
     for address in chosen:
         serials = list(occupants.get(address, ()))
@@ -223,12 +237,12 @@ def plan_unravel(physical: Mapping[int, Iterable[str]], database: Mapping[int, s
                 destination = target[0]
                 if destination == local_unit:
                     return plan(f"Database address {destination} for {serial} is the local PCI")
-                refusal = ensure_vacant(destination, (serial,), (address,))
+                refusal, displaced = ensure_vacant(destination, (serial,), (address,))
                 if refusal is not None:
                     if refusal == "several":
                         return plan(f"Database address {destination} for {serial} holds several units")
                     return plan(refusal)
-                move(serial, destination, "database_match", method)
+                move(serial, destination, "database_match", method, displaced)
                 continue
             destination = free_address()
             if destination is None:

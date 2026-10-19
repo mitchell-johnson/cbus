@@ -13,6 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 MAP_PATH = ROOT / "docs" / "toolkit-dialog-map.json"
 LEDGER_PATH = ROOT / "src" / "cbus_toolkit" / "capabilities.json"
 REGISTER_PATH = ROOT / "src" / "cbus_toolkit" / "parity-obligations.json"
+SURFACE_PATH = ROOT / "docs" / "toolkit-surface.json"
 ABSENT_IN_1_18 = {"dialog:10747.htm", "dialog:12558.htm", "dialog:19973.htm"}
 
 
@@ -25,6 +26,13 @@ def ledger() -> dict:
 
 
 class CensusDispositionTests(unittest.TestCase):
+    def test_stable_ids_preserved_in_census_order(self):
+        document = dialog_map.load_committed()
+        surface = json.loads(SURFACE_PATH.read_text(encoding="utf-8"))
+        expected = [row["id"] for row in surface["device_dialog_candidates"]]
+        self.assertEqual([row["dialog_id"] for row in document["dialogs"]], expected)
+        self.assertEqual(len(expected), 118)
+
     def test_every_unresolved_dialog_has_a_disposition(self):
         document = dialog_map.load_committed()
         self.assertEqual(document["census_disposition_codes"], dialog_map.CENSUS_DISPOSITIONS)
