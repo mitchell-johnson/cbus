@@ -117,7 +117,9 @@ def test_fifo_input_refuses_promptly_without_waiting_for_a_writer(tmp_path):
 
 
 def test_unix_socket_input_refuses_as_a_special_file(tmp_path):
-    with tempfile.TemporaryDirectory(prefix="cb-offline-", dir="/private/tmp") as folder:
+    # A short directory keeps the AF_UNIX path under the platform limit.
+    short_root = "/private/tmp" if os.path.isdir("/private/tmp") else "/tmp"
+    with tempfile.TemporaryDirectory(prefix="cb-offline-", dir=short_root) as folder:
         source = Path(folder) / "i.sock"
         with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as special:
             special.bind(str(source))
