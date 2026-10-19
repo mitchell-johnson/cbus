@@ -5389,3 +5389,168 @@ async fn quoted_dbset_values_preserve_pending_existing_oid_path_and_project_relo
     no_io(&mut remote).await;
     std::fs::remove_file(path).unwrap();
 }
+
+fn associated_numeric_level_object_rows() -> Vec<serde_json::Value> {
+    let rows = include_str!(
+        "../../../../testdata/vectors/cgate_associated_numeric_level_object_matrix.jsonl"
+    )
+    .lines()
+    .filter(|line| !line.trim().is_empty())
+    .map(|line| serde_json::from_str::<serde_json::Value>(line).unwrap())
+    .collect::<Vec<_>>();
+    assert_eq!(rows.len(), 12);
+    for row in &rows {
+        assert_eq!(row["format"], "cbus-associated-numeric-level-object-xml-v1");
+        assert_eq!(row["issue"], 73);
+        assert_eq!(row["observed_only"], true);
+    }
+    rows
+}
+
+async fn check_associated_numeric_level_rows(
+    service: &Arc<Service>,
+    client: &mut ClientState,
+    path: &std::path::Path,
+    rows: &[serde_json::Value],
+    owners: &std::collections::BTreeMap<String, String>,
+    label: &str,
+) {
+    let before = Database::from_server(&*service.model.lock().await);
+    let bytes = std::fs::read(path).unwrap();
+    for row in rows {
+        let oid = &owners[row["owner"].as_str().unwrap()];
+        let request = row["request"].as_str().unwrap();
+        let response = run(service, client, request).await;
+        let status = row["status"].as_u64().unwrap() as u16;
+        assert_eq!(response.status, status, "{label} {request}: {response:?}");
+        if let Some(final_text) = row["final"].as_str() {
+            assert_eq!(response.final_text, final_text, "{label} {request}");
+            assert!(response.lines.is_empty(), "{label} {request}");
+        }
+        if let Some(prefix) = row["body"].as_str() {
+            let selector = request.trim_start_matches("DBGETXML ");
+            let document = xml(service, client, selector).await;
+            assert!(
+                document.starts_with(prefix),
+                "{label} {request}: {document}"
+            );
+            // The numeric owner projects exactly the issued Level OID document.
+            assert_eq!(
+                document,
+                xml(service, client, &format!("!{oid}")).await,
+                "{label} {request}"
+            );
+            let parsed = roxmltree::Document::parse(&document).unwrap();
+            assert_eq!(
+                parsed
+                    .root_element()
+                    .children()
+                    .find(|node| node.has_tag_name("OID"))
+                    .and_then(|node| node.text()),
+                Some(oid.as_str()),
+                "{label} {request}"
+            );
+            assert_eq!(associated_level_xml_value(&document).as_deref(), Some("77"));
+        }
+    }
+    // Reads never mutate the graph or its durable bytes.
+    assert!(
+        Database::from_server(&*service.model.lock().await) == before,
+        "{label}"
+    );
+    assert_eq!(std::fs::read(path).unwrap(), bytes, "{label}");
+}
+
+#[tokio::test]
+async fn associated_numeric_level_xml_matches_original_contract() {
+    let rows = associated_numeric_level_object_rows();
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    for command in [
+        "PROJECT NEW ASSOC",
+        "PROJECT USE ASSOC",
+        "DBCREATENET 11 Eleven Cni 127.0.0.1:1",
+        "NET LOAD DB",
+        "NET SAVE DB",
+    ] {
+        ok_command(&service, &mut client, command).await;
+    }
+    created(
+        &service,
+        &mut client,
+        "DBADDSAFE //ASSOC/11 Application 56 Lighting",
+    )
+    .await;
+    let group = created(
+        &service,
+        &mut client,
+        "DBADDSAFE //ASSOC/11/56 Group 1 Main",
+    )
+    .await;
+    let variable = created(
+        &service,
+        &mut client,
+        "DBADDSAFE //ASSOC/11/56 NetVar 4 Variable",
+    )
+    .await;
+    ok_command(&service, &mut client, "DBRENAMENETSAFE 11 Renamed").await;
+    // Plain SAFE Levels and completed unsafe Levels under each parent kind.
+    let mut owners = std::collections::BTreeMap::new();
+    for (owner, parent) in [("group", &group), ("netvar", &variable)] {
+        let plain = created(
+            &service,
+            &mut client,
+            &format!("DBADDSAFE !{parent} Level 7 Plain"),
+        )
+        .await;
+        ok_command(
+            &service,
+            &mut client,
+            &format!("DBSETSAFE !{plain}/Value 77"),
+        )
+        .await;
+        owners.insert(format!("plain-{owner}"), plain);
+        let completed = created(&service, &mut client, &format!("DBADD !{parent} Level")).await;
+        for command in [
+            format!("DBSET !{completed}/Value 77"),
+            format!("DBSET !{completed}/TagName Completed"),
+            format!("DBSET !{completed}/Address 8"),
+        ] {
+            ok_command(&service, &mut client, &command).await;
+        }
+        owners.insert(format!("completed-{owner}"), completed);
+    }
+    check_associated_numeric_level_rows(&service, &mut client, &path, &rows, &owners, "initial")
+        .await;
+    // Non-canonical numeric lexemes keep their established handling.
+    for selector in ["//ASSOC/11/56/01/7", "//ASSOC/11/56/1/+7"] {
+        let response = run(&service, &mut client, &format!("DBGETXML {selector}")).await;
+        assert!(
+            !response
+                .lines
+                .iter()
+                .any(|line| line.starts_with("347-<Level")),
+            "{selector}: {response:?}"
+        );
+    }
+    for command in [
+        "PROJECT SAVE ASSOC",
+        "PROJECT CLOSE ASSOC",
+        "PROJECT LOAD ASSOC",
+        "PROJECT USE ASSOC",
+    ] {
+        ok_command(&service, &mut client, command).await;
+    }
+    for oid in owners.values() {
+        assert_eq!(
+            scalar(&service, &mut client, &format!("!{oid}/OID")).await,
+            *oid
+        );
+    }
+    check_associated_numeric_level_rows(&service, &mut client, &path, &rows, &owners, "reloaded")
+        .await;
+    no_io(&mut remote).await;
+    std::fs::remove_file(path).unwrap();
+}

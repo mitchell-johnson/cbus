@@ -641,7 +641,10 @@ preserve both failed-run count conventions, focused correction, unchanged
 runtime bindings and resource/publication deltas. No new original instruction,
 VM, house or hardware acceptance was executed, and no full Python suite was
 repeated locally. The broad ledger and fully accepted obligation counts remain
-unchanged; Description XML fidelity remains open in issue 75.
+unchanged. The owned Rust servers now round-trip Application/Group
+`<Description>` through DBSETXML/DBGETXML using the scalar store (exported
+after `Address`; owned-model order). Native Description XML placement,
+default omission and acceptance remain open in issue 75.
 
 The [replacement, cached NeoPro CSV and bounded TCP batch](feature-batch-2026-10-02-cached-csv-event-bounds.md)
 introduced a guarded metadata/delete/readdress/save/reopen lifecycle for the 123 tweaker pairs
@@ -691,7 +694,12 @@ parents passed with one original-input skip and 934 separate subtests. See the
 for exact source/artifact bindings, historical failures and the explicit later
 prose delta. The full Python suite was not repeated; current original/vendor/VM
 and hardware execution remains zero. Raw COPY/resync still refuse before lossy
-projection. Numeric object XML remains tracked in [#73](https://github.com/mitchell-johnson/cbus/issues/73).
+projection. Qualified canonical numeric Level object DBGETXML now resolves
+through the exact associated owner on the owned model: Group children return
+the Level OID snippet (`344`) and NetVar children `500 Internal error.`, as in
+the retained imported originals. Bare numeric object XML keeps local `404`;
+the original renamed/bare selector contract remains tracked in
+[#73](https://github.com/mitchell-johnson/cbus/issues/73) and [#72](https://github.com/mitchell-johnson/cbus/issues/72).
 Reproduced canonical numeric byte-COPY destination401 and unsupported retained-XML
 plain-Level LOAD mutations are deferred in [#74](https://github.com/mitchell-johnson/cbus/issues/74)
 after cyber protection stopped the correction agent; untested private edits are

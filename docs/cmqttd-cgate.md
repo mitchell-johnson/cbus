@@ -63,9 +63,20 @@ or loading physical programming. Application and Group `Description` scalar
 writes through issued OIDs now update the canonical durable object: exact
 `DBGET !OID/Description` readback survives project reload and JSON restart.
 This supports the [ordered eDLT Application Add workflow](../toolkit-cli/docs/edlt-application-reset-add.md).
-Application XML still omits Description and does not admit it on import;
-[issue 75](https://github.com/mitchell-johnson/cbus/issues/75) tracks the native
-observations and XML implementation needed for that separate compatibility gap.
+Owned-model Application and Group XML now carries the same value: DBGETXML
+exports one text-only `<Description>` immediately after `Address`, and
+DBSETXML admits an optional text-only `<Description>` on Application and Group
+only (at most 1,024 characters, no control characters, no attributes or nested
+markup; a duplicate is refused with `400`). An empty element is stored as
+absent, so scalar readback stays `401`; omitting it on replacement retires the
+value. Import, scalar DBGET, export, PROJECT SAVE/CLOSE/LOAD, JSON restart,
+PROJECT COPY, Application SAFE copy and combined Network replacement share the
+canonical store. NetVar, Level and Network `<Description>` remain refused. The
+element position, default omission and empty handling are owned-model choices:
+native C-Gate placement and Application XML acceptance remain unproven, and
+[issue 75](https://github.com/mitchell-johnson/cbus/issues/75) stays open for
+those original observations. The exact owned contract is
+`rust/testdata/vectors/cgate_application_description_xml_roundtrip.jsonl`.
 
 Admitted Level ADD/COPY after a secondary tag-Network rename now delegates to
 the existing numeric database owner. Qualified/bare paths and bare Group/NetVar
