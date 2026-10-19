@@ -1,0 +1,2520 @@
+{
+  "schema_version": 1,
+  "format": "cbus-toolkit-macro-leaf-map-v1",
+  "target": "C-Bus Toolkit 1.18.0.2754",
+  "purpose": "Deterministic map from each macro-reference leaf to its implemented classic key-macro preset or micro-function, or its explicit gap.",
+  "inputs": {
+    "surface": {
+      "path": "docs/toolkit-surface.json",
+      "sha256": "2cd1dd61f80a34ff14aebcfb44e131aa0ab738856a5073342bc3aac5a3494401"
+    },
+    "macros": {
+      "path": "src/cbus_toolkit/macros.py",
+      "sha256": "9db99b787d510d3c3d6902e69a1a4eb03ff320564bf605970c2e0844cd57cc53"
+    }
+  },
+  "leaves": [
+    {
+      "leaf_id": "help:965.htm",
+      "title": "Bell Press (wired)",
+      "status": "mapped",
+      "kind": "preset",
+      "presets": [
+        "bellpress"
+      ],
+      "reasons": []
+    },
+    {
+      "leaf_id": "help:961.htm",
+      "title": "Dimmer (wired)",
+      "status": "mapped",
+      "kind": "preset",
+      "presets": [
+        "dimmer",
+        "dimmer_memory"
+      ],
+      "reasons": []
+    },
+    {
+      "leaf_id": "help:966.htm",
+      "title": "Dimmer Up (wired)",
+      "status": "mapped",
+      "kind": "preset",
+      "presets": [
+        "dimmer_up"
+      ],
+      "reasons": []
+    },
+    {
+      "leaf_id": "help:967.htm",
+      "title": "Dimmer Down (wired)",
+      "status": "mapped",
+      "kind": "preset",
+      "presets": [
+        "dimmer_down"
+      ],
+      "reasons": []
+    },
+    {
+      "leaf_id": "help:959.htm",
+      "title": "Off (wired)",
+      "status": "mapped",
+      "kind": "preset",
+      "presets": [
+        "off"
+      ],
+      "reasons": []
+    },
+    {
+      "leaf_id": "help:963.htm",
+      "title": "Off Down (wired)",
+      "status": "mapped",
+      "kind": "preset",
+      "presets": [
+        "off_down"
+      ],
+      "reasons": []
+    },
+    {
+      "leaf_id": "help:958.htm",
+      "title": "On (wired)",
+      "status": "mapped",
+      "kind": "preset",
+      "presets": [
+        "on"
+      ],
+      "reasons": []
+    },
+    {
+      "leaf_id": "help:960.htm",
+      "title": "On/Off (wired)",
+      "status": "mapped",
+      "kind": "preset",
+      "presets": [
+        "toggle"
+      ],
+      "reasons": []
+    },
+    {
+      "leaf_id": "help:962.htm",
+      "title": "On Up (wired)",
+      "status": "mapped",
+      "kind": "preset",
+      "presets": [
+        "on_up"
+      ],
+      "reasons": []
+    },
+    {
+      "leaf_id": "help:964.htm",
+      "title": "Timer (wired)",
+      "status": "mapped",
+      "kind": "preset",
+      "presets": [
+        "timer"
+      ],
+      "reasons": []
+    },
+    {
+      "leaf_id": "help:968.htm",
+      "title": "Soft Up (wired)",
+      "status": "mapped",
+      "kind": "preset",
+      "presets": [
+        "soft_up"
+      ],
+      "reasons": []
+    },
+    {
+      "leaf_id": "help:969.htm",
+      "title": "Soft Down (wired)",
+      "status": "mapped",
+      "kind": "preset",
+      "presets": [
+        "soft_down"
+      ],
+      "reasons": []
+    },
+    {
+      "leaf_id": "help:970.htm",
+      "title": "Preset 1 (wired)",
+      "status": "mapped",
+      "kind": "preset",
+      "presets": [
+        "preset1"
+      ],
+      "reasons": []
+    },
+    {
+      "leaf_id": "help:971.htm",
+      "title": "Preset 2 (wired)",
+      "status": "mapped",
+      "kind": "preset",
+      "presets": [
+        "preset2"
+      ],
+      "reasons": []
+    },
+    {
+      "leaf_id": "help:972.htm",
+      "title": "Trigger 1 (wired)",
+      "status": "mapped",
+      "kind": "preset",
+      "presets": [
+        "trigger1"
+      ],
+      "reasons": []
+    },
+    {
+      "leaf_id": "help:973.htm",
+      "title": "Trigger 2 (wired)",
+      "status": "mapped",
+      "kind": "preset",
+      "presets": [
+        "trigger2"
+      ],
+      "reasons": []
+    },
+    {
+      "leaf_id": "help:975.htm",
+      "title": "<Custom> (wired)",
+      "status": "mapped",
+      "kind": "custom",
+      "preset": "custom",
+      "reasons": []
+    },
+    {
+      "leaf_id": "help:976.htm",
+      "title": "Unused (wired)",
+      "status": "mapped",
+      "kind": "preset",
+      "presets": [
+        "unused"
+      ],
+      "reasons": []
+    },
+    {
+      "leaf_id": "help:5133.htm",
+      "title": "Shutter toggle (wired)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "shutter",
+          "detail": "A shutter macro leaf outside the admitted classic key-macro scope; shutter configuration remains unassessed.",
+          "subjects": [
+            "Shutter toggle (wired)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:5134.htm",
+      "title": "Shutter close toggle (wired)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "shutter",
+          "detail": "A shutter macro leaf outside the admitted classic key-macro scope; shutter configuration remains unassessed.",
+          "subjects": [
+            "Shutter close toggle (wired)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:5135.htm",
+      "title": "Shutter open toggle (wired)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "shutter",
+          "detail": "A shutter macro leaf outside the admitted classic key-macro scope; shutter configuration remains unassessed.",
+          "subjects": [
+            "Shutter open toggle (wired)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:5136.htm",
+      "title": "Shutter open (wired)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "shutter",
+          "detail": "A shutter macro leaf outside the admitted classic key-macro scope; shutter configuration remains unassessed.",
+          "subjects": [
+            "Shutter open (wired)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:5137.htm",
+      "title": "Shutter close (wired)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "shutter",
+          "detail": "A shutter macro leaf outside the admitted classic key-macro scope; shutter configuration remains unassessed.",
+          "subjects": [
+            "Shutter close (wired)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:5138.htm",
+      "title": "Shutter stop (wired)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "shutter",
+          "detail": "A shutter macro leaf outside the admitted classic key-macro scope; shutter configuration remains unassessed.",
+          "subjects": [
+            "Shutter stop (wired)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:9890.htm",
+      "title": "On/Off bistable (wired)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "bistable",
+          "detail": "A bistable macro leaf outside the admitted classic key-macro scope; bistable configuration remains unassessed.",
+          "subjects": [
+            "On/Off bistable (wired)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:9891.htm",
+      "title": "Off/On bistable (wired)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "bistable",
+          "detail": "A bistable macro leaf outside the admitted classic key-macro scope; bistable configuration remains unassessed.",
+          "subjects": [
+            "Off/On bistable (wired)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:9892.htm",
+      "title": "On/Off toggle bistable (wired)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "bistable",
+          "detail": "A bistable macro leaf outside the admitted classic key-macro scope; bistable configuration remains unassessed.",
+          "subjects": [
+            "On/Off toggle bistable (wired)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:9893.htm",
+      "title": "On/Off toggle timer bistable (wired)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "bistable",
+          "detail": "A bistable macro leaf outside the admitted classic key-macro scope; bistable configuration remains unassessed.",
+          "subjects": [
+            "On/Off toggle timer bistable (wired)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:9894.htm",
+      "title": "Memory toggle bistable (wired)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "bistable",
+          "detail": "A bistable macro leaf outside the admitted classic key-macro scope; bistable configuration remains unassessed.",
+          "subjects": [
+            "Memory toggle bistable (wired)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:9895.htm",
+      "title": "Soft on/Soft off bistable (wired)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "bistable",
+          "detail": "A bistable macro leaf outside the admitted classic key-macro scope; bistable configuration remains unassessed.",
+          "subjects": [
+            "Soft on/Soft off bistable (wired)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:9896.htm",
+      "title": "Soft on/Hard off bistable (wired)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "bistable",
+          "detail": "A bistable macro leaf outside the admitted classic key-macro scope; bistable configuration remains unassessed.",
+          "subjects": [
+            "Soft on/Hard off bistable (wired)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:9897.htm",
+      "title": "Hard on/Soft off bistable (wired)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "bistable",
+          "detail": "A bistable macro leaf outside the admitted classic key-macro scope; bistable configuration remains unassessed.",
+          "subjects": [
+            "Hard on/Soft off bistable (wired)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:10114.htm",
+      "title": "Day Move",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "schedule_move",
+          "detail": "A time-driven move leaf outside the admitted classic key-macro scope; schedule behavior remains unassessed.",
+          "subjects": [
+            "Day Move"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:10115.htm",
+      "title": "Night Move",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "schedule_move",
+          "detail": "A time-driven move leaf outside the admitted classic key-macro scope; schedule behavior remains unassessed.",
+          "subjects": [
+            "Night Move"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:10116.htm",
+      "title": "Sunset",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "schedule_move",
+          "detail": "A time-driven move leaf outside the admitted classic key-macro scope; schedule behavior remains unassessed.",
+          "subjects": [
+            "Sunset"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:17328.htm",
+      "title": "Any Move",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "schedule_move",
+          "detail": "A time-driven move leaf outside the admitted classic key-macro scope; schedule behavior remains unassessed.",
+          "subjects": [
+            "Any Move"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:11944.htm",
+      "title": "Scene macro function (wired)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "scene_widget",
+          "detail": "A scene macro leaf outside the admitted classic key-macro scope; scene widgets remain unassessed.",
+          "subjects": [
+            "Scene macro function (wired)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:11946.htm",
+      "title": "Modify scene macro function (wired)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "scene_widget",
+          "detail": "A scene macro leaf outside the admitted classic key-macro scope; scene widgets remain unassessed.",
+          "subjects": [
+            "Modify scene macro function (wired)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:13242.htm",
+      "title": "Fan Speed Cycle macro function (wired)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "fan",
+          "detail": "A fan macro leaf outside the admitted classic key-macro scope; fan configuration remains unassessed.",
+          "subjects": [
+            "Fan Speed Cycle macro function (wired)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14458.htm",
+      "title": "Occupancy Detector macro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "occupancy",
+          "detail": "An occupancy macro leaf outside the admitted classic key-macro scope; occupancy configuration remains unassessed.",
+          "subjects": [
+            "Occupancy Detector macro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14459.htm",
+      "title": "Preset macro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "other_key_family",
+          "detail": "A non-classic key-family template leaf outside the admitted classic scope; other families remain unassessed.",
+          "subjects": [
+            "Preset macro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14461.htm",
+      "title": "On macro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "other_key_family",
+          "detail": "A non-classic key-family template leaf outside the admitted classic scope; other families remain unassessed.",
+          "subjects": [
+            "On macro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14462.htm",
+      "title": "Bell press macro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "other_key_family",
+          "detail": "A non-classic key-family template leaf outside the admitted classic scope; other families remain unassessed.",
+          "subjects": [
+            "Bell press macro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14464.htm",
+      "title": "Scene Set macro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "scene_widget",
+          "detail": "A scene macro leaf outside the admitted classic key-macro scope; scene widgets remain unassessed.",
+          "subjects": [
+            "Scene Set macro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14460.htm",
+      "title": "Off macro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "other_key_family",
+          "detail": "A non-classic key-family template leaf outside the admitted classic scope; other families remain unassessed.",
+          "subjects": [
+            "Off macro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14463.htm",
+      "title": "Scene On/Off macro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "scene_widget",
+          "detail": "A scene macro leaf outside the admitted classic key-macro scope; scene widgets remain unassessed.",
+          "subjects": [
+            "Scene On/Off macro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14467.htm",
+      "title": "Off macro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "other_key_family",
+          "detail": "A non-classic key-family template leaf outside the admitted classic scope; other families remain unassessed.",
+          "subjects": [
+            "Off macro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14468.htm",
+      "title": "On/Off macro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "other_key_family",
+          "detail": "A non-classic key-family template leaf outside the admitted classic scope; other families remain unassessed.",
+          "subjects": [
+            "On/Off macro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14470.htm",
+      "title": "On Up macro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "other_key_family",
+          "detail": "A non-classic key-family template leaf outside the admitted classic scope; other families remain unassessed.",
+          "subjects": [
+            "On Up macro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14471.htm",
+      "title": "Off Down macro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "other_key_family",
+          "detail": "A non-classic key-family template leaf outside the admitted classic scope; other families remain unassessed.",
+          "subjects": [
+            "Off Down macro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14469.htm",
+      "title": "Dimmer macro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "other_key_family",
+          "detail": "A non-classic key-family template leaf outside the admitted classic scope; other families remain unassessed.",
+          "subjects": [
+            "Dimmer macro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14473.htm",
+      "title": "Dimmer Up macro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "other_key_family",
+          "detail": "A non-classic key-family template leaf outside the admitted classic scope; other families remain unassessed.",
+          "subjects": [
+            "Dimmer Up macro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14474.htm",
+      "title": "Dimmer Down macro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "other_key_family",
+          "detail": "A non-classic key-family template leaf outside the admitted classic scope; other families remain unassessed.",
+          "subjects": [
+            "Dimmer Down macro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14472.htm",
+      "title": "Timer macro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "other_key_family",
+          "detail": "A non-classic key-family template leaf outside the admitted classic scope; other families remain unassessed.",
+          "subjects": [
+            "Timer macro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14475.htm",
+      "title": "Soft Up macro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "other_key_family",
+          "detail": "A non-classic key-family template leaf outside the admitted classic scope; other families remain unassessed.",
+          "subjects": [
+            "Soft Up macro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14477.htm",
+      "title": "Preset macro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "other_key_family",
+          "detail": "A non-classic key-family template leaf outside the admitted classic scope; other families remain unassessed.",
+          "subjects": [
+            "Preset macro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14476.htm",
+      "title": "Soft Down macro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "other_key_family",
+          "detail": "A non-classic key-family template leaf outside the admitted classic scope; other families remain unassessed.",
+          "subjects": [
+            "Soft Down macro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14478.htm",
+      "title": "Aux On/Off macro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "aux_subset",
+          "detail": "An AUX-subset template leaf with no admitted preset; AUX templates remain unassessed.",
+          "subjects": [
+            "Aux On/Off macro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14533.htm",
+      "title": "On/Off bistable macro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "bistable",
+          "detail": "A bistable macro leaf outside the admitted classic key-macro scope; bistable configuration remains unassessed.",
+          "subjects": [
+            "On/Off bistable macro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14534.htm",
+      "title": "Off/On bistable macro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "bistable",
+          "detail": "A bistable macro leaf outside the admitted classic key-macro scope; bistable configuration remains unassessed.",
+          "subjects": [
+            "Off/On bistable macro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14550.htm",
+      "title": "On/Off Toggle bistable macro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "bistable",
+          "detail": "A bistable macro leaf outside the admitted classic key-macro scope; bistable configuration remains unassessed.",
+          "subjects": [
+            "On/Off Toggle bistable macro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14535.htm",
+      "title": "On/Off Toggle Timer bistable macro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "bistable",
+          "detail": "A bistable macro leaf outside the admitted classic key-macro scope; bistable configuration remains unassessed.",
+          "subjects": [
+            "On/Off Toggle Timer bistable macro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14536.htm",
+      "title": "Mem Toggle bistable macro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "bistable",
+          "detail": "A bistable macro leaf outside the admitted classic key-macro scope; bistable configuration remains unassessed.",
+          "subjects": [
+            "Mem Toggle bistable macro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14547.htm",
+      "title": "Soft On/Off bistable macro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "bistable",
+          "detail": "A bistable macro leaf outside the admitted classic key-macro scope; bistable configuration remains unassessed.",
+          "subjects": [
+            "Soft On/Off bistable macro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14548.htm",
+      "title": "Soft On/Hard Off bistable macro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "bistable",
+          "detail": "A bistable macro leaf outside the admitted classic key-macro scope; bistable configuration remains unassessed.",
+          "subjects": [
+            "Soft On/Hard Off bistable macro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14549.htm",
+      "title": "Hard On/Soft Off bistable macro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "bistable",
+          "detail": "A bistable macro leaf outside the admitted classic key-macro scope; bistable configuration remains unassessed.",
+          "subjects": [
+            "Hard On/Soft Off bistable macro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:979.htm",
+      "title": "Downcycle (wired)",
+      "status": "mapped",
+      "kind": "micro_function",
+      "micro_function": "downcycle",
+      "reasons": []
+    },
+    {
+      "leaf_id": "help:981.htm",
+      "title": "Down Key (wired)",
+      "status": "mapped",
+      "kind": "micro_function",
+      "micro_function": "down",
+      "reasons": []
+    },
+    {
+      "leaf_id": "help:992.htm",
+      "title": "End Ramp (wired)",
+      "status": "mapped",
+      "kind": "micro_function",
+      "micro_function": "end_ramp",
+      "reasons": []
+    },
+    {
+      "leaf_id": "help:977.htm",
+      "title": "Idle (wired)",
+      "status": "mapped",
+      "kind": "micro_function",
+      "micro_function": "idle",
+      "reasons": []
+    },
+    {
+      "leaf_id": "help:980.htm",
+      "title": "Memory Toggle 2 (wired)",
+      "status": "mapped",
+      "kind": "micro_function",
+      "micro_function": "memory_toggle2",
+      "reasons": []
+    },
+    {
+      "leaf_id": "help:991.htm",
+      "title": "Off Key (wired)",
+      "status": "mapped",
+      "kind": "micro_function",
+      "micro_function": "off",
+      "reasons": []
+    },
+    {
+      "leaf_id": "help:990.htm",
+      "title": "On Key (wired)",
+      "status": "mapped",
+      "kind": "micro_function",
+      "micro_function": "on",
+      "reasons": []
+    },
+    {
+      "leaf_id": "help:982.htm",
+      "title": "Up Key (wired)",
+      "status": "mapped",
+      "kind": "micro_function",
+      "micro_function": "up",
+      "reasons": []
+    },
+    {
+      "leaf_id": "help:988.htm",
+      "title": "Ramp Recall 1 (wired)",
+      "status": "mapped",
+      "kind": "micro_function",
+      "micro_function": "ramp_recall1",
+      "reasons": []
+    },
+    {
+      "leaf_id": "help:987.htm",
+      "title": "Ramp Off (wired)",
+      "status": "mapped",
+      "kind": "micro_function",
+      "micro_function": "ramp_off",
+      "reasons": []
+    },
+    {
+      "leaf_id": "help:983.htm",
+      "title": "Recall 1 (wired)",
+      "status": "mapped",
+      "kind": "micro_function",
+      "micro_function": "recall1",
+      "reasons": []
+    },
+    {
+      "leaf_id": "help:984.htm",
+      "title": "Recall 2 (wired)",
+      "status": "mapped",
+      "kind": "micro_function",
+      "micro_function": "recall2",
+      "reasons": []
+    },
+    {
+      "leaf_id": "help:985.htm",
+      "title": "Retrigger Timer (wired)",
+      "status": "mapped",
+      "kind": "micro_function",
+      "micro_function": "retrigger_timer",
+      "reasons": []
+    },
+    {
+      "leaf_id": "help:986.htm",
+      "title": "Start (wired)",
+      "status": "mapped",
+      "kind": "micro_function",
+      "micro_function": "start_timer",
+      "reasons": []
+    },
+    {
+      "leaf_id": "help:978.htm",
+      "title": "Store 1 (wired)",
+      "status": "mapped",
+      "kind": "micro_function",
+      "micro_function": "store1",
+      "reasons": []
+    },
+    {
+      "leaf_id": "help:989.htm",
+      "title": "Toggle (wired)",
+      "status": "mapped",
+      "kind": "micro_function",
+      "micro_function": "toggle",
+      "reasons": []
+    },
+    {
+      "leaf_id": "help:14482.htm",
+      "title": "Recall micro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "special_micro_function",
+          "detail": "A scene, block or POT micro-function leaf outside the 0..15 classic domain; specialist micro-functions remain unassessed.",
+          "subjects": [
+            "Recall micro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14483.htm",
+      "title": "Ramp On micro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "special_micro_function",
+          "detail": "A scene, block or POT micro-function leaf outside the 0..15 classic domain; specialist micro-functions remain unassessed.",
+          "subjects": [
+            "Ramp On micro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14484.htm",
+      "title": "Ramp Off micro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "special_micro_function",
+          "detail": "A scene, block or POT micro-function leaf outside the 0..15 classic domain; specialist micro-functions remain unassessed.",
+          "subjects": [
+            "Ramp Off micro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14486.htm",
+      "title": "Toggle micro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "special_micro_function",
+          "detail": "A scene, block or POT micro-function leaf outside the 0..15 classic domain; specialist micro-functions remain unassessed.",
+          "subjects": [
+            "Toggle micro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14487.htm",
+      "title": "Mem Toggle micro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "bistable",
+          "detail": "A bistable macro leaf outside the admitted classic key-macro scope; bistable configuration remains unassessed.",
+          "subjects": [
+            "Mem Toggle micro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14488.htm",
+      "title": "On Key micro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "special_micro_function",
+          "detail": "A scene, block or POT micro-function leaf outside the 0..15 classic domain; specialist micro-functions remain unassessed.",
+          "subjects": [
+            "On Key micro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14489.htm",
+      "title": "Off Key micro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "special_micro_function",
+          "detail": "A scene, block or POT micro-function leaf outside the 0..15 classic domain; specialist micro-functions remain unassessed.",
+          "subjects": [
+            "Off Key micro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14490.htm",
+      "title": "Scene Set micro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "scene_widget",
+          "detail": "A scene macro leaf outside the admitted classic key-macro scope; scene widgets remain unassessed.",
+          "subjects": [
+            "Scene Set micro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14491.htm",
+      "title": "Scene Toggle micro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "scene_widget",
+          "detail": "A scene macro leaf outside the admitted classic key-macro scope; scene widgets remain unassessed.",
+          "subjects": [
+            "Scene Toggle micro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14492.htm",
+      "title": "Scene Modify Off micro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "scene_widget",
+          "detail": "A scene macro leaf outside the admitted classic key-macro scope; scene widgets remain unassessed.",
+          "subjects": [
+            "Scene Modify Off micro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14493.htm",
+      "title": "Scene Modify Down Key micro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "scene_widget",
+          "detail": "A scene macro leaf outside the admitted classic key-macro scope; scene widgets remain unassessed.",
+          "subjects": [
+            "Scene Modify Down Key micro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14494.htm",
+      "title": "Scene Modify Up Key micro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "scene_widget",
+          "detail": "A scene macro leaf outside the admitted classic key-macro scope; scene widgets remain unassessed.",
+          "subjects": [
+            "Scene Modify Up Key micro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14495.htm",
+      "title": "Scene End Ramp micro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "scene_widget",
+          "detail": "A scene macro leaf outside the admitted classic key-macro scope; scene widgets remain unassessed.",
+          "subjects": [
+            "Scene End Ramp micro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14496.htm",
+      "title": "Scene Modify Downcycle micro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "scene_widget",
+          "detail": "A scene macro leaf outside the admitted classic key-macro scope; scene widgets remain unassessed.",
+          "subjects": [
+            "Scene Modify Downcycle micro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14497.htm",
+      "title": "Store micro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "special_micro_function",
+          "detail": "A scene, block or POT micro-function leaf outside the 0..15 classic domain; specialist micro-functions remain unassessed.",
+          "subjects": [
+            "Store micro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14498.htm",
+      "title": "Downcycle micro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "special_micro_function",
+          "detail": "A scene, block or POT micro-function leaf outside the 0..15 classic domain; specialist micro-functions remain unassessed.",
+          "subjects": [
+            "Downcycle micro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14499.htm",
+      "title": "Down Key micro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "special_micro_function",
+          "detail": "A scene, block or POT micro-function leaf outside the 0..15 classic domain; specialist micro-functions remain unassessed.",
+          "subjects": [
+            "Down Key micro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14500.htm",
+      "title": "Up Key micro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "special_micro_function",
+          "detail": "A scene, block or POT micro-function leaf outside the 0..15 classic domain; specialist micro-functions remain unassessed.",
+          "subjects": [
+            "Up Key micro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14508.htm",
+      "title": "End Ramp micro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "special_micro_function",
+          "detail": "A scene, block or POT micro-function leaf outside the 0..15 classic domain; specialist micro-functions remain unassessed.",
+          "subjects": [
+            "End Ramp micro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14509.htm",
+      "title": "Block Retrigger Timer micro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "special_micro_function",
+          "detail": "A scene, block or POT micro-function leaf outside the 0..15 classic domain; specialist micro-functions remain unassessed.",
+          "subjects": [
+            "Block Retrigger Timer micro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14510.htm",
+      "title": "Block Start micro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "special_micro_function",
+          "detail": "A scene, block or POT micro-function leaf outside the 0..15 classic domain; specialist micro-functions remain unassessed.",
+          "subjects": [
+            "Block Start micro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14511.htm",
+      "title": "POT 1 Start Timer micro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "special_micro_function",
+          "detail": "A scene, block or POT micro-function leaf outside the 0..15 classic domain; specialist micro-functions remain unassessed.",
+          "subjects": [
+            "POT 1 Start Timer micro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14512.htm",
+      "title": "POT 1 Retrigger Timer micro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "special_micro_function",
+          "detail": "A scene, block or POT micro-function leaf outside the 0..15 classic domain; specialist micro-functions remain unassessed.",
+          "subjects": [
+            "POT 1 Retrigger Timer micro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14513.htm",
+      "title": "POT 2 Timer macro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "other_key_family",
+          "detail": "A non-classic key-family template leaf outside the admitted classic scope; other families remain unassessed.",
+          "subjects": [
+            "POT 2 Timer macro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:14514.htm",
+      "title": "POT 2 Retrigger Timer micro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "special_micro_function",
+          "detail": "A scene, block or POT micro-function leaf outside the 0..15 classic domain; specialist micro-functions remain unassessed.",
+          "subjects": [
+            "POT 2 Retrigger Timer micro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:855.htm",
+      "title": "Bell Press (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Bell Press (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:937.htm",
+      "title": "Using the Increment macro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "guide_only",
+          "detail": "A guide leaf describing interaction rather than a selectable macro function.",
+          "subjects": [
+            "Using the Increment macro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:872.htm",
+      "title": "Enable Control (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Enable Control (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:847.htm",
+      "title": "Dimmer Down (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Dimmer Down (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:846.htm",
+      "title": "Dimmer Up (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Dimmer Up (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:860.htm",
+      "title": "Full On (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Full On (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:937_1.htm",
+      "title": "Using the Increment macro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "guide_only",
+          "detail": "A guide leaf describing interaction rather than a selectable macro function.",
+          "subjects": [
+            "Using the Increment macro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:931.htm",
+      "title": "Using the Mem Toggle Up Cycle macro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "guide_only",
+          "detail": "A guide leaf describing interaction rather than a selectable macro function.",
+          "subjects": [
+            "Using the Mem Toggle Up Cycle macro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:845.htm",
+      "title": "Mem Toggle Dim Down Cycle (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Mem Toggle Dim Down Cycle (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:839.htm",
+      "title": "On (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "On (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:851.htm",
+      "title": "On Up (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "On Up (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:854.htm",
+      "title": "On Timer (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "On Timer (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:840.htm",
+      "title": "Off (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Off (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:852.htm",
+      "title": "Off Down (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Off Down (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:1911.htm",
+      "title": "Dim Down Cycle Continuous (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Dim Down Cycle Continuous (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:1912.htm",
+      "title": "Dim Up Cycle Continuous (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Dim Up Cycle Continuous (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:841.htm",
+      "title": "On/Off (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "On/Off (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:858.htm",
+      "title": "Preset 1 (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Preset 1 (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:859.htm",
+      "title": "Preset 2 (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Preset 2 (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:850.htm",
+      "title": "Ramp (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Ramp (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:856.htm",
+      "title": "Soft Up (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Soft Up (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:857.htm",
+      "title": "Soft Dn (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Soft Dn (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:863.htm",
+      "title": "Scene Set (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Scene Set (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:864.htm",
+      "title": "Scene Off (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Scene Off (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:870.htm",
+      "title": "Scene Off Down (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Scene Off Down (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:868.htm",
+      "title": "Scene Set Up (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Scene Set Up (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:866.htm",
+      "title": "Scene Up (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Scene Up (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:867.htm",
+      "title": "Scene Down (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Scene Down (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:908.htm",
+      "title": "Using Scene Toggle",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "guide_only",
+          "detail": "A guide leaf describing interaction rather than a selectable macro function.",
+          "subjects": [
+            "Using Scene Toggle"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:933.htm",
+      "title": "Using the Timer macro function",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "guide_only",
+          "detail": "A guide leaf describing interaction rather than a selectable macro function.",
+          "subjects": [
+            "Using the Timer macro function"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:928.htm",
+      "title": "Toggle Dim Up Cycle user interaction",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "guide_only",
+          "detail": "A guide leaf describing interaction rather than a selectable macro function.",
+          "subjects": [
+            "Toggle Dim Up Cycle user interaction"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:843.htm",
+      "title": "Toggle Dim Down Cycle (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Toggle Dim Down Cycle (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:848.htm",
+      "title": "Toggle Dim Up (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Toggle Dim Up (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:849.htm",
+      "title": "Toggle Dim Down (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Toggle Dim Down (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:905.htm",
+      "title": "Remote Scene Trigger (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Remote Scene Trigger (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:906.htm",
+      "title": "Unused (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Unused (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:12045.htm",
+      "title": "Shutter toggle (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Shutter toggle (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:12046.htm",
+      "title": "Shutter close toggle (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Shutter close toggle (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:12047.htm",
+      "title": "Shutter open toggle (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Shutter open toggle (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:12048.htm",
+      "title": "Shutter open (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Shutter open (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:12049.htm",
+      "title": "Shutter close (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Shutter close (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:12050.htm",
+      "title": "Shutter stop (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Shutter stop (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:893.htm",
+      "title": "Decrement (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Decrement (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:876.htm",
+      "title": "DownCycle (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "DownCycle (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:1914.htm",
+      "title": "Dim Down Cycle Continuous (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Dim Down Cycle Continuous (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:878.htm",
+      "title": "Down Key (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Down Key (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:904.htm",
+      "title": "Enable Control (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Enable Control (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:888.htm",
+      "title": "End Ramp (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "End Ramp (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:891.htm",
+      "title": "Full On (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Full On (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:895.htm",
+      "title": "Idle (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Idle (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:892.htm",
+      "title": "Increment (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Increment (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:877.htm",
+      "title": "Memory Toggle 2 (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Memory Toggle 2 (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:887.htm",
+      "title": "On Key (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "On Key (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:889.htm",
+      "title": "Off Key (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Off Key (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:880.htm",
+      "title": "Recall 2 (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Recall 2 (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:881.htm",
+      "title": "Retrigger Timer (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Retrigger Timer (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:883.htm",
+      "title": "Ramp Off (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Ramp Off (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:884.htm",
+      "title": "Ramp Recall 1 (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Ramp Recall 1 (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:886.htm",
+      "title": "Recall 1 (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Recall 1 (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:885.htm",
+      "title": "Toggle (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Toggle (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:890.htm",
+      "title": "Ramp (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Ramp (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:894.htm",
+      "title": "Upcycle (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Upcycle (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:1913.htm",
+      "title": "Dim Up Cycle Continuous (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Dim Up Cycle Continuous (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:879.htm",
+      "title": "Up Key (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Up Key (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:897.htm",
+      "title": "Scene Set (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Scene Set (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:898.htm",
+      "title": "Scene Up (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Scene Up (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:899.htm",
+      "title": "Scene Off (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Scene Off (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:900.htm",
+      "title": "Scene Down (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Scene Down (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:902.htm",
+      "title": "Scene Toggle (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Scene Toggle (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:903.htm",
+      "title": "Scene Stop (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Scene Stop (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:875.htm",
+      "title": "Store 1 (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Store 1 (wireless)"
+          ]
+        }
+      ]
+    },
+    {
+      "leaf_id": "help:882.htm",
+      "title": "Start (wireless)",
+      "status": "pending",
+      "kind": "pending",
+      "reasons": [
+        {
+          "code": "wireless_input",
+          "detail": "A wireless macro leaf outside the admitted classic wired scope; wireless inputs remain unassessed.",
+          "subjects": [
+            "Start (wireless)"
+          ]
+        }
+      ]
+    }
+  ],
+  "counts": {
+    "leaves": 179,
+    "mapped_preset": 17,
+    "mapped_custom": 1,
+    "mapped_micro_function": 16,
+    "pending": 145,
+    "pending_reasons": {
+      "aux_subset": 1,
+      "bistable": 17,
+      "fan": 1,
+      "guide_only": 6,
+      "occupancy": 1,
+      "other_key_family": 16,
+      "scene_widget": 11,
+      "schedule_move": 4,
+      "shutter": 6,
+      "special_micro_function": 16,
+      "wireless_input": 66
+    }
+  }
+}

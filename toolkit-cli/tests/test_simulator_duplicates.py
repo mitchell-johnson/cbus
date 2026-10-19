@@ -10,6 +10,7 @@ import unittest
 from uuid import uuid4
 
 from cbus_toolkit.cgate import CGateClient
+from cbus_toolkit.duplicate_resolution import LEGACY_ADDRESS, SELECTED_SERIAL, plan_unravel
 from cbus_toolkit.native import NativeDatabase, NativeProjects
 from cbus_toolkit.networks import NativeNetworks
 from cbus_toolkit.programming import xml_text
@@ -229,6 +230,144 @@ class NativeDuplicateDiscoveryTests(unittest.TestCase):
                     destination = Path(path); destination.parent.mkdir(parents=True, exist_ok=True)
                     destination.write_text(json.dumps(report, indent=2) + "\n")
                 if report["passed"]: self.assertEqual(errors, [])
+
+
+class DuplicateResolutionSubsetTests(unittest.TestCase):
+    """Smallest safe P3.03 subset for #30: recursive chains, multi-unit
+    refusal, descending order, cycle refusal, journal/vacancy sequencing.
+
+    Pure prediction over caller-supplied facts; no bus, simulator, or C-Gate
+    I/O. Literal vectors mirror owned native captures in
+    ``rust/testdata/fixtures/native_cgate_unravel_cases.json``.
+    """
+
+    def replay_with_vacancy(self, physical, plan):
+        """Replay moves as a journal with an independent vacancy check."""
+        occupants = {address: list(serials) for address, serials in physical.items()}
+        journal = []
+        for move in plan.moves:
+            self.assertIn(move.serial, occupants.get(move.source, ()),
+                          f"{move.serial} missing at source {move.source}")
+            self.assertNotIn(move.serial, occupants.get(move.destination, ()))
+            # Deepest-first sequencing: a database move's destination must be
+            # vacant right before the write because the preceding displacement
+            # cleared it; a displacement target must be vacant as well.
+            self.assertEqual(occupants.get(move.destination, []), [],
+                             f"destination {move.destination} not vacant for {move}")
+            occupants[move.source].remove(move.serial)
+            if not occupants[move.source]:
+                del occupants[move.source]
+            occupants.setdefault(move.destination, []).append(move.serial)
+            journal.append((move.serial, move.source, move.destination))
+        final = {serial: address for address, serials in occupants.items() for serial in serials}
+        self.assertEqual(final, plan.final)
+        self.assertEqual(len(final), sum(len(v) for v in physical.values()))
+        return journal
+
+    def test_descending_numeric_serial_order_is_preserved(self):
+        plan = plan_unravel({255: ["5.999", "5.1000"]}, {}, selection=[255])
+        self.assertIsNone(plan.refusal)
+        self.assertEqual([m.serial for m in plan.moves], ["5.1000", "5.999"])
+        self.assertEqual([(m.destination, m.reason) for m in plan.moves],
+                         [(2, "free_address"), (3, "free_address")])
+        self.assertTrue(all(m.native_method == SELECTED_SERIAL for m in plan.moves))
+        keeper = plan_unravel({20: ["5.999", "5.1000"]}, {}, selection=[20])
+        self.assertEqual(keeper.kept, ((20, "5.999"),))
+
+    def test_two_link_chain_resolves_deepest_first_with_displaced(self):
+        physical = {20: ["1.1", "1.10"], 6: ["1.2"], 7: ["1.3"]}
+        database = {20: "1.1", 6: "1.10", 7: "1.2"}
+        plan = plan_unravel(physical, database, selection=[20], match_database=True)
+        self.assertIsNone(plan.refusal)
+        self.assertEqual([(m.serial, m.source, m.destination, m.reason) for m in plan.moves],
+                         [("1.3", 7, 2, "displacement"),
+                          ("1.2", 6, 7, "displacement"),
+                          ("1.10", 20, 6, "database_match")])
+        self.assertEqual([m.displaced for m in plan.moves], [None, "1.3", "1.2"])
+        self.assertEqual([m.native_method for m in plan.moves],
+                         [LEGACY_ADDRESS, LEGACY_ADDRESS, SELECTED_SERIAL])
+        self.assertEqual(plan.final, {"1.1": 20, "1.10": 6, "1.2": 7, "1.3": 2})
+        self.assertEqual(plan.kept, ((20, "1.1"),))
+        self.replay_with_vacancy(physical, plan)
+
+    def test_three_link_chain_resolves_deepest_first(self):
+        physical = {20: ["1.1", "1.10"], 6: ["1.2"], 7: ["1.3"], 8: ["1.4"]}
+        database = {20: "1.1", 6: "1.10", 7: "1.2", 8: "1.3"}
+        plan = plan_unravel(physical, database, selection=[20], match_database=True)
+        self.assertIsNone(plan.refusal)
+        self.assertEqual([(m.serial, m.source, m.destination) for m in plan.moves],
+                         [("1.4", 8, 2), ("1.3", 7, 8), ("1.2", 6, 7), ("1.10", 20, 6)])
+        self.assertEqual([m.displaced for m in plan.moves], [None, "1.4", "1.3", "1.2"])
+        self.replay_with_vacancy(physical, plan)
+
+    def test_multi_unit_destinations_are_refused(self):
+        crowded = plan_unravel({255: ["1.1"], 6: ["1.2", "1.3"]}, {6: "1.1"},
+                               selection=[255], match_database=True)
+        self.assertEqual(crowded.moves, ())
+        self.assertRegex(crowded.refusal, "holds several units")
+        deep = plan_unravel({20: ["1.1", "1.10"], 6: ["1.2"], 7: ["1.3", "1.4"]},
+                            {20: "1.1", 6: "1.10", 7: "1.2"},
+                            selection=[20], match_database=True)
+        self.assertEqual(deep.moves, ())
+        self.assertRegex(deep.refusal, "Database address 7 for 1\\.2 holds several units")
+
+    def test_cycles_are_refused_without_moves(self):
+        selected_cycle = plan_unravel({20: ["1.1", "1.10"], 6: ["1.2"]},
+                                      {20: "1.2", 6: "1.10"},
+                                      selection=[20], match_database=True)
+        self.assertEqual(selected_cycle.moves, ())
+        self.assertRegex(selected_cycle.refusal, "cyclic")
+        serial_cycle = plan_unravel({20: ["1.1", "1.10"], 6: ["1.2"], 7: ["1.3"]},
+                                    {20: "1.3", 6: "1.10", 7: "1.2"},
+                                    selection=[20], match_database=True)
+        self.assertRegex(serial_cycle.refusal, "cyclic")
+
+    def test_native_occupied_target_clears_to_free_first(self):
+        # Literal matchdb_target_occupied_known capture: 6 holds 101136.1562,
+        # whose own database address 9 is vacant, so it goes to free 2 first.
+        physical = {255: ["101136.1558"], 6: ["101136.1562"]}
+        database = {6: "101136.1558", 9: "101136.1562"}
+        plan = plan_unravel(physical, database, selection=[255], match_database=True)
+        self.assertIsNone(plan.refusal)
+        self.assertEqual([(m.serial, m.source, m.destination, m.reason) for m in plan.moves],
+                         [("101136.1562", 6, 2, "displacement"),
+                          ("101136.1558", 255, 6, "database_match")])
+        self.assertEqual(plan.moves[-1].displaced, "101136.1562")
+        self.assertEqual(plan.final, {"101136.1558": 6, "101136.1562": 2})
+        self.replay_with_vacancy(physical, plan)
+
+    def test_native_free_skips_database_and_unknown_uses_free(self):
+        # Literal free_address_skips_database: 2 and 3 are database-assigned,
+        # so the unknown serial at 255 takes 4.
+        plan = plan_unravel({255: ["101136.1562"]},
+                            {2: "101136.1558", 3: "101136.1559"},
+                            selection=[255], match_database=True)
+        self.assertIsNone(plan.refusal)
+        self.assertEqual([(m.serial, m.destination) for m in plan.moves],
+                         [("101136.1562", 4)])
+        # Literal unknown_serial_255 with an unrelated database entry.
+        unknown = plan_unravel({255: ["101136.1562"]}, {6: "101136.1558"},
+                               selection=[255], match_database=True)
+        self.assertEqual([(m.serial, m.destination) for m in unknown.moves],
+                         [("101136.1562", 2)])
+        # A healthy unknown singleton off 255 is left alone (unknown_ordinary).
+        healthy = plan_unravel({20: ["101136.1562"]}, {6: "101136.1558"},
+                               selection=[20], match_database=True)
+        self.assertEqual(healthy.moves, ())
+        self.assertEqual(healthy.kept, ((20, "101136.1562"),))
+
+    def test_native_swap_is_left_alone_and_descending_order_holds(self):
+        swap = plan_unravel({6: ["101136.1559"], 7: ["101136.1558"]},
+                            {6: "101136.1558", 7: "101136.1559"},
+                            selection=[6, 7], match_database=True)
+        self.assertEqual(swap.moves, ())
+        self.assertIsNone(swap.refusal)
+        # Literal n3_at_255_reordered_no_db descending order.
+        plan = plan_unravel({255: ["101136.1560", "101136.1558", "101136.1559"]},
+                            {30: "101136.1562"}, selection=[255], match_database=True)
+        self.assertEqual([m.serial for m in plan.moves],
+                         ["101136.1560", "101136.1559", "101136.1558"])
+        self.assertEqual([m.destination for m in plan.moves], [2, 3, 4])
 
 
 if __name__ == "__main__": unittest.main()

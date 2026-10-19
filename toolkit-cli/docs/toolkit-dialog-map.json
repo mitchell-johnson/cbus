@@ -614,6 +614,10 @@
   "counts": {
     "catalogued_unit_types": 271,
     "catalogued_unit_types_reached_by_dialogs": 140,
+    "census_disposition": {
+      "absent_in_1_18": 3,
+      "ledger_owned": 14
+    },
     "controls_in_editor_dialogs": 3946,
     "controls_mapped": 244,
     "dialogs": 118,
@@ -637,6 +641,7 @@
       "generic_ledger_only": 15,
       "help_unit_type_absent_from_executable": 3
     },
+    "with_census_disposition": 17,
     "with_form_resources": 118,
     "with_unit_types": 118
   },
@@ -1749,6 +1754,20 @@
       "unresolved_reasons": []
     },
     {
+      "census_disposition": {
+        "absence_evidence": {
+          "KEYH5": {
+            "short_string": false,
+            "utf16_literal": false
+          }
+        },
+        "kind": "absent_in_1_18",
+        "note": "Help-only type absent from catalogue, specifications, static factories and executable literals in Toolkit 1.18.0.2754; only external INI registration could add it at run time. Census scope only; no editor, GUI or acceptance claimed for absent subjects.",
+        "owner_ledger_id": "neo-core-key-presets",
+        "subjects": [
+          "KEYH5"
+        ]
+      },
       "control_coverage": {
         "basis": "no_control_level_receipt",
         "controls_mapped": 0,
@@ -2301,6 +2320,17 @@
       "unresolved_reasons": []
     },
     {
+      "census_disposition": {
+        "kind": "ledger_owned",
+        "note": "Present in Toolkit 1.18 with static node-manager/director/form resources; owned pending functional breakdown. Census scope only; no implemented editor, GUI or acceptance claimed.",
+        "owner_ledger_id": "toolkit-differential-acceptance",
+        "subjects": [
+          "KEYH1A",
+          "KEYH2A",
+          "KEYH3A",
+          "KEYH4A"
+        ]
+      },
       "dialog_form_classes": [
         "TfrmNCCInputOutputUnit"
       ],
@@ -4662,6 +4692,16 @@
       "unresolved_reasons": []
     },
     {
+      "census_disposition": {
+        "kind": "ledger_owned",
+        "note": "Present in Toolkit 1.18 with static node-manager/director/form resources; owned pending functional breakdown. Census scope only; no implemented editor, GUI or acceptance claimed.",
+        "owner_ledger_id": "toolkit-differential-acceptance",
+        "subjects": [
+          "KEYB2A",
+          "KEYB4A",
+          "KEYB6A"
+        ]
+      },
       "dialog_form_classes": [
         "TfrmNCCInputOutputUnit"
       ],
@@ -8103,6 +8143,14 @@
       "unresolved_reasons": []
     },
     {
+      "census_disposition": {
+        "kind": "ledger_owned",
+        "note": "Present in Toolkit 1.18 with static node-manager/director/form resources; owned pending functional breakdown. Census scope only; no implemented editor, GUI or acceptance claimed.",
+        "owner_ledger_id": "toolkit-differential-acceptance",
+        "subjects": [
+          "PC_GIM"
+        ]
+      },
       "dialog_form_classes": [
         "TfrmPC_GIM"
       ],
@@ -11849,6 +11897,14 @@
       "unresolved_reasons": []
     },
     {
+      "census_disposition": {
+        "kind": "ledger_owned",
+        "note": "Present in Toolkit 1.18 with static node-manager/director/form resources; owned pending functional breakdown. Census scope only; no implemented editor, GUI or acceptance claimed.",
+        "owner_ledger_id": "toolkit-differential-acceptance",
+        "subjects": [
+          "PC_CTB"
+        ]
+      },
       "dialog_form_classes": [
         "TfrmCBusPCI"
       ],
@@ -11925,6 +11981,14 @@
       ]
     },
     {
+      "census_disposition": {
+        "kind": "ledger_owned",
+        "note": "Present in Toolkit 1.18 with static node-manager/director/form resources; owned pending functional breakdown. Census scope only; no implemented editor, GUI or acceptance claimed.",
+        "owner_ledger_id": "toolkit-differential-acceptance",
+        "subjects": [
+          "PC_CTBL"
+        ]
+      },
       "dialog_form_classes": [
         "TfrmCBusPCI"
       ],
@@ -12001,6 +12065,14 @@
       ]
     },
     {
+      "census_disposition": {
+        "kind": "ledger_owned",
+        "note": "Present in Toolkit 1.18 with static node-manager/director/form resources; owned pending functional breakdown. Census scope only; no implemented editor, GUI or acceptance claimed.",
+        "owner_ledger_id": "toolkit-differential-acceptance",
+        "subjects": [
+          "PC_CTC"
+        ]
+      },
       "dialog_form_classes": [
         "TfrmCBusPCI"
       ],
@@ -12076,6 +12148,14 @@
       ]
     },
     {
+      "census_disposition": {
+        "kind": "ledger_owned",
+        "note": "Present in Toolkit 1.18 with static node-manager/director/form resources; owned pending functional breakdown. Census scope only; no implemented editor, GUI or acceptance claimed.",
+        "owner_ledger_id": "toolkit-differential-acceptance",
+        "subjects": [
+          "PC_CTD"
+        ]
+      },
       "dialog_form_classes": [
         "TfrmCBusPCI"
       ],
@@ -12145,6 +12225,14 @@
       ]
     },
     {
+      "census_disposition": {
+        "kind": "ledger_owned",
+        "note": "Present in Toolkit 1.18 with static node-manager/director/form resources; owned pending functional breakdown. Census scope only; no implemented editor, GUI or acceptance claimed.",
+        "owner_ledger_id": "toolkit-differential-acceptance",
+        "subjects": [
+          "PC_CTDL"
+        ]
+      },
       "dialog_form_classes": [
         "TfrmCBusPCI"
       ],
@@ -12214,6 +12302,14 @@
       ]
     },
     {
+      "census_disposition": {
+        "kind": "ledger_owned",
+        "note": "Present in Toolkit 1.18 with static node-manager/director/form resources; owned pending functional breakdown. Census scope only; no implemented editor, GUI or acceptance claimed.",
+        "owner_ledger_id": "toolkit-differential-acceptance",
+        "subjects": [
+          "PC_PACA"
+        ]
+      },
       "dialog_form_classes": [
         "TfrmCBusPCI"
       ],
@@ -12295,6 +12391,21 @@
       ]
     },
     {
+      "census_disposition": {
+        "kind": "ledger_owned",
+        "note": "Present in Toolkit 1.18 with static node-manager/director/form resources; owned pending functional breakdown. Census scope only; no implemented editor, GUI or acceptance claimed.",
+        "owner_ledger_id": "toolkit-differential-acceptance",
+        "subjects": [
+          "PC_AC2",
+          "PC_NAC",
+          "PC_NAC2",
+          "PC_SHAC",
+          "SYS_AC2",
+          "SYS_NAC",
+          "SYS_NAC2",
+          "SYS_SHAC"
+        ]
+      },
       "dialog_form_classes": [
         "TfrmPCSHAC"
       ],
@@ -12560,6 +12671,20 @@
       ]
     },
     {
+      "census_disposition": {
+        "absence_evidence": {
+          "PC_INTU": {
+            "short_string": false,
+            "utf16_literal": false
+          }
+        },
+        "kind": "absent_in_1_18",
+        "note": "Help-only type absent from catalogue, specifications, static factories and executable literals in Toolkit 1.18.0.2754; only external INI registration could add it at run time. Census scope only; no editor, GUI or acceptance claimed for absent subjects.",
+        "owner_ledger_id": "interface-discovery-and-setup",
+        "subjects": [
+          "PC_INTU"
+        ]
+      },
       "dialog_form_classes": [
         "TfrmCBusPCI"
       ],
@@ -13018,6 +13143,14 @@
       "unresolved_reasons": []
     },
     {
+      "census_disposition": {
+        "kind": "ledger_owned",
+        "note": "Present in Toolkit 1.18 with static node-manager/director/form resources; owned pending functional breakdown. Census scope only; no implemented editor, GUI or acceptance claimed.",
+        "owner_ledger_id": "toolkit-differential-acceptance",
+        "subjects": [
+          "PC_DAL2C"
+        ]
+      },
       "dialog_form_classes": [
         "TfrmPC_DAL2B"
       ],
@@ -13171,6 +13304,14 @@
       "unresolved_reasons": []
     },
     {
+      "census_disposition": {
+        "kind": "ledger_owned",
+        "note": "Present in Toolkit 1.18 with static node-manager/director/form resources; owned pending functional breakdown. Census scope only; no implemented editor, GUI or acceptance claimed.",
+        "owner_ledger_id": "toolkit-differential-acceptance",
+        "subjects": [
+          "PC_IRT2"
+        ]
+      },
       "dialog_form_classes": [
         "TfrmCBusPCI"
       ],
@@ -13234,6 +13375,14 @@
       ]
     },
     {
+      "census_disposition": {
+        "kind": "ledger_owned",
+        "note": "Present in Toolkit 1.18 with static node-manager/director/form resources; owned pending functional breakdown. Census scope only; no implemented editor, GUI or acceptance claimed.",
+        "owner_ledger_id": "toolkit-differential-acceptance",
+        "subjects": [
+          "PC_CBTI"
+        ]
+      },
       "dialog_form_classes": [
         "TfrmCBusPCI"
       ],
@@ -13303,6 +13452,37 @@
       ]
     },
     {
+      "census_disposition": {
+        "absence_evidence": {
+          "WPAD2D1": {
+            "short_string": false,
+            "utf16_literal": false
+          },
+          "WPAD2R1": {
+            "short_string": false,
+            "utf16_literal": false
+          }
+        },
+        "kind": "absent_in_1_18",
+        "note": "Help-only type absent from catalogue, specifications, static factories and executable literals in Toolkit 1.18.0.2754; only external INI registration could add it at run time. Census scope only; no editor, GUI or acceptance claimed for absent subjects.",
+        "owner_ledger_id": "toolkit-differential-acceptance",
+        "pending_subjects": [
+          "WRD0D1",
+          "WRD0R1",
+          "WRD1D1",
+          "WRD1R1",
+          "WRD2D1",
+          "WRD2R1",
+          "WRD3D1",
+          "WRD3R1",
+          "WRD4D1",
+          "WRD4R1"
+        ],
+        "subjects": [
+          "WPAD2D1",
+          "WPAD2R1"
+        ]
+      },
       "dialog_form_classes": [
         "TfrmWirelessInputUnit"
       ],
@@ -14349,6 +14529,15 @@
       "unresolved_reasons": []
     },
     {
+      "census_disposition": {
+        "kind": "ledger_owned",
+        "note": "Present in Toolkit 1.18 with static node-manager/director/form resources; owned pending functional breakdown. Census scope only; no implemented editor, GUI or acceptance claimed.",
+        "owner_ledger_id": "toolkit-differential-acceptance",
+        "subjects": [
+          "PC_WHAD",
+          "PC_WHAR"
+        ]
+      },
       "dialog_form_classes": [
         "TfrmCBusPC_WHAA"
       ],

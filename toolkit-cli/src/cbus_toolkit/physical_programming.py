@@ -318,6 +318,84 @@ def _save_writable(parameter: PhysicalParameter) -> bool:
     return parameter.protection != "special"
 
 
+# P4.02 (#34) verified applicability pair.  ``direct/checksum`` is the
+# largest admitted pair in docs/pp-protection-matrix.json (1608 declarations
+# across 108 specification files) and its native save contract is identical
+# to ``direct/none``: changed bytes use the method's tagged STORE, the tag
+# is a transaction index, and no checksum field is rewritten.  The direct
+# space is linear, so there is no page-edge handling; factory-bit writes,
+# lock UNLOCKs and special skips belong to other pairs and stay refused or
+# skipped by the existing ``_save_writable``/matrix contract, not by this
+# helper.
+P402_VERIFIED_PAIR = ("direct", "checksum")
+
+_ADMITTED_PROTECTIONS = frozenset({"none", "checksum", "lock", "factory", "special"})
+_STORABLE_PROTECTIONS = frozenset({"none", "checksum", "lock"})
+
+
+def _check_save_protection_admission(
+    selected: tuple[PhysicalParameter, ...],
+    capabilities: Mapping[str, Any],
+    evidence: dict[str, Any],
+) -> None:
+    """Refuse before the first PP SET when an edited protection is unusable.
+
+    Every edited parameter must name an admitted pp-protection-matrix
+    protection.  Storable protections (``none``/``checksum``/``lock``) must
+    be advertised in the server's ``physical_pp_routed_save_protection``;
+    ``lock`` additionally requires the routed lock and the edited method in
+    ``physical_pp_routed_lock_methods``.  ``factory``/``special`` pass
+    through: the journal plans them via ``_save_writable`` (skipped, except
+    factory ``bit`` fields which use the plain tagged STORE).  A malformed
+    server declaration refuses rather than guessing.  Callers invoke this
+    only when saving; dry-run stages SETs without any STORE/UNLOCK.
+    """
+    save_protection = capabilities.get("physical_pp_routed_save_protection")
+    lock_methods = capabilities.get("physical_pp_routed_lock_methods")
+    routed_lock = capabilities.get("physical_pp_routed_lock")
+    evidence["protection_admission"] = {
+        "pairs": [f"{item.program_method}/{item.protection}" for item in selected],
+        "save_protection": save_protection,
+        "lock_methods": lock_methods,
+        "lock": routed_lock,
+        "verified_pair": f"{P402_VERIFIED_PAIR[0]}/{P402_VERIFIED_PAIR[1]}",
+    }
+
+    def refuse(message: str) -> PhysicalProgrammingError:
+        evidence.update({
+            "phase": "save-capability-preflight",
+            "complete": False,
+            "physical_load_completed": True,
+        })
+        return PhysicalProgrammingError(message, evidence)
+
+    if not isinstance(save_protection, list) or not all(
+        isinstance(entry, str) for entry in save_protection
+    ):
+        raise refuse("routed physical PP save-protection declaration is malformed")
+    for item in selected:
+        if item.protection not in _ADMITTED_PROTECTIONS:
+            raise refuse(
+                f"Physical PP protection {item.protection!r} for {item.name!r} "
+                "is not an admitted pp-protection-matrix pair"
+            )
+        if item.protection in _STORABLE_PROTECTIONS and item.protection not in save_protection:
+            raise refuse(
+                f"Routed physical PP save protection {item.protection!r} "
+                "is unavailable on this cmqttd build"
+            )
+        if item.protection == "lock" and (
+            routed_lock is not True
+            or not isinstance(lock_methods, list)
+            or not all(isinstance(entry, str) for entry in lock_methods)
+            or item.program_method not in lock_methods
+        ):
+            raise refuse(
+                f"Routed physical PP lock for method {item.program_method!r} "
+                "is unavailable on this cmqttd build"
+            )
+
+
 def _debug_rows(reply: Any) -> dict[str, list[str]]:
     rows: dict[str, list[str]] = {}
     for code, message in _rows(reply):
@@ -1069,6 +1147,12 @@ class PhysicalProgramming:
                 selected = self._selected_schema(
                     schema, method, (item.parameter for item in edit_rows)
                 )
+                # P4.02 (#34): bind the edited (method, protection) pairs to
+                # the server's advertised save protection before the first
+                # PP SET.  The unit-wide NCC gate above covers the commit
+                # phase; this covers the STORE/UNLOCK phase.
+                if saving:
+                    _check_save_protection_admission(selected, capabilities, evidence)
                 if validate_session is not None:
                     evidence.setdefault("typed_validation", {})["loaded"] = validate_session(
                         session, schema, "loaded", capabilities)

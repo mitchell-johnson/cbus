@@ -13,10 +13,14 @@
 //!
 //! Selected differences from native are deliberate and documented: sibling
 //! applications, groups and levels export in address order (native keeps
-//! creation order), `createdBy` names cmqttd, Jackson exception detail is not
-//! reproduced after the native prefix, and an import that would create a
-//! nameless object is refused before mutation because native accepts it but
-//! can then never save the project.
+//! creation order), Jackson exception detail is not reproduced after the
+//! native prefix, and an import that would create a nameless object is
+//! refused before mutation because native accepts it but can then never save
+//! the project.
+//!
+//! The export `createdBy` carries the native build string so CGL 1.1
+//! documents stay byte-comparable with owned C-Gate 3.4.0.2001 captures
+//! after timestamp normalization.
 
 use std::collections::{BTreeMap, BTreeSet, HashMap, VecDeque};
 
@@ -28,7 +32,9 @@ use crate::{err, fresh_oid, DbLevel, Project, Response, Server};
 
 /// C-Bus source routes carry at most six bridge hops.
 const MAX_ROUTE: usize = 6;
-const CREATED_BY: &str = "cmqttd";
+/// Native build string kept so exported CGL 1.1 documents stay
+/// byte-comparable with owned C-Gate 3.4.0.2001 captures.
+const CREATED_BY: &str = "C-Gate v3.4.0 (build 2001)";
 const IMPORT_FAILED: &str = "408 Operation failed: CGL import failed: Import failed.  Exception: ";
 const NPE: &str = "java.lang.NullPointerException";
 const PARSE_FAILED: &str = "400 Syntax Error: CGL validation failed: Import Failed: ";

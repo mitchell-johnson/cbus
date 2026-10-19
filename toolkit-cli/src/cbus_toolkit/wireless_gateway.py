@@ -123,6 +123,24 @@ def scene_count(offsets):
     return sum(1 for value in offsets if value != 0xFF and (value & 0x7F) < 100)
 
 
+def validate_scene_offsets(offsets):
+    """Fail closed on sparse or invalid SceneVectorOffset tables.
+
+    Mirrors the Scenes workflow (WirelessScenes.decode): LoadScenes builds a
+    contiguous scene list, so a valid entry after an unused 255 or an entry
+    with (v & 0x7F) >= 100 needs original load dependency review. The gateway
+    editor counts such tables with :func:`scene_count` for display only; plan
+    and show refuse them instead of guessing the Toolkit load mapping.
+    """
+    unused = False
+    for value in offsets:
+        if value == 0xFF:
+            unused = True
+            continue
+        if unused or (value & 0x7F) >= 100:
+            raise WirelessGatewayError('Sparse or invalid scene offsets require original load dependency review')
+
+
 def decode_slot(mask, secondary, value):
     """The Toolkit view of one PP key slot (LoadRemoteKeys)."""
     if mask:
@@ -259,6 +277,7 @@ class WirelessGatewayEditor:
     def show(self, current):
         """Project the stored values the way the Toolkit Mode and Remotes controls load them."""
         values = self.snapshot(current)
+        validate_scene_offsets(values['SceneVectorOffset'])
         count = scene_count(values['SceneVectorOffset'])
         effects = []
         remotes = []
@@ -321,6 +340,7 @@ class WirelessGatewayEditor:
         if remote is not None:
             remote = _integer(remote, 'Remote', 1, REMOTES)
         original = self.snapshot(current)
+        validate_scene_offsets(original['SceneVectorOffset'])
         updates = {name: list(values) for name, values in original.items()}
         if mode is not None:
             enable = MODES.index(mode)
@@ -384,6 +404,7 @@ class WirelessGatewayEditor:
             # SaveRemotes group branch: mask 0, secondary = not primary, group or 255.
             mask, secondary, value = 0, int(application == 'secondary'), group
         else:
+            validate_scene_offsets(updates['SceneVectorOffset'])
             count = scene_count(updates['SceneVectorOffset'])
             scene = _integer(assignment.get('scene'), f'{label} scene', 1, 15)
             if scene > count:
@@ -414,7 +435,8 @@ class WirelessGatewayEditor:
         if plan.identity is not None and plan.identity[:2] != identity[:2]:
             raise WirelessGatewayError('Plan was created for another unit type or firmware')
         self._verify_session(session)
-        if self.snapshot(session.values()) != dict(plan.expected):
+        before = session.values()
+        if self.snapshot(before) != dict(plan.expected):
             raise WirelessGatewayError('PP parameters changed since the wireless gateway plan was created')
         attempted = []
         try:
@@ -422,14 +444,19 @@ class WirelessGatewayEditor:
                 if name in plan.changes:
                     attempted.append(name)
                     session.set(name, ' '.join(map(str, plan.changes[name])))
+            after = session.values()
             expected = dict(plan.expected)
             expected.update(plan.changes)
-            if self.snapshot(session.values()) != expected:
+            if self.snapshot(after) != expected:
                 raise WirelessGatewayError('Native wireless gateway readback differs from the plan')
+            if {k: v for k, v in before.items() if k not in OWNED} != {
+                    k: v for k, v in after.items() if k not in OWNED}:
+                raise WirelessGatewayError('Unrelated gateway parameters changed during staging')
         except (RuntimeError, OSError, ValueError) as error:
             # Never issue recovery I/O after an uncertain or partial PP write.
             raise WirelessGatewayApplyError(error, attempted) from error
-        return {**replace(plan, identity=identity).as_dict(), 'verified': True}
+        return {**replace(plan, identity=identity).as_dict(), 'verified': True,
+                'unrelated_parameters_preserved': True}
 
     def configure(self, session, **options):
         identity = self._verify_profile(session)

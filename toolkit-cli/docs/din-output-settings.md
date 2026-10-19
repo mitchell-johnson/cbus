@@ -255,6 +255,14 @@ The historical native CLI test separately checks:
 - that RELDN8SP is refused;
 - persistence across a project close and load.
 
+Focused P5.03 subset (`tests/test_din_p503_subset.py`, RELDN4 only): one
+channel plan pins `MinDimmingLevel` 40% -> 102 at `0x60`, recovery 50% ->
+127 at `0x00`, restrike bit 6 of `0x32`, and interlock 4 -> 3 at `0x30`;
+logic association plus Or pins `0x81` at `0x32`. The same file checks
+apply/readback, raw bytes, stale refusal, `UnitAddress` preservation,
+one-pass Toolkit-save idempotence, and profile/tab refusals. No
+hardware, vendor EXE, or C-Gate server is used.
+
 Open items:
 
 - Physical output behaviour: logic evaluation, interlocking, restrike timing

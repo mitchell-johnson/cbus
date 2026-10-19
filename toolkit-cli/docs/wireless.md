@@ -134,8 +134,15 @@ Refused before any write:
 
 **Scenes.** Scene *n* is configured if `SceneVectorOffset` has at least *n*
 entries that are not 255 and satisfy `(v & 0x7F) < 100`. Scene keys also need
-`SceneTriggerGroup[n−1]` ≠ 255. The editor does not decode scene vectors, so
-Toolkit's check that a scene vector is non-empty is not reproduced.
+`SceneTriggerGroup[n−1]` ≠ 255. Sparse or invalid offset tables (a valid entry
+after an unused 255, or any non-255 entry with `(v & 0x7F) >= 100`) are refused
+before any write, matching the Scenes workflow load review. The editor does not
+decode scene vectors, so Toolkit's check that a scene vector is non-empty is
+not reproduced.
+
+Staging verifies PP readback and preserves every parameter outside the remote
+mapping ownership: a change to unrelated gateway parameters during staging is
+refused and reported as an uncertain partial write with no recovery I/O.
 
 The editor changes only the parameters named in a plan. It does not reproduce
 these whole-dialog save effects, and `show` reports stored values that a

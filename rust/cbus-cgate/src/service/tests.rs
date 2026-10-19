@@ -16011,6 +16011,132 @@ async fn cmqttd_replays_native_cgl_capture_without_pci_traffic() {
     std::fs::remove_file(path).unwrap();
 }
 
+/// Six-hop one-way CGL label interchange sends no PCI traffic.
+///
+/// The head export of a directional 254 -> ... -> 248 bridge chain carries
+/// the native creator identity and exact six-hop routes, the one-way tail
+/// exports only itself, and a far-end import with a wrong supplied route
+/// still lands only in the durable label graph. Golden bytes live in
+/// `testdata/vectors/cgate_cgl_sixhop_identity.jsonl`; the model-level
+/// interaction coverage is
+/// `tests/cgl_vectors.rs::sixhop_oneway_export_carries_native_creator_without_pci_traffic`.
+/// No physical-controller behavior is claimed: CGL moves labels only.
+#[tokio::test]
+async fn sixhop_cgl_identity_exchange_sends_no_pci_traffic() {
+    let path = state_path();
+    let (pci, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci, None).unwrap();
+    let mut client = ClientState {
+        access_level: Some(CgateAccessLevel::Clipsal),
+        ..ClientState::default()
+    };
+    const SETUP: &[&str] = &[
+        "PROJECT NEW CGLI",
+        "PROJECT USE CGLI",
+        "DBCREATENET 254 Local Cni 127.0.0.2:29999",
+        "DBCREATENET 253 Hop1 Bridge 254/p/253",
+        "DBCREATENET 252 Hop2 Bridge 253/p/252",
+        "DBCREATENET 251 Hop3 Bridge 252/p/251",
+        "DBCREATENET 250 Hop4 Bridge 251/p/250",
+        "DBCREATENET 249 Hop5 Bridge 250/p/249",
+        "DBCREATENET 248 Hop6 Bridge 249/p/248",
+        "DBCREATENET 247 Hop7 Bridge 248/p/247",
+        "DBCREATENET 240 Island Cni 127.0.0.2:29998",
+        "DBADDSAFE //CGLI/254 Unit 253 Bridge253",
+        "DBSETSAFE //CGLI/254/p/253/UnitType BRIDGE",
+        "DBSETSAFE //CGLI/254/p/253/UnitName BRIDGE",
+        "DBADDSAFE //CGLI/253 Unit 252 Bridge252",
+        "DBSETSAFE //CGLI/253/p/252/UnitType BRIDGE",
+        "DBSETSAFE //CGLI/253/p/252/UnitName BRIDGE",
+        "DBADDSAFE //CGLI/252 Unit 251 Bridge251",
+        "DBSETSAFE //CGLI/252/p/251/UnitType BRIDGE",
+        "DBSETSAFE //CGLI/252/p/251/UnitName BRIDGE",
+        "DBADDSAFE //CGLI/251 Unit 250 Bridge250",
+        "DBSETSAFE //CGLI/251/p/250/UnitType BRIDGE",
+        "DBSETSAFE //CGLI/251/p/250/UnitName BRIDGE",
+        "DBADDSAFE //CGLI/250 Unit 249 Bridge249",
+        "DBSETSAFE //CGLI/250/p/249/UnitType BRIDGE",
+        "DBSETSAFE //CGLI/250/p/249/UnitName BRIDGE",
+        "DBADDSAFE //CGLI/249 Unit 248 Bridge248",
+        "DBSETSAFE //CGLI/249/p/248/UnitType BRIDGE",
+        "DBSETSAFE //CGLI/249/p/248/UnitName BRIDGE",
+        "DBADDSAFE //CGLI/248 Unit 247 Bridge247",
+        "DBSETSAFE //CGLI/248/p/247/UnitType BRIDGE",
+        "DBSETSAFE //CGLI/248/p/247/UnitName BRIDGE",
+        "NET LOAD DB",
+        "DBADDSAFE //CGLI/254 Application 56 Light",
+        "DBADDSAFE //CGLI/254/56 Group 3 Hall",
+        "DBADDSAFE //CGLI/254/56/3 Level 2 Wall",
+    ];
+    for (index, command) in SETUP.iter().enumerate() {
+        let response = service
+            .handle(&mut client, &format!("[{index}] {command}"))
+            .await;
+        assert!(response.status < 400, "{command}: {response:?}");
+    }
+
+    let export = service
+        .handle(&mut client, "[100] CGL EXPORT CGLI 254")
+        .await;
+    assert_eq!(export.status, 344, "{export:?}");
+    let document = export
+        .lines
+        .iter()
+        .find(|line| line.starts_with("347-"))
+        .expect("export carries a 347 document line");
+    let document: serde_json::Value = serde_json::from_str(&document[4..]).unwrap();
+    assert_eq!(
+        document["createdBy"],
+        serde_json::json!("C-Gate v3.4.0 (build 2001)")
+    );
+    let addresses = document["networks"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|network| network["address"].as_u64().unwrap())
+        .collect::<Vec<_>>();
+    assert_eq!(addresses, vec![254, 253, 252, 251, 250, 249, 248]);
+
+    let tail = service
+        .handle(&mut client, "[101] CGL EXPORT CGLI 247")
+        .await;
+    assert_eq!(tail.status, 344, "{tail:?}");
+    assert_eq!(
+        tail.final_text,
+        "344 End CGL snippet [numberOfExportedObjects:0]"
+    );
+
+    let import_document = "{\"cglVersion\":\"1.1\",\"localNetwork\":254,\"networks\":[{\"address\":254},{\"address\":248,\"route\":[9,9],\"applications\":[{\"address\":202,\"name\":\"Trig\",\"groups\":[{\"address\":4,\"name\":\"Four\",\"levels\":[{\"address\":5,\"name\":\"Five\"}]}]}]}]}";
+    let import = service
+        .handle_document(&mut client, "[102] CGL IMPORT CGLI", import_document)
+        .await;
+    assert_eq!(import.status, 200, "{import:?}");
+    assert!(
+        import
+            .lines
+            .iter()
+            .any(|line| line.contains("Created new level 248/202/4/5 ('Five')")),
+        "{import:?}"
+    );
+
+    let after = service
+        .handle(&mut client, "[103] CGL EXPORT CGLI 254")
+        .await;
+    assert_eq!(
+        after.final_text, "344 End CGL snippet [numberOfExportedObjects:6]",
+        "{after:?}"
+    );
+
+    let mut byte = [0];
+    assert!(
+        tokio::time::timeout(Duration::from_millis(20), remote.read(&mut byte))
+            .await
+            .is_err(),
+        "six-hop CGL exchange reached the PCI"
+    );
+    std::fs::remove_file(path).unwrap();
+}
+
 #[tokio::test]
 async fn dbsetxml_native_admin_floor_and_recovery_admission_precede_document_mutation() {
     let path = state_path();

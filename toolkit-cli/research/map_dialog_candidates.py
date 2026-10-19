@@ -85,6 +85,74 @@ UNRESOLVED = {
     "generic_ledger_only": "No specific ledger row names the mapped unit types or shares their editor, and the help-branch triage is generic; only the generic differential row applies.",
 }
 
+# Census disposition for the P0.01 unresolved roster (issues #13, #15).
+# Every unresolved dialog carries exactly one evidenced disposition without
+# claiming an unsupported editor or GUI/hardware acceptance:
+# ``absent_in_1_18`` for help-only types with no static Toolkit 1.18 path,
+# ``ledger_owned`` for present types owned pending functional breakdown.
+CENSUS_DISPOSITION_KINDS = ("absent_in_1_18", "ledger_owned")
+CENSUS_DISPOSITION_NOTES = {
+    "absent_in_1_18": (
+        "Help-only type absent from catalogue, specifications, static factories "
+        "and executable literals in Toolkit 1.18.0.2754; only external INI "
+        "registration could add it at run time. Census scope only; no editor, "
+        "GUI or acceptance claimed for absent subjects."
+    ),
+    "ledger_owned": (
+        "Present in Toolkit 1.18 with static node-manager/director/form resources; "
+        "owned pending functional breakdown. Census scope only; no implemented "
+        "editor, GUI or acceptance claimed."
+    ),
+}
+
+
+def _census_disposition(
+    *,
+    reasons: list[str],
+    subjects: dict[str, list[str]],
+    ledger_ids: list[str],
+    triage_id: str,
+    help_only: dict[str, dict[str, bool]],
+) -> dict[str, Any] | None:
+    """Evidenced P0.01 disposition for one unresolved dialog row.
+
+    Absence takes precedence: a dialog with both an absent help-only type and
+    present-but-generic types reports ``absent_in_1_18`` for the absent
+    subjects and lists the present subjects under ``pending_subjects`` under
+    the same named owner.  A dialog with only generic routing reports
+    ``ledger_owned``.  Resolved dialogs carry no disposition.
+    """
+    if not reasons:
+        return None
+    owner = ledger_ids[0] if ledger_ids else triage_id
+    if "help_unit_type_absent_from_executable" in reasons:
+        absent = sorted(subjects.get("help_unit_type_absent_from_executable", []))
+        disposition: dict[str, Any] = {
+            "kind": "absent_in_1_18",
+            "owner_ledger_id": owner,
+            "subjects": absent,
+            "absence_evidence": {
+                name: dict(
+                    help_only.get(
+                        name, {"utf16_literal": False, "short_string": False}
+                    )
+                )
+                for name in absent
+            },
+            "note": CENSUS_DISPOSITION_NOTES["absent_in_1_18"],
+        }
+        pending = sorted(subjects.get("generic_ledger_only", []))
+        if pending:
+            disposition["pending_subjects"] = pending
+        return disposition
+    owned = sorted(subjects.get("generic_ledger_only", []))
+    return {
+        "kind": "ledger_owned",
+        "owner_ledger_id": owner,
+        "subjects": owned,
+        "note": CENSUS_DISPOSITION_NOTES["ledger_owned"],
+    }
+
 
 def digest(path: Path) -> str:
     return sha256(path.read_bytes()).hexdigest()
@@ -1472,6 +1540,19 @@ def assemble_dialogs(surface: dict, executable: dict, ledger: dict, facts: dict,
                 {"code": code, "detail": UNRESOLVED[code], "subjects": subjects.get(code, [])}
                 for code in reasons
             ],
+            **(
+                {
+                    "census_disposition": _census_disposition(
+                        reasons=reasons,
+                        subjects=subjects,
+                        ledger_ids=ledger_ids,
+                        triage_id=triage_id,
+                        help_only=facts["help_only_unit_types"],
+                    )
+                }
+                if reasons
+                else {}
+            ),
         })
     return rows
 
@@ -1513,6 +1594,15 @@ def build_document(facts: dict) -> dict:
         for reason in row["unresolved_reasons"]:
             reason_counts[reason["code"]] += 1
     counts["unresolved_reasons"] = dict(sorted(reason_counts.items()))
+    disposition_counts: dict[str, int] = defaultdict(int)
+    for row in dialogs:
+        disposition = row.get("census_disposition")
+        if disposition is not None:
+            disposition_counts[disposition["kind"]] += 1
+    counts["census_disposition"] = dict(sorted(disposition_counts.items()))
+    counts["with_census_disposition"] = sum(
+        "census_disposition" in row for row in dialogs
+    )
     # Catalogued product types that no help dialog candidate reaches are
     # candidate implicit editor branches for the census (P0.01).
     catalogued = sorted(
@@ -1626,9 +1716,12 @@ def validate_document(document: dict) -> dict:
         raise ValueError("Dialog map roster differs from the help census")
     for row in dialogs:
         reasons = row.get("unresolved_reasons")
+        disposition = row.get("census_disposition")
         if row.get("status") == "resolved":
             if reasons or not row.get("unit_types") or not row.get("form_resources") or row.get("ledger_basis") == "generic":
                 raise ValueError(f"{row['dialog_id']} claims resolution without every facet")
+            if disposition is not None:
+                raise ValueError(f"{row['dialog_id']} resolved row must not carry a census disposition")
         elif row.get("status") == "unresolved":
             if not reasons or any(
                 not isinstance(reason, dict) or reason.get("code") not in UNRESOLVED
@@ -1637,6 +1730,27 @@ def validate_document(document: dict) -> dict:
                 for reason in reasons
             ):
                 raise ValueError(f"{row['dialog_id']} is unresolved without an explicit reason")
+            codes = [reason["code"] for reason in reasons]
+            subjects = {
+                reason["code"]: list(reason["subjects"]) for reason in reasons
+            }
+            expected: dict[str, Any] | None = _census_disposition(
+                reasons=codes,
+                subjects=subjects,
+                ledger_ids=list(row.get("ledger_ids", [])),
+                triage_id=str(row.get("triage_ledger_id", "")),
+                help_only=dict(document.get("help_only_unit_types", {})),
+            )
+            if not isinstance(disposition, dict) or disposition != expected:
+                raise ValueError(
+                    f"{row['dialog_id']} is unresolved without an evidenced census disposition"
+                )
+            if disposition.get("kind") not in CENSUS_DISPOSITION_KINDS:
+                raise ValueError(f"{row['dialog_id']} has an unknown census disposition")
+            if disposition.get("note") != CENSUS_DISPOSITION_NOTES[disposition["kind"]]:
+                raise ValueError(f"{row['dialog_id']} census disposition note changed")
+            if not disposition.get("owner_ledger_id") or not disposition.get("subjects"):
+                raise ValueError(f"{row['dialog_id']} census disposition lacks evidence")
         else:
             raise ValueError(f"{row['dialog_id']} has an unknown status")
     facts = {key: document.get(key) for key in FACT_KEYS}

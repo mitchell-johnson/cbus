@@ -159,3 +159,200 @@ fn cgate_mock_matches_every_cgl_route_vector() {
     }
     assert!(failures.is_empty(), "{}", failures.join("\n"));
 }
+
+/// Six-hop one-way label interchange with the native creator identity.
+///
+/// Golden bytes live in
+/// `testdata/vectors/cgate_cgl_sixhop_identity.jsonl`: the head export
+/// carries the exact native `createdBy` build string with six-hop routes,
+/// the one-way tail exports only itself, and a far-end import with a wrong
+/// supplied route still lands only in the label graph. Export borrows the
+/// model immutably (`&Server`), so it cannot touch PCI state; wire-level PCI
+/// silence for this exchange is proven by
+/// `service::tests::sixhop_cgl_identity_exchange_sends_no_pci_traffic`.
+/// No physical-controller behavior is claimed: CGL moves labels only.
+#[test]
+fn sixhop_oneway_export_carries_native_creator_without_pci_traffic() {
+    const NATIVE_CREATOR: &str = "C-Gate v3.4.0 (build 2001)";
+    let rows: Vec<Value> = include_str!("../../testdata/vectors/cgate_cgl_sixhop_identity.jsonl")
+        .lines()
+        .map(|line| serde_json::from_str(line).unwrap())
+        .collect();
+    assert_eq!(rows.len(), 4);
+    for (index, row) in rows.iter().enumerate() {
+        assert_eq!(row["group"], json!("sixhop-identity"), "row {index}");
+    }
+
+    let mut server = Server::new(AccessLevel::Program);
+    const SETUP: &[&str] = &[
+        "PROJECT NEW CGLI",
+        "PROJECT USE CGLI",
+        "DBCREATENET 254 Local Cni <simulator>",
+        "DBCREATENET 253 Hop1 Bridge 254/p/253",
+        "DBCREATENET 252 Hop2 Bridge 253/p/252",
+        "DBCREATENET 251 Hop3 Bridge 252/p/251",
+        "DBCREATENET 250 Hop4 Bridge 251/p/250",
+        "DBCREATENET 249 Hop5 Bridge 250/p/249",
+        "DBCREATENET 248 Hop6 Bridge 249/p/248",
+        "DBCREATENET 247 Hop7 Bridge 248/p/247",
+        "DBCREATENET 240 Island Cni 127.0.0.2:29998",
+        "DBADDSAFE //CGLI/254 Unit 253 Bridge253",
+        "DBSETSAFE //CGLI/254/p/253/UnitType BRIDGE",
+        "DBSETSAFE //CGLI/254/p/253/UnitName BRIDGE",
+        "DBADDSAFE //CGLI/253 Unit 252 Bridge252",
+        "DBSETSAFE //CGLI/253/p/252/UnitType BRIDGE",
+        "DBSETSAFE //CGLI/253/p/252/UnitName BRIDGE",
+        "DBADDSAFE //CGLI/252 Unit 251 Bridge251",
+        "DBSETSAFE //CGLI/252/p/251/UnitType BRIDGE",
+        "DBSETSAFE //CGLI/252/p/251/UnitName BRIDGE",
+        "DBADDSAFE //CGLI/251 Unit 250 Bridge250",
+        "DBSETSAFE //CGLI/251/p/250/UnitType BRIDGE",
+        "DBSETSAFE //CGLI/251/p/250/UnitName BRIDGE",
+        "DBADDSAFE //CGLI/250 Unit 249 Bridge249",
+        "DBSETSAFE //CGLI/250/p/249/UnitType BRIDGE",
+        "DBSETSAFE //CGLI/250/p/249/UnitName BRIDGE",
+        "DBADDSAFE //CGLI/249 Unit 248 Bridge248",
+        "DBSETSAFE //CGLI/249/p/248/UnitType BRIDGE",
+        "DBSETSAFE //CGLI/249/p/248/UnitName BRIDGE",
+        "DBADDSAFE //CGLI/248 Unit 247 Bridge247",
+        "DBSETSAFE //CGLI/248/p/247/UnitType BRIDGE",
+        "DBSETSAFE //CGLI/248/p/247/UnitName BRIDGE",
+        "NET LOAD DB",
+        "DBADDSAFE //CGLI/254 Application 56 Light",
+        "DBADDSAFE //CGLI/254/56 Group 3 Hall",
+        "DBADDSAFE //CGLI/254/56/3 Level 2 Wall",
+    ];
+    for (index, command) in SETUP.iter().enumerate() {
+        let line = format!("[{index}] {}", command.replace("<simulator>", SIMULATOR));
+        let response = server.handle(&line);
+        assert!(response.status < 400, "{command}: {response:?}");
+    }
+
+    fn canonical(line: &str, creator: &str) -> Value {
+        let mut document: Value = serde_json::from_str(&line[4..]).unwrap();
+        assert_eq!(
+            document["createdBy"].as_str(),
+            Some(creator),
+            "createdBy must match native"
+        );
+        document["createdTime"] = json!("<timestamp>");
+        document
+    }
+
+    fn assert_no_pci_traces(response: &Response, label: &str) {
+        for line in response
+            .lines
+            .iter()
+            .chain(std::iter::once(&response.final_text))
+        {
+            assert!(
+                !line.to_lowercase().contains("pci"),
+                "{label} reached PCI state: {line}"
+            );
+            assert!(!line.starts_with("120-"), "{label} opened PCI: {line}");
+        }
+    }
+
+    // Head export: every network reachable within six hops, with the native
+    // creator identity and the far end still bare.
+    let export = server.handle("[100] CGL EXPORT CGLI 254");
+    assert_eq!(export.status, 344, "{export:?}");
+    assert_no_pci_traces(&export, "head export");
+    let expected = &rows[0]["expect_export"];
+    assert_eq!(expected["first"].as_str(), Some(export.lines[0].as_str()));
+    assert_eq!(expected["final"].as_str(), Some(export.final_text.as_str()));
+    let document = canonical(&export.lines[1], NATIVE_CREATOR);
+    assert_eq!(document, expected["document"]);
+    let addresses = document["networks"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|network| network["address"].as_u64().unwrap())
+        .collect::<Vec<_>>();
+    assert_eq!(addresses, vec![254, 253, 252, 251, 250, 249, 248]);
+    assert_eq!(
+        document["networks"][6]["route"],
+        json!([253, 252, 251, 250, 249, 248])
+    );
+    assert!(document["networks"][6].get("applications").is_none());
+
+    // Export is read-only: a repeat carries the identical document.
+    let repeat = server.handle("[101] CGL EXPORT CGLI 254");
+    assert_eq!(canonical(&repeat.lines[1], NATIVE_CREATOR), document);
+
+    // One-way tail: 247 is the seventh hop from 254, so it exports alone.
+    let tail = server.handle("[102] CGL EXPORT CGLI 247");
+    assert_eq!(tail.status, 344, "{tail:?}");
+    assert_no_pci_traces(&tail, "tail export");
+    let expected_tail = &rows[1]["expect_export"];
+    assert_eq!(
+        expected_tail["first"].as_str(),
+        Some(tail.lines[0].as_str())
+    );
+    assert_eq!(
+        expected_tail["final"].as_str(),
+        Some(tail.final_text.as_str())
+    );
+    let tail_document = canonical(&tail.lines[1], NATIVE_CREATOR);
+    assert_eq!(tail_document, expected_tail["document"]);
+    assert_eq!(
+        tail_document["networks"],
+        json!([{"address": 247, "name": "Hop7"}])
+    );
+
+    // Far-end import: the supplied wrong route is ignored (native behavior),
+    // the labels land six hops out, and nothing touches PCI state.
+    let import_document = rows[2]["document"].as_str().unwrap();
+    let import = server.handle_document("[103] CGL IMPORT CGLI", import_document);
+    assert_eq!(import.status, 200, "{import:?}");
+    assert_no_pci_traces(&import, "far-end import");
+    let actual = import
+        .lines
+        .iter()
+        .chain(std::iter::once(&import.final_text))
+        .cloned()
+        .collect::<Vec<_>>();
+    let expected_lines = rows[2]["expect"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|line| line.as_str().unwrap().to_string())
+        .collect::<Vec<_>>();
+    assert_eq!(actual, expected_lines);
+
+    // The far-end labels re-export with their exact six-hop route.
+    let after = server.handle("[104] CGL EXPORT CGLI 254");
+    assert_eq!(after.status, 344, "{after:?}");
+    assert_no_pci_traces(&after, "post-import export");
+    let expected_after = &rows[3]["expect_export"];
+    assert_eq!(
+        expected_after["final"].as_str(),
+        Some(after.final_text.as_str())
+    );
+    let after_document = canonical(&after.lines[1], NATIVE_CREATOR);
+    assert_eq!(after_document, expected_after["document"]);
+    assert_eq!(
+        after_document["networks"][6]["applications"],
+        json!([{"address": 202, "type": 202, "name": "Trig", "groups": [
+            {"address": 4, "name": "Four", "levels": [
+                {"address": 5, "name": "Five"}]}]}])
+    );
+
+    // The import is idempotent: a repeat reports zero new objects.
+    let again = server.handle_document("[105] CGL IMPORT CGLI", import_document);
+    assert_eq!(again.status, 200, "{again:?}");
+    assert!(
+        again
+            .lines
+            .last()
+            .is_some_and(|line| line.contains("0 object(s)")),
+        "{again:?}"
+    );
+
+    // The tail is unaffected by the head-local import.
+    let tail_again = server.handle("[106] CGL EXPORT CGLI 247");
+    assert_eq!(
+        canonical(&tail_again.lines[1], NATIVE_CREATOR),
+        tail_document
+    );
+}

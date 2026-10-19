@@ -582,3 +582,17 @@ controls, corridor linking, join mode, bank-switch editing and light
 maintenance/broadcast programming. Custom macros, SENLLA/SENPILLA
 dialogs and complete GUI before/after parity are also outside it. The PIR and
 SENLL dialogs have their own evidence above.
+
+### P5.04 focused SENPILL subset
+
+`tests/test_sensor_p504_senpill_subset.py` pins one narrow SENPILL slice for
+[#41](https://github.com/mitchell-johnson/cbus/issues/41) without changing the
+workflow: key 3 night on block 3 with group 31, 513 s `ramp_off`, 550 lux at
+10% (target byte 55, margin byte 6), enable group 23 off with the conflicting
+potentiometer explicitly disabled. It checks the admitted profile/event/layout
+literals (source case), packed-neighbor clearing (`0xD9`/`0x7F`), unrelated
+parameter preservation and stale-plan refusal, six refused identities that
+raise before any write, install-independent module literals and an identical
+plan from independent spec instances (installed-wheel case), and a single
+skipped-unless-provisioned native profile with save/reload plus one refusal
+(native case).

@@ -18148,6 +18148,7 @@ fn import_project(xml: &str, network_name: Option<&str>) -> io::Result<(Server, 
                 unit_xml_order: Vec::new(),
                 // The project file lists Networks in native list order.
                 created_seq: network_index as u64 + 1,
+                application_creation_order: Default::default(),
                 physical: HashMap::new(),
                 levels: HashMap::new(),
             },
