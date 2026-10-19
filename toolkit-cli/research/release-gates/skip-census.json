@@ -2856,7 +2856,7 @@
       "native": "all",
       "gated_tests": 1,
       "native_runnable_tests": 1,
-      "native_selected_tests": 16,
+      "native_selected_tests": 17,
       "sites": [
         {
           "scope": "tests/test_cmqtt_programming_methods_interop.py::test_protection_matrix_matches_a_fresh_derivation",
