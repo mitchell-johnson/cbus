@@ -2,7 +2,8 @@
 
 `cbus-toolkit interface probe-serial PORT [--baud 9600] [--timeout 5] [--setup]`
 opens one explicitly named serial device with pyserial (`serial` extra) and
-classifies what is attached. It never scans or guesses ports.
+classifies what is attached. It never scans or guesses ports; use
+`interface list-serial` (below) to enumerate them.
 
 ```sh
 cbus-toolkit interface probe-serial /dev/ttyUSB0
@@ -53,6 +54,43 @@ to 64 KiB of received bytes. Identity is attributed only to the PCI on the
 explicit port; `absent` does not prove that no interface is attached (for
 example, a PCI at another rate).
 
+## Listing ports
+
+`cbus-toolkit interface list-serial [--probe] [--baud 9600] [--timeout 5]
+[--format json|text]` enumerates host ports with pyserial's
+`serial.tools.list_ports.comports()` and reports each `device`, `name`,
+`description`, `hwid`, USB `vid`/`pid` (integers, plus a `vid_pid` hex
+string), `serial_number`, `manufacturer`, `product` and `location`, sorted by
+device. Fields pyserial leaves empty or `n/a` are `null`. Without `--probe` no
+port is opened. The JSON format is `cbus-serial-port-list-v1`.
+
+```sh
+cbus-toolkit interface list-serial
+cbus-toolkit interface list-serial --probe --format text
+```
+
+`--probe` runs the probe above on each listed port in turn, never with
+`--setup`, so the only bytes sent are its reset, SMART/CONNECT, `@1A2001`,
+IDENTIFY and RECALL frames and `configuration_writes` stays 0. Each exclusive
+open is closed before the next port; nothing is retried. Every entry keeps the
+full probe result under `probe` and adds a coarser `outcome`:
+
+| `outcome` | Probe result |
+| --- | --- |
+| `found` | `present`; `identity` repeats its type, firmware and local unit |
+| `no_response` | `absent` or `timeout` |
+| `busy` | `busy` from a lock or in-use open failure (`EBUSY`, `EAGAIN`, pyserial's exclusive-lock failure, Windows access denied) |
+| `permission_denied` | `busy` whose open failure was `EACCES` or `EPERM` |
+| `error` | `malformed`, `rejected`, `not_found`, `error`, or a device name the probe refuses |
+
+Windows reports an in-use COM port as access denied, so there it is `busy`;
+the two cannot be told apart. `outcome_counts` totals the outcomes. The exit
+status is 0 whenever enumeration completes, including an empty list or no
+`found` port; read the outcomes. Probing every port sends reset frames to any
+device attached to them, which is why it is opt-in. `--format text` prints a
+summary whose non-ASCII characters are backslash-escaped, so it survives a
+legacy-code-page stdout like the JSON output ([cli-json-output.md](cli-json-output.md)).
+
 ## cmqttd
 
 `cmqttd --serial DEVICE` opens its PCI exclusively (TIOCEXCL and `flock`), so
@@ -69,12 +107,17 @@ failure is retried once without a rate.
 terminals. Its serial peer wraps the independent `PCISimulator` decoder with
 reset, SMART/CONNECT, basic echo and A3 option handling, and covers every
 outcome, exclusive-lock contention, setup verification and mismatch, and the
-CLI. A TIOCEXCL-holder case skips on platforms whose pty driver does not
-enforce TIOCEXCL (macOS). `rust/cmqttd/tests/system_serial_pty.rs` runs
+CLI, and opens a pty at each of the six `PCI_BAUD_RATES` checking the
+termios line speed and a `present` result. A pty does not model rate
+mismatch, so this proves configuration, not a physical PCI at that rate.
+`tests/test_pci_serial_list.py` mocks enumeration (empty, metadata, open
+errors per outcome) and probes real ptys for `found`, `no_response`, `busy`
+and, when not root, `permission_denied`. A TIOCEXCL-holder case skips on
+platforms whose pty driver does not enforce TIOCEXCL (macOS). `rust/cmqttd/tests/system_serial_pty.rs` runs
 cmqttd on a pty relayed to the scripted fake PCI and checks the init frames,
 `PORT LIST`, the `431` refusal and live MQTT control.
 
 These are simulator and pseudo-terminal results only. No physical PCI, USB
 serial adapter, native C-Gate/Toolkit serial differential, alternate-rate
-detection, power-up option (0x41) handling or Windows COM acceptance has been
-performed.
+detection, physical USB-serial enumeration, power-up option (0x41) handling
+or Windows COM acceptance has been performed.
