@@ -33,7 +33,7 @@
         "target": "owned C-Gate 3.4.0.2001 native external command-session payload capture",
         "artifact_sha256": "d2752f56f3e0abcbff10d805e7803b29704337368b09580e5685e3b3bf6d3c5f"
       },
-      "source_revision": "2a25dfce10549fa43520a486b30fbdbbbf4d3741",
+      "source_revision": "9faed48650007fd644924a91f5ef8309bbd63c28",
       "command": "/home/claude/cbus/toolkit-cli/.venv/bin/python research/run_cgate_session_cmqttd_differential.py --cmqttd-bin /home/claude/cbus/rust/target/debug/cmqttd --output research/fixtures/cgate-session-differential-cmqttd.json",
       "exit_code": 0,
       "invalidates_on": {
@@ -278,11 +278,11 @@
         {
           "role": "report",
           "path": "research/fixtures/cgate-session-differential-cmqttd.json",
-          "sha256": "f87a48741e5ab992834e4ee290d1d6b3f86d88385306f82b9205448848b085c2"
+          "sha256": "4abdad31580de16b62389f1f7e25154476ffba1e0bfe589b1f5ef43997ade26e"
         }
       ],
       "skips": [],
-      "record_sha256": "5918167291f8b42b644af961642a7d4051dbd675d0b4df12979bfe3ba3755186"
+      "record_sha256": "039e20a461813b7b6bec96d8e52052e32326b117de4781146e3513a1914c2525"
     },
     {
       "id": "evidence:cgate-session-id-tagged-wire-differential-v1",
@@ -317,7 +317,7 @@
         "target": "owned C-Gate 3.4.0.2001 native numeric-tag SESSION_ID wire capture",
         "artifact_sha256": "76f77ea955a6575700ea350aba52f8b136599119c07d955f4d04cce3ab5469c8"
       },
-      "source_revision": "2a25dfce10549fa43520a486b30fbdbbbf4d3741",
+      "source_revision": "9faed48650007fd644924a91f5ef8309bbd63c28",
       "command": "/home/claude/cbus/toolkit-cli/.venv/bin/python research/cgate_tagged_session_differential.py --mock-bin /home/claude/cbus/rust/target/debug/cgate-mock --cmqttd-bin /home/claude/cbus/rust/target/debug/cmqttd --output-dir research/runtime",
       "exit_code": 0,
       "invalidates_on": {
@@ -549,7 +549,7 @@
           "toolkit-cli/tests/test_cgate_tagged_session_differential.py",
           "toolkit-cli/tests/test_parity_register.py"
         ],
-        "fingerprint_sha256": "8369247df738e81fb68872be0c7bc5e92488ed0e357c1c5a0f183707e856460e"
+        "fingerprint_sha256": "5caa11fc5d082e3e8b33eb7734189e7a57437cdf3659d095bca5120a43c449be"
       },
       "report_verification": {
         "format": "cgate-tagged-session-differential-v1",
@@ -564,11 +564,11 @@
         {
           "role": "report",
           "path": "research/fixtures/cgate-tagged-session-differential-cmqttd.json",
-          "sha256": "e1f89ff7caffadab5fb7930025c47505443c782db76b45b4f9d18d5a99f07559"
+          "sha256": "9956185bbcc63093b3c87079f5585d565b2b5b86cdcc067ee2ab440aeff17671"
         }
       ],
       "skips": [],
-      "record_sha256": "e885684ae1d7da6595feb0190f04f882b338ae27fc23a8725ffc129916489011"
+      "record_sha256": "0d498e5b51d5c7db26deb98c32f47fe5ce91001c09add8f03d7729708277fd4d"
     },
     {
       "id": "evidence:cgate-session-id-physical-applicability-v1",
@@ -609,7 +609,7 @@
         "kind": "offline",
         "identity": "source-bound review of the owned native loopback capture and local-only C-Gate path contracts"
       },
-      "source_revision": "2a25dfce10549fa43520a486b30fbdbbbf4d3741",
+      "source_revision": "9faed48650007fd644924a91f5ef8309bbd63c28",
       "command": "PYTHONPATH=src python3 research/cgate_session_physical_applicability.py --output research/fixtures/cgate-session-physical-applicability.json",
       "exit_code": 0,
       "invalidates_on": {
@@ -645,11 +645,11 @@
         {
           "role": "report",
           "path": "research/fixtures/cgate-session-physical-applicability.json",
-          "sha256": "6bb74e9c3043eef209c455e6fc15e485149088c202bc8b1f2d94cf44d1d8d188"
+          "sha256": "a05d80a9fd3309ab46a011c5e422c612c3e9808c3bea17a24fb95e2e6819f94c"
         }
       ],
       "skips": [],
-      "record_sha256": "6d79aa70789f0384e3b7e9573975dd6c6c12d6991fc021a5b3492600b3a28b1a"
+      "record_sha256": "bc105f9f2b91978ad2f94a7a8d9b68cad5413d663a3737b8a263fa9857cac841"
     }
   ]
 }
