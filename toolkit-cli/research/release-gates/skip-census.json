@@ -50,15 +50,15 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 819,
+    "test_modules": 820,
     "modules_without_skip_sites": 491,
-    "modules_with_skip_sites": 328,
+    "modules_with_skip_sites": 329,
     "modules_by_category": {
       "cgate_test_host": 133,
       "external_cgate_project": 1,
       "hardware": 1,
-      "host_platform": 17,
-      "host_tool": 12,
+      "host_platform": 18,
+      "host_tool": 13,
       "native_cgate_local": 79,
       "native_opt_in": 2,
       "original_model_runtime": 4,
@@ -67,7 +67,7 @@
       "private_vendor_tree": 8,
       "runtime_capability": 6,
       "rust_binaries": 15,
-      "unclassified": 40,
+      "unclassified": 41,
       "unit_specs": 148,
       "vendor_firmware": 4,
       "windows": 12
@@ -75,7 +75,7 @@
     "native_modules": {
       "all": 140,
       "partial": 20,
-      "none": 168
+      "none": 169
     },
     "native_runnable_tests": 259,
     "native_selected_required_tests": 259,
@@ -8358,6 +8358,78 @@
           ],
           "offline": "skips",
           "native": "runs"
+        }
+      ]
+    },
+    "tests/test_pci_serial_list.py": {
+      "categories": [
+        "host_platform",
+        "host_tool",
+        "unclassified"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_pci_serial_list.py::ListingPtyProbeTests",
+          "kind": "decorator.skipUnless",
+          "condition": "POSIX_SERIAL",
+          "reason": "POSIX PTY and serial extra required",
+          "environment": [],
+          "categories": [
+            "host_platform",
+            "host_tool"
+          ],
+          "offline": "runs",
+          "native": "runs"
+        },
+        {
+          "scope": "tests/test_pci_serial_list.py::ListingPtyProbeTests::test_unreadable_port_is_permission_denied",
+          "kind": "decorator.skipIf",
+          "condition": "os.geteuid() == 0",
+          "reason": "root bypasses file permissions",
+          "environment": [],
+          "categories": [
+            "unclassified"
+          ],
+          "offline": "unknown",
+          "native": "unknown"
+        },
+        {
+          "scope": "tests/test_pci_serial_list.py::ListingTests::test_cli_json_and_text",
+          "kind": "decorator.skipUnless",
+          "condition": "PYSERIAL",
+          "reason": "serial extra required",
+          "environment": [],
+          "categories": [
+            "host_tool"
+          ],
+          "offline": "runs",
+          "native": "runs"
+        },
+        {
+          "scope": "tests/test_pci_serial_list.py::ListingTests::test_default_enumeration_uses_pyserial_list_ports",
+          "kind": "decorator.skipUnless",
+          "condition": "PYSERIAL",
+          "reason": "serial extra required",
+          "environment": [],
+          "categories": [
+            "host_tool"
+          ],
+          "offline": "runs",
+          "native": "runs"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "unclassified"
+          ],
+          "tests": [
+            "ListingPtyProbeTests::test_unreadable_port_is_permission_denied"
+          ]
         }
       ]
     },

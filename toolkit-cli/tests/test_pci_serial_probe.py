@@ -16,8 +16,8 @@ import tempfile
 import threading
 import unittest
 
-from cbus_toolkit.pci_serial_probe import (RESET_FRAMES, SETUP_FRAMES, classify_open_error,
-                                           exit_status, probe_serial_interface)
+from cbus_toolkit.pci_serial_probe import (PCI_BAUD_RATES, RESET_FRAMES, SETUP_FRAMES,
+                                           classify_open_error, exit_status, probe_serial_interface)
 from cbus_toolkit.simulator import PCISimulator
 
 POSIX_SERIAL = os.name == "posix" and importlib.util.find_spec("serial") is not None
@@ -142,6 +142,30 @@ class SerialProbePtyTests(unittest.TestCase):
         self.assertFalse(any(sent.startswith(b"A3") for sent in peer.lines))
         self.assertEqual(peer.lines[:5], [b"~", b"~", b"~", b"|", b"@1A2001"])
         self.assertEqual(exit_status(result), 0)
+
+    def test_every_pci_baud_rate_opens_at_that_rate_and_reads_identity(self):
+        import termios
+        self.assertEqual(PCI_BAUD_RATES, (9600, 4800, 2400, 1200, 600, 300))
+        for baud in PCI_BAUD_RATES:
+            with self.subTest(baud=baud):
+                line = SerialSimulatorLine()
+                opened = []
+
+                def factory(**kwargs):
+                    import serial
+                    port = serial.Serial(**kwargs)
+                    opened.append((kwargs["baudrate"], termios.tcgetattr(port.fd)[4:6]))
+                    return port
+                result, peer = self.probe(line, baud=baud, serial_factory=factory)
+                self.assertEqual(result["outcome"], "present", result)
+                self.assertEqual(result["baud"], baud)
+                speed = getattr(termios, f"B{baud}")
+                self.assertEqual(opened, [(baud, [speed, speed])])
+                self.assertEqual(result["identity"]["unit_type"], "PC_CNIED")
+                self.assertEqual(result["configuration_writes"], 0)
+                self.assertEqual(line.dm, [])
+                self.assertEqual(peer.lines[:5], [b"~", b"~", b"~", b"|", b"@1A2001"])
+                self.assertEqual(exit_status(result), 0)
 
     def test_setup_applies_transport_options_and_verifies_checksummed_readback(self):
         line = SerialSimulatorLine()

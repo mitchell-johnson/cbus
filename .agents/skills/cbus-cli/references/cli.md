@@ -11,6 +11,7 @@ The Python `cbus-toolkit` application is installed separately; see [toolkit.md](
 | Read a Toolkit backup or project XML | `cbus-tools dump-labels` | Reads locally; optionally writes JSON |
 | Query one unit or discover units | `cbus-tools interrogate` | Sends requests through a TCP CNI |
 | Discover CNI2/Wiser endpoints | `cbus-toolkit interface discover-cni` / `scan-cni`, or `cbus-tools cni-discover` / `cni-scan` | One bounded IPv4 UDP query per selected route; does not open TCP or C-Bus |
+| List or probe local serial PCIs | `cbus-toolkit interface list-serial [--probe]`, `interface probe-serial PORT` | Listing opens nothing; probing exclusively opens each port and sends reset/identify/RECALL frames; see `toolkit-cli/docs/serial-interface-probe.md` |
 | Verify a selected-serial plan | `cbus-tools serial-verify` | Sends bounded read-only MMI and IDENTIFY traffic |
 | Apply a selected-serial plan | `cbus-tools serial-apply` | Writes a durable local journal, sends one address broadcast, then reads state |
 | Bridge C-Bus and MQTT/Home Assistant | `cmqttd` | Long-running network and MQTT traffic; accepts control messages |

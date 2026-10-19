@@ -2,7 +2,9 @@
 
 CLI success results, errors and event records use ASCII-safe JSON escapes.
 Decoding the JSON restores the original Unicode strings, including supplementary
-characters. Output file encodings are controlled by their respective commands.
+characters. Output file encodings are controlled by their respective commands. The text
+summary of `interface list-serial --format text` backslash-escapes non-ASCII
+characters for the same reason.
 
 A native Windows probe exposed a completed repair returning exit status 1:
 the output file had been written correctly, but printing its Unicode filename

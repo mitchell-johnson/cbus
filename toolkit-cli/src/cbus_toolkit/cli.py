@@ -1481,6 +1481,17 @@ def build_parser():
                       help="Per-probe bound in 1..4096; reaching it marks the scan incomplete")
     scan.add_argument("--include-hidden", action="store_true",
                       help="Include product-id 2 replies hidden by captured Toolkit behavior")
+    list_serial = interface_ops.add_parser(
+        "list-serial", help="List host serial ports; optionally run the read-only PCI probe on each"
+    )
+    list_serial.add_argument("--probe", action="store_true",
+                             help="Probe each listed port in turn exactly as probe-serial does without --setup")
+    list_serial.add_argument("--baud", type=int, default=9600,
+                             help="With --probe, PCI rate: 9600, 4800, 2400, 1200, 600 or 300")
+    list_serial.add_argument("--timeout", type=float, default=5.0,
+                             help="With --probe, budget per port in seconds, in [1, 60]")
+    list_serial.add_argument("--format", dest="output_format", choices=("json", "text"), default="json",
+                             help="Output JSON (default) or an ASCII-escaped text summary")
     probe_serial = interface_ops.add_parser(
         "probe-serial", help="Exclusively open one serial port, reset and identify its attached PCI"
     )
@@ -4133,6 +4144,9 @@ def run(args):
     if args.area == "interface":
         from .cni_discovery import (discover_cni, plan_host_cni_probes, scan_cni,
                                     scan_host_cni, validate_scan_cni)
+        if args.action == "list-serial":
+            from .pci_serial_list import list_serial_ports
+            return list_serial_ports(probe=args.probe, baud=args.baud, timeout=args.timeout), 0
         if args.action == "probe-serial":
             from .pci_serial_probe import exit_status, probe_serial_interface
             result = probe_serial_interface(args.port, baud=args.baud, timeout=args.timeout,
@@ -4623,6 +4637,10 @@ def main(argv=None):
         # JSON escapes preserve Unicode even when redirected Windows stdout uses
         # a legacy code page. An output encoding error must not mask a completed write.
         try:
+            if args.area == "interface" and args.action == "list-serial" and args.output_format == "text":
+                from .pci_serial_list import render_text
+                print(render_text(result))
+                return status
             print(json.dumps(result, default=_json_default, ensure_ascii=True, indent=None if args.compact or stream else 2))
         except BaseException as output_error:
             if args.area == "cgate" and args.action == "conversion" and args.remote_action == "tweak":
