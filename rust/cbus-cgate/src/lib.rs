@@ -3269,7 +3269,8 @@ impl Server {
                 self.event_sub(&cmd.tag, &words)
             }
             _ if starts_with(&upper, "GETSTATE") => self.getstate(&cmd.tag, &words),
-            _ if starts_with(&upper, "LOGIN") => ok(&cmd.tag, vec![], "200 OK"),
+            _ if starts_with(&upper, "LOGIN") => self.login(&cmd.tag, &words),
+            _ if eq_verb(&upper, "ID") => self.identify_unit(&cmd.tag, &words),
             _ if starts_with(&upper, "LOGOUT") => ok(&cmd.tag, vec![], "200 OK"),
             _ if starts_with(&upper, "QUIT") || starts_with(&upper, "EXIT") => Response {
                 tag: cmd.tag.clone(),
@@ -3300,6 +3301,70 @@ impl Server {
     /// dispatcher.
     pub fn last_command_unknown(&self) -> bool {
         self.last_command_unknown
+    }
+
+    /// Native `LOGIN` (C-Gate 3.4 handler `oT`): a bare query answers 210,
+    /// a user and password answer 211. The mock keeps its configured access
+    /// level rather than authenticating.
+    fn login(&self, tag: &str, words: &[&str]) -> Response {
+        let level = match self.access {
+            AccessLevel::Program => "Program",
+            AccessLevel::Admin => "Admin",
+            AccessLevel::Monitor => "Monitor",
+            AccessLevel::Config => "Connect",
+        };
+        match words.len() {
+            1 => err(tag, 210, &format!("210 Access level: {level}")),
+            2 => err(tag, status::BAD_REQUEST, "400 Syntax Error."),
+            _ => err(tag, 211, &format!("211 Access level set to: {level}")),
+        }
+    }
+
+    /// Native `ID <unit> <field>` (C-Gate 3.4 handler `nB`) reads the unit on
+    /// the bus: one `300 p/<net>/<unit> <field>=<value>` line, or 521 when the
+    /// unit cannot answer. The mock answers `type` and `version` from its
+    /// physical inventory; other fields have no modeled source.
+    fn identify_unit(&self, tag: &str, words: &[&str]) -> Response {
+        let Some(address) = words.get(1).copied() else {
+            return err(tag, status::BAD_REQUEST, "400 Syntax Error.");
+        };
+        let not_found = || {
+            err(
+                tag,
+                status::ABSENT,
+                &format!("401 Bad object or device ID: {address} (Object not found )"),
+            )
+        };
+        let unavailable = || err(tag, 521, "521 Unit unavailable: Identify failed.");
+        let Some((project, net, unit)) = self.unit_of(address) else {
+            return not_found();
+        };
+        let Some(network) = self
+            .projects
+            .get(&project)
+            .and_then(|project| project.networks.get(&net))
+        else {
+            return not_found();
+        };
+        if !network.physical.contains_key(&unit) && !network.units.contains_key(&unit) {
+            return not_found();
+        }
+        let field = words
+            .get(2)
+            .map_or("all".to_string(), |w| w.to_ascii_lowercase());
+        let physical = network.physical.get(&unit);
+        let online = matches!(network.state, NetworkState::Open | NetworkState::Ok);
+        let value = match (online, physical, field.as_str()) {
+            (true, Some(found), "type") => &found.unit_type,
+            (true, Some(found), "version") => &found.firmware,
+            _ => return unavailable(),
+        };
+        Response {
+            tag: tag.to_string(),
+            lines: vec![],
+            final_text: format!("300 p/{net}/{unit} {field}={value}"),
+            status: 300,
+        }
     }
 
     /// Native `START_BACKGROUND_JOB <job-name>` (top-level `pf`, Clipsal

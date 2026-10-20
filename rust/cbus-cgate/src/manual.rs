@@ -2087,7 +2087,9 @@ impl Server {
         } else if method == "UNRAVEL" {
             let args = ["NET", "UNRAVEL", words[1]];
             self.net_unravel(tag, &args)
-        } else if method == "PSYNC" {
+        } else if method == "PSYNC" || method == "QSYNC" {
+            // Native registers QSync on every unit; types without a quick
+            // sync fall back to a full sync and answer like Psync.
             if words.len() != 3 {
                 return err(tag, 400, "400 Syntax Error: Too many parameters");
             }
