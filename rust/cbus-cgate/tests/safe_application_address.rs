@@ -16,7 +16,7 @@ fn harness() -> (Server, String) {
     assert_eq!(
         s.handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
             .status,
-        200
+        301
     );
     assert_eq!(
         s.handle("[3] DBADDSAFE //T125A/254 Application 80 App80")
@@ -253,7 +253,7 @@ fn safe_address_remaps_hyphen_alias_and_isolates_neighbors() {
     assert_eq!(
         s.handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
             .status,
-        200
+        301
     );
     assert_eq!(
         s.handle("[3] DBADDSAFE //TISO/254 Application 5 App5")

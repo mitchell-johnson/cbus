@@ -507,7 +507,7 @@ def test_public_renamed_associated_level_cli_owner_and_wire(backend, variable, t
                     evidence["oid_roles"] = roles
                     if backend == "cgate-mock":
                         for command in ("PROJECT NEW CONTROL", f"DBCREATENET 254 Control Cni {trap}", "PROJECT USE LAB"):
-                            assert owner.command(command).code == 200
+                            assert owner.command(command).code == (301 if command.startswith("DBCREATENET ") else 200)
                     before = associated_snapshot(owner, backend)
                     source = associated_document(owner, "!" + roles["source"])
                     evidence.update(before=before, source_xml=source)
@@ -786,7 +786,7 @@ def test_public_associated_empty_tags_copy_after_reload(backend, variable, tmp_p
                     roles = associated_seed(owner, work, trap)
                     if backend == "cgate-mock":
                         for command in ("PROJECT NEW CONTROL", f"DBCREATENET 254 Control Cni {trap}", "PROJECT USE LAB"):
-                            assert owner.command(command).code == 200
+                            assert owner.command(command).code == (301 if command.startswith("DBCREATENET ") else 200)
                     initial = associated_document(owner, "!" + roles["source"])
                     assert len(ET.fromstring(initial).findall("TagsDLT")) == 0
                     # The source obtains its empty collection at the real LOAD boundary.
@@ -1023,7 +1023,7 @@ def test_public_associated_raw_level_value_literal_and_preservation(backend, var
                     roles["control"] = control
                     if backend == "cgate-mock":
                         for command in ("PROJECT NEW CONTROL", f"DBCREATENET 254 Control Cni {trap}", "PROJECT USE LAB"):
-                            assert owner.command(command).code == 200
+                            assert owner.command(command).code == (301 if command.startswith("DBCREATENET ") else 200)
                     added = owner.command(f"DBADDSAFE !{roles['group2']} Level 30 Null")
                     assert added.code == 301
                     roles["null"] = added.final.removeprefix("301 OID=")

@@ -272,7 +272,7 @@ fn tcp_project_network_lighting_cycle() {
     assert_eq!(
         s.command("DBCREATENET 254 Local Cni 127.0.0.1:10001")
             .status,
-        200
+        301
     );
     let open = s.command("NET OPEN //TEST/254");
     assert_eq!(open.status, 200);
@@ -300,7 +300,7 @@ fn tcp_network_retries_zero_matches_native_reply_and_readback() {
         session
             .command("DBCREATENET 254 Local Cni 127.0.0.1:10001")
             .status,
-        200
+        301
     );
 
     let before = session.command("GET //TEST/254 Retries");
@@ -507,7 +507,7 @@ fn tcp_deny_programming_posture() {
     assert_eq!(s.command("PROJECT NEW TEST").status, 200);
     // Programming sessions stay denied; everything else still works.
     assert_eq!(s.command("PP LOCK //TEST/254").status, 420);
-    assert_eq!(s.command("PROJECT LIST").status, 200);
+    assert_eq!(s.command("PROJECT LIST").status, 123);
 }
 
 #[test]
@@ -519,7 +519,7 @@ fn tcp_documents_and_oid_flow() {
     assert_eq!(
         s.command("DBCREATENET 254 Local Cni 127.0.0.1:10001")
             .status,
-        200
+        301
     );
     // Here-document field store.
     let set = s.document("DBSETXML //TEST/254/p/20/UnitName", "ENDDOC1", "LOUNGE\n");
@@ -557,7 +557,7 @@ fn tcp_complete_typed_dbsetxml_returns_root_oid_and_exact_readback() {
         session
             .command("DBCREATENET 254 Local Cni 127.0.0.1:1")
             .status,
-        200
+        301
     );
     let add = session.command("DBADD 254 Application");
     let old_oid = add.lines[0].trim_start_matches("301 OID=").to_string();
@@ -697,7 +697,7 @@ fn native_dbgetxml_wire_matches_fresh_address_oid_and_pipeline_capture() {
         session
             .command("DBCREATENET 254 Local Cni 127.0.0.1:1")
             .status,
-        200
+        301
     );
     let missing = session.command("DBGETXML //XFRAME/254/p/21");
     assert_eq!(missing.status, 401);
@@ -727,7 +727,7 @@ fn tcp_dbgetxml_uses_native_mixed_delimiters_and_closing_status() {
         session
             .command("DBCREATENET 254 Local Cni 127.0.0.1:1")
             .status,
-        200
+        301
     );
     let before = session.command("DBGETXML //XUNIT/254");
     assert_eq!(before.status, 344);
@@ -783,7 +783,7 @@ fn tcp_legacy_database_add_and_copy_preserve_native_oid_flow() {
         session
             .command("DBCREATENET 254 Source Cni loopback")
             .status,
-        200
+        301
     );
 
     let interface = session.command("DBADD //SOURCE/254 Interface trailing");
@@ -839,7 +839,7 @@ fn tcp_legacy_database_add_and_copy_preserve_native_oid_flow() {
         session
             .command("DBCREATENET 1 Destination Cni loopback")
             .status,
-        200
+        301
     );
     assert_eq!(session.command("PROJECT USE SOURCE").status, 200);
     let cross = session.command("DBCOPY //SOURCE/254/p/20 //DEST/1 ignored");
@@ -891,7 +891,9 @@ fn tcp_parameters_complete_with_315_and_keep_next_reply_synchronized() {
     ] {
         assert_eq!(
             s.command(command).status,
-            if command == "DBADDSAFE //TEST/254 Unit 20 Lounge" {
+            if command == "DBADDSAFE //TEST/254 Unit 20 Lounge"
+                || command.starts_with("DBCREATENET ")
+            {
                 301
             } else {
                 200

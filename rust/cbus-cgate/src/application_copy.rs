@@ -852,13 +852,13 @@ mod tests {
             server
                 .handle("[net] DBCREATENET 254 Local Cni nowhere")
                 .status,
-            200
+            301
         );
         assert_eq!(
             server
                 .handle("[dest] DBCREATENET 253 Other Cni nowhere")
                 .status,
-            200
+            301
         );
         for (address, name) in [(72, "A72"), (0, "Zero"), (71, "A71"), (66, "A66")] {
             assert_eq!(
@@ -1193,7 +1193,7 @@ mod tests {
             server
                 .handle("[net] DBCREATENET 1 Target Cni nowhere")
                 .status,
-            200
+            301
         );
         assert_eq!(server.handle("[source] PROJECT USE COPY").status, 200);
         let before = server.project_tables("COPY");
@@ -1362,7 +1362,7 @@ mod tests {
                 server
                     .handle(&format!("[net] DBCREATENET {network} {name} Cni nowhere"))
                     .status,
-                200
+                301
             );
         }
         let shared = "11111111-1111-4111-8111-111111111111";
@@ -1466,7 +1466,7 @@ mod tests {
             server
                 .handle("[net] DBCREATENET 254 Local Cni nowhere")
                 .status,
-            200
+            301
         );
         let shared = duplicate["shared_oid"].as_str().unwrap().to_string();
         assert_eq!(cross_kind["shared_oid"].as_str().unwrap(), shared);
@@ -1788,7 +1788,7 @@ mod tests {
                         server
                             .handle("[net] DBCREATENET 254 Other Cni nowhere")
                             .status,
-                        200
+                        301
                     );
                     "OTHER"
                 } else {

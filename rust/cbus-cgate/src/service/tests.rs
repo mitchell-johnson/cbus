@@ -14321,7 +14321,7 @@ async fn physical_project_identify_fails_closed_before_store_and_on_bad_readback
             "[43] DBCREATENET 253 Other Cni 127.0.0.1:10002",
         )
         .await;
-    assert_eq!(other_network.status, 200, "{other_network:?}");
+    assert_eq!(other_network.status, 301, "{other_network:?}");
     let unbound = service
         .handle(
             &mut ClientState::default(),
@@ -15217,7 +15217,7 @@ async fn native_handler_floors_isolate_sessions_and_survive_reconnect() {
         .await
         .last()
         .unwrap(),
-        "[admin-list] 200 OK"
+        "[admin-list] 123 project=HARNESS state=stopped"
     );
     assert_eq!(
         command_lines(
@@ -16431,7 +16431,7 @@ async fn auth_reads_and_bus_control_stay_open() {
     );
     assert_eq!(
         service.handle(&mut client, "[2] PROJECT LIST").await.status,
-        200
+        123
     );
     assert_eq!(
         service
@@ -16669,7 +16669,7 @@ async fn project_archive_restore_and_secondary_rename_are_durable_database_only(
         let response = service.handle(&mut client, command).await;
         assert_eq!(
             response.status,
-            if command.contains(" DBADDSAFE ") {
+            if command.contains(" DBADDSAFE ") || command.contains(" DBCREATENET ") {
                 301
             } else {
                 200
@@ -16755,7 +16755,7 @@ async fn project_copy_and_secondary_delete_are_durable_database_only() {
         let response = service.handle(&mut client, command).await;
         assert_eq!(
             response.status,
-            if command.contains(" DBADDSAFE ") {
+            if command.contains(" DBADDSAFE ") || command.contains(" DBCREATENET ") {
                 301
             } else {
                 200
@@ -17392,7 +17392,11 @@ async fn unsaved_dbsetxml_reverts_on_close_but_survives_daemon_restart_without_p
     ] {
         assert_eq!(
             call(&service, &mut client, line).await.status,
-            200,
+            if line.contains(" DBCREATENET ") {
+                301
+            } else {
+                200
+            },
             "{line}"
         );
     }
@@ -17572,7 +17576,11 @@ async fn dbsetxml_error_matrix_refuses_without_mutation_or_pci_io() {
     ] {
         assert_eq!(
             service.handle(&mut client, line).await.status,
-            200,
+            if line.contains(" DBCREATENET ") {
+                301
+            } else {
+                200
+            },
             "{line}"
         );
     }
@@ -17689,7 +17697,11 @@ async fn cross_network_oid_winner_follows_creation_order_through_restart() {
     ] {
         assert_eq!(
             service.handle(&mut client, line).await.status,
-            200,
+            if line.contains(" DBCREATENET ") {
+                301
+            } else {
+                200
+            },
             "{line}"
         );
     }
@@ -17786,7 +17798,7 @@ async fn duplicate_oid_units_keep_independent_documents_through_service_restart(
             .handle(&mut client, "[3] DBCREATENET 253 Local Cni 127.0.0.1:1")
             .await
             .status,
-        200
+        301
     );
     let initial = service.handle(&mut client, "[4] DBGETXML //XDUP/253").await;
     let parsed =
@@ -17972,7 +17984,14 @@ async fn duplicate_application_oid_keeps_both_paths_through_service_restart() {
         "[2] PROJECT USE XAPP",
         "[3] DBCREATENET 254 Local Cni 127.0.0.1:1",
     ] {
-        assert_eq!(service.handle(&mut client, command).await.status, 200);
+        assert_eq!(
+            service.handle(&mut client, command).await.status,
+            if command.contains("DBCREATENET") {
+                301
+            } else {
+                200
+            }
+        );
     }
     let initial = service.handle(&mut client, "[4] DBGETXML //XAPP/254").await;
     let parsed =
@@ -18130,7 +18149,14 @@ async fn nested_same_oid_application_children_survive_repository_restart() {
         "[2] PROJECT USE XNEST",
         "[3] DBCREATENET 254 Local Cni 127.0.0.1:1",
     ] {
-        assert_eq!(service.handle(&mut client, command).await.status, 200);
+        assert_eq!(
+            service.handle(&mut client, command).await.status,
+            if command.contains("DBCREATENET") {
+                301
+            } else {
+                200
+            }
+        );
     }
     let initial = service
         .handle(&mut client, "[4] DBGETXML //XNEST/254")
@@ -18278,7 +18304,14 @@ async fn nested_same_oid_levels_materialize_on_load_and_survive_repository_resta
             format!("[use] PROJECT USE {project}"),
             "[net] DBCREATENET 254 Local Cni 127.0.0.1:1".to_string(),
         ] {
-            assert_eq!(service.handle(&mut client, &command).await.status, 200);
+            assert_eq!(
+                service.handle(&mut client, &command).await.status,
+                if command.contains("DBCREATENET") {
+                    301
+                } else {
+                    200
+                }
+            );
         }
         let initial = service
             .handle(&mut client, &format!("[base] DBGETXML //{project}/254"))
@@ -18472,7 +18505,14 @@ async fn complete_group_dlt_replacement_survives_service_restart_without_pci_io(
         "[use] PROJECT USE XGSVC",
         "[net] DBCREATENET 254 Local Cni 127.0.0.1:1",
     ] {
-        assert_eq!(service.handle(&mut client, command).await.status, 200);
+        assert_eq!(
+            service.handle(&mut client, command).await.status,
+            if command.contains("DBCREATENET") {
+                301
+            } else {
+                200
+            }
+        );
     }
     let network = service
         .handle(&mut client, "[base] DBGETXML //XGSVC/254")
@@ -18581,7 +18621,14 @@ async fn reversed_four_application_oid_order_survives_repository_restart() {
         "[2] PROJECT USE XQUAD",
         "[3] DBCREATENET 254 Local Cni 127.0.0.1:1",
     ] {
-        assert_eq!(service.handle(&mut client, command).await.status, 200);
+        assert_eq!(
+            service.handle(&mut client, command).await.status,
+            if command.contains("DBCREATENET") {
+                301
+            } else {
+                200
+            }
+        );
     }
     let initial = service
         .handle(&mut client, "[4] DBGETXML //XQUAD/254")
@@ -18748,7 +18795,7 @@ async fn typed_container_dbsetxml_is_durable_atomic_and_never_reaches_pci() {
             .handle(&mut client, "[2] DBCREATENET 200 Auxiliary Cni 127.0.0.1:1")
             .await
             .status,
-        200
+        301
     );
     let created = service
         .handle(&mut client, "[3] DBADD 200 Application")
@@ -20744,7 +20791,7 @@ async fn legacy_database_local_subset_is_durable_and_never_touches_pci() {
                 .handle(&mut client, &format!("[{tag}] {command}"))
                 .await
                 .status,
-            if command.starts_with("DBADDSAFE ") {
+            if command.starts_with("DBADDSAFE ") || command.starts_with("DBCREATENET ") {
                 301
             } else {
                 200

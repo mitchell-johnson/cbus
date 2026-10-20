@@ -50,9 +50,9 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 931,
+    "test_modules": 932,
     "modules_without_skip_sites": 592,
-    "modules_with_skip_sites": 339,
+    "modules_with_skip_sites": 340,
     "modules_by_category": {
       "cgate_test_host": 136,
       "external_cgate_project": 1,
@@ -66,7 +66,7 @@
       "private_evidence_input": 4,
       "private_vendor_tree": 9,
       "runtime_capability": 6,
-      "rust_binaries": 20,
+      "rust_binaries": 21,
       "unclassified": 41,
       "unit_specs": 150,
       "vendor_firmware": 4,
@@ -75,7 +75,7 @@
     "native_modules": {
       "all": 142,
       "partial": 20,
-      "none": 177
+      "none": 178
     },
     "native_runnable_tests": 261,
     "native_selected_required_tests": 261,
@@ -11650,6 +11650,41 @@
             "AboutTests::test_nested_version_blocks_duplicate_and_language_ambiguity_reject",
             "AboutTests::test_pinned_exe_resource_and_provenance_are_independent",
             "AboutTests::test_resource_display_name_is_substituted_and_absence_has_explicit_fallback"
+          ]
+        }
+      ]
+    },
+    "tests/test_toolkit_client_inventory.py": {
+      "categories": [
+        "rust_binaries"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_toolkit_client_inventory.py::test_mock_replies_fit_toolkit_parsers",
+          "kind": "body.call",
+          "condition": "not supplied",
+          "reason": "Select CBUS_CGATE_MOCK_BIN for the Toolkit client reply check",
+          "environment": [
+            "CBUS_CGATE_MOCK_BIN"
+          ],
+          "categories": [
+            "rust_binaries"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "rust_binaries"
+          ],
+          "tests": [
+            "test_mock_replies_fit_toolkit_parsers"
           ]
         }
       ]

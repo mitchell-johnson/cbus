@@ -6,7 +6,7 @@ fn seed() -> (Server, String) {
     assert_eq!(
         s.handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
             .status,
-        200
+        301
     );
     assert_eq!(
         s.handle("[3] DBADDSAFE //TCOPY/254 Application 70 Src70")

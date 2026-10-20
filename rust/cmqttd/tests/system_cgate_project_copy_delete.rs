@@ -85,14 +85,14 @@ async fn project_copy_delete_preserves_database_identity_and_mqtt_continuity() {
     ] {
         let reply = command(&mut reader, &mut writer, tag, text).await;
         assert!(
-            reply
-                .last()
-                .unwrap()
-                .contains(if text == "DBADDSAFE //AUX/1 Unit 20 Original" {
+            reply.last().unwrap().contains(
+                if text == "DBADDSAFE //AUX/1 Unit 20 Original" || text.starts_with("DBCREATENET ")
+                {
                     "301 OID="
                 } else {
                     "200 OK"
-                }),
+                }
+            ),
             "{text}: {reply:?}"
         );
     }

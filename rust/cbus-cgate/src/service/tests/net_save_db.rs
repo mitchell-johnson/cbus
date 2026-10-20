@@ -20,7 +20,8 @@ async fn command(service: &Arc<Service>, client: &mut ClientState, text: &str) {
                 | "DBADDSAFE //HARNESS/254/57 Group 8 CreatedGroup"
                 | "DBADDSAFE //AUX/42 Application 57 App"
                 | "DBADDSAFE //AUX/42/57 Group 8 Group"
-        ) {
+        ) || text.starts_with("DBCREATENET ")
+        {
             301
         } else {
             200
@@ -1789,7 +1790,11 @@ async fn net_save_db_numeric_application_copy_survives_save_close_load_and_resta
         let reply = run(&service, &mut client, text).await;
         assert_eq!(
             reply.status,
-            if text.starts_with("DBADD") { 301 } else { 200 },
+            if text.starts_with("DBADD") || text.starts_with("DBCREATENET") {
+                301
+            } else {
+                200
+            },
             "{text}: {reply:?}"
         );
     }

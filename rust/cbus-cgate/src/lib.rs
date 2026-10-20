@@ -598,6 +598,32 @@ fn ok(tag: &str, lines: Vec<String>, final_text: &str) -> Response {
     }
 }
 
+/// Native list envelope: every row carries `code`, the last one as the
+/// final line; an empty list answers `empty_code empty_text` instead.
+fn coded_rows(
+    tag: &str,
+    code: u16,
+    mut rows: Vec<String>,
+    empty_code: u16,
+    empty_text: &str,
+) -> Response {
+    let Some(last) = rows.pop() else {
+        return Response {
+            tag: tag.to_string(),
+            lines: Vec::new(),
+            final_text: format!("{empty_code} {empty_text}"),
+            status: empty_code,
+        };
+    };
+    Response {
+        tag: tag.to_string(),
+        // `format_response` prefixes payload rows with the status code.
+        lines: rows,
+        final_text: format!("{code} {last}"),
+        status: code,
+    }
+}
+
 /// Native parameter replies complete on the last 315 row, without a
 /// trailing 200. The empty, spec-free mock namespace has no parameter
 /// row to emit and retains its explicit 200 completion.
@@ -1636,6 +1662,37 @@ fn dequote_value(raw: &str) -> String {
     out
 }
 
+/// Native `mK.b()`: trim, and when the text starts with a quote drop it and
+/// the last quote, then unescape `\\ `, `\\"` and `\\\\`.
+fn native_dequote(raw: &str) -> String {
+    let raw = raw.trim();
+    let Some(inner) = raw.strip_prefix('"') else {
+        return raw.to_string();
+    };
+    let inner = match inner.rfind('"') {
+        Some(end) => format!("{}{}", &inner[..end], &inner[end + 1..]),
+        None => inner.to_string(),
+    };
+    dequote_value(&format!("\"{inner}\""))
+}
+
+/// Native `Command.argsAsDequotedString`: join whitespace tokens with one
+/// space until the quote count is even, then dequote. Returns the value and
+/// the tokens after it, or `None` when the tokens run out first.
+fn dequoted_argument<'a, 'b>(tokens: &'a [&'b str]) -> Option<(String, &'a [&'b str])> {
+    let mut joined = String::new();
+    for (index, token) in tokens.iter().enumerate() {
+        if index > 0 {
+            joined.push(' ');
+        }
+        joined.push_str(token);
+        if joined.matches('"').count().is_multiple_of(2) {
+            return Some((native_dequote(&joined), &tokens[index + 1..]));
+        }
+    }
+    None
+}
+
 /// Parse C-Gate whitespace tokens while retaining dequoted string arguments.
 /// PROGRAMMER CREATE is the maintained family that needs more than one quoted
 /// tail, so the general command dispatcher's whitespace view is insufficient.
@@ -1779,6 +1836,11 @@ fn has_status_prefix(line: &str) -> bool {
     // failure. Admit only its fixed native prefix rather than arbitrary 501
     // text, so a user-controlled data row cannot spoof another envelope.
     if line.starts_with("501-failed: could not delete programmer: ") {
+        return true;
+    }
+    // SEND reports a failed literal send per network before its 300
+    // response. Admit only that fixed native suffix.
+    if line.starts_with("524-//") && line.ends_with(": Command send error") {
         return true;
     }
     // TREEXML wraps its generated project-level unsupported row between the
@@ -2549,6 +2611,16 @@ pub struct Server {
     /// existed. Native C-Gate exposes these object trees as `error`; freshly
     /// created, never reselected local objects remain `new` until activation.
     activated_networks: HashSet<(String, u8)>,
+    /// Projects currently started by `PROJECT START`; `PROJECT LIST` reports
+    /// them as `state=started` and every other loaded project as `stopped`.
+    started_projects: HashSet<String>,
+    /// Set when the last command reached the unknown-verb fallback.
+    last_command_unknown: bool,
+    /// Projects unloaded by `PROJECT CLOSE`. They stay in the repository
+    /// model but leave `PROJECT LIST` until loaded or used again.
+    unloaded_projects: HashSet<String>,
+    /// Creation dates for `PROJECT DIR ALL` rows, recorded by `PROJECT NEW`.
+    project_created: HashMap<String, String>,
     /// Volatile runtime application/group objects created by `CGL IMPORT`,
     /// keyed by `//PROJECT/net/app[/group]`. Native import reports an object
     /// as created when either this layer or the tag database lacked it, so a
@@ -2699,6 +2771,10 @@ impl Server {
             projects: HashMap::new(),
             current: None,
             activated_networks: HashSet::new(),
+            started_projects: HashSet::new(),
+            last_command_unknown: false,
+            unloaded_projects: HashSet::new(),
+            project_created: HashMap::new(),
             cgl_runtime: HashSet::new(),
             command_session: None,
             events: VecDeque::new(),
@@ -2963,6 +3039,7 @@ impl Server {
     }
 
     fn handle_command(&mut self, line: &str) -> Response {
+        self.last_command_unknown = false;
         let cmd = match parse_command(line) {
             Ok(c) => c,
             Err(e) => {
@@ -3050,8 +3127,17 @@ impl Server {
                 vec!["C-Gate 3.4.0 (rust cbus-cgate 0.1.0)".to_string()],
                 "200 OK",
             ),
-            _ if starts_with(&upper, "PROJECT LIST") => self.project_list(&cmd.tag),
-            _ if starts_with(&upper, "PROJECT NEW") => self.project_new(&cmd.tag, &words),
+            _ if starts_with(&upper, "PROJECT LIST") => self.project_list(&cmd.tag, &words),
+            _ if starts_with(&upper, "PROJECT NEW") => {
+                let response = self.project_new(&cmd.tag, &words);
+                if response.status < 400 {
+                    self.project_created.insert(
+                        words[2].to_string(),
+                        chrono::Local::now().format("%d/%m/%Y").to_string(),
+                    );
+                }
+                response
+            }
             _ if starts_with(&upper, "PROJECT USE") => self.project_use(&cmd.tag, &words),
             _ if starts_with(&upper, "PROJECT LOAD") => {
                 let response = self.project_load(&cmd.tag, &words);
@@ -3061,12 +3147,24 @@ impl Server {
                 }
                 response
             }
-            _ if starts_with(&upper, "PROJECT CLOSE") => self.project_close(&cmd.tag, &words),
+            _ if starts_with(&upper, "PROJECT CLOSE") => {
+                let closed = words
+                    .get(2)
+                    .map(|name| (*name).to_string())
+                    .or_else(|| self.current.clone());
+                let response = self.project_close(&cmd.tag, &words);
+                if let Some(name) = closed.filter(|_| response.status < 400) {
+                    self.started_projects.remove(&name);
+                    self.unloaded_projects.insert(name);
+                }
+                response
+            }
             _ if starts_with(&upper, "PROJECT SAVE") => self.project_save(&cmd.tag, &words),
             _ if starts_with(&upper, "PROJECT DELETE") => {
                 let response = self.project_delete(&cmd.tag, &words);
                 if response.status < 400 {
                     self.saved_projects.remove(words[2]);
+                    self.forget_project_lifecycle(words[2]);
                 }
                 response
             }
@@ -3084,6 +3182,7 @@ impl Server {
                 if response.status < 400 {
                     self.saved_projects.remove(words[2]);
                     self.mark_project_saved(words[3]);
+                    self.move_project_lifecycle(words[2], words[3]);
                 }
                 response
             }
@@ -3108,7 +3207,7 @@ impl Server {
                 self.net_unravel(&cmd.tag, &words)
             }
             _ if starts_with(&upper, "NET CLOCKS") => self.net_clocks(&cmd.tag, &words),
-            _ if starts_with(&upper, "NET LIST_ALL") => self.net_list_all(&cmd.tag),
+            _ if starts_with(&upper, "NET LIST_ALL") => self.net_list_all(&cmd.tag, &words),
             _ if starts_with(&upper, "NET LIST") => self.net_list(&cmd.tag, &words),
             _ if starts_with(&upper, "NET RENAME") => self.net_rename(&cmd.tag, &words),
             _ if starts_with(&upper, "NET SET_PROJECT_IDENTIFY") => {
@@ -3146,7 +3245,7 @@ impl Server {
             _ if starts_with(&upper, "DBVALIDATE") => self.dbvalidate(&cmd.tag, &words),
             _ if starts_with(&upper, "CGL IMPORT") => self.cgl_import(&cmd.tag, &words),
             _ if starts_with(&upper, "CGL EXPORT") => self.cgl_export(&cmd.tag, &words),
-            _ if starts_with(&upper, "DBCREATENET") => self.dbcreate_net(&cmd.tag, &words),
+            _ if starts_with(&upper, "DBCREATENET") => self.dbcreate_net(&cmd.tag, &cmd.body),
             _ if starts_with(&upper, "SCENE") => err(
                 &cmd.tag,
                 status::UNAUTHORIZED,
@@ -3178,7 +3277,89 @@ impl Server {
                 lines: vec![],
                 final_text: "204 Closing connection.".to_string(),
             },
-            _ => err(&cmd.tag, status::BAD_REQUEST, "400 Unknown command"),
+            _ if eq_verb(&upper, "START_BACKGROUND_JOB")
+                || starts_with(&upper, "START_BACKGROUND_JOB") =>
+            {
+                self.start_background_job(&cmd.tag, &words)
+            }
+            _ if eq_verb(&upper, "SEND") || starts_with(&upper, "SEND") => {
+                self.send_literal(&cmd.tag, &words)
+            }
+            // Native C-Gate answers every unregistered verb with a bare
+            // syntax error; Toolkit's TcgcMark relies on this as a marker.
+            _ => {
+                self.last_command_unknown = true;
+                err(&cmd.tag, status::BAD_REQUEST, "400 Syntax Error.")
+            }
+        }
+    }
+
+    /// Whether the most recent command fell through to the unknown-verb
+    /// reply. Native C-Gate gives unknown verbs the same `400 Syntax Error.`
+    /// as malformed known ones, so tests use this to detect a missing
+    /// dispatcher.
+    pub fn last_command_unknown(&self) -> bool {
+        self.last_command_unknown
+    }
+
+    /// Native `START_BACKGROUND_JOB <job-name>` (top-level `pf`, Clipsal
+    /// level). Only `XmlToSqlTransformJob` is defined; the job's outcome is
+    /// not reported through this reply and the mock runs no job.
+    fn start_background_job(&self, tag: &str, words: &[&str]) -> Response {
+        if matches!(self.access, AccessLevel::Admin | AccessLevel::Monitor) {
+            return err(tag, status::ACCESS_DENIED, "420 Access denied.");
+        }
+        match words.get(1) {
+            None => err(tag, status::BAD_REQUEST, "400 Syntax Error."),
+            Some(job) if job.eq_ignore_ascii_case("XmlToSqlTransformJob") => {
+                ok(tag, vec![], "200 OK.")
+            }
+            Some(_) => err(
+                tag,
+                status::BAD_REQUEST,
+                "400 Syntax Error: Invalid parameter : The background job is not defined.",
+            ),
+        }
+    }
+
+    /// Native `SEND <network-id> <command>` (top-level `nK`, Program level):
+    /// sends one literal CAL token to each matched network and answers
+    /// `300 Response=<reply>`. The mock has no CAL responder: a closed
+    /// network adds native `524 ... Command send error` before the empty
+    /// response, and an open one answers with an empty response.
+    fn send_literal(&self, tag: &str, words: &[&str]) -> Response {
+        if matches!(self.access, AccessLevel::Admin | AccessLevel::Monitor) {
+            return err(tag, status::ACCESS_DENIED, "420 Access denied.");
+        }
+        let (Some(object), Some(_command)) = (words.get(1), words.get(2)) else {
+            return err(tag, status::BAD_REQUEST, "400 Syntax Error.");
+        };
+        let (project, net) = split_network(object);
+        let project = if project.is_empty() {
+            self.current.clone().unwrap_or_default()
+        } else {
+            project
+        };
+        let network = net.parse::<u8>().ok().and_then(|net| {
+            self.projects
+                .get(&project)?
+                .networks
+                .get(&net)
+                .map(|n| (net, n))
+        });
+        let Some((net, network)) = network else {
+            return err(tag, status::UNAUTHORIZED, "401 Bad object or device ID.");
+        };
+        let lines = if network.state == NetworkState::Closed {
+            vec![format!("524-//{project}/{net}: Command send error")]
+        } else {
+            Vec::new()
+        };
+        Response {
+            tag: tag.to_string(),
+            lines,
+            final_text: "300 Response=".to_string(),
+            status: 300,
         }
     }
 
@@ -3186,11 +3367,50 @@ impl Server {
         self.access == AccessLevel::Monitor
     }
 
-    fn project_list(&self, tag: &str) -> Response {
-        let mut names: Vec<&String> = self.projects.keys().collect();
+    /// Native `PROJECT LIST` (ProjectCommand `qt`): one `123` row per loaded
+    /// project as `project=<name> state=<stopped|started>`, or
+    /// `124 no projects found`. A closed project is unloaded and leaves the
+    /// list until it is loaded or used again.
+    fn project_list(&self, tag: &str, words: &[&str]) -> Response {
+        if words.len() > 2 {
+            return err(tag, status::BAD_REQUEST, "400 Syntax Error.");
+        }
+        let mut names: Vec<&String> = self
+            .projects
+            .keys()
+            .filter(|name| !self.unloaded_projects.contains(*name))
+            .collect();
         names.sort();
-        let lines = names.into_iter().cloned().collect();
-        ok(tag, lines, "200 OK")
+        let rows = names
+            .into_iter()
+            .map(|name| {
+                let state = if self.started_projects.contains(name) {
+                    "started"
+                } else {
+                    "stopped"
+                };
+                format!("project={name} state={state}")
+            })
+            .collect();
+        coded_rows(tag, 123, rows, 124, "no projects found")
+    }
+
+    fn forget_project_lifecycle(&mut self, name: &str) {
+        self.started_projects.remove(name);
+        self.unloaded_projects.remove(name);
+        self.project_created.remove(name);
+    }
+
+    fn move_project_lifecycle(&mut self, src: &str, dst: &str) {
+        if self.started_projects.remove(src) {
+            self.started_projects.insert(dst.to_string());
+        }
+        if self.unloaded_projects.remove(src) {
+            self.unloaded_projects.insert(dst.to_string());
+        }
+        if let Some(created) = self.project_created.remove(src) {
+            self.project_created.insert(dst.to_string(), created);
+        }
     }
 
     fn project_new(&mut self, tag: &str, words: &[&str]) -> Response {
@@ -3237,10 +3457,12 @@ impl Server {
 
     fn project_use(&mut self, tag: &str, words: &[&str]) -> Response {
         if words.len() == 2 {
-            return if self.current.is_some() {
-                ok(tag, vec![], "200 OK")
-            } else {
-                err(tag, status::NOT_FOUND, "404 No project selected")
+            // Native bare `PROJECT USE` reports the session project.
+            return Response {
+                tag: tag.to_string(),
+                lines: Vec::new(),
+                final_text: format!("123 project={}", self.current.as_deref().unwrap_or("null")),
+                status: 123,
             };
         }
         if words.len() != 3 {
@@ -3266,10 +3488,19 @@ impl Server {
                 .map(|network| (name.to_string(), *network)),
         );
         self.current = Some(name.to_string());
+        self.unloaded_projects.remove(name);
         ok(tag, vec![], "200 OK.")
     }
 
     fn project_load(&mut self, tag: &str, words: &[&str]) -> Response {
+        if words.len() == 2 {
+            // Bare LOAD reloads the session project; only bare USE reports it.
+            return if self.current.is_some() {
+                ok(tag, vec![], "200 OK")
+            } else {
+                err(tag, status::NOT_FOUND, "404 No project selected")
+            };
+        }
         if words.len() <= 3 {
             let response = self.project_use(tag, words);
             // Owned build-2001 captures add empty Level TagsDLT nodes when a
@@ -3298,6 +3529,7 @@ impl Server {
         self.projects.insert(words[2].to_string(), project);
         self.restore_unit_document_archive(words[3], words[2]);
         self.current = Some(words[2].to_string());
+        self.unloaded_projects.remove(words[2]);
         self.invalidated_unit_oid_lookups
             .retain(|(project, _)| project != words[2]);
         ok(tag, vec![], "200 OK")
@@ -3952,9 +4184,11 @@ impl Server {
         ok(tag, vec![], "200 OK.")
     }
 
-    /// Native `PROJECT DIR`: directory listing. The exact native entry
-    /// shape is unmodeled, so this answers project names exactly like
-    /// `PROJECT LIST` (documented approximation).
+    /// Native `PROJECT DIR [ALL]` (ProjectCommand `qr`): one `123` row per
+    /// repository project, `124 no projects found` when empty. `ALL` merges
+    /// every repository and adds `repository=`, `creationDate=` and
+    /// `description=` to each entry. The mock has one XML-style repository
+    /// and keeps no project descriptions, so `description=` is empty.
     fn project_dir(&self, tag: &str, words: &[&str]) -> Response {
         if words.len() > 3
             || words
@@ -3967,7 +4201,25 @@ impl Server {
                 "400 PROJECT DIR takes only optional ALL",
             );
         }
-        self.project_list(tag)
+        let all = words.len() == 3;
+        let mut names: Vec<&String> = self.projects.keys().collect();
+        names.sort();
+        let rows = names
+            .into_iter()
+            .map(|name| {
+                if all {
+                    let created = self
+                        .project_created
+                        .get(name)
+                        .map(String::as_str)
+                        .unwrap_or_default();
+                    format!("project={name} repository=XML creationDate={created} description=")
+                } else {
+                    format!("project={name}")
+                }
+            })
+            .collect();
+        coded_rows(tag, 123, rows, 124, "no projects found")
     }
 
     /// Native `PROJECT ARCHIVE name server-path`, backed by the model's
@@ -4384,22 +4636,43 @@ impl Server {
     /// Mirrors native `DBCREATENET addr name Serial|Cni|Bridge iface-addr`
     /// (see `NativeDatabase.create_network`): networks come from the
     /// database layer, while `NET OPEN` only operates on existing ones.
-    fn dbcreate_net(&mut self, tag: &str, words: &[&str]) -> Response {
-        if words.len() != 5 {
+    ///
+    /// The name and interface address are dequoted like native
+    /// `argsAsDequotedString`/`remainingArgsAsDequotedString`, so Toolkit's
+    /// `dbcreatenet %s "%s" %s %s` form is accepted, and success answers
+    /// `301 OID=<network oid>` like native C-Gate.
+    fn dbcreate_net(&mut self, tag: &str, body: &str) -> Response {
+        let tokens: Vec<&str> = body.split_whitespace().skip(1).collect();
+        let Some((name, rest)) = dequoted_argument(&tokens[1.min(tokens.len())..]) else {
             return err(
                 tag,
                 status::BAD_REQUEST,
-                "400 DBCREATENET requires address, name, interface type and interface address",
+                "400 Syntax Error: Missing parameter : name",
+            );
+        };
+        if tokens.is_empty() {
+            return err(
+                tag,
+                status::BAD_REQUEST,
+                "400 Syntax Error: Missing parameter : address",
             );
         }
-        let net: i64 = words[1].parse().unwrap_or(-1);
+        let Some((iface_type, rest)) = rest.split_first() else {
+            return err(
+                tag,
+                status::BAD_REQUEST,
+                "400 Syntax Error: Missing parameter : type",
+            );
+        };
+        let iface_addr = native_dequote(&rest.join(" "));
+        let net: i64 = tokens[0].parse().unwrap_or(-1);
         if !(0..=255).contains(&net) {
             return err(tag, status::BAD_REQUEST, "400 Invalid network address");
         }
-        if !valid_name(words[2]) {
+        if name.is_empty() {
             return err(tag, status::BAD_REQUEST, "400 Invalid network name");
         }
-        let iface = words[3].to_ascii_uppercase();
+        let iface = iface_type.to_ascii_uppercase();
         if !matches!(iface.as_str(), "SERIAL" | "CNI" | "BRIDGE") {
             return err(
                 tag,
@@ -4407,11 +4680,11 @@ impl Server {
                 "400 Interface type must be Serial, Cni or Bridge",
             );
         }
-        if words[4].is_empty() {
+        if iface_addr.is_empty() {
             return err(
                 tag,
                 status::BAD_REQUEST,
-                "400 Interface address is required",
+                "400 Syntax Error: Missing parameter : interface-address",
             );
         }
         let Some(proj) = self.current_project_mut() else {
@@ -4429,9 +4702,9 @@ impl Server {
                 oid: oid.clone(),
                 interface_oid: fresh_oid(),
                 address: net,
-                name: words[2].to_string(),
-                iface_type: words[3].to_string(),
-                iface_addr: words[4].to_string(),
+                name,
+                iface_type: iface_type.to_string(),
+                iface_addr,
                 state: NetworkState::Closed,
                 retries: default_network_retries(),
                 units: HashMap::new(),
@@ -4442,9 +4715,14 @@ impl Server {
                 levels: HashMap::new(),
             },
         );
-        self.known_oids.insert(oid);
+        self.known_oids.insert(oid.clone());
         self.push_event(format!("#e# net {net} created"));
-        ok(tag, vec![], "200 OK")
+        Response {
+            tag: tag.to_string(),
+            lines: Vec::new(),
+            final_text: format!("301 OID={oid}"),
+            status: 301,
+        }
     }
 
     fn net_open(&mut self, tag: &str, words: &[&str]) -> Response {
@@ -13437,36 +13715,119 @@ impl Server {
         }
     }
 
-    /// Native `NET LIST_ALL`.
-    fn net_list_all(&self, tag: &str) -> Response {
-        let mut lines = Vec::new();
+    /// Native object state (`Bo.aH()`): one of unknown, new, sync, ok,
+    /// error or deleted. A closed network stays `new` until its project is
+    /// selected again after creation, which native C-Gate reports as `error`.
+    fn native_network_state(&self, project: &str, net: u8, network: &Network) -> &'static str {
+        match network.state {
+            NetworkState::Closed
+                if self
+                    .activated_networks
+                    .contains(&(project.to_string(), net)) =>
+            {
+                "error"
+            }
+            NetworkState::Closed => "new",
+            NetworkState::Syncing => "sync",
+            NetworkState::Open | NetworkState::Ok => "ok",
+        }
+    }
+
+    fn native_interface_state(network: &Network) -> &'static str {
+        if network.state == NetworkState::Closed {
+            "closed"
+        } else {
+            "running"
+        }
+    }
+
+    /// Native `NET LIST_ALL` (NetCommand `kJ`): one `135` row per network in
+    /// every project, from `CBusBaseNetwork.f(true)`; `132 no networks found`
+    /// when there are none.
+    fn net_list_all(&self, tag: &str, words: &[&str]) -> Response {
+        if words.len() > 2 {
+            return err(tag, status::BAD_REQUEST, "400 Syntax Error.");
+        }
+        let mut rows = Vec::new();
         let mut projects: Vec<&String> = self.projects.keys().collect();
         projects.sort();
         for project in projects {
-            let mut nets: Vec<&u8> = self.projects[project].networks.keys().collect();
+            let networks = &self.projects[project].networks;
+            let mut nets: Vec<&u8> = networks.keys().collect();
             nets.sort();
             for net in nets {
-                lines.push(format!("//{project}/{net}"));
+                let network = &networks[net];
+                rows.push(format!(
+                    "project={project} address=//{project}/{net} OID={} interfaceType={} \
+                     interfaceAddress={} state={} interfaceState={}",
+                    network.oid,
+                    network.iface_type,
+                    network.iface_addr,
+                    self.native_network_state(project, *net, network),
+                    Self::native_interface_state(network),
+                ));
             }
         }
-        ok(tag, lines, "200 OK")
+        coded_rows(tag, 135, rows, 132, "no networks found")
     }
 
-    /// Native `NET LIST project`.
+    /// Native `NET LIST [project]` (NetCommand `kK`): one `131` row per
+    /// network as `network=<n> State=<s> InterfaceState=<is>`, or
+    /// `132 no networks found`. Without an argument it lists the session's
+    /// `PROJECT USE` project.
     fn net_list(&self, tag: &str, words: &[&str]) -> Response {
-        if words.len() != 3 || !valid_name(words[2]) {
-            return err(tag, status::BAD_REQUEST, "400 NET LIST requires a project");
+        if words.len() > 3 {
+            return err(
+                tag,
+                status::BAD_REQUEST,
+                "400 Syntax Error: Too many parameters",
+            );
         }
-        let Some(proj) = self.projects.get(words[2]) else {
-            return err(tag, status::NOT_FOUND, "404 Project not found");
+        let project = match words.get(2) {
+            Some(name) => {
+                let name = name.trim_start_matches("//");
+                if !self.projects.contains_key(name) {
+                    return err(
+                        tag,
+                        status::BAD_REQUEST,
+                        "400 Syntax Error: No project specified",
+                    );
+                }
+                name.to_string()
+            }
+            None => match &self.current {
+                None => {
+                    return err(
+                        tag,
+                        status::BAD_REQUEST,
+                        "400 Syntax Error: No project in use",
+                    )
+                }
+                Some(name) if self.unloaded_projects.contains(name) => {
+                    return err(
+                        tag,
+                        status::BAD_REQUEST,
+                        "400 Syntax Error: Project in use is not loaded",
+                    )
+                }
+                Some(name) => name.clone(),
+            },
         };
-        let mut nets: Vec<&u8> = proj.networks.keys().collect();
+        let networks = &self.projects[&project].networks;
+        let mut nets: Vec<&u8> = networks.keys().collect();
         nets.sort();
-        let lines = nets
+        let rows = nets
             .into_iter()
-            .map(|n| format!("//{}/{n}", words[2]))
+            .map(|net| {
+                let network = &networks[net];
+                format!(
+                    "network={net} State={} InterfaceState={}",
+                    self.native_network_state(&project, *net, network),
+                    Self::native_interface_state(network),
+                )
+            })
             .collect();
-        ok(tag, lines, "200 OK")
+        coded_rows(tag, 131, rows, 132, "no networks found")
     }
 
     /// Native `NET SYNCNEW address [unit]`.
@@ -14286,7 +14647,7 @@ mod tests {
             server
                 .handle("[net] DBCREATENET 254 Local Cni 127.0.0.1:10001")
                 .status,
-            200
+            301
         );
         server
     }
@@ -14923,7 +15284,7 @@ mod tests {
     fn project_lifecycle() {
         let mut s = Server::new(AccessLevel::Program);
         assert_eq!(s.handle("[1] PROJECT NEW TEST").status, 200);
-        assert_eq!(s.handle("[2] PROJECT LIST").status, 200);
+        assert_eq!(s.handle("[2] PROJECT LIST").status, 123);
         assert_eq!(s.handle("[3] PROJECT USE TEST").status, 200);
         assert_eq!(s.handle("[4] PROJECT SAVE").status, 200);
         // Networks come from the database layer; OPEN of a missing one is 404.
@@ -14931,7 +15292,7 @@ mod tests {
         assert_eq!(
             s.handle("[6] DBCREATENET 254 Local Cni 127.0.0.1:10001")
                 .status,
-            200
+            301
         );
         assert_eq!(s.handle("[7] NET OPEN //TEST/254").status, 200);
         assert_eq!(s.handle("[8] NET STATE //TEST/254").status, 200);
@@ -14994,7 +15355,7 @@ mod tests {
             server
                 .handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
                 .status,
-            200
+            301
         );
         for (command, expected_name) in [
             (
@@ -15041,7 +15402,7 @@ mod tests {
         assert_eq!(
             s.handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
                 .status,
-            200
+            301
         );
         // Unit lifecycle through the native SAFE verbs.
         assert_eq!(
@@ -15072,8 +15433,8 @@ mod tests {
         assert_eq!(resolve.status, 342);
         assert!(resolve.final_text.ends_with(&oid));
         // Observation commands over the known network.
-        assert_eq!(s.handle("[9] NET LIST_ALL").status, 200);
-        assert_eq!(s.handle("[10] NET LIST TEST").status, 200);
+        assert_eq!(s.handle("[9] NET LIST_ALL").status, 135);
+        assert_eq!(s.handle("[10] NET LIST TEST").status, 131);
         assert_eq!(s.handle("[11] NET OPEN //TEST/254").status, 200);
         let st = s.handle("[12] GET //TEST/254 state");
         assert_eq!(st.status, 300);
@@ -15191,7 +15552,7 @@ mod tests {
         assert_eq!(
             s.handle("[3] DBCREATENET 254 Local Cni 127.0.0.1:10001")
                 .status,
-            200
+            301
         );
         // Native C-Gate rejects an unknown group until the group is created
         // by a database entry or first observed through a lighting command.
@@ -15239,7 +15600,7 @@ mod tests {
         assert_eq!(
             s.handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
                 .status,
-            200
+            301
         );
         assert_eq!(
             s.handle("[3] DBADDSAFE //TEST/254 Unit 20 Lounge").status,
@@ -15359,7 +15720,7 @@ mod tests {
         assert_eq!(
             s.handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
                 .status,
-            200
+            301
         );
         assert_eq!(s.handle("[3] GETSTATE //TEST/254").status, 200);
         let snap = s.handle("[4] GETSTATE //TEST/254");
@@ -15376,7 +15737,7 @@ mod tests {
     fn project_verbs_repositories_and_export() {
         let mut s = Server::new(AccessLevel::Program);
         assert_eq!(s.handle("[1] PROJECT NEW TEST").status, 200);
-        assert_eq!(s.handle("[2] PROJECT DIR").status, 200);
+        assert_eq!(s.handle("[2] PROJECT DIR").status, 123);
         assert_eq!(s.handle("[3] PROJECT LOAD TEST").status, 200);
         assert_eq!(s.handle("[4] PROJECT LOAD NOPE").status, 404);
         // Manual 4.5.162 permits the current project to be implicit.
@@ -15385,7 +15746,7 @@ mod tests {
         assert_eq!(
             s.handle("[4b] DBCREATENET 254 Local Cni 127.0.0.1:10001")
                 .status,
-            200
+            301
         );
         assert_eq!(
             s.handle("[4c] DBADDSAFE //TEST/254 Unit 20 Lounge").status,
@@ -15530,7 +15891,7 @@ mod tests {
         assert_eq!(
             s.handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
                 .status,
-            200
+            301
         );
         assert_eq!(
             s.handle("[3] DBADDSAFE //SOURCE/254 Unit 20 Original")
@@ -15764,7 +16125,7 @@ mod tests {
             server
                 .handle("[1] DBCREATENET 11 Local Cni 127.0.0.1:1")
                 .status,
-            200
+            301
         );
         assert_eq!(
             server
@@ -15798,7 +16159,7 @@ mod tests {
         assert_eq!(s.handle("[1] PROJECT NEW SOURCE").status, 200);
         assert_eq!(
             s.handle("[2] DBCREATENET 254 Local Cni loopback").status,
-            200
+            301
         );
         let source_network_oid = s.projects["SOURCE"].networks[&254].oid.clone();
         let level = s.handle("[3] DBADDSAFE //SOURCE/254/56/1 Level 7 Seven");
@@ -15815,7 +16176,7 @@ mod tests {
         assert_eq!(s.handle("[6] PROJECT NEW OTHER").status, 200);
         assert_eq!(
             s.handle("[7] DBCREATENET 254 Local Cni loopback").status,
-            200
+            301
         );
 
         for command in [
@@ -15872,7 +16233,7 @@ mod tests {
         assert_eq!(
             s.handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
                 .status,
-            200
+            301
         );
         assert_eq!(s.handle("[3] DBADDSAFE //TEST/254 Unit 6 Hall").status, 301);
         // Dropping bus presence keeps the database object addressable while
@@ -15902,7 +16263,7 @@ mod tests {
         ] {
             assert_eq!(
                 server.handle(&format!("[1] {command}")).status,
-                if command.starts_with("DBADDSAFE ") {
+                if command.starts_with("DBADDSAFE ") || command.starts_with("DBCREATENET ") {
                     301
                 } else {
                     200
@@ -16000,7 +16361,7 @@ mod tests {
         assert_eq!(
             s.handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
                 .status,
-            200
+            301
         );
         assert_eq!(s.handle("[3] DBADDSAFE //TEST/254 Unit 4 Key").status, 301);
         assert_eq!(
@@ -16048,7 +16409,7 @@ mod tests {
         assert_eq!(
             s.handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
                 .status,
-            200
+            301
         );
         assert_eq!(s.handle("[3] DBADDSAFE //TEST/254 Unit 4 Key").status, 301);
         assert_eq!(
@@ -16160,7 +16521,7 @@ mod tests {
         assert_eq!(
             s.handle("[3] DBCREATENET 254 Local Cni 127.0.0.1:10001")
                 .status,
-            200
+            301
         );
         assert_eq!(
             s.handle("[4] DBADDSAFE //TEST/254 Unit 20 Lounge").status,
@@ -16188,7 +16549,7 @@ mod tests {
         assert_eq!(
             s.handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
                 .status,
-            200
+            301
         );
         assert_eq!(
             s.handle("[3] DBADDSAFE //TEST/254 Unit 20 Lounge").status,
@@ -16223,7 +16584,7 @@ mod tests {
         assert_eq!(
             s.handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
                 .status,
-            200
+            301
         );
         // Native scene-executor forms.
         assert_eq!(s.handle("[3] LIGHTING ON //TEST/254/56/1").status, 200);

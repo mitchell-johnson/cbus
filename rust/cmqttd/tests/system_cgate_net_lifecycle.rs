@@ -180,7 +180,11 @@ async fn net_lifecycle_is_durable_confirmed_authenticated_and_keeps_mqtt_live() 
                 .await
                 .last()
                 .unwrap()
-                .starts_with("200 OK"),
+                .starts_with(if text.starts_with("DBCREATENET ") {
+                    "301 OID="
+                } else {
+                    "200 OK"
+                }),
             "{text}"
         );
     }

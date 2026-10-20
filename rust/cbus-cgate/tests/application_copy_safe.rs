@@ -16,13 +16,13 @@ fn seed() -> Server {
         server
             .handle("[net] DBCREATENET 254 Local Cni nowhere")
             .status,
-        200
+        301
     );
     assert_eq!(
         server
             .handle("[dest] DBCREATENET 253 Other Cni nowhere")
             .status,
-        200
+        301
     );
     for (address, name) in [
         (72, "A72"),
@@ -278,7 +278,7 @@ fn cross_project_copy_isolated_from_source_and_can_be_saved_and_reopened() {
         server
             .handle("[net] DBCREATENET 1 Target Cni nowhere")
             .status,
-        200
+        301
     );
     assert_eq!(server.handle("[source] PROJECT USE COPY").status, 200);
     let result = server.handle("[copy] DBCOPYSAFE //COPY/254/56 //OTHER/1 0 Cross");

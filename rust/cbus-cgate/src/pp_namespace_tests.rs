@@ -13,7 +13,9 @@ pub(crate) fn fixture() -> Server {
     ] {
         assert_eq!(
             server.handle(command).status,
-            if command == "[test] DBADDSAFE //PPSTORE/254 Unit 20 Original" {
+            if command == "[test] DBADDSAFE //PPSTORE/254 Unit 20 Original"
+                || command.contains("DBCREATENET")
+            {
                 301
             } else {
                 200

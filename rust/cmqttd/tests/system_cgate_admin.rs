@@ -430,7 +430,7 @@ async fn application_and_unit_shared_oid_mutations_preserve_application_over_dae
     ] {
         let reply = command(&mut reader, &mut writer, tag, text).await;
         assert!(
-            reply.last().unwrap().contains("200 OK"),
+            reply.last().unwrap().contains("200 OK") || reply.last().unwrap().contains("301 OID="),
             "{text}: {reply:?}"
         );
     }
@@ -628,7 +628,7 @@ async fn administrative_documents_and_mqtt_share_the_running_daemon() {
     .await
     .last()
     .unwrap()
-    .contains("200 OK"));
+    .contains("301 OID="));
     let added = command(&mut reader, &mut writer, "9", "DBADD 1 Application").await;
     let application_oid = added
         .last()

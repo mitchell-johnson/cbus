@@ -198,7 +198,7 @@ fn check_cgate_dbsetxml(v: &Value) -> Result<(), String> {
         name,
         "DBCREATENET",
         server.handle("[seed] DBCREATENET 254 Local Cni 127.0.0.1:1"),
-        200,
+        301,
     )?;
     if setup == "typed-tree" {
         let seed = roxmltree::Document::parse(DBSETXML_TYPED_TREE_SEED)

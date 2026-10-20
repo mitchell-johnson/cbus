@@ -12,8 +12,14 @@ fn vector() -> serde_json::Value {
 fn seed() -> (Server, String) {
     let mut server = Server::new(AccessLevel::Program);
     for command in vector()["seed"].as_array().unwrap() {
-        let response = server.handle(&format!("[seed] {}", command.as_str().unwrap()));
-        assert_eq!(response.status, 200, "{response:?}");
+        let command = command.as_str().unwrap();
+        let response = server.handle(&format!("[seed] {command}"));
+        let expected = if command.starts_with("DBCREATENET ") {
+            301
+        } else {
+            200
+        };
+        assert_eq!(response.status, expected, "{response:?}");
     }
     let (oid, _) = network_identity(&mut server);
     (server, oid)

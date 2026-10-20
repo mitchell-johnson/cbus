@@ -20,7 +20,7 @@ fn seed() -> Server {
     assert_eq!(command(&mut model, "PROJECT NEW LVSAFE").status, 200);
     assert_eq!(
         command(&mut model, "DBCREATENET 254 Local Cni nowhere").status,
-        200
+        301
     );
     assert_eq!(
         command(&mut model, "DBADDSAFE //LVSAFE/254 Application 80 App").status,

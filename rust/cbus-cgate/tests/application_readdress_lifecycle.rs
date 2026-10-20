@@ -13,7 +13,7 @@ fn harness() -> (Server, String) {
     assert_eq!(
         s.handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
             .status,
-        200
+        301
     );
     for (address, name) in [(66u8, "A66"), (71u8, "A71")] {
         let added = s.handle(&format!(
