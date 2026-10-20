@@ -194,7 +194,8 @@ def test_complete_baseline_preserves_991_explicit_ids_and_seven_modules(runner):
                 "tests/test_application_safe_set_backends.py::",
                 "tests/test_ordinary_level_value_backends.py::",
                 "tests/test_ordinary_level_value_followon_backends.py::",
-                "tests/test_conversion_xml_preservation_backends.py::", "tests/test_thermostat_zone_controls_backends.py::", "tests/test_conversion_xml_restart_backends.py::"))]
+                "tests/test_conversion_xml_preservation_backends.py::", "tests/test_thermostat_zone_controls_backends.py::", "tests/test_conversion_xml_restart_backends.py::",
+                "tests/test_toolkit_client_inventory.py::"))]
     ids = sorted(n for p in plans.values() for n in p["required_ids"])
     quoted = sorted(n for p in plans.values() for n in p["quoted_ids"])
     assert len(ids) == 991 and len(quoted) == 985
@@ -904,7 +905,7 @@ def test_conversion_xml_packet_preserves_all_1067_inherited_ids_and_seven_module
     actual = [n for plan in plans.values() for n in plan['required_ids'] if n.startswith(XML_PRESERVATION_MODULE + '::')]
     assert sorted(actual) == sorted(expected) and len(actual) == len(set(actual)) == 18
     assert hashlib.sha256(('\n'.join(sorted(actual)) + '\n').encode()).hexdigest() == 'e209733d197dbdbb1c799bd2997ab4cd8504c4744ad5bde5f3c9b25bbf3a191c'
-    inherited = {backend: [n for n in plan['required_ids'] if not n.startswith((XML_PRESERVATION_MODULE + '::', 'tests/test_thermostat_zone_controls_backends.py::', 'tests/test_conversion_xml_restart_backends.py::'))]
+    inherited = {backend: [n for n in plan['required_ids'] if not n.startswith((XML_PRESERVATION_MODULE + '::', 'tests/test_thermostat_zone_controls_backends.py::', 'tests/test_conversion_xml_restart_backends.py::', 'tests/test_toolkit_client_inventory.py::'))]
                  for backend, plan in plans.items()}
     assert {b: len(v) for b, v in inherited.items()} == {'mock': 527, 'daemon': 540}
     for backend, old_digest in (('mock', 'e4c60b4a4973aac669d1a694ea061700116272b9a92377e42c022709f355d0f4'),
@@ -969,12 +970,13 @@ def test_conversion_xml_restart_preserves_ordered_1121_ids_and_seven_modules(run
     inherited_digests = {'mock': '9d7f4c2e130560e0348fe511ca4eb4a45ae306519c00421e73fe3091616f61bc', 'daemon': 'e2d64334548ea89324bc607058216a2a3623c3160eaa8bbd449d03fe66277c0b'}
     inherited_ordered_digests = {'mock': '08f437eb31d6cbb381fce7a772b49afd01bc94ebc8469814495478357cce5c4f', 'daemon': '65c56ec3dbfee85e029b09154a86166b1f0d4d0ecdc14b4db6ed3afe54215b07'}
     for backend, plan in plans.items():
-        inherited = [n for n in plan['required_ids'] if n not in XML_RESTART_IDS]
+        inherited = [n for n in plan['required_ids']
+                     if n not in XML_RESTART_IDS and not n.startswith('tests/test_toolkit_client_inventory.py::')]
         assert len(inherited) == len(set(inherited)) == inherited_counts[backend]
         assert hashlib.sha256(('\n'.join(sorted(inherited)) + '\n').encode()).hexdigest() == inherited_digests[backend]
         assert hashlib.sha256(('\n'.join(inherited) + '\n').encode()).hexdigest() == inherited_ordered_digests[backend]
         assert plan['whole_modules'] == {'mock': ['tests/test_rust_cgate_interop.py'], 'daemon': ['tests/test_cmqtt_interop.py', 'tests/test_cmqtt_programming_methods_interop.py', 'tests/test_cmqtt_dali_commissioning_interop.py', 'tests/test_cmqtt_network_new_cli.py', 'tests/test_cmqtt_network_save_db_cli.py', 'tests/test_cgate_file_upload.py']}[backend]
-    assert sum(len(plan['required_ids']) for plan in plans.values()) == 1123
+    assert sum(len(plan['required_ids']) for plan in plans.values()) == 1124
 
 
 @pytest.mark.parametrize('damage', ['none', 'missing-body', 'skipped-body', 'missing-call'])

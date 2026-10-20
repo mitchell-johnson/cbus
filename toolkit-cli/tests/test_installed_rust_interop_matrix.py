@@ -20,9 +20,9 @@ check-cmqtt-interop: compile
 \tpython -m pytest 'tests/test_matrix_fixture.py::test_daemon' tests/test_cmqtt_programming_methods_interop.py -q
 
 """
-COUNTS = {"mock": 552, "daemon": 571}
+COUNTS = {"mock": 553, "daemon": 571}
 DIGESTS = {
-    "mock": "9d7f4c2e130560e0348fe511ca4eb4a45ae306519c00421e73fe3091616f61bc",
+    "mock": "68d7a95595e72616ef9a077bffaebf8376e1d0dac8711589f3b919cadfa3fb64",
     "daemon": "996292d47b0991c6416e678a501a05b5b09a91144c65b487c3f1d8e814137d08",
 }
 
@@ -128,7 +128,10 @@ def test_current_backend_rosters_have_literal_full_digests_and_core_modules(gate
         assert chosen[backend] == configured[backend]
     assert len(configured["mock"]["whole_modules"]) == 1
     assert len(configured["daemon"]["whole_modules"]) == 6
-    assert sum(len(plan["required_ids"]) for plan in configured.values()) == 1123
+    assert sum(len(plan["required_ids"]) for plan in configured.values()) == 1124
+    # Toolkit 1.18 client reply-shape check runs only against cgate-mock.
+    assert [n for n in configured["mock"]["required_ids"] if n.startswith("tests/test_toolkit_client_inventory.py::")] == [
+        "tests/test_toolkit_client_inventory.py::test_mock_replies_fit_toolkit_parsers"]
     assert sum(len(plan["required_ids"]) - len(plan["quoted_ids"]) for plan in configured.values()) == 6
 
 

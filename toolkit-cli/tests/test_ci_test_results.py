@@ -507,7 +507,7 @@ class NewInteropSelectionTests(unittest.TestCase):
                                                'tests/test_application_safe_set_backends.py::',
                                                'tests/test_ordinary_level_value_backends.py::',
                                                'tests/test_ordinary_level_value_followon_backends.py::',
-                                               'tests/test_conversion_xml_preservation_backends.py::', 'tests/test_thermostat_zone_controls_backends.py::', 'tests/test_conversion_xml_restart_backends.py::'))]
+                                               'tests/test_conversion_xml_preservation_backends.py::', 'tests/test_thermostat_zone_controls_backends.py::', 'tests/test_conversion_xml_restart_backends.py::', 'tests/test_toolkit_client_inventory.py::'))]
         self.assertEqual(len(complete_ids), 945)
         self.assertEqual(len(set(complete_ids)), 945)
         inherited_945 = '\n'.join(sorted(complete_ids)) + '\n'
@@ -768,7 +768,7 @@ class NewInteropSelectionTests(unittest.TestCase):
         self.assertEqual(len(set(total)), 5)
         self.assertEqual(hashlib.sha256(('\n'.join(sorted(total)) + '\n').encode()).hexdigest(), 'b14d154114f2583ead0aa02d1f8941dd2e2ea164525597d4cc2d20e17559451d')
         inherited = [n for n in re.findall(r"'(tests/[^']+::[^']+)'", make)
-                     if not n.startswith((module + '::', 'tests/test_conversion_xml_preservation_backends.py::', 'tests/test_thermostat_zone_controls_backends.py::', 'tests/test_conversion_xml_restart_backends.py::'))]
+                     if not n.startswith((module + '::', 'tests/test_conversion_xml_preservation_backends.py::', 'tests/test_thermostat_zone_controls_backends.py::', 'tests/test_conversion_xml_restart_backends.py::', 'tests/test_toolkit_client_inventory.py::'))]
         self.assertEqual(len(inherited), 1056)
         self.assertEqual(len(inherited), len(set(inherited)))
         self.assertEqual(hashlib.sha256(('\n'.join(sorted(inherited)) + '\n').encode()).hexdigest(), '3a5b0584311acab115319254599a580f254062391c7b42108fcb93b15ea81a05')
@@ -807,7 +807,7 @@ class NewInteropSelectionTests(unittest.TestCase):
                                            'tests/test_application_safe_set_backends.py::',
                                            'tests/test_ordinary_level_value_backends.py::',
                                            'tests/test_ordinary_level_value_followon_backends.py::',
-                                               'tests/test_conversion_xml_preservation_backends.py::', 'tests/test_thermostat_zone_controls_backends.py::', 'tests/test_conversion_xml_restart_backends.py::'))]
+                                               'tests/test_conversion_xml_preservation_backends.py::', 'tests/test_thermostat_zone_controls_backends.py::', 'tests/test_conversion_xml_restart_backends.py::', 'tests/test_toolkit_client_inventory.py::'))]
         self.assertEqual(len(complete), 985)
         self.assertEqual(len(set(complete)), 985)
         for backend, target, selection in (('mock', 'check-cgate-interop', 'cgate-mock'),
