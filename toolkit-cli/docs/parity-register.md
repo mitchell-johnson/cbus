@@ -6,7 +6,7 @@ global register. Read [source/obligation reconciliation](toolkit-obligation-reco
 for trusted artifact roots and the original/physical gate boundary.
 
 `cbus-toolkit coverage` now derives its completion result from packaged
-functional-obligation and evidence records. The 39-row feature ledger remains
+functional-obligation and evidence records. The 42-row feature ledger remains
 visible as historical planning information, but changing its labels cannot
 make the completion gate pass.
 

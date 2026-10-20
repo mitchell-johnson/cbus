@@ -11,6 +11,7 @@ The Python `cbus-toolkit` application is installed separately; see [toolkit.md](
 | Read a Toolkit backup or project XML | `cbus-tools dump-labels` | Reads locally; optionally writes JSON |
 | Query one unit or discover units | `cbus-tools interrogate` | Sends requests through a TCP CNI |
 | Discover CNI2/Wiser endpoints | `cbus-toolkit interface discover-cni` / `scan-cni`, or `cbus-tools cni-discover` / `cni-scan` | One bounded IPv4 UDP query per selected route; does not open TCP or C-Bus |
+| List or probe local serial PCIs | `cbus-toolkit interface list-serial [--probe]`, `interface probe-serial PORT` | Listing opens nothing; probing exclusively opens each port and sends reset/identify/RECALL frames; see `toolkit-cli/docs/serial-interface-probe.md` |
 | Verify a selected-serial plan | `cbus-tools serial-verify` | Sends bounded read-only MMI and IDENTIFY traffic |
 | Apply a selected-serial plan | `cbus-tools serial-apply` | Writes a durable local journal, sends one address broadcast, then reads state |
 | Bridge C-Bus and MQTT/Home Assistant | `cmqttd` | Long-running network and MQTT traffic; accepts control messages |
@@ -142,7 +143,16 @@ topology before sending, and transmits once. Raw `--bridge` plus
 `--expected-source/--expected-destination/--expected-route` remains available.
 Neither successful form proves live bridge delivery or device origin. WRITE
 does not prove parameter commit, readback, reboot behavior or nonvolatile
-persistence. See `toolkit-cli/docs/pci-routed-recall.md`,
+persistence. Add `--journal NEW.json` to a WRITE whose first data byte is the
+ACK tag. It takes a read-only baseline RECALL, then exclusively creates and
+fsyncs a journal bound to the plan, route/topology digest, project SHA-256 and
+PCI generation (`null` in the direct CLI). It rechecks topology at the send
+handoff and refuses later same-target WRITEs while an attempt is unresolved.
+After any uncertain or interrupted WRITE, run
+`routed-write --recover --journal NEW.json [--project-file PROJECT]` against
+the same endpoint. It RECALLs once and classifies the result as
+`expected`/`unchanged` (resolved, exit 0) or `mixed`/`unreadable` (unresolved,
+exit 1). It never writes or resends. See `toolkit-cli/docs/pci-routed-recall.md`,
 `toolkit-cli/docs/pci-routed-identify.md` and
 `toolkit-cli/docs/pci-routed-write.md`.
 

@@ -5389,3 +5389,628 @@ async fn quoted_dbset_values_preserve_pending_existing_oid_path_and_project_relo
     no_io(&mut remote).await;
     std::fs::remove_file(path).unwrap();
 }
+
+fn associated_numeric_level_object_rows() -> Vec<serde_json::Value> {
+    let rows = include_str!(
+        "../../../../testdata/vectors/cgate_associated_numeric_level_object_matrix.jsonl"
+    )
+    .lines()
+    .filter(|line| !line.trim().is_empty())
+    .map(|line| serde_json::from_str::<serde_json::Value>(line).unwrap())
+    .collect::<Vec<_>>();
+    assert_eq!(rows.len(), 12);
+    for row in &rows {
+        assert_eq!(row["format"], "cbus-associated-numeric-level-object-xml-v1");
+        assert_eq!(row["issue"], 73);
+        assert_eq!(row["observed_only"], true);
+    }
+    rows
+}
+
+async fn check_associated_numeric_level_rows(
+    service: &Arc<Service>,
+    client: &mut ClientState,
+    path: &std::path::Path,
+    rows: &[serde_json::Value],
+    owners: &std::collections::BTreeMap<String, String>,
+    label: &str,
+) {
+    let before = Database::from_server(&*service.model.lock().await);
+    let bytes = std::fs::read(path).unwrap();
+    for row in rows {
+        let oid = &owners[row["owner"].as_str().unwrap()];
+        let request = row["request"].as_str().unwrap();
+        let response = run(service, client, request).await;
+        let status = row["status"].as_u64().unwrap() as u16;
+        assert_eq!(response.status, status, "{label} {request}: {response:?}");
+        if let Some(final_text) = row["final"].as_str() {
+            assert_eq!(response.final_text, final_text, "{label} {request}");
+            assert!(response.lines.is_empty(), "{label} {request}");
+        }
+        if let Some(prefix) = row["body"].as_str() {
+            let selector = request.trim_start_matches("DBGETXML ");
+            let document = xml(service, client, selector).await;
+            assert!(
+                document.starts_with(prefix),
+                "{label} {request}: {document}"
+            );
+            // The numeric owner projects exactly the issued Level OID document.
+            assert_eq!(
+                document,
+                xml(service, client, &format!("!{oid}")).await,
+                "{label} {request}"
+            );
+            let parsed = roxmltree::Document::parse(&document).unwrap();
+            assert_eq!(
+                parsed
+                    .root_element()
+                    .children()
+                    .find(|node| node.has_tag_name("OID"))
+                    .and_then(|node| node.text()),
+                Some(oid.as_str()),
+                "{label} {request}"
+            );
+            assert_eq!(associated_level_xml_value(&document).as_deref(), Some("77"));
+        }
+    }
+    // Reads never mutate the graph or its durable bytes.
+    assert!(
+        Database::from_server(&*service.model.lock().await) == before,
+        "{label}"
+    );
+    assert_eq!(std::fs::read(path).unwrap(), bytes, "{label}");
+}
+
+#[tokio::test]
+async fn associated_numeric_level_xml_matches_original_contract() {
+    let rows = associated_numeric_level_object_rows();
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    for command in [
+        "PROJECT NEW ASSOC",
+        "PROJECT USE ASSOC",
+        "DBCREATENET 11 Eleven Cni 127.0.0.1:1",
+        "NET LOAD DB",
+        "NET SAVE DB",
+    ] {
+        ok_command(&service, &mut client, command).await;
+    }
+    created(
+        &service,
+        &mut client,
+        "DBADDSAFE //ASSOC/11 Application 56 Lighting",
+    )
+    .await;
+    let group = created(
+        &service,
+        &mut client,
+        "DBADDSAFE //ASSOC/11/56 Group 1 Main",
+    )
+    .await;
+    let variable = created(
+        &service,
+        &mut client,
+        "DBADDSAFE //ASSOC/11/56 NetVar 4 Variable",
+    )
+    .await;
+    ok_command(&service, &mut client, "DBRENAMENETSAFE 11 Renamed").await;
+    // Plain SAFE Levels and completed unsafe Levels under each parent kind.
+    let mut owners = std::collections::BTreeMap::new();
+    for (owner, parent) in [("group", &group), ("netvar", &variable)] {
+        let plain = created(
+            &service,
+            &mut client,
+            &format!("DBADDSAFE !{parent} Level 7 Plain"),
+        )
+        .await;
+        ok_command(
+            &service,
+            &mut client,
+            &format!("DBSETSAFE !{plain}/Value 77"),
+        )
+        .await;
+        owners.insert(format!("plain-{owner}"), plain);
+        let completed = created(&service, &mut client, &format!("DBADD !{parent} Level")).await;
+        for command in [
+            format!("DBSET !{completed}/Value 77"),
+            format!("DBSET !{completed}/TagName Completed"),
+            format!("DBSET !{completed}/Address 8"),
+        ] {
+            ok_command(&service, &mut client, &command).await;
+        }
+        owners.insert(format!("completed-{owner}"), completed);
+    }
+    check_associated_numeric_level_rows(&service, &mut client, &path, &rows, &owners, "initial")
+        .await;
+    // Non-canonical numeric lexemes keep their established handling.
+    for selector in ["//ASSOC/11/56/01/7", "//ASSOC/11/56/1/+7"] {
+        let response = run(&service, &mut client, &format!("DBGETXML {selector}")).await;
+        assert!(
+            !response
+                .lines
+                .iter()
+                .any(|line| line.starts_with("347-<Level")),
+            "{selector}: {response:?}"
+        );
+    }
+    for command in [
+        "PROJECT SAVE ASSOC",
+        "PROJECT CLOSE ASSOC",
+        "PROJECT LOAD ASSOC",
+        "PROJECT USE ASSOC",
+    ] {
+        ok_command(&service, &mut client, command).await;
+    }
+    for oid in owners.values() {
+        assert_eq!(
+            scalar(&service, &mut client, &format!("!{oid}/OID")).await,
+            *oid
+        );
+    }
+    check_associated_numeric_level_rows(&service, &mut client, &path, &rows, &owners, "reloaded")
+        .await;
+    no_io(&mut remote).await;
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn associated_numeric_copy_destination_routes_through_exact_owner() {
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    let group = associated_level_setup(&service, &mut client).await;
+    let plain = created(
+        &service,
+        &mut client,
+        &format!("DBADDSAFE !{group} Level 9 PlainSource"),
+    )
+    .await;
+    ok_command(
+        &service,
+        &mut client,
+        &format!("DBSETSAFE !{plain}/Value 77"),
+    )
+    .await;
+    let netvar = created(
+        &service,
+        &mut client,
+        "DBADDSAFE //ASSOC/Renamed/56 NetVar 4 Variable",
+    )
+    .await;
+    let netvar_level = created(
+        &service,
+        &mut client,
+        &format!("DBADDSAFE !{netvar} Level 42 High"),
+    )
+    .await;
+    ok_command(
+        &service,
+        &mut client,
+        &format!("DBSET !{netvar_level}/Value 23"),
+    )
+    .await;
+    let completed = created(&service, &mut client, &format!("DBADD !{group} Level")).await;
+    for command in [
+        format!("DBSET !{completed}/Value 78"),
+        format!("DBSET !{completed}/TagName Completed"),
+        format!("DBSET !{completed}/Address 8"),
+    ] {
+        ok_command(&service, &mut client, &command).await;
+    }
+    ok_command(&service, &mut client, "PROJECT SAVE ASSOC").await;
+    let before_source = xml(&service, &mut client, &format!("!{plain}")).await;
+    let numeric = created(
+        &service,
+        &mut client,
+        &format!("DBCOPYSAFE !{plain} //ASSOC/11/56/1 12 NumericCopy"),
+    )
+    .await;
+    assert_ne!(numeric, plain);
+    assert_eq!(
+        scalar(&service, &mut client, &format!("!{numeric}/Value")).await,
+        "77"
+    );
+    let unsafe_copy = created(
+        &service,
+        &mut client,
+        &format!("DBCOPY !{plain} //ASSOC/11/56/1"),
+    )
+    .await;
+    assert_ne!(unsafe_copy, plain);
+    let lexical = created(
+        &service,
+        &mut client,
+        "DBCOPYSAFE //ASSOC/Renamed/56/1/9 //ASSOC/11/56/1 13 NumericLexicalCopy",
+    )
+    .await;
+    assert_ne!(lexical, plain);
+    assert_eq!(
+        scalar(&service, &mut client, &format!("!{lexical}/Value")).await,
+        "77"
+    );
+    let netvar_copy = created(
+        &service,
+        &mut client,
+        &format!("DBCOPYSAFE !{netvar_level} //ASSOC/11/56/4 43 NetVarNumericCopy"),
+    )
+    .await;
+    assert_eq!(
+        scalar(&service, &mut client, &format!("!{netvar_copy}/Value")).await,
+        "23"
+    );
+    let control = created(
+        &service,
+        &mut client,
+        &format!("DBCOPYSAFE !{plain} //ASSOC/Renamed/56/1 14 LexicalCopy"),
+    )
+    .await;
+    assert_ne!(control, plain);
+    for command in [
+        format!("DBCOPYSAFE !{plain} //ASSOC/11/56/9 15 Ghost"),
+        format!("DBCOPYSAFE !{plain} //ASSOC/11/99 15 Ghost"),
+    ] {
+        let response = run(&service, &mut client, &command).await;
+        assert_eq!(response.status, 401, "{command}: {response:?}");
+    }
+    assert_eq!(
+        xml(&service, &mut client, &format!("!{plain}")).await,
+        before_source
+    );
+    for command in [
+        "PROJECT SAVE ASSOC",
+        "PROJECT CLOSE ASSOC",
+        "PROJECT LOAD ASSOC",
+        "PROJECT USE ASSOC",
+    ] {
+        ok_command(&service, &mut client, command).await;
+    }
+    assert_eq!(
+        scalar(&service, &mut client, &format!("!{numeric}/Value")).await,
+        "77"
+    );
+    // LOAD may materialize the admitted absent collection on the source; the
+    // typed value and identity stay owned while unrelated bytes are preserved.
+    assert_eq!(
+        scalar(&service, &mut client, &format!("!{plain}/Value")).await,
+        "77"
+    );
+    assert!(xml(&service, &mut client, &format!("!{plain}"))
+        .await
+        .contains("Value=\"77\""));
+    no_io(&mut remote).await;
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn associated_plain_level_load_preserves_unsupported_xml_atomically() {
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    let group = associated_level_setup(&service, &mut client).await;
+    let absent = created(
+        &service,
+        &mut client,
+        &format!("DBADDSAFE !{group} Level 20 Absent"),
+    )
+    .await;
+    ok_command(
+        &service,
+        &mut client,
+        &format!("DBSETSAFE !{absent}/Value 20"),
+    )
+    .await;
+    let strict = created(
+        &service,
+        &mut client,
+        &format!("DBADDSAFE !{group} Level 21 Strict"),
+    )
+    .await;
+    ok_command(
+        &service,
+        &mut client,
+        &format!("DBSETSAFE !{strict}/Value 21"),
+    )
+    .await;
+    {
+        let mut model = service.model.lock().await;
+        let key = Server::unit_document_key("ASSOC", &strict);
+        model.db_xml_extras.entry(key).or_default().children = vec!["<TagsDLT/>".to_string()];
+    }
+    let unsupported: Vec<(&str, Vec<String>)> = vec![
+        ("pi", vec!["<?unknown value?><TagsDLT/>".to_string()]),
+        ("comment", vec!["<!--retained--><TagsDLT/>".to_string()]),
+        ("namespaced", vec!["<x:TagsDLT/>".to_string()]),
+        ("bom", vec!["\u{FEFF}<TagsDLT/>".to_string()]),
+        (
+            "attr",
+            vec!["<TagsDLT marker=\"unsupported\"/>".to_string()],
+        ),
+        ("nonempty", vec!["<TagsDLT><TagDLT/></TagsDLT>".to_string()]),
+    ];
+    let mut oids = Vec::new();
+    for (index, (label, children)) in unsupported.iter().enumerate() {
+        let address = (30 + index) as u8;
+        let oid = created(
+            &service,
+            &mut client,
+            &format!("DBADDSAFE !{group} Level {address} {label}"),
+        )
+        .await;
+        ok_command(&service, &mut client, &format!("DBSETSAFE !{oid}/Value 77")).await;
+        {
+            let mut model = service.model.lock().await;
+            let key = Server::unit_document_key("ASSOC", &oid);
+            let extras = model.db_xml_extras.entry(key).or_default();
+            extras.children = children.clone();
+            extras.saved_level_tags_pending = true;
+        }
+        oids.push((label.to_string(), oid, children.clone()));
+    }
+    {
+        let mut model = service.model.lock().await;
+        for oid in [&absent, &strict] {
+            let key = Server::unit_document_key("ASSOC", oid);
+            model
+                .db_xml_extras
+                .entry(key)
+                .or_default()
+                .saved_level_tags_pending = true;
+        }
+    }
+    ok_command(&service, &mut client, "PROJECT SAVE ASSOC").await;
+    let before: Vec<(String, Vec<String>)> = {
+        let model = service.model.lock().await;
+        oids.iter()
+            .map(|(label, oid, _)| {
+                let key = Server::unit_document_key("ASSOC", oid);
+                let extras = model.db_xml_extras.get(&key).cloned().unwrap_or_default();
+                (label.clone(), extras.children)
+            })
+            .collect()
+    };
+    ok_command(&service, &mut client, "PROJECT LOAD ASSOC").await;
+    {
+        let model = service.model.lock().await;
+        for (label, oid, children) in &oids {
+            let key = Server::unit_document_key("ASSOC", oid);
+            let extras = model.db_xml_extras.get(&key).cloned().unwrap_or_default();
+            assert_eq!(&extras.children, children, "{label}");
+            assert!(extras.saved_level_tags_pending, "{label} marker must stay");
+        }
+        for oid in [&absent, &strict] {
+            let key = Server::unit_document_key("ASSOC", oid);
+            let extras = model.db_xml_extras.get(&key).cloned().unwrap_or_default();
+            assert!(!extras.saved_level_tags_pending, "{oid}");
+            assert!(
+                extras.children.iter().any(|c| c.starts_with("<TagsDLT")),
+                "{oid} must have collection"
+            );
+        }
+    }
+    ok_command(&service, &mut client, "PROJECT LOAD ASSOC").await;
+    {
+        let model = service.model.lock().await;
+        for (index, (label, oid, _)) in oids.iter().enumerate() {
+            let key = Server::unit_document_key("ASSOC", oid);
+            let extras = model.db_xml_extras.get(&key).cloned().unwrap_or_default();
+            assert_eq!(extras.children, before[index].1, "{label} second LOAD");
+            assert!(
+                extras.saved_level_tags_pending,
+                "{label} marker second LOAD"
+            );
+        }
+    }
+    no_io(&mut remote).await;
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn associated_missing_descendant_value_getter_preserves_lexical_error() {
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    let group = associated_level_setup(&service, &mut client).await;
+    let plain = created(
+        &service,
+        &mut client,
+        &format!("DBADDSAFE !{group} Level 9 Plain"),
+    )
+    .await;
+    ok_command(
+        &service,
+        &mut client,
+        &format!("DBSETSAFE !{plain}/Value 77"),
+    )
+    .await;
+    // Independent numeric-looking Network "11" wins lexically; insert it by
+    // cloning the associated record so private tag bookkeeping stays valid.
+    {
+        let mut model = service.model.lock().await;
+        let associated = model.projects["ASSOC"].tag_networks["Renamed"].clone();
+        let mut independent = associated;
+        for (key, value) in independent.root.fields.iter_mut() {
+            if key == "Address" {
+                *value = "11".to_string();
+            } else if key == "OID" {
+                *value = crate::fresh_oid();
+            } else if key == "TagName" {
+                *value = "n11".to_string();
+            }
+        }
+        independent.database_network = None;
+        model
+            .projects
+            .get_mut("ASSOC")
+            .unwrap()
+            .tag_networks
+            .insert("11".to_string(), independent);
+    }
+    ok_command(&service, &mut client, "PROJECT SAVE ASSOC").await;
+    let missing = run(&service, &mut client, "DBGET //ASSOC/11/56/1/9/Value").await;
+    assert_eq!(missing.status, 401, "{missing:?}");
+    assert!(
+        missing.final_text.contains("Index out of range"),
+        "{missing:?}"
+    );
+    assert_eq!(
+        scalar(&service, &mut client, &format!("!{plain}/Value")).await,
+        "77"
+    );
+    assert_eq!(
+        scalar(&service, &mut client, "//ASSOC/Renamed/56/1/9/Value").await,
+        "77"
+    );
+    let refused = run(
+        &service,
+        &mut client,
+        "DBSETSAFE //ASSOC/11/56/1/9/Value 99",
+    )
+    .await;
+    assert_eq!(refused.status, 401, "{refused:?}");
+    assert_eq!(
+        scalar(&service, &mut client, &format!("!{plain}/Value")).await,
+        "77"
+    );
+    no_io(&mut remote).await;
+    std::fs::remove_file(path).unwrap();
+}
+
+#[tokio::test]
+async fn associated_numeric_level_xml_netvar_split_survives_reload() {
+    let path = state_path();
+    let (pci_client, mut remote) = pci();
+    let service = Service::new(&fixture(), None, path.clone(), pci_client, None).unwrap();
+    let mut client = ClientState::default();
+    let group = associated_level_setup(&service, &mut client).await;
+    let plain_group = created(
+        &service,
+        &mut client,
+        &format!("DBADDSAFE !{group} Level 9 PlainGroup"),
+    )
+    .await;
+    ok_command(
+        &service,
+        &mut client,
+        &format!("DBSETSAFE !{plain_group}/Value 77"),
+    )
+    .await;
+    let completed_group = created(&service, &mut client, &format!("DBADD !{group} Level")).await;
+    for command in [
+        format!("DBSET !{completed_group}/Value 78"),
+        format!("DBSET !{completed_group}/TagName CompletedGroup"),
+        format!("DBSET !{completed_group}/Address 8"),
+    ] {
+        ok_command(&service, &mut client, &command).await;
+    }
+    let netvar = created(
+        &service,
+        &mut client,
+        "DBADDSAFE //ASSOC/Renamed/56 NetVar 4 Variable",
+    )
+    .await;
+    let plain_netvar = created(
+        &service,
+        &mut client,
+        &format!("DBADDSAFE !{netvar} Level 42 PlainNetVar"),
+    )
+    .await;
+    ok_command(
+        &service,
+        &mut client,
+        &format!("DBSET !{plain_netvar}/Value 77"),
+    )
+    .await;
+    let completed_netvar = created(&service, &mut client, &format!("DBADD !{netvar} Level")).await;
+    for command in [
+        format!("DBSET !{completed_netvar}/Value 78"),
+        format!("DBSET !{completed_netvar}/TagName CompletedNetVar"),
+        format!("DBSET !{completed_netvar}/Address 43"),
+    ] {
+        ok_command(&service, &mut client, &command).await;
+    }
+    ok_command(&service, &mut client, "PROJECT SAVE ASSOC").await;
+    for oid in [&plain_group, &completed_group] {
+        let canonical = {
+            let model = service.model.lock().await;
+            let level = model.level(oid).unwrap().clone();
+            format!("{}/{}", level.parent, level.address)
+        };
+        let response = run(&service, &mut client, &format!("DBGETXML {canonical}")).await;
+        assert_eq!(response.status, 200, "{canonical}: {response:?}");
+        assert!(
+            response.lines.iter().any(|l| l.contains("<Level")),
+            "{canonical}: {:?}",
+            response.lines
+        );
+        let bare = canonical.trim_start_matches("//ASSOC/").to_string();
+        let response = run(&service, &mut client, &format!("DBGETXML {bare}")).await;
+        // Bare numeric object-XML stays 404 per the committed wire vector
+        // (existing-bare-numeric-object-XML404, issue #73); only qualified
+        // `//PROJECT/...` and `!oid` forms resolve positively.
+        assert_eq!(response.status, 404, "{bare}: {response:?}");
+        let response = run(&service, &mut client, &format!("DBGETXML !{oid}")).await;
+        assert_eq!(response.status, 200, "!{oid}: {response:?}");
+        assert!(
+            response.lines.iter().any(|l| l.contains("<Level")),
+            "!{oid}: {:?}",
+            response.lines
+        );
+    }
+    for oid in [&plain_netvar, &completed_netvar] {
+        let canonical = {
+            let model = service.model.lock().await;
+            let level = model.level(oid).unwrap().clone();
+            format!("{}/{}", level.parent, level.address)
+        };
+        let response = run(&service, &mut client, &format!("DBGETXML {canonical}")).await;
+        assert_eq!(response.status, 500, "{canonical}: {response:?}");
+        let bare = canonical.trim_start_matches("//ASSOC/").to_string();
+        let response = run(&service, &mut client, &format!("DBGETXML {bare}")).await;
+        // Bare numeric object-XML stays 404 per the committed wire vector
+        // (issue #73); NetVar positive contract covers qualified/OID only.
+        assert_eq!(response.status, 404, "{bare}: {response:?}");
+        let response = run(&service, &mut client, &format!("DBGETXML !{oid}")).await;
+        assert_eq!(response.status, 200, "!{oid}: {response:?}");
+    }
+    let before = xml(&service, &mut client, "//ASSOC/Renamed").await;
+    assert_eq!(
+        run(&service, &mut client, "DBGETXML //ASSOC/Renamed/56/1/9")
+            .await
+            .status,
+        200
+    );
+    assert_eq!(xml(&service, &mut client, "//ASSOC/Renamed").await, before);
+    for command in [
+        "PROJECT SAVE ASSOC",
+        "PROJECT CLOSE ASSOC",
+        "PROJECT LOAD ASSOC",
+        "PROJECT USE ASSOC",
+    ] {
+        ok_command(&service, &mut client, command).await;
+    }
+    // LOAD may materialize admitted empty collections; OIDs and values stay owned.
+    let reloaded = xml(&service, &mut client, "//ASSOC/Renamed").await;
+    assert_eq!(oid_set(&reloaded), oid_set(&before));
+    for oid in [
+        &plain_group,
+        &completed_group,
+        &plain_netvar,
+        &completed_netvar,
+    ] {
+        assert_eq!(
+            scalar(&service, &mut client, &format!("!{oid}/Value")).await,
+            if *oid == completed_group || *oid == completed_netvar {
+                "78"
+            } else {
+                "77"
+            }
+        );
+    }
+    no_io(&mut remote).await;
+    std::fs::remove_file(path).unwrap();
+}

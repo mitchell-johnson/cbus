@@ -23,7 +23,7 @@ jobs:
   toolkit:
     name: Toolkit source and Rust interoperability
     runs-on: ubuntu-latest
-    timeout-minutes: 240
+    timeout-minutes: 350
     steps:
       - uses: actions/checkout@v4
 
@@ -440,7 +440,7 @@ jobs:
   toolkit-wheel-rust-interop:
     name: Toolkit installed wheel and Rust interoperability (${{ matrix.backend }})
     runs-on: ubuntu-latest
-    timeout-minutes: 300
+    timeout-minutes: 350
     strategy:
       fail-fast: false
       matrix:
@@ -466,7 +466,7 @@ jobs:
         working-directory: toolkit-cli
         run: >-
           make check-wheel-interop WHEEL_PY=python
-          WHEEL_INTEROP_BACKEND=${{ matrix.backend }} WHEEL_INTEROP_TIMEOUT=14400
+          WHEEL_INTEROP_BACKEND=${{ matrix.backend }} WHEEL_INTEROP_TIMEOUT=19800
           WHEEL_INTEROP_OUTPUT="${RUNNER_TEMP}/toolkit-wheel-rust-interop-${{ matrix.backend }}"
 
       - name: Retain installed-wheel Rust execution and import evidence

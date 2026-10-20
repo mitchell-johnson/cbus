@@ -8,6 +8,7 @@ import unittest
 from uuid import uuid4
 
 from cbus_toolkit.cgate import CGateClient
+from cbus_toolkit.duplicate_resolution import LEGACY_ADDRESS, SELECTED_SERIAL, plan_unravel
 from cbus_toolkit.native import NativeDatabase, NativeProjects
 from cbus_toolkit.networks import NativeNetworks
 from cbus_toolkit.physical_addressing import PhysicalAddressUncertain
@@ -226,6 +227,98 @@ class NativeSerialCommissioningTests(unittest.TestCase):
     def test_native_commissioning_preserves_database_and_persists_fixture(self): self._lifecycle()
     def test_native_lost_reply_recovery_does_not_replay(self): self._lifecycle(lost=True)
     def test_raw_unravel_internal_scan_fault_can_choose_another_address(self): self._lifecycle(raw_scan_fault=True)
+
+
+class DuplicateResolutionJournalVacancyTests(unittest.TestCase):
+    """Journal/vacancy sequencing for the P3.03 duplicate-resolution subset.
+
+    Pure prediction replay: every move is applied in plan order through an
+    explicit journal with an independent vacancy check before each write.
+    Literal vectors pin descending serial order, displaced linkage, and safe
+    refusal. No hardware, broker, or C-Gate I/O.
+    """
+
+    def replay(self, physical, plan):
+        occupants = {address: list(serials) for address, serials in physical.items()}
+        journal = []
+        for move in plan.moves:
+            self.assertIn(move.serial, occupants.get(move.source, ()))
+            self.assertEqual(occupants.get(move.destination, []), [],
+                             f"destination {move.destination} occupied before {move}")
+            occupants[move.source].remove(move.serial)
+            if not occupants[move.source]:
+                del occupants[move.source]
+            occupants.setdefault(move.destination, []).append(move.serial)
+            journal.append({"serial": move.serial, "source": move.source,
+                            "destination": move.destination, "reason": move.reason,
+                            "displaced": move.displaced, "method": move.native_method})
+            if move.reason == "database_match" and move.displaced is not None:
+                # The journal must contain the displacement that vacated it.
+                self.assertTrue(any(entry["serial"] == move.displaced
+                                    and entry["destination"] != move.destination
+                                    for entry in journal[:-1]),
+                                f"displaced {move.displaced} not journaled before {move}")
+        final = {serial: address for address, serials in occupants.items() for serial in serials}
+        self.assertEqual(final, plan.final)
+        return journal
+
+    def test_database_move_names_displaced_for_journal_order(self):
+        physical = {255: ["1.1"], 6: ["1.2"]}
+        plan = plan_unravel(physical, {6: "1.1"}, selection=[255], match_database=True)
+        self.assertIsNone(plan.refusal)
+        self.assertEqual([(m.serial, m.source, m.destination, m.displaced) for m in plan.moves],
+                         [("1.2", 6, 2, None), ("1.1", 255, 6, "1.2")])
+        journal = self.replay(physical, plan)
+        self.assertEqual([(e["serial"], e["destination"]) for e in journal],
+                         [("1.2", 2), ("1.1", 6)])
+
+    def test_free_avoids_future_database_target_preserving_identity(self):
+        # 1.2's displacement must skip database-assigned 2 (future target of
+        # 1.3) and take 3, so 1.3 can land on 2 vacant with no redisplacement.
+        physical = {20: ["1.1", "1.10", "1.3"], 6: ["1.2"]}
+        database = {20: "1.1", 6: "1.10", 2: "1.3"}
+        plan = plan_unravel(physical, database, selection=[20], match_database=True)
+        self.assertIsNone(plan.refusal)
+        self.assertEqual([(m.serial, m.source, m.destination, m.reason) for m in plan.moves],
+                         [("1.2", 6, 3, "displacement"),
+                          ("1.10", 20, 6, "database_match"),
+                          ("1.3", 20, 2, "database_match")])
+        self.assertEqual(plan.moves[1].displaced, "1.2")
+        self.assertIsNone(plan.moves[2].displaced)
+        self.assertEqual(set(plan.final), {"1.1", "1.10", "1.2", "1.3"})
+        self.replay(physical, plan)
+
+    def test_free_address_skips_database_assigned_candidates(self):
+        physical = {255: ["1.2", "1.1"]}
+        database = {2: "10.2", 3: "10.3"}
+        plan = plan_unravel(physical, database, selection=[255], match_database=False)
+        self.assertIsNone(plan.refusal)
+        self.assertEqual([(m.serial, m.destination) for m in plan.moves],
+                         [("1.2", 4), ("1.1", 5)])
+        self.replay(physical, plan)
+
+    def test_chain_preserves_identity_with_descending_order(self):
+        physical = {20: ["1.1", "1.10"], 6: ["1.2"], 7: ["1.3"]}
+        database = {20: "1.1", 6: "1.10", 7: "1.2"}
+        plan = plan_unravel(physical, database, selection=[20], match_database=True)
+        self.assertIsNone(plan.refusal)
+        seen = [m.serial for m in plan.moves]
+        self.assertEqual(len(set(seen)), len(seen))
+        self.assertEqual(set(plan.final), {"1.1", "1.10", "1.2", "1.3"})
+        journal = self.replay(physical, plan)
+        self.assertEqual(journal[-1]["serial"], "1.10")
+        self.assertEqual(journal[-1]["displaced"], "1.2")
+
+    def test_cycle_and_local_pci_are_refused_before_any_move(self):
+        cyclic = plan_unravel({20: ["1.1", "1.10"], 6: ["1.2"], 7: ["1.3"]},
+                              {20: "1.3", 6: "1.10", 7: "1.2"},
+                              selection=[20], match_database=True)
+        self.assertEqual(cyclic.moves, ())
+        self.assertRegex(cyclic.refusal, "cyclic")
+        local = plan_unravel({255: ["1.1"], 16: ["9.9"]}, {16: "1.1"},
+                             selection=[255], match_database=True,
+                             local_unit=16, local_serial="9.9")
+        self.assertRegex(local.refusal, "local PCI")
 
 
 if __name__ == "__main__": unittest.main()

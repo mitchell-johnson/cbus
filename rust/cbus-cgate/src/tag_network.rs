@@ -2287,6 +2287,118 @@ impl Server {
         Ok(None)
     }
 
+    /// Resolve a qualified canonical numeric Level object
+    /// (`//PROJECT/NET/APP/GROUP/LEVEL`) through its exact selected associated
+    /// owner. Retained build-2001 imported captures answer a Group child with
+    /// its `<Level>` snippet and a NetVar child with `500 Internal error.`;
+    /// this owned model applies that split to plain and completed associated
+    /// owners. Bare numeric spellings, non-canonical address lexemes,
+    /// independent lexical winners and unselected projects return `None` so
+    /// the established handlers (including the bare404) keep their contract.
+    fn associated_numeric_level_xml_operand(
+        &self,
+        raw: &str,
+    ) -> Option<(AssociatedLevelOperand, AssociatedLevelOperand)> {
+        if !raw.starts_with("//") || raw.starts_with("///") {
+            return None;
+        }
+        match self.tag_selection(raw) {
+            Ok(Some(selection))
+                if self.projects[&selection.project].tag_networks[&selection.key]
+                    .database_network
+                    .is_some() => {}
+            Ok(None) => {}
+            _ => return None,
+        }
+        let parts = raw[2..].split('/').collect::<Vec<_>>();
+        if parts.len() != 5 || parts[2].eq_ignore_ascii_case("p") {
+            return None;
+        }
+        // Canonical decimal bytes only; padded/signed lexemes keep their
+        // existing handling.
+        if !parts[1..].iter().all(|part| {
+            part.parse::<u8>()
+                .is_ok_and(|byte| byte.to_string() == *part)
+        }) {
+            return None;
+        }
+        let project = parts[0];
+        let number = parts[1].parse::<u8>().ok()?;
+        if self.current.as_deref() != Some(project) {
+            return None;
+        }
+        self.associated_level_owner(project, &format!("//{project}/{number}"))?;
+        let mut oids = self
+            .db_levels
+            .values()
+            .filter(|level| !level.netvar && format!("{}/{}", level.parent, level.address) == raw)
+            .map(|level| level.oid.clone())
+            .collect::<HashSet<_>>();
+        oids.extend(
+            self.db_pending
+                .values()
+                .filter(|object| {
+                    object.project == project
+                        && object.element == "Level"
+                        && object.path.as_deref() == Some(raw)
+                })
+                .map(|object| object.oid.clone()),
+        );
+        if oids.len() != 1 {
+            return None;
+        }
+        let oid = oids.into_iter().next()?;
+        let level = match self.associated_level_operand(&format!("!{oid}")) {
+            Ok(Some(operand))
+                if operand.element == "Level" && operand.addressed && operand.canonical == raw =>
+            {
+                operand
+            }
+            _ => return None,
+        };
+        let parent_path = raw.rsplit_once('/')?.0;
+        let parent = match self.associated_numeric_level_parent_operand(parent_path) {
+            Ok(Some(parent)) if matches!(parent.element.as_str(), "Group" | "NetVar") => parent,
+            _ => return None,
+        };
+        Some((level, parent))
+    }
+
+    fn associated_numeric_level_xml_command(
+        &mut self,
+        tag: &str,
+        words: &[&str],
+    ) -> Option<Response> {
+        if words.len() != 2 || !words[0].eq_ignore_ascii_case("DBGETXML") {
+            return None;
+        }
+        let (level, parent) = self.associated_numeric_level_xml_operand(words[1])?;
+        if parent.element == "NetVar" {
+            // Retained original NetVar/Level selector failure; the Level OID
+            // read remains the successful route.
+            return Some(err(tag, 500, "500 Internal error."));
+        }
+        // Project exactly the document the issued Level OID returns.
+        let oid = format!("!{}", level.oid);
+        let rewritten = ["DBGETXML", oid.as_str()];
+        let response = self
+            .tag_database_command(tag, &rewritten)
+            .unwrap_or_else(|| self.dbget(tag, &rewritten));
+        let document = response
+            .lines
+            .iter()
+            .filter_map(|line| line.strip_prefix("347-"))
+            .collect::<String>();
+        if response.status != 200 || !document.starts_with("<Level") {
+            return Some(err(
+                tag,
+                408,
+                "408 Operation failed: Associated numeric Level document is unavailable",
+            ));
+        }
+        Some(response)
+    }
+
     fn associated_level_value_command(&mut self, tag: &str, words: &[&str]) -> Option<Response> {
         let verb = words.first()?.to_ascii_uppercase();
         let getter = verb == "DBGET";
@@ -2835,6 +2947,9 @@ impl Server {
             return None;
         }
         if let Some(response) = self.associated_level_value_command(tag, words) {
+            return Some(response);
+        }
+        if let Some(response) = self.associated_numeric_level_xml_command(tag, words) {
             return Some(response);
         }
         if let Some(response) = self.associated_level_command(tag, words) {

@@ -3,7 +3,7 @@
 Ledger/census + fresh-wheel + differential harness scaffolding only.
 
 This module does NOT claim Toolkit parity. It loads the authoritative
-39-area ledger in ``capabilities.json`` (``census_complete: false``) and
+42-area ledger in ``capabilities.json`` (``census_complete: false``) and
 exposes the differential matrix: every ledger area maps to workflow and
 negative-path slots that start ``unassessed``, except the eight attempted
 rows ``edlt-reset-controls``, ``edlt-retained-scene-editing``,

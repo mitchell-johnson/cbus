@@ -178,6 +178,57 @@ class SceneExecutorTest(unittest.TestCase):
         self.assertIs(caught.exception, error)
 
 
+class SceneNamedRejectLoopbackTest(unittest.TestCase):
+    def test_named_scene_401_reject_vs_scene_file_workflow(self):
+        # Offline P7.02 slice: named SCENE PLAY/RECORD are rejected with 401
+        # while the supported scene-file workflow is accepted, over exact
+        # loopback wire bytes. The '401 Scene not found' reason string mirrors
+        # the Rust cgate-mock envelope for an unrecorded named scene
+        # (rust/cbus-cgate/src/service/tests.rs,
+        # named_scene_record_and_play_deliberately_extend_native_401); native
+        # C-Gate 3.4.0.2001 is independently observed to reject both named
+        # verbs with 401 while the Python file workflow passes (gated
+        # SceneNativeTest below, research/verify_scenes.py). No native byte
+        # capture or physical-execution claim is made here: playback success
+        # means queue acceptance only (queued, not device_verified).
+        from test_cgate import peer
+
+        from cbus_toolkit.cgate import CGateClient
+        scene = SceneFile.parse('play 254/56/27\nrecord 254/56/33\nset 254/56/12 1\nset 254/56/24 2 4\n')
+        replies = [[b'[1] 401 Scene not found\r\n'], [b'[2] 401 Scene not found\r\n'],
+                   [b'[3] 200 OK.\r\n'], [b'[4] 200 OK.\r\n'],
+                   [b'[5] 300 //TEST/254/56/12: level=255\r\n'],
+                   [b'[6] 300 //TEST/254/56/24: level=127\r\n']]
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'scene'
+            scene.save(path)
+            before = path.read_bytes()
+            with peer(replies) as ((host, port), sent):
+                with CGateClient(host, port, timeout=10) as client:
+                    scenes = NativeScenes(client)
+                    for operation in (scenes.play, scenes.record):
+                        with self.subTest(operation=operation.__name__), self.assertRaises(CGateError) as caught:
+                            operation('CLI_SCENE', 'evening')
+                        self.assertEqual(caught.exception.response.code, 401)
+                        self.assertEqual(caught.exception.response.final, '401 Scene not found')
+                    executor = SceneExecutor(client)
+                    playback = executor.play(scene)
+                    self.assertTrue(playback.queued)
+                    self.assertFalse(playback.device_verified)
+                    recorded = executor.record(scene)
+            self.assertEqual(sent, [b'[1] SCENE PLAY CLI_SCENE evening\r\n',
+                                    b'[2] SCENE RECORD CLI_SCENE evening\r\n',
+                                    b'[3] LIGHTING RAMP 254/56/12 1 0\r\n',
+                                    b'[4] LIGHTING RAMP 254/56/24 2 4\r\n',
+                                    b'[5] GET 254/56/12 level\r\n',
+                                    b'[6] GET 254/56/24 level\r\n'])
+            self.assertEqual(recorded.actions, (SceneAction('254/56/12', 255), SceneAction('254/56/24', 127)))
+            self.assertEqual((recorded.play_trigger, recorded.record_trigger), ('254/56/27', '254/56/33'))
+            # Rejected named commands and recording never mutate the input or file.
+            self.assertEqual(scene.actions, (SceneAction('254/56/12', 1), SceneAction('254/56/24', 2, 4)))
+            self.assertEqual(path.read_bytes(), before)
+
+
 @unittest.skipUnless(os.environ.get('CBUS_SCENE_NATIVE') == '1', 'Set CBUS_SCENE_NATIVE=1 for the owned native scene oracle')
 class SceneNativeTest(unittest.TestCase):
     def test_native_parser_and_python_execution_against_independent_peer(self):

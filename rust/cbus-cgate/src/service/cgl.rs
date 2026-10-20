@@ -931,6 +931,509 @@ mod tests {
         assert_eq!(server.db_fields["//CGLP/254/255/255/TagName"], "G255");
     }
 
+    /// The far end of a directional six-hop chain is a one-way tail: native
+    /// routes run 254 -> ... -> 247, so `CGL EXPORT CGLP 247` carries only
+    /// itself with no route. Golden bytes live in
+    /// `testdata/vectors/cgate_cgl_oneway_tail.jsonl`.
+    ///
+    /// CGL export borrows the model immutably (`&Server`), so it cannot
+    /// touch PCI state; wire-level PCI silence for CGL exchange is proven by
+    /// `service::tests::cmqttd_replays_native_cgl_capture_without_pci_traffic`.
+    /// No physical-controller behavior is claimed: CGL moves labels only.
+    #[test]
+    fn oneway_tail_exports_only_itself() {
+        const VECTOR: &str = include_str!("../../../testdata/vectors/cgate_cgl_oneway_tail.jsonl");
+        let vector: serde_json::Value = serde_json::from_str(VECTOR.trim_end()).unwrap();
+        assert_eq!(vector["command"], "CGL EXPORT CGLP 247");
+
+        let mut server = Server::new(AccessLevel::Program);
+        const SIMULATOR: &str = "127.0.0.2:29999";
+        const SETUP: &[&str] = &[
+            "PROJECT NEW CGLP",
+            "PROJECT USE CGLP",
+            "DBCREATENET 254 Local Cni <simulator>",
+            "DBCREATENET 253 Hop1 Bridge 254/p/253",
+            "DBCREATENET 252 Hop2 Bridge 253/p/252",
+            "DBCREATENET 251 Hop3 Bridge 252/p/251",
+            "DBCREATENET 250 Hop4 Bridge 251/p/250",
+            "DBCREATENET 249 Hop5 Bridge 250/p/249",
+            "DBCREATENET 248 Hop6 Bridge 249/p/248",
+            "DBCREATENET 247 Hop7 Bridge 248/p/247",
+            "DBCREATENET 240 Island Cni 127.0.0.2:29998",
+            "DBADDSAFE //CGLP/254 Unit 253 Bridge253",
+            "DBSETSAFE //CGLP/254/p/253/UnitType BRIDGE",
+            "DBSETSAFE //CGLP/254/p/253/UnitName BRIDGE",
+            "DBADDSAFE //CGLP/253 Unit 252 Bridge252",
+            "DBSETSAFE //CGLP/253/p/252/UnitType BRIDGE",
+            "DBSETSAFE //CGLP/253/p/252/UnitName BRIDGE",
+            "DBADDSAFE //CGLP/252 Unit 251 Bridge251",
+            "DBSETSAFE //CGLP/252/p/251/UnitType BRIDGE",
+            "DBSETSAFE //CGLP/252/p/251/UnitName BRIDGE",
+            "DBADDSAFE //CGLP/251 Unit 250 Bridge250",
+            "DBSETSAFE //CGLP/251/p/250/UnitType BRIDGE",
+            "DBSETSAFE //CGLP/251/p/250/UnitName BRIDGE",
+            "DBADDSAFE //CGLP/250 Unit 249 Bridge249",
+            "DBSETSAFE //CGLP/250/p/249/UnitType BRIDGE",
+            "DBSETSAFE //CGLP/250/p/249/UnitName BRIDGE",
+            "DBADDSAFE //CGLP/249 Unit 248 Bridge248",
+            "DBSETSAFE //CGLP/249/p/248/UnitType BRIDGE",
+            "DBSETSAFE //CGLP/249/p/248/UnitName BRIDGE",
+            "DBADDSAFE //CGLP/248 Unit 247 Bridge247",
+            "DBSETSAFE //CGLP/248/p/247/UnitType BRIDGE",
+            "DBSETSAFE //CGLP/248/p/247/UnitName BRIDGE",
+            "NET LOAD DB",
+        ];
+        for (index, command) in SETUP.iter().enumerate() {
+            let line = format!("[{index}] {}", command.replace("<simulator>", SIMULATOR));
+            let response = server.handle(&line);
+            assert!(response.status < 400, "{command}: {response:?}");
+        }
+
+        fn canonical(line: &str) -> Value {
+            let mut document: Value = serde_json::from_str(&line[4..]).unwrap();
+            document["createdBy"] = Value::from("<creator>");
+            document["createdTime"] = Value::from("<timestamp>");
+            document
+        }
+
+        let export = server.handle("[100] CGL EXPORT CGLP 247");
+        assert_eq!(export.status, 344, "{export:?}");
+        assert_eq!(export.lines.len(), 2, "{export:?}");
+        assert_eq!(export.lines[0], "343-Begin CGL snippet");
+        assert_eq!(
+            export.final_text,
+            "344 End CGL snippet [numberOfExportedObjects:0]"
+        );
+        let expected = &vector["expect_export"];
+        assert_eq!(expected["first"].as_str(), Some(export.lines[0].as_str()));
+        assert_eq!(expected["final"].as_str(), Some(export.final_text.as_str()));
+        let document = canonical(&export.lines[1]);
+        assert_eq!(document, expected["document"]);
+        // Exact order: the single tail network carries no route key.
+        assert_eq!(
+            document["networks"],
+            serde_json::json!([{"address": 247, "name": "Hop7"}])
+        );
+
+        // The reverse direction stays bounded: 247 is the seventh hop from
+        // 254, so the head export still stops at 248.
+        let head = server.handle("[101] CGL EXPORT CGLP 254");
+        assert_eq!(head.status, 344, "{head:?}");
+        let head_document = canonical(&head.lines[1]);
+        let addresses = head_document["networks"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|network| network["address"].as_u64().unwrap())
+            .collect::<Vec<_>>();
+        assert_eq!(addresses, vec![254, 253, 252, 251, 250, 249, 248]);
+
+        // Export is read-only: a repeat carries the identical document.
+        let repeat = server.handle("[102] CGL EXPORT CGLP 247");
+        assert_eq!(canonical(&repeat.lines[1]), document);
+    }
+
+    /// Creation-order tie in reverse: remotes 30 then 10 are created after
+    /// 254, so `CGL EXPORT CGLO 254` carries them in creation order
+    /// [254, 30, 10], not address order. Golden bytes live in
+    /// `testdata/vectors/cgate_cgl_creation_tie.jsonl`.
+    ///
+    /// CGL export borrows the model immutably (`&Server`), so it cannot
+    /// touch PCI state; wire-level PCI silence for CGL exchange is proven by
+    /// `service::tests::cmqttd_replays_native_cgl_capture_without_pci_traffic`.
+    /// No physical-controller behavior is claimed: CGL moves labels only.
+    #[test]
+    fn creation_tie_exports_in_creation_order() {
+        const VECTOR: &str = include_str!("../../../testdata/vectors/cgate_cgl_creation_tie.jsonl");
+        let vector: serde_json::Value = serde_json::from_str(VECTOR.trim_end()).unwrap();
+        assert_eq!(vector["command"], "CGL EXPORT CGLO 254");
+
+        let mut server = Server::new(AccessLevel::Program);
+        const SIMULATOR: &str = "127.0.0.2:29999";
+        const SETUP: &[&str] = &[
+            "PROJECT NEW CGLO",
+            "PROJECT USE CGLO",
+            "DBCREATENET 254 Local Cni <simulator>",
+            "DBCREATENET 30 C Bridge 254/p/30",
+            "DBCREATENET 10 A Bridge 254/p/10",
+            "DBADDSAFE //CGLO/254 Unit 30 Bridge30",
+            "DBSETSAFE //CGLO/254/p/30/UnitType BRIDGE",
+            "DBSETSAFE //CGLO/254/p/30/UnitName BRIDGE",
+            "DBADDSAFE //CGLO/254 Unit 10 Bridge10",
+            "DBSETSAFE //CGLO/254/p/10/UnitType BRIDGE",
+            "DBSETSAFE //CGLO/254/p/10/UnitName BRIDGE",
+            "NET LOAD DB",
+        ];
+        for (index, command) in SETUP.iter().enumerate() {
+            let line = format!("[{index}] {}", command.replace("<simulator>", SIMULATOR));
+            let response = server.handle(&line);
+            assert!(response.status < 400, "{command}: {response:?}");
+        }
+
+        fn canonical(line: &str) -> Value {
+            let mut document: Value = serde_json::from_str(&line[4..]).unwrap();
+            document["createdBy"] = Value::from("<creator>");
+            document["createdTime"] = Value::from("<timestamp>");
+            document
+        }
+
+        let export = server.handle("[100] CGL EXPORT CGLO 254");
+        assert_eq!(export.status, 344, "{export:?}");
+        assert_eq!(export.lines.len(), 2, "{export:?}");
+        assert_eq!(export.lines[0], "343-Begin CGL snippet");
+        assert_eq!(
+            export.final_text,
+            "344 End CGL snippet [numberOfExportedObjects:0]"
+        );
+        let expected = &vector["expect_export"];
+        assert_eq!(expected["first"].as_str(), Some(export.lines[0].as_str()));
+        assert_eq!(expected["final"].as_str(), Some(export.final_text.as_str()));
+        let document = canonical(&export.lines[1]);
+        assert_eq!(document, expected["document"]);
+        // Exact order: creation order [254, 30, 10], not address order.
+        let addresses = document["networks"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|network| network["address"].as_u64().unwrap())
+            .collect::<Vec<_>>();
+        assert_eq!(addresses, vec![254, 30, 10]);
+        assert_eq!(
+            document["networks"],
+            serde_json::json!([
+                {"address": 254, "name": "Local"},
+                {"address": 30, "name": "C", "route": [30]},
+                {"address": 10, "name": "A", "route": [10]},
+            ])
+        );
+
+        // Local selection follows creation order too: the default export
+        // picks the last-created network (10), not the highest address.
+        let default = server.handle("[101] CGL EXPORT CGLO");
+        assert_eq!(default.status, 344, "{default:?}");
+        let default_document = canonical(&default.lines[1]);
+        assert_eq!(default_document["localNetwork"], serde_json::json!(10));
+        assert_eq!(
+            default_document["networks"],
+            serde_json::json!([{"address": 10, "name": "A"}])
+        );
+
+        // Export is read-only: a repeat carries the identical document.
+        let repeat = server.handle("[102] CGL EXPORT CGLO 254");
+        assert_eq!(canonical(&repeat.lines[1]), document);
+    }
+
+    /// Sibling order: applications 202 then 56, groups 9 then 3 and levels
+    /// 9 then 2 are created in reverse address order. Applications export
+    /// in retained creation order [202, 56]; the dispositioned deviation
+    /// keeps groups and levels in address order [3, 9] / [2, 9] where
+    /// native would keep creation order. Golden bytes live in
+    /// `testdata/vectors/cgate_cgl_sibling_order.jsonl`.
+    ///
+    /// CGL export borrows the model immutably (`&Server`), so it cannot
+    /// touch PCI state; wire-level PCI silence for CGL exchange is proven by
+    /// `service::tests::cmqttd_replays_native_cgl_capture_without_pci_traffic`.
+    /// No physical-controller behavior is claimed: CGL moves labels only.
+    #[test]
+    fn sibling_order_exports_groups_and_levels_in_address_order() {
+        const VECTOR: &str =
+            include_str!("../../../testdata/vectors/cgate_cgl_sibling_order.jsonl");
+        let vector: serde_json::Value = serde_json::from_str(VECTOR.trim_end()).unwrap();
+        assert_eq!(vector["command"], "CGL EXPORT CGLS 254");
+
+        let mut server = Server::new(AccessLevel::Program);
+        const SIMULATOR: &str = "127.0.0.2:29999";
+        const SETUP: &[&str] = &[
+            "PROJECT NEW CGLS",
+            "PROJECT USE CGLS",
+            "DBCREATENET 254 Local Cni <simulator>",
+            "NET LOAD DB",
+            "DBADDSAFE //CGLS/254 Application 202 Trig",
+            "DBADDSAFE //CGLS/254 Application 56 Light",
+            "DBADDSAFE //CGLS/254/56 Group 9 Nine",
+            "DBADDSAFE //CGLS/254/56 Group 3 Three",
+            "DBADDSAFE //CGLS/254/56/9 Level 9 L9",
+            "DBADDSAFE //CGLS/254/56/9 Level 2 L2",
+        ];
+        for (index, command) in SETUP.iter().enumerate() {
+            let line = format!("[{index}] {}", command.replace("<simulator>", SIMULATOR));
+            let response = server.handle(&line);
+            assert!(response.status < 400, "{command}: {response:?}");
+        }
+
+        fn canonical(line: &str) -> Value {
+            let mut document: Value = serde_json::from_str(&line[4..]).unwrap();
+            document["createdBy"] = Value::from("<creator>");
+            document["createdTime"] = Value::from("<timestamp>");
+            document
+        }
+
+        let export = server.handle("[100] CGL EXPORT CGLS 254");
+        assert_eq!(export.status, 344, "{export:?}");
+        assert_eq!(export.lines.len(), 2, "{export:?}");
+        assert_eq!(export.lines[0], "343-Begin CGL snippet");
+        assert_eq!(
+            export.final_text,
+            "344 End CGL snippet [numberOfExportedObjects:6]"
+        );
+        let expected = &vector["expect_export"];
+        assert_eq!(expected["first"].as_str(), Some(export.lines[0].as_str()));
+        assert_eq!(expected["final"].as_str(), Some(export.final_text.as_str()));
+        let document = canonical(&export.lines[1]);
+        assert_eq!(document, expected["document"]);
+        // Applications follow retained creation order [202, 56]; the
+        // dispositioned deviation is groups/levels in address order.
+        assert_eq!(
+            document["networks"],
+            serde_json::json!([{
+            "address": 254, "name": "Local",
+            "applications": [
+                {"address": 202, "type": 202, "name": "Trig"},
+                {"address": 56, "type": 56, "name": "Light",
+                 "groups": [
+                    {"address": 3, "name": "Three"},
+                    {"address": 9, "name": "Nine",
+                     "levels": [
+                        {"address": 2, "name": "L2"},
+                        {"address": 9, "name": "L9"},
+                    ]},
+                 ]},
+            ]}])
+        );
+
+        // Export is read-only: a repeat carries the identical document.
+        let repeat = server.handle("[101] CGL EXPORT CGLS 254");
+        assert_eq!(canonical(&repeat.lines[1]), document);
+    }
+
+    /// Nameless import refusal: the native nameless document (a level with
+    /// no name, then a group with no name) is refused with an exact 408
+    /// envelope and leaves no mutation behind. Golden bytes live in
+    /// `testdata/vectors/cgate_cgl_nameless_refusal.jsonl`.
+    ///
+    /// Deliberate difference from native: native C-Gate 3.4.0.2001 imports
+    /// the nameless objects and then fails `PROJECT SAVE` with
+    /// `SQLITE_CONSTRAINT_NOTNULL`; cmqttd refuses before mutation because
+    /// the imported graph could then never be saved. The import path never
+    /// touches PCI state; wire-level PCI silence for CGL exchange is proven
+    /// by `service::tests::cmqttd_replays_native_cgl_capture_without_pci_traffic`.
+    /// No physical-controller behavior is claimed: CGL moves labels only.
+    #[test]
+    fn nameless_import_refused_before_mutation() {
+        const VECTOR: &str =
+            include_str!("../../../testdata/vectors/cgate_cgl_nameless_refusal.jsonl");
+        let vector: serde_json::Value = serde_json::from_str(VECTOR.trim_end()).unwrap();
+        assert_eq!(vector["command"], "CGL IMPORT CGLN");
+        assert_eq!(vector["export_command"], "CGL EXPORT CGLN 254");
+        let document = vector["document"].as_str().unwrap();
+
+        let mut server = Server::new(AccessLevel::Program);
+        const SIMULATOR: &str = "127.0.0.2:29999";
+        const SETUP: &[&str] = &[
+            "PROJECT NEW CGLN",
+            "PROJECT USE CGLN",
+            "DBCREATENET 254 Local Cni <simulator>",
+            "NET LOAD DB",
+        ];
+        for (index, command) in SETUP.iter().enumerate() {
+            let line = format!("[{index}] {}", command.replace("<simulator>", SIMULATOR));
+            let response = server.handle(&line);
+            assert!(response.status < 400, "{command}: {response:?}");
+        }
+
+        fn canonical(line: &str) -> Value {
+            let mut document: Value = serde_json::from_str(&line[4..]).unwrap();
+            document["createdBy"] = Value::from("<creator>");
+            document["createdTime"] = Value::from("<timestamp>");
+            document
+        }
+
+        let before = (
+            server.db_fields.len(),
+            server.db_levels.len(),
+            server.objects.len(),
+            server.known_oids.len(),
+            server.cgl_runtime.len(),
+        );
+
+        let import = server.handle_document("[100] CGL IMPORT CGLN", document);
+        assert_eq!(import.status, 408, "{import:?}");
+        assert!(import.lines.is_empty(), "{import:?}");
+        let expected = vector["expect"].as_array().unwrap();
+        assert_eq!(expected.len(), 1);
+        assert_eq!(
+            expected[0].as_str(),
+            Some(import.final_text.as_str()),
+            "{import:?}"
+        );
+
+        // Refused before mutation: none of the named objects in the refused
+        // document were created, and no level OIDs were minted.
+        let after = (
+            server.db_fields.len(),
+            server.db_levels.len(),
+            server.objects.len(),
+            server.known_oids.len(),
+            server.cgl_runtime.len(),
+        );
+        assert_eq!(before, after);
+        for absent in ["//CGLN/254/56/TagName", "//CGLN/254/56/1/TagName"] {
+            assert!(!server.db_fields.contains_key(absent), "{absent}");
+        }
+
+        // The refused import left nothing to export.
+        let expected_export = &vector["expect_export"];
+        let export = server.handle("[101] CGL EXPORT CGLN 254");
+        assert_eq!(export.status, 344, "{export:?}");
+        assert_eq!(export.lines.len(), 2, "{export:?}");
+        assert_eq!(
+            expected_export["first"].as_str(),
+            Some(export.lines[0].as_str())
+        );
+        assert_eq!(
+            expected_export["final"].as_str(),
+            Some(export.final_text.as_str())
+        );
+        let exported = canonical(&export.lines[1]);
+        assert_eq!(exported, expected_export["document"]);
+        assert_eq!(
+            exported["networks"],
+            serde_json::json!([{"address": 254, "name": "Local"}])
+        );
+
+        // The refusal is deterministic: a repeat carries the identical
+        // envelope and still mutates nothing.
+        let repeat = server.handle_document("[102] CGL IMPORT CGLN", document);
+        assert_eq!(repeat.status, 408, "{repeat:?}");
+        assert!(repeat.lines.is_empty(), "{repeat:?}");
+        assert_eq!(repeat.final_text, import.final_text);
+        assert_eq!(
+            (
+                server.db_fields.len(),
+                server.db_levels.len(),
+                server.objects.len(),
+                server.known_oids.len(),
+                server.cgl_runtime.len(),
+            ),
+            before
+        );
+        let re_export = server.handle("[103] CGL EXPORT CGLN 254");
+        assert_eq!(canonical(&re_export.lines[1]), exported);
+    }
+
+    /// NPE partial-state import: the first network creates application 71 on
+    /// 254, then the second network carries `"applications": null`, so native
+    /// C-Gate 3.4.0.2001 stops with an exact 408 NPE envelope and keeps the
+    /// earlier mutation. Golden bytes live in
+    /// `testdata/vectors/cgate_cgl_npe_partial.jsonl`.
+    ///
+    /// This matches native: the 408 keeps every earlier change (only 400
+    /// failures happen before any change). The import path never touches PCI
+    /// state; wire-level PCI silence for CGL exchange is proven by
+    /// `service::tests::cmqttd_replays_native_cgl_capture_without_pci_traffic`.
+    /// No physical-controller behavior is claimed: CGL moves labels only.
+    #[test]
+    fn npe_partial_import_keeps_earlier_mutation() {
+        const VECTOR: &str = include_str!("../../../testdata/vectors/cgate_cgl_npe_partial.jsonl");
+        let vector: serde_json::Value = serde_json::from_str(VECTOR.trim_end()).unwrap();
+        assert_eq!(vector["command"], "CGL IMPORT CGLP");
+        assert_eq!(vector["export_command"], "CGL EXPORT CGLP 254");
+        let document = vector["document"].as_str().unwrap();
+
+        let mut server = Server::new(AccessLevel::Program);
+        const SIMULATOR: &str = "127.0.0.2:29999";
+        const SETUP: &[&str] = &[
+            "PROJECT NEW CGLP",
+            "PROJECT USE CGLP",
+            "DBCREATENET 254 Local Cni <simulator>",
+            "DBCREATENET 253 Hop1 Bridge 254/p/253",
+            "DBADDSAFE //CGLP/254 Unit 253 Bridge253",
+            "DBSETSAFE //CGLP/254/p/253/UnitType BRIDGE",
+            "DBSETSAFE //CGLP/254/p/253/UnitName BRIDGE",
+            "NET LOAD DB",
+        ];
+        for (index, command) in SETUP.iter().enumerate() {
+            let line = format!("[{index}] {}", command.replace("<simulator>", SIMULATOR));
+            let response = server.handle(&line);
+            assert!(response.status < 400, "{command}: {response:?}");
+        }
+
+        fn canonical(line: &str) -> Value {
+            let mut document: Value = serde_json::from_str(&line[4..]).unwrap();
+            document["createdBy"] = Value::from("<creator>");
+            document["createdTime"] = Value::from("<timestamp>");
+            document
+        }
+
+        let import = server.handle_document("[100] CGL IMPORT CGLP", document);
+        assert_eq!(import.status, 408, "{import:?}");
+        assert!(import.lines.is_empty(), "{import:?}");
+        let expected = vector["expect"].as_array().unwrap();
+        assert_eq!(expected.len(), 1);
+        assert_eq!(
+            expected[0].as_str(),
+            Some(import.final_text.as_str()),
+            "{import:?}"
+        );
+
+        // Partial state kept: the first network's application survived the
+        // 408, and the failed network left nothing behind.
+        assert_eq!(server.db_fields["//CGLP/254/71/TagName"], "A71");
+        assert!(!server.db_fields.contains_key("//CGLP/253/56/TagName"));
+
+        // The kept mutation is visible in export; the failed network exports
+        // with its route and no applications.
+        let expected_export = &vector["expect_export"];
+        let export = server.handle("[101] CGL EXPORT CGLP 254");
+        assert_eq!(export.status, 344, "{export:?}");
+        assert_eq!(export.lines.len(), 2, "{export:?}");
+        assert_eq!(
+            expected_export["first"].as_str(),
+            Some(export.lines[0].as_str())
+        );
+        assert_eq!(
+            expected_export["final"].as_str(),
+            Some(export.final_text.as_str())
+        );
+        let exported = canonical(&export.lines[1]);
+        assert_eq!(exported, expected_export["document"]);
+        assert_eq!(
+            exported["networks"],
+            serde_json::json!([
+                {"address": 254, "name": "Local",
+                 "applications": [{"address": 71, "type": 56, "name": "A71"}]},
+                {"address": 253, "name": "Hop1", "route": [253]},
+            ])
+        );
+
+        // The 408 is deterministic: a repeat carries the identical envelope
+        // and changes nothing (the application already exists, so no new
+        // objects are created).
+        let before = (
+            server.db_fields.len(),
+            server.db_levels.len(),
+            server.objects.len(),
+            server.known_oids.len(),
+            server.cgl_runtime.len(),
+        );
+        let repeat = server.handle_document("[102] CGL IMPORT CGLP", document);
+        assert_eq!(repeat.status, 408, "{repeat:?}");
+        assert!(repeat.lines.is_empty(), "{repeat:?}");
+        assert_eq!(repeat.final_text, import.final_text);
+        assert_eq!(
+            (
+                server.db_fields.len(),
+                server.db_levels.len(),
+                server.objects.len(),
+                server.known_oids.len(),
+                server.cgl_runtime.len(),
+            ),
+            before
+        );
+        let re_export = server.handle("[103] CGL EXPORT CGLP 254");
+        assert_eq!(canonical(&re_export.lines[1]), exported);
+    }
+
     #[test]
     fn export_types_keep_retained_special_applications() {
         for retained in [

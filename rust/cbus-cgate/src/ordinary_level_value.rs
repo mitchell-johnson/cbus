@@ -224,21 +224,49 @@ impl Server {
                 object.project == project && object.path.as_deref() == Some(parent.as_str())
             })
             .collect::<Vec<_>>();
-        if parents.len() != 1
-            || !matches!(parents[0].element.as_str(), "Group" | "NetVar")
-            || !self.known_oids.contains(&parents[0].oid)
-            || parents[0]
+        // A SAFE-created NetVar has no pending mirror; its typed record is
+        // then the one complete parent owner. Any pending object at the path
+        // keeps the strict pending check above.
+        let typed_netvar_parent = || {
+            let netvars = self
+                .db_levels
+                .values()
+                .filter(|candidate| {
+                    candidate.netvar
+                        && format!("{}/{}", candidate.parent, candidate.address) == parent
+                })
+                .collect::<Vec<_>>();
+            match netvars.as_slice() {
+                [netvar]
+                    if netvar.address == addresses[2] && self.known_oids.contains(&netvar.oid) =>
+                {
+                    Some(netvar.oid.clone())
+                }
+                _ => None,
+            }
+        };
+        let parent_oid = if parents.is_empty() {
+            typed_netvar_parent()
+        } else if parents.len() == 1
+            && matches!(parents[0].element.as_str(), "Group" | "NetVar")
+            && self.known_oids.contains(&parents[0].oid)
+            && parents[0]
                 .fields
                 .get("Address")
                 .and_then(|value| value.parse::<u8>().ok())
-                != Some(addresses[2])
+                == Some(addresses[2])
         {
+            Some(parents[0].oid.clone())
+        } else {
+            None
+        };
+        let Some(parent_oid) = parent_oid else {
             return Err((
                 408,
                 "408 Operation failed: Ordinary Level parent is not unique",
             ));
-        }
-        let parent_oid = &parents[0].oid;
+        };
+        let parent_oid = &parent_oid;
         let mirrors = self
             .db_pending
             .values()

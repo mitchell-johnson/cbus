@@ -249,7 +249,7 @@ def test_matrix_ci_keeps_full_backend_budget_and_independent_retention():
     child = workflow.split("  toolkit-wheel-rust-interop:\n", 1)[1].split("  toolkit-wheel-rust-interop-matrix:\n", 1)[0]
     aggregate = workflow.split("  toolkit-wheel-rust-interop-matrix:\n", 1)[1].split("  toolkit-native-release:\n", 1)[0]
     assert "fail-fast: false" in child and "backend: [mock, daemon]" in child
-    assert "timeout-minutes: 300" in child and "WHEEL_INTEROP_TIMEOUT=14400" in child
+    assert "timeout-minutes: 350" in child and "WHEEL_INTEROP_TIMEOUT=19800" in child
     assert "WHEEL_INTEROP_BACKEND=${{ matrix.backend }}" in child and "--select" not in child
     assert child.count("${{ matrix.backend }}") >= 4 and "include-hidden-files: true" in child
     assert "if: ${{ always() }}" in child and "needs: [toolkit-wheel-rust-interop]" in aggregate

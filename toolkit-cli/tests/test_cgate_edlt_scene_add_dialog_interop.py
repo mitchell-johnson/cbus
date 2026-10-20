@@ -7,7 +7,6 @@ from contextlib import contextmanager
 import hashlib
 import json
 from pathlib import Path
-import sys
 import uuid
 from xml.etree import ElementTree as ET
 

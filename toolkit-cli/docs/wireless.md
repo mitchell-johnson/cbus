@@ -134,8 +134,15 @@ Refused before any write:
 
 **Scenes.** Scene *n* is configured if `SceneVectorOffset` has at least *n*
 entries that are not 255 and satisfy `(v & 0x7F) < 100`. Scene keys also need
-`SceneTriggerGroup[n−1]` ≠ 255. The editor does not decode scene vectors, so
-Toolkit's check that a scene vector is non-empty is not reproduced.
+`SceneTriggerGroup[n−1]` ≠ 255. Sparse or invalid offset tables (a valid entry
+after an unused 255, or any non-255 entry with `(v & 0x7F) >= 100`) are refused
+before any write, matching the Scenes workflow load review. The editor does not
+decode scene vectors, so Toolkit's check that a scene vector is non-empty is
+not reproduced.
+
+Staging verifies PP readback and preserves every parameter outside the remote
+mapping ownership: a change to unrelated gateway parameters during staging is
+refused and reported as an uncertain partial write with no recovery I/O.
 
 The editor changes only the parameters named in a plan. It does not reproduce
 these whole-dialog save effects, and `show` reports stored values that a
@@ -421,7 +428,7 @@ If a PP write fails or its reply is uncertain, the result reports
 | `research/fixtures/wireless-source-review.json` | Sanitized static receipt covering: profile registrations; attribute offsets; control-to-parameter rules with original addresses; the WTXU key map; scene encoding; dependencies; save order; unreproduced save effects; the ForwardingRoute rule; the WRM learn/house-code/key-mask rules; unresolved points. It records hashes of the executable, map, catalogue, form resources, help topics and specs. |
 | `research/fixtures/wireless-connection-source-review.json` | Fresh static receipt for the Connection controls, application lists/filter and callbacks, directed topology builder, per-entry route save/load rules, profile limits, separate terminal `UseSecurity` save and normal 16-InputKeys WRM construction. Supersedes the earlier route-tail wording and unresolved key-count note; records exact method addresses and hashes. |
 | `research/fixtures/wireless-base-connection-source-review.json` | Independent WGATE5N base unit/agent registration, Connection visibility, exact six fields, catalogue/spec selection and application callbacks without Advanced dependencies. Supersedes the earlier deliberate WGATE5N Connection exclusion. |
-| `research/fixtures/wireless-base-connection-native-acceptance.json` | Positive owned closed native project workflow at both WGATE5N firmware bounds: plan, stale refusal, stage, raw readback, 62 unrelated parameters preserved, save/close/reload and four actual CLI operations. No NET OPEN, NET SYNC or DO; physical forwarding remains unverified. |
+| `research/fixtures/wireless-base-connection-native-acceptance.json` | Positive owned closed native project workflow at both WGATE5N firmware bounds: plan, stale refusal, stage, raw readback, 62 unrelated parameters preserved, save/close/reload and four actual CLI operations. No NET OPEN, NET SYNC or DO; physical forwarding remains unverified. The receipt covers its retained historical `wireless_gateway.py`; the later fail-closed sparse scene-offset and unrelated-parameter checks are offline-tested only and need native re-acceptance. |
 | `research/fixtures/wireless-parent-save-source-review.json` | 36 original method hashes establish the loaded security Boolean, distinct main/project/network-status/security phases, network GET versus unit PSYNC distinction and the nine remaining WRM cascades. Source evidence only; no complete parent workflow execution. |
 | `research/fixtures/wireless-scenes-source-review.json` | 98 exact original method hashes pin visibility, vector tail preservation, allocation, scene detail controls, ordinal remote references and load-time metadata side effects. |
 | `research/fixtures/wireless-scenes-native-acceptance.json` | Owned closed synthetic project acceptance for full arrays, stale state, unrelated PP preservation and save/close/reload; separately records native permissive array behavior. Database evidence only. |

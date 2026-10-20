@@ -81,3 +81,12 @@ cleanup. Run it with `CBUS_CGATE_JAVA` and `CBUS_LOCAL_CGATE_VENDOR` pointing
 to the pinned disposable service; otherwise the test explicitly skips. This
 does not prove every XML class or variant, physical eDLT label-cache write,
 concurrent update safety, or full Toolkit GUI behavior.
+
+On the owned Rust servers, Application and Group documents may carry one
+text-only `<Description>` (at most 1,024 characters, no control characters).
+cmqttd and `cgate-mock` export it immediately after `Address`, store it in the
+same field as scalar `DBSETSAFE .../Description`, treat an empty element as
+absent and refuse duplicates with `400`. Native C-Gate placement, default
+omission and Application XML admission are not established
+([issue 75](https://github.com/mitchell-johnson/cbus/issues/75)); do not assume
+an original server accepts or emits the same order.

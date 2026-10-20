@@ -3,7 +3,6 @@ from contextlib import contextmanager
 import json
 from pathlib import Path
 import re
-import sys
 import xml.etree.ElementTree as ET
 import pytest
 from cbus_toolkit.cgate import CGateClient

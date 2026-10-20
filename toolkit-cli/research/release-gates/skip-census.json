@@ -50,37 +50,37 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 819,
-    "modules_without_skip_sites": 491,
-    "modules_with_skip_sites": 328,
+    "test_modules": 931,
+    "modules_without_skip_sites": 592,
+    "modules_with_skip_sites": 339,
     "modules_by_category": {
-      "cgate_test_host": 133,
+      "cgate_test_host": 136,
       "external_cgate_project": 1,
       "hardware": 1,
-      "host_platform": 17,
-      "host_tool": 12,
-      "native_cgate_local": 79,
+      "host_platform": 20,
+      "host_tool": 13,
+      "native_cgate_local": 80,
       "native_opt_in": 2,
       "original_model_runtime": 4,
       "original_toolkit": 118,
       "private_evidence_input": 4,
-      "private_vendor_tree": 8,
+      "private_vendor_tree": 9,
       "runtime_capability": 6,
-      "rust_binaries": 15,
-      "unclassified": 40,
-      "unit_specs": 148,
+      "rust_binaries": 20,
+      "unclassified": 41,
+      "unit_specs": 150,
       "vendor_firmware": 4,
       "windows": 12
     },
     "native_modules": {
-      "all": 140,
+      "all": 142,
       "partial": 20,
-      "none": 168
+      "none": 177
     },
-    "native_runnable_tests": 259,
-    "native_selected_required_tests": 259,
+    "native_runnable_tests": 261,
+    "native_selected_required_tests": 261,
     "native_excluded": 0,
-    "native_selection_selectors": 162
+    "native_selection_selectors": 164
   },
   "modules": {
     "tests/test_addressing.py": {
@@ -311,6 +311,58 @@
         }
       ]
     },
+    "tests/test_cgate_application_description_interop.py": {
+      "categories": [
+        "rust_binaries"
+      ],
+      "native": "none",
+      "gated_tests": 2,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_cgate_application_description_interop.py::test_application_description_xml_contract",
+          "kind": "body.call",
+          "condition": "not binary.is_file() or not os.access(binary, os.X_OK)",
+          "reason": " binary is not built",
+          "environment": [
+            "CBUS_CGATE_MOCK_BIN",
+            "CBUS_CMQTTD_BIN"
+          ],
+          "categories": [
+            "rust_binaries"
+          ],
+          "offline": "unknown",
+          "native": "unknown"
+        },
+        {
+          "scope": "tests/test_cgate_application_description_interop.py::test_application_description_xml_roundtrip_vector",
+          "kind": "body.call",
+          "condition": "not supplied",
+          "reason": "Select  for the owned Application Description XML round trip",
+          "environment": [
+            "CBUS_CGATE_MOCK_BIN",
+            "CBUS_CMQTTD_BIN"
+          ],
+          "categories": [
+            "rust_binaries"
+          ],
+          "offline": "unknown",
+          "native": "unknown"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "rust_binaries"
+          ],
+          "tests": [
+            "test_application_description_xml_contract",
+            "test_application_description_xml_roundtrip_vector"
+          ]
+        }
+      ]
+    },
     "tests/test_cgate_barcode_database_interop.py": {
       "categories": [
         "unclassified"
@@ -451,6 +503,78 @@
             "test_public_csv_last_profiles_all_literals_and_ordered_selection",
             "test_public_csv_last_profiles_lost_snapshot_is_terminal_without_replay",
             "test_public_csv_last_profiles_refusal_is_atomic"
+          ]
+        }
+      ]
+    },
+    "tests/test_cgate_database_application_readdress_interop.py": {
+      "categories": [
+        "rust_binaries"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_cgate_database_application_readdress_interop.py::test_public_application_readdress_end_to_end",
+          "kind": "body.call",
+          "condition": "not supplied",
+          "reason": "Select  for the owned application readdress journey",
+          "environment": [
+            "CBUS_CGATE_MOCK_BIN",
+            "CBUS_CMQTTD_BIN"
+          ],
+          "categories": [
+            "rust_binaries"
+          ],
+          "offline": "unknown",
+          "native": "unknown"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "rust_binaries"
+          ],
+          "tests": [
+            "test_public_application_readdress_end_to_end"
+          ]
+        }
+      ]
+    },
+    "tests/test_cgate_database_level_value_interop.py": {
+      "categories": [
+        "rust_binaries"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_cgate_database_level_value_interop.py::test_public_numeric_level_value_end_to_end",
+          "kind": "body.call",
+          "condition": "not supplied",
+          "reason": "Select  for the owned numeric Level Value journey",
+          "environment": [
+            "CBUS_CGATE_MOCK_BIN",
+            "CBUS_CMQTTD_BIN"
+          ],
+          "categories": [
+            "rust_binaries"
+          ],
+          "offline": "unknown",
+          "native": "unknown"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "rust_binaries"
+          ],
+          "tests": [
+            "test_public_numeric_level_value_end_to_end"
           ]
         }
       ]
@@ -652,6 +776,42 @@
             "test_public_neopro_csv_late_unsupported_profile_refuses_atomically",
             "test_public_neopro_csv_lost_snapshot_terminal_is_not_retried",
             "test_public_neopro_csv_project_network_selection_on_owned_backend"
+          ]
+        }
+      ]
+    },
+    "tests/test_cgate_numeric_application_copy_interop.py": {
+      "categories": [
+        "rust_binaries"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_cgate_numeric_application_copy_interop.py::test_public_numeric_application_copy_end_to_end",
+          "kind": "body.call",
+          "condition": "not supplied",
+          "reason": "Select  for the owned numeric copy journey",
+          "environment": [
+            "CBUS_CGATE_MOCK_BIN",
+            "CBUS_CMQTTD_BIN"
+          ],
+          "categories": [
+            "rust_binaries"
+          ],
+          "offline": "unknown",
+          "native": "unknown"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "rust_binaries"
+          ],
+          "tests": [
+            "test_public_numeric_application_copy_end_to_end"
           ]
         }
       ]
@@ -2418,6 +2578,52 @@
         }
       ]
     },
+    "tests/test_cli_selected_serial.py": {
+      "categories": [
+        "host_platform"
+      ],
+      "native": "none",
+      "gated_tests": 0,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_cli_selected_serial.py::SelectedSerialCLITests::test_sigkill_mid_apply_resumes_from_journal_without_readdressing",
+          "kind": "decorator.skipUnless",
+          "condition": "os.name == 'posix'",
+          "reason": "SIGKILL crash recovery needs a POSIX process signal",
+          "environment": [],
+          "categories": [
+            "host_platform"
+          ],
+          "offline": "runs",
+          "native": "runs"
+        }
+      ]
+    },
+    "tests/test_cli_selected_serial_routed_sigkill.py": {
+      "categories": [
+        "host_platform"
+      ],
+      "native": "none",
+      "gated_tests": 0,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_cli_selected_serial_routed_sigkill.py::RoutedSigkillRecoveryTests::test_sigkill_mid_routed_apply_resumes_without_readdressing",
+          "kind": "decorator.skipUnless",
+          "condition": "os.name == 'posix'",
+          "reason": "SIGKILL crash recovery needs a POSIX process signal",
+          "environment": [],
+          "categories": [
+            "host_platform"
+          ],
+          "offline": "runs",
+          "native": "runs"
+        }
+      ]
+    },
     "tests/test_cli_sensors.py": {
       "categories": [
         "cgate_test_host",
@@ -2665,7 +2871,7 @@
         "rust_binaries"
       ],
       "native": "none",
-      "gated_tests": 16,
+      "gated_tests": 17,
       "native_runnable_tests": 0,
       "native_selected_tests": 0,
       "sites": [
@@ -2701,6 +2907,7 @@
             "test_typed_api_ext_only_deploy_stores_changed_bytes_once_and_verifies_readback",
             "test_typed_cli_all_global_proxy_families_match_executed_original_final_memory",
             "test_typed_cli_dry_run_reads_and_stages_but_never_deploys",
+            "test_typed_cli_evidenced_line_leaves_match_executed_original_final_memory",
             "test_typed_cli_ext_only_extraction_decodes_current_native_proxy_fields",
             "test_typed_cli_ext_only_extraction_reads_complete_gateway_memory_without_writes",
             "test_typed_cli_extracts_native_model_without_dali_configuration_writes",
@@ -2856,7 +3063,7 @@
       "native": "all",
       "gated_tests": 1,
       "native_runnable_tests": 1,
-      "native_selected_tests": 16,
+      "native_selected_tests": 17,
       "sites": [
         {
           "scope": "tests/test_cmqtt_programming_methods_interop.py::test_protection_matrix_matches_a_fresh_derivation",
@@ -7961,7 +8168,7 @@
       "native": "all",
       "gated_tests": 1,
       "native_runnable_tests": 1,
-      "native_selected_tests": 8,
+      "native_selected_tests": 11,
       "sites": [
         {
           "scope": "tests/test_native_unravel_cases.py::NativeRecaptureTests",
@@ -8361,6 +8568,78 @@
         }
       ]
     },
+    "tests/test_pci_serial_list.py": {
+      "categories": [
+        "host_platform",
+        "host_tool",
+        "unclassified"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_pci_serial_list.py::ListingPtyProbeTests",
+          "kind": "decorator.skipUnless",
+          "condition": "POSIX_SERIAL",
+          "reason": "POSIX PTY and serial extra required",
+          "environment": [],
+          "categories": [
+            "host_platform",
+            "host_tool"
+          ],
+          "offline": "runs",
+          "native": "runs"
+        },
+        {
+          "scope": "tests/test_pci_serial_list.py::ListingPtyProbeTests::test_unreadable_port_is_permission_denied",
+          "kind": "decorator.skipIf",
+          "condition": "os.geteuid() == 0",
+          "reason": "root bypasses file permissions",
+          "environment": [],
+          "categories": [
+            "unclassified"
+          ],
+          "offline": "unknown",
+          "native": "unknown"
+        },
+        {
+          "scope": "tests/test_pci_serial_list.py::ListingTests::test_cli_json_and_text",
+          "kind": "decorator.skipUnless",
+          "condition": "PYSERIAL",
+          "reason": "serial extra required",
+          "environment": [],
+          "categories": [
+            "host_tool"
+          ],
+          "offline": "runs",
+          "native": "runs"
+        },
+        {
+          "scope": "tests/test_pci_serial_list.py::ListingTests::test_default_enumeration_uses_pyserial_list_ports",
+          "kind": "decorator.skipUnless",
+          "condition": "PYSERIAL",
+          "reason": "serial extra required",
+          "environment": [],
+          "categories": [
+            "host_tool"
+          ],
+          "offline": "runs",
+          "native": "runs"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "unclassified"
+          ],
+          "tests": [
+            "ListingPtyProbeTests::test_unreadable_port_is_permission_denied"
+          ]
+        }
+      ]
+    },
     "tests/test_pci_serial_probe.py": {
       "categories": [
         "host_platform",
@@ -8548,7 +8827,7 @@
       "native": "all",
       "gated_tests": 2,
       "native_runnable_tests": 2,
-      "native_selected_tests": 33,
+      "native_selected_tests": 34,
       "sites": [
         {
           "scope": "tests/test_programming.py::NativeProgrammingTest",
@@ -10302,7 +10581,7 @@
         "rust_binaries"
       ],
       "native": "none",
-      "gated_tests": 2,
+      "gated_tests": 3,
       "native_runnable_tests": 0,
       "native_selected_tests": 0,
       "sites": [
@@ -10327,6 +10606,7 @@
             "rust_binaries"
           ],
           "tests": [
+            "RustRoutedCalSimulatorTests::test_journaled_write_binds_baseline_and_recovery_reads_expected",
             "RustRoutedCalSimulatorTests::test_project_bound_write_then_independent_recall_direct_through_six_bridges",
             "RustRoutedCalSimulatorTests::test_wrong_outbound_route_never_mutates_the_simulated_parameter"
           ]
@@ -10340,7 +10620,7 @@
       "native": "all",
       "gated_tests": 1,
       "native_runnable_tests": 1,
-      "native_selected_tests": 16,
+      "native_selected_tests": 17,
       "sites": [
         {
           "scope": "tests/test_scenes.py::SceneNativeTest",
@@ -10352,6 +10632,39 @@
           ],
           "categories": [
             "native_opt_in"
+          ],
+          "offline": "skips",
+          "native": "runs"
+        }
+      ]
+    },
+    "tests/test_sensor_p504_senpill_subset.py": {
+      "categories": [
+        "cgate_test_host",
+        "native_cgate_local",
+        "unit_specs"
+      ],
+      "native": "all",
+      "gated_tests": 1,
+      "native_runnable_tests": 1,
+      "native_selected_tests": 1,
+      "sites": [
+        {
+          "scope": "tests/test_sensor_p504_senpill_subset.py::FocusedSenpillNativeTest",
+          "kind": "decorator.skipUnless",
+          "condition": "native_backend() and os.environ.get('CBUS_UNITSPEC_DIR')",
+          "reason": "Select native C-Gate and unit specs for the focused SENPILL case",
+          "environment": [
+            "CBUS_CGATE_JAVA",
+            "CBUS_CGATE_TEST_HOST",
+            "CBUS_LOCAL_CGATE_VENDOR",
+            "CBUS_NATIVE_SERVICE_BACKEND",
+            "CBUS_UNITSPEC_DIR"
+          ],
+          "categories": [
+            "cgate_test_host",
+            "native_cgate_local",
+            "unit_specs"
           ],
           "offline": "skips",
           "native": "runs"
@@ -10458,7 +10771,7 @@
       "native": "all",
       "gated_tests": 3,
       "native_runnable_tests": 3,
-      "native_selected_tests": 10,
+      "native_selected_tests": 15,
       "sites": [
         {
           "scope": "tests/test_serial_commissioning.py::NativeSerialCommissioningTests",
@@ -10693,6 +11006,43 @@
         }
       ]
     },
+    "tests/test_serial_reconcile_wfccomm_one_bridge.py": {
+      "categories": [
+        "rust_binaries"
+      ],
+      "native": "none",
+      "gated_tests": 3,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_serial_reconcile_wfccomm_one_bridge.py::LoadedWfccommOneBridgeTests",
+          "kind": "decorator.skipUnless",
+          "condition": "BIN",
+          "reason": "Select CBUS_CMQTTD_BIN for owned loaded WFCOMM reconciliation",
+          "environment": [
+            "CBUS_CMQTTD_BIN"
+          ],
+          "categories": [
+            "rust_binaries"
+          ],
+          "offline": "unknown",
+          "native": "unknown"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "rust_binaries"
+          ],
+          "tests": [
+            "LoadedWfccommOneBridgeTests::test_cli_admission_and_tamper_refuse_before_write",
+            "LoadedWfccommOneBridgeTests::test_cli_plan_apply_close_load_readback_noop",
+            "LoadedWfccommOneBridgeTests::test_target_save_failure_retries_database_only_without_readdress"
+          ]
+        }
+      ]
+    },
     "tests/test_serials.py": {
       "categories": [
         "cgate_test_host",
@@ -10775,7 +11125,7 @@
       "native": "all",
       "gated_tests": 1,
       "native_runnable_tests": 1,
-      "native_selected_tests": 9,
+      "native_selected_tests": 17,
       "sites": [
         {
           "scope": "tests/test_simulator_duplicates.py::NativeDuplicateDiscoveryTests",
@@ -11173,6 +11523,58 @@
           ],
           "tests": [
             "OriginalThermostatTests::test_all_28840_fresh_original_instruction_cases"
+          ]
+        }
+      ]
+    },
+    "tests/test_thermostat_template_creation.py": {
+      "categories": [
+        "cgate_test_host",
+        "private_vendor_tree"
+      ],
+      "native": "none",
+      "gated_tests": 1,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_thermostat_template_creation.py::NativeTemplateGroupCreationTests",
+          "kind": "decorator.skipUnless",
+          "condition": "os.environ.get('CBUS_CGATE_TEST_HOST')",
+          "reason": "Set CBUS_CGATE_TEST_HOST for native template group creation",
+          "environment": [
+            "CBUS_CGATE_TEST_HOST"
+          ],
+          "categories": [
+            "cgate_test_host"
+          ],
+          "offline": "skips",
+          "native": "runs"
+        },
+        {
+          "scope": "tests/test_thermostat_template_creation.py::NativeTemplateGroupCreationTests::test_ordered_creation_with_tag_name_and_save_reload",
+          "kind": "body.call",
+          "condition": "tag is None",
+          "reason": "Native fresh project has no scalar Project.TagName",
+          "environment": [
+            "CBUS_CGATE_TEST_HOST",
+            "CBUS_CGATE_TEST_PORT"
+          ],
+          "categories": [
+            "cgate_test_host",
+            "private_vendor_tree"
+          ],
+          "offline": "unknown",
+          "native": "unknown"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "private_vendor_tree"
+          ],
+          "tests": [
+            "NativeTemplateGroupCreationTests::test_ordered_creation_with_tag_name_and_save_reload"
           ]
         }
       ]
@@ -12407,6 +12809,34 @@
           "categories": [
             "cgate_test_host",
             "native_cgate_local",
+            "unit_specs"
+          ],
+          "offline": "skips",
+          "native": "runs"
+        }
+      ]
+    },
+    "tests/test_wireless_gateway_p507_host.py": {
+      "categories": [
+        "cgate_test_host",
+        "unit_specs"
+      ],
+      "native": "all",
+      "gated_tests": 1,
+      "native_runnable_tests": 1,
+      "native_selected_tests": 1,
+      "sites": [
+        {
+          "scope": "tests/test_wireless_gateway_p507_host.py::WirelessGatewayP507HostTest",
+          "kind": "decorator.skipUnless",
+          "condition": "native_enabled()",
+          "reason": "Set CBUS_CGATE_TEST_HOST and CBUS_UNITSPEC_DIR for P5.07 gateway acceptance",
+          "environment": [
+            "CBUS_CGATE_TEST_HOST",
+            "CBUS_UNITSPEC_DIR"
+          ],
+          "categories": [
+            "cgate_test_host",
             "unit_specs"
           ],
           "offline": "skips",

@@ -27,6 +27,7 @@ Python 3.13 or newer is required. The base package has no external dependencies.
 | Inspect or change addressing and serials | `cgate address`, `serials` | C-Gate; profile and identity guards apply |
 | Direct CNI queries and commissioning | `pci`, `serial-address` | Explicit PCI/CNI endpoint |
 | Discover CNI2/Wiser endpoints | `interface discover-cni`, `interface scan-cni --probe BIND@DEST`, `interface scan-cni --auto-adapters [--plan-only]` | Bounded IPv4 UDP queries; auto mode needs the optional `network` extra; plan-only sends no traffic; no TCP or C-Bus connection |
+| List host serial ports, optionally probing each | `interface list-serial [--probe] [--format text]` | pyserial `list_ports` metadata (device, description, hwid, VID/PID, serial number) without opening ports; `--probe` runs `probe-serial` without `--setup` on every port in turn and reports `found`/`no_response`/`busy`/`permission_denied`/`error`; it sends reset frames to whatever is attached, so use it only when that is acceptable; needs the `serial` extra |
 | Probe or set up a serial PCI | `interface probe-serial PORT [--setup]` | Exclusive open of one explicit port; reset/identify/RECALL only; `--setup` writes cmqttd's four interface options after a `present` result and verifies readback; needs the `serial` extra |
 | Inspect route bytes | `pci-route` | Offline |
 | Plan supported device settings | `keys`, `sensors`, `din-settings`, `iope-settings`, `dlt`, `edlt`, `wireless`, `unit-conversion`, `unit-scenes` | Offline, with explicit inputs/specifications; `dlt profiles` explains DLT/eDLT admission; `wireless boundary` composes C-Gate learn/unit-action commands without I/O |
@@ -364,7 +365,10 @@ literal bridge/reply bytes or a typed legacy XML/CBZ route. The typed form
 takes `--project-file`, `--source-network`, `--target-network`, and the global
 `--local-unit`; it binds the file digest and derives the exact return path
 before one send. WRITE additionally requires an ACK tag and never replays an
-uncertain mutation. Use these only for bounded CAL transport. Saved-project
+uncertain mutation. WRITE `--journal` adds a baseline RECALL and an exclusive
+fsynced attempt journal before the send. `--recover` classifies that journal
+from one fresh RECALL and never resends. Use these only for bounded CAL
+transport. Saved-project
 resolution does not authenticate live bridge topology; device programming
 methods, readback, commit and persistence remain separate.
 

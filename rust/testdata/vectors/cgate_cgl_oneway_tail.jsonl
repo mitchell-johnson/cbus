@@ -1,0 +1,1 @@
+{"command":"CGL EXPORT CGLP 247","expect_export":{"document":{"cglVersion":"1.1","createdBy":"<creator>","createdTime":"<timestamp>","localNetwork":247,"networks":[{"address":247,"name":"Hop7"}]},"final":"344 End CGL snippet [numberOfExportedObjects:0]","first":"343-Begin CGL snippet"},"group":"oneway","id":"cgl-oneway-tail-0"}

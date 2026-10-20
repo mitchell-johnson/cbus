@@ -244,6 +244,17 @@ LIGHTING_BINDING_FACTS = (
     ('Lighting.OffsetEditable visibility', 'Never'),
     ('Lighting.TargetLevel1Editable visibility', 'Never'),
 )
+ORIGINAL_PARENT_ADD_CALLBACK_ORDER = (
+    ('ComboBoxAddEdit Add button', 'FrmBaseUnit parent panel'),
+    ('CBusNetwork.AddGroupRequest/AddApplicationRequest', 'TfrmKEYGL5.AddSharpGroup'),
+    ('TCBusApplicationGUIAgent.AddGroup (TddGroup/TfrmGroupAssign)', 'TfrmKEYGL5.AddSharpGroup'),
+    ('SelectedValue.WriteValue on accept', 'owning panel combo binding'),
+    ('ShowWidget', 'FrmBaseUnit.ShowWidget'),
+    ('BaseWidget.SetWidgetData', 'FrmBaseUnit.ShowWidget'),
+    ('BaseWidget.SetUpDataSource', 'BaseWidget.SetWidgetData'),
+    ('assign selected data source', 'owning panel SetUpDataSource'),
+    ('ResetBindings(false)', 'owning panel SetUpDataSource'),
+)
 
 
 class _NativeLanguageBinding(dict):
@@ -941,6 +952,7 @@ class EdltParentTransaction:
         scene_widget_seen = False
         dialog_panels = {row['panel'] for row in operations
                          if row['op'] == 'parent-add-binding'}
+        add_history = []
         widget_editors = {
             'measurement': self.measurement_editor,
             'lighting': self.lighting_editor,
@@ -961,6 +973,59 @@ class EdltParentTransaction:
             options = {name: value for name, value in operation.items()
                        if name != 'op'}
             dialog_binding = kind == 'parent-add-binding'
+            if dialog_binding and operation.get('cancelled') is True:
+                # A cancelled Add closes the dialog without creation or a
+                # SelectedValue write, so it owns no bytes and changes no
+                # controls. It still occupies its ordered history position:
+                # later Adds must not reuse its slot and later panels must
+                # not observe a binding that never happened.
+                panel = operation['panel']
+                entry = {
+                    'operation': number, 'panel': panel,
+                    'option': operation['option'], 'outcome': 'cancelled',
+                    'value': None,
+                    'callback_order': [
+                        event for event, _source in
+                        ORIGINAL_PARENT_ADD_CALLBACK_ORDER[:3]],
+                    'selected_value_written': False,
+                    'owned_parameters': [],
+                }
+                add_history.append(entry)
+                document = {
+                    'format': 'cbus-edlt-parent-add-history-v1',
+                    'operation': number, 'panel': panel,
+                    'option': operation['option'], 'outcome': 'cancelled',
+                    'composition_role': (
+                        'ordered cancelled parent Add history without '
+                        'creation or panel binding'),
+                    'callback_order': [
+                        {'order': index, 'event': event, 'source_method': source}
+                        for index, (event, source) in enumerate(
+                            ORIGINAL_PARENT_ADD_CALLBACK_ORDER[:3], 1)],
+                    'selected_value_written': False,
+                    'owned_parameters': [],
+                    'parent_panel_binding': {
+                        'source': PANEL_BINDING_SOURCES.get(
+                            panel, 'ComboBoxAddEdit.cs / FrmBaseUnit.cs'),
+                        'cancelled_dialog_replayed': True,
+                        'creation_issued': False,
+                        'full_original_parent_form_executed': False,
+                    },
+                    'standalone_changes_applied_directly': False,
+                    'terminal_save_deferred_to_parent': True,
+                }
+                results.append(_json(document))
+                continue
+            if dialog_binding:
+                add_history.append({
+                    'operation': number, 'panel': operation['panel'],
+                    'option': operation['option'], 'outcome': 'accepted',
+                    'value': operation.get('value'),
+                    'callback_order': [
+                        event for event, _source in
+                        ORIGINAL_PARENT_ADD_CALLBACK_ORDER],
+                    'selected_value_written': True,
+                })
             if kind == 'parent-language-binding':
                 images = {(row['application'], row['group']): row
                           for row in operation['group_images']}
@@ -1774,6 +1839,16 @@ class EdltParentTransaction:
                 {'property': name, 'update_mode': mode}
                 for name, mode in LIGHTING_BINDING_FACTS
             ],
+            'parent_add_callback_order': [
+                {'order': index, 'event': event, 'source_method': source}
+                for index, (event, source) in
+                enumerate(ORIGINAL_PARENT_ADD_CALLBACK_ORDER, 1)
+            ],
+            'parent_add_cancelled_callback_order': [
+                {'order': index, 'event': event, 'source_method': source}
+                for index, (event, source) in
+                enumerate(ORIGINAL_PARENT_ADD_CALLBACK_ORDER[:3], 1)
+            ],
             'original_save_order': list(ORIGINAL_SAVE_ORDER),
             'transaction_order': [
                 'validate exact profile, complete snapshot, lifecycle cache and operation grammar',
@@ -1809,7 +1884,11 @@ class EdltParentTransaction:
                 'duplicate_or_conflicting_byte_ownership_rejected': True,
                 'all_controls_validated_before_first_pp_write': True,
                 'operation_group_dependencies_verified_before_first_pp_write': True,
+                'parent_add_history_ordered': True,
+                'cancelled_parent_add_owns_no_bytes': True,
+                'cancelled_parent_add_writes_no_selected_value': True,
             },
+            'parent_add_history': list(add_history),
             'operation_metadata_dependencies': metadata_dependencies,
             'execution_counts': {
                 'retained_load_models': 1,
@@ -1826,6 +1905,13 @@ class EdltParentTransaction:
                     int(scene_manager_composition is not None),
                 'standalone_validation_placement_projections':
                     validation_placement_projections,
+                'parent_add_history_entries': len(add_history),
+                'cancelled_parent_add_entries': sum(
+                    1 for entry in add_history
+                    if entry['outcome'] == 'cancelled'),
+                'accepted_parent_add_entries': sum(
+                    1 for entry in add_history
+                    if entry['outcome'] == 'accepted'),
                 'terminal_normalization_passes': 1,
                 'terminal_crc_passes': 1,
                 'apply_parameter_write_passes': 1,

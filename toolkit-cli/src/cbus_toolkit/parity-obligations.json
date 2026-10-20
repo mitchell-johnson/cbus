@@ -8,25 +8,25 @@
     "toolkit_surface": "2cd1dd61f80a34ff14aebcfb44e131aa0ab738856a5073342bc3aac5a3494401",
     "unindexed_help_review": "dcf9d5fa20ec98d321372c4099dea6c320f881fab1322de91cbb997d69808e80",
     "toolkit_executable_surface": "c7205a186952f2c2543d9e545d1055a606889614b382294fa7e2cb2340ed2767",
-    "toolkit_dialog_map": "142c8265bae907317f9ff2a23c48521ac29d2140eaabee98e405d29ef212b644",
+    "toolkit_dialog_map": "e7bbe1d681a71f19f08641f83c3c6aaed9983b7d197c79e8597595cb007630e4",
     "toolkit_executable_binary": "9d01721abab3beb4724511e7d65e39328c0518e0721caa53f4601cded20655ab",
     "toolkit_map": "f96f05cef7c2bdf0f295397d97249b50c45db013f3fcaa2c502f76e2c10dd1eb",
-    "feature_ledger": "f5a1ab3b7660b4a8edde4d11aa0f0027cdf49931adc0f077680d32ebfb952657",
-    "cgate_capability_matrix": "e25f26795c6739f4ebdc4f632560a97d3db6b403ecf46b10694d918ca9498f20",
-    "cgate_contract_inventory": "0e4879b1ecb1b93f6bf7ad5f3b490881675fe5014a24f1f7e76e943938dec8d9",
+    "feature_ledger": "664438a2bb5cad160da788a2339c329acf3851905df51e71c9f4ccde7b8e86e1",
+    "cgate_capability_matrix": "e3472545a08a9c5c3a0ea586366eb9e437f3e44785c99e823da386387558c788",
+    "cgate_contract_inventory": "8ee46ecbfd464a3f87eb428d03eec312bd8540f2248cc888fb21b5ff7fbd1f20",
     "cgate_session_native_acceptance": "d2752f56f3e0abcbff10d805e7803b29704337368b09580e5685e3b3bf6d3c5f",
     "cgate_tagged_session_native_acceptance": "76f77ea955a6575700ea350aba52f8b136599119c07d955f4d04cce3ab5469c8",
     "functional_obligation_pilot": "8fca68938d03aa2d798c8a1fdd924e0ed4c2dd0c16297cad87a288d11afbd621",
-    "cgate_session_differential_cmqttd": "459f25b15f7886445ae5b156d0b99579c533901d8e2a329a408e54c06a3c38b5",
-    "cgate_tagged_session_differential_cmqttd": "b6ee1ca031cdaf3f7a0cac1275dfd0bc81a85ffaf525eb68a69334f0dc36cf14",
-    "cgate_session_physical_applicability": "2fa0e1e3b31f99d8870d4d6e8e7fa1cdcd1d63ddb506a0ec14ca921a827e4837",
+    "cgate_session_differential_cmqttd": "4abdad31580de16b62389f1f7e25154476ffba1e0bfe589b1f5ef43997ade26e",
+    "cgate_tagged_session_differential_cmqttd": "9956185bbcc63093b3c87079f5585d565b2b5b86cdcc067ee2ab440aeff17671",
+    "cgate_session_physical_applicability": "a05d80a9fd3309ab46a011c5e422c612c3e9808c3bea17a24fb95e2e6819f94c",
     "roadmap": "a3362a55854ffc6523c4954cf12e8393c74cc7070ad4270e5f458f2530516c7f",
     "hardware_fixture_matrix": "92f9025fb16821c507ce51aea3abfc4c9d65d62c99486316d1b6b640a76b566e",
     "workflow_completion_criteria": "d23e6220c24f76c0f65e789898db9647f267cb9326988870bea42a660064bf3c",
     "parity_denominator_history": "6743465a137da2241cc1c1adb69cf809ace3238d9c0fbaaa20e19df069b130ca",
     "closure_receipts": "6f055800e712d7e36607b65a9d83321b9bf6e16b34d7e95b8dd733a0d1245398"
   },
-  "evidence_bundle_sha256": "7ca5521e960a7c62bef677650a354a9757b9e9eb7ee58f6b9980614c39fd24da",
+  "evidence_bundle_sha256": "f390a14393acd39a82bc45135d30f82af80cc3ecaad633e2c8ddcff7f1420d73",
   "work_item_ids": [
     "P0.01",
     "P0.02",
@@ -143076,8 +143076,8 @@
       "source_id": "DBCOPYSAFE",
       "routing_class": "LocalDatabase",
       "contract_id": "cgate-contract:ae45dd106aaef25a",
-      "contract_sha256": "d51334b3dc9b2c38f7f0b0aaa8bcb9c1ee7125b7c46471203f64372daabbe7a7",
-      "contract_axes_sha256": "9832fa17198392b10840fe5c974cbea0f4b9a660e8fb833092d47b386d02cfdd",
+      "contract_sha256": "91780543a9f566e7af6d1b6883480986d6ab8c6a38ce9d26ab4cc5fbfccccb19",
+      "contract_axes_sha256": "4b553d58eac9f8536dacc9e612b5be0f34e3ad7f679e8d8fcf9cfc339735cffe",
       "contract_axes": {
         "selector_grammar": {
           "status": "partial",
@@ -143252,7 +143252,7 @@
                 "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
               ],
               "known": {
-                "routing_evidence": "Service::handle has no pre-gate branch; local_command() admits this database verb to the durable in-memory model with no bus I/O."
+                "routing_evidence": "Server::dbcopy duplicates known Unit records and admitted OID Level records with the 301 OID flow, and ordinary numeric Application/Group/NetVar/Level sources (plus admitted !oid Application/Group selectors) as complete subtrees with fresh identities, caller-supplied root address/tag, retained descendant values and a 301 OID=root receipt, atomically on a staged clone (409 on destination conflict, 401 on missing source or wrong parent, cross-project selectors isolated). Level copies keep the NULL-value flow for the caller initializer. Network sources, !oid parents, incomplete sources/descendants and unit-bearing payloads keep their established refusal or legacy opaque behavior. local_command() admits the verb with no bus I/O."
               }
             }
           }
@@ -147003,8 +147003,8 @@
       "source_id": "DBSETXML",
       "routing_class": "LocalDatabase",
       "contract_id": "cgate-contract:4e1f41fe90d80336",
-      "contract_sha256": "03b3fca8fde4073e7238ae2023b3613234688773704018683cd72c3433dd3b92",
-      "contract_axes_sha256": "a1ffacd02ebc22ac48e6784f2efd55d8c871bbc851eb2f80c24685e4e5e01a53",
+      "contract_sha256": "de981bbb2587858f9c1ca04f1fc87edcbcea86ef9ddf097ed6a3ad18fb1d53ed",
+      "contract_axes_sha256": "62619d7b097d7bfbeedb4a42a4110c2523a9439c4ecf5cc80ddd7a3ac5e1e511",
       "contract_axes": {
         "selector_grammar": {
           "status": "partial",
@@ -147179,7 +147179,7 @@
                 "rust/cbus-cgate/src/capability_matrix.rs#CAPABILITY_MATRIX"
               ],
               "known": {
-                "routing_evidence": "Server::handle_document supports scalar-field documents plus complete typed Unit, Level, NetVar, Group, Application and Network/Interface replacement. Complete forms validate the whole submitted tree, selected-project path/OID target, required Unit scalars/PP ownership, the captured Application/Unit, two-Unit and two-leaf-Application shared-OID shapes with address-keyed Unit metadata and path-distinct pending Applications, other OID conflicts, and sibling application/unit addresses on a cloned model before one commit; return the 301 submitted-root OID receipt; retire omitted/replaced descendants; keep the native Unit scalar schema and open PP catalogue while omitting captured unknown namespaced root attributes/direct children and unknown plain Unit children (owned replacement-edges tags 127/128); and survive copy/rename/delete/archive/restart. Service::handle_document persists atomically with rollback and no PCI I/O. The configured live Network admits same-address replacements only while its interface type/address binding remains unchanged; observed physical/state/level data remain runtime-owned. An owned native C-Gate 3.4.0 build 2001 combined Network/Application/Unit replacement captures the 301 receipt, Application-before-Unit readback, schema-ordered plain Unit fields, and 446 validation for missing UnitName with previous state preserved (native_cgate_dbsetxml_combined.json; cgate_dbsetxml.jsonl; dbsetxml_combined_network_unit_matches_native_build_2001_capture). A second owned capture pins shared-OID readback, OID lookup precedence and save/reload plus direct Unit mutation (native_cgate_dbsetxml_duplicate_oids.json; cgate_dbsetxml_duplicate_oids.jsonl; dbsetxml_duplicate_oid_matches_owned_native_vectors; duplicate_oid_units_keep_independent_documents_through_service_restart). A third owned capture pins two leaf Applications with one OID, durable direct and OID readback, and path/OID TagName replacement (native_cgate_dbsetxml_duplicate_applications.json; cgate_dbsetxml_duplicate_applications.jsonl; dbsetxml_duplicate_leaf_applications_match_owned_native_vectors; duplicate_application_oid_keeps_both_paths_through_service_restart). Other duplicate typed-container shapes, cross-network Unit-OID collisions, Unit-containing ambiguous OID mutations and unprobed duplicate-Application mutations remain closed with 409. The broader typed-tree and extension behavior remains separately tested (native_cgate_legacy_database.json; dbsetxml_replaces_evidenced_typed_database_trees_atomically; dbsetxml_network_unit_topology_is_atomic_conflict_checked_and_retires_omissions; configured_network_dbsetxml_replaces_database_topology_without_rebinding_or_pci_io; typed_container_dbsetxml_is_durable_atomic_and_never_reaches_pci; tcp_complete_typed_dbsetxml_returns_root_oid_and_exact_readback; test_typed_container_document_replaces_complete_subtree)."
+                "routing_evidence": "Server::handle_document supports scalar-field documents plus complete typed Unit, Level, NetVar, Group, Application and Network/Interface replacement. Complete forms validate the whole submitted tree, selected-project path/OID target, required Unit scalars/PP ownership, the captured Application/Unit, two-Unit and two-leaf-Application shared-OID shapes with address-keyed Unit metadata and path-distinct pending Applications, other OID conflicts, and sibling application/unit addresses on a cloned model before one commit; return the 301 submitted-root OID receipt; retire omitted/replaced descendants; keep the native Unit scalar schema and open PP catalogue while omitting captured unknown namespaced root attributes/direct children and unknown plain Unit children (owned replacement-edges tags 127/128); admit an owned-model text-only bounded Application/Group Description (exported after Address, empty normalizes to absent, NetVar/Level/Network Description refused; native placement/order/defaults unproven, issue #75); and survive copy/rename/delete/archive/restart. Service::handle_document persists atomically with rollback and no PCI I/O. The configured live Network admits same-address replacements only while its interface type/address binding remains unchanged; observed physical/state/level data remain runtime-owned. An owned native C-Gate 3.4.0 build 2001 combined Network/Application/Unit replacement captures the 301 receipt, Application-before-Unit readback, schema-ordered plain Unit fields, and 446 validation for missing UnitName with previous state preserved (native_cgate_dbsetxml_combined.json; cgate_dbsetxml.jsonl; dbsetxml_combined_network_unit_matches_native_build_2001_capture). A second owned capture pins shared-OID readback, OID lookup precedence and save/reload plus direct Unit mutation (native_cgate_dbsetxml_duplicate_oids.json; cgate_dbsetxml_duplicate_oids.jsonl; dbsetxml_duplicate_oid_matches_owned_native_vectors; duplicate_oid_units_keep_independent_documents_through_service_restart). A third owned capture pins two leaf Applications with one OID, durable direct and OID readback, and path/OID TagName replacement (native_cgate_dbsetxml_duplicate_applications.json; cgate_dbsetxml_duplicate_applications.jsonl; dbsetxml_duplicate_leaf_applications_match_owned_native_vectors; duplicate_application_oid_keeps_both_paths_through_service_restart). Other duplicate typed-container shapes, cross-network Unit-OID collisions, Unit-containing ambiguous OID mutations and unprobed duplicate-Application mutations remain closed with 409. The broader typed-tree and extension behavior remains separately tested (native_cgate_legacy_database.json; dbsetxml_replaces_evidenced_typed_database_trees_atomically; dbsetxml_network_unit_topology_is_atomic_conflict_checked_and_retires_omissions; configured_network_dbsetxml_replaces_database_topology_without_rebinding_or_pci_io; typed_container_dbsetxml_is_durable_atomic_and_never_reaches_pci; tcp_complete_typed_dbsetxml_returns_root_oid_and_exact_readback; test_typed_container_document_replaces_complete_subtree)."
               }
             }
           }
@@ -337739,7 +337739,7 @@
       "source_scope_item_id": "scope:cgate_primary_path:ae45dd106aaef25a",
       "source_id": "DBCOPYSAFE",
       "contract_id": "cgate-contract:ae45dd106aaef25a",
-      "contract_sha256": "d51334b3dc9b2c38f7f0b0aaa8bcb9c1ee7125b7c46471203f64372daabbe7a7",
+      "contract_sha256": "91780543a9f566e7af6d1b6883480986d6ab8c6a38ce9d26ab4cc5fbfccccb19",
       "definition_status": "provisional",
       "implementation_status": "in_progress",
       "implementation_basis": "route_reachable_contract_incomplete",
@@ -338705,7 +338705,7 @@
       "source_scope_item_id": "scope:cgate_primary_path:4e1f41fe90d80336",
       "source_id": "DBSETXML",
       "contract_id": "cgate-contract:4e1f41fe90d80336",
-      "contract_sha256": "03b3fca8fde4073e7238ae2023b3613234688773704018683cd72c3433dd3b92",
+      "contract_sha256": "de981bbb2587858f9c1ca04f1fc87edcbcea86ef9ddf097ed6a3ad18fb1d53ed",
       "definition_status": "provisional",
       "implementation_status": "in_progress",
       "implementation_basis": "route_reachable_contract_incomplete",

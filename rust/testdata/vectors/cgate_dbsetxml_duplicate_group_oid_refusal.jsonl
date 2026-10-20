@@ -1,0 +1,1 @@
+{"name":"duplicate Group OID across two Applications is rejected","expected_status":409,"shape":"duplicate-group-oid-across-applications","target":"//XDUPG/254","application_addresses":[56,57],"group_address":1,"duplicate_oid":"66666666-6666-4666-8666-666666666666","error":"DBSETXML document contains unsupported duplicate OIDs"}

@@ -313,7 +313,7 @@ def record():
     import importlib.metadata
     origins={name:module.__file__ for name,module in sys.modules.items() if name=='cbus_toolkit' or name.startswith('cbus_toolkit.')}
     entries=[{'name':entry.name,'value':entry.value} for entry in importlib.metadata.distribution('cbus-toolkit-cli').entry_points if entry.group=='console_scripts']
-    Path(os.environ['CBUS_PUBLIC_ORIGIN_RECEIPT']).write_text(json.dumps({'origins':origins,'paths':sys.path,'entry_script':sys.modules['__main__'].__file__,'entries':entries})+'\\n')
+    Path(os.environ['CBUS_PUBLIC_ORIGIN_RECEIPT']).write_text(json.dumps({'origins':origins,'paths':sys.path,'entry_script':sys.modules['__main__'].__loader__.path,'entries':entries})+'\\n')
 atexit.register(record)
 ''', encoding="utf-8")
     source = (EXAMPLES / "neo-editor.json").resolve()

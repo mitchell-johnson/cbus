@@ -495,14 +495,23 @@ class DaliCommissioning:
         if proxy_edits:
             contract = capabilities.get("dali_session_extended_proxy")
             families = contract.get("families") if isinstance(contract, dict) else None
-            requirements.append((isinstance(families, list) and all(row["family"] in families for row in proxy_edits)
+            global_edits = [row for row in proxy_edits if "line_index" not in row]
+            requirements.append((isinstance(families, list) and all(row["family"] in families for row in global_edits)
                                  and contract.get("native_reserved_bits") is True
                                  and contract.get("excluded_bytes") is True,
                                  "DALI native extended-proxy serializer is unavailable"))
+            if len(global_edits) != len(proxy_edits):
+                # cmqttd advertises its line serializer only by family count;
+                # line leaf ownership is this CLI's original-vector table.
+                requirements.append((isinstance(contract, dict)
+                                     and contract.get("line_families") == extended_proxy.LINE_FAMILY_COUNT
+                                     and contract.get("whole_recalled_families") is True,
+                                     "DALI native extended-proxy line serializer is unavailable"))
             schema = contract.get("writable_global_fields") if isinstance(contract, dict) else None
             indexed = {row.get("path"): row for row in schema if isinstance(row, dict)} if isinstance(schema, list) else {}
             for edit in evidence["edits"]:
-                if edit.get("path", "").startswith(extended_proxy.PREFIX):
+                if (edit.get("path", "").startswith(extended_proxy.PREFIX)
+                        and not edit["path"].startswith(extended_proxy.PREFIX + "line/")):
                     address, maximum, boolean = extended_proxy.FIELDS[edit["path"][len(extended_proxy.PREFIX):]]
                     advertised = indexed.get(edit["path"], {})
                     requirements.append((advertised.get("address") == address

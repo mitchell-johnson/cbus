@@ -3,6 +3,7 @@
 
 use super::*;
 use cbus_protocol::dali::DaliCalMode;
+use cbus_protocol::pci_observation::{routed_recall_request, routed_write_request};
 use cbus_protocol::serial_address::{
     encode_serial_address, encode_serial_address_routed, parse_native_serial,
 };
@@ -2162,6 +2163,109 @@ impl PciClient {
             sals: vec![sal],
         })
         .await
+    }
+
+    /// Send one routed CAL WRITE exactly once using the shared pure encoder.
+    ///
+    /// The wire bytes come from `routed_write_request` (single source of
+    /// truth; no payload bytes are duplicated here) with this session's
+    /// checksum mode; only the allocator-owned confirmation byte replaces the
+    /// encoder's fixed `g`. The frame is never registered for replay.
+    /// Success means only that the attached PCI returned the exact positive
+    /// confirmation for this send. It does not prove unit acceptance,
+    /// movement, or persistence; callers correlate the Reply Network unit ACK
+    /// separately via `routed_write_expected_ack`. Routes outside one to six
+    /// bridges and payloads over 30 bytes are refused with `InvalidInput`
+    /// before any I/O.
+    pub async fn routed_write_once(
+        &self,
+        bridges: &[u8],
+        unit: u8,
+        parameter: u8,
+        data: &[u8],
+    ) -> Result<()> {
+        validate_bridge_route(bridges)?;
+        let template =
+            routed_write_request(bridges, unit, parameter, data, self.command_checksum())
+                .map_err(|error| Error::new(ErrorKind::InvalidInput, error))?;
+        self.routed_cal_send_once(template).await
+    }
+
+    /// Send one routed CAL RECALL exactly once using the shared pure encoder.
+    ///
+    /// Encoding, confirmation-only success, and pre-I/O refusal follow
+    /// [`Self::routed_write_once`]; a zero recall count is refused with
+    /// `InvalidInput` before any I/O. This returns PCI delivery confirmation
+    /// only: reply bytes still require a correlated recall exchange such as
+    /// [`Self::recall_parameter_routed`].
+    pub async fn routed_recall_once(
+        &self,
+        bridges: &[u8],
+        unit: u8,
+        parameter: u8,
+        count: u8,
+    ) -> Result<()> {
+        validate_bridge_route(bridges)?;
+        let template =
+            routed_recall_request(bridges, unit, parameter, count, self.command_checksum())
+                .map_err(|error| Error::new(ErrorKind::InvalidInput, error))?;
+        self.routed_cal_send_once(template).await
+    }
+
+    // Send one shared-encoder routed CAL template exactly once and wait for
+    // its PCI delivery confirmation. The template must be encoder wire ending
+    // in the fixed code `g` plus carriage return; only that code byte is
+    // replaced with the allocated confirmation, mirroring the OEM-control
+    // paths. No retry is registered, so an absent confirmation is
+    // outcome-uncertain and quarantines the code.
+    async fn routed_cal_send_once(&self, template: Vec<u8>) -> Result<()> {
+        if template.len() < 4
+            || template.first() != Some(&b'\\')
+            || template[template.len() - 1] != b'\r'
+            || template[template.len() - 2] != b'g'
+        {
+            return Err(Error::new(
+                ErrorKind::InvalidInput,
+                "routed CAL template must be shared-encoder wire ending in fixed code g",
+            ));
+        }
+        let mut replies = self.packets.subscribe();
+        let confirmation = self
+            .programming_send_encoded_once(|code| {
+                let mut bytes = template;
+                let slot = bytes.len() - 2;
+                bytes[slot] = code;
+                Ok(bytes)
+            })
+            .await?;
+        let code = confirmation.code;
+        tokio::time::timeout(Duration::from_secs(12), async {
+            loop {
+                match replies.recv().await {
+                    Ok(Some(Packet::Confirmation { code: got, success })) if got == code => {
+                        return if success {
+                            Ok(())
+                        } else {
+                            Err(Error::other("PCI rejected routed CAL command"))
+                        };
+                    }
+                    Ok(Some(_)) => {}
+                    Ok(None) | Err(_) => {
+                        return Err(Error::new(
+                            ErrorKind::BrokenPipe,
+                            "PCI response stream lost",
+                        ))
+                    }
+                }
+            }
+        })
+        .await
+        .unwrap_or_else(|_| {
+            Err(Error::new(
+                ErrorKind::TimedOut,
+                "PCI delivery confirmation timed out",
+            ))
+        })
     }
 
     async fn programming_exchange(
@@ -5656,6 +5760,1921 @@ mod tests {
         cal.extend_from_slice(&packed);
         cal.extend_from_slice(&[0; 7]);
         reply(remote, unit, &cal).await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_write_once_sends_shared_encoder_bytes_once() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_command_checksum(false);
+        // Typed pre-I/O refusals: a seven-bridge route and a 31-byte payload
+        // never reach the wire, so the valid send below is the first line.
+        assert_eq!(
+            pci.routed_write_once(&[1, 2, 3, 4, 5, 6, 7], 4, 7, &[0xAA])
+                .await
+                .unwrap_err()
+                .kind(),
+            ErrorKind::InvalidInput
+        );
+        assert_eq!(
+            pci.routed_write_once(&[0x20], 4, 7, &[0xAA; 31])
+                .await
+                .unwrap_err()
+                .kind(),
+            ErrorKind::InvalidInput
+        );
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move { pci.routed_write_once(&[0x20], 4, 7, &[0xAA, 0xBB]).await }
+        });
+        let request = line(&mut remote).await;
+        // Byte-matched to the shared pure encoder (`rc-write-one-nocheck`
+        // vector): payload hex is exact; only the allocator-owned
+        // confirmation byte may differ from the encoder's fixed `g`.
+        let expected = cbus_protocol::pci_observation::routed_write_request(
+            &[0x20],
+            4,
+            7,
+            &[0xAA, 0xBB],
+            false,
+        )
+        .unwrap();
+        assert_eq!(
+            &request[..request.len() - 2],
+            &expected[..expected.len() - 2]
+        );
+        assert_eq!(&request[..request.len() - 2], b"\\46200904A307AABB");
+        let code = request[request.len() - 2];
+        assert!((b'g'..=b'z').contains(&code));
+        assert_eq!(request[request.len() - 1], b'\r');
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        running.await.unwrap().unwrap();
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(15),
+            "routed WRITE was replayed after confirmation",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_recall_once_sends_shared_encoder_bytes_once() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_command_checksum(false);
+        // Typed pre-I/O refusals: a seven-bridge route and a zero recall
+        // count never reach the wire.
+        assert_eq!(
+            pci.routed_recall_once(&[1, 2, 3, 4, 5, 6, 7], 4, 7, 2)
+                .await
+                .unwrap_err()
+                .kind(),
+            ErrorKind::InvalidInput
+        );
+        assert_eq!(
+            pci.routed_recall_once(&[0x20], 4, 7, 0)
+                .await
+                .unwrap_err()
+                .kind(),
+            ErrorKind::InvalidInput
+        );
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move { pci.routed_recall_once(&[0x20], 4, 7, 2).await }
+        });
+        let request = line(&mut remote).await;
+        // Byte-matched to the shared pure encoder (`rc-recall-one-nocheck`).
+        let expected =
+            cbus_protocol::pci_observation::routed_recall_request(&[0x20], 4, 7, 2, false).unwrap();
+        assert_eq!(
+            &request[..request.len() - 2],
+            &expected[..expected.len() - 2]
+        );
+        assert_eq!(&request[..request.len() - 2], b"\\462009041A0702");
+        let code = request[request.len() - 2];
+        assert!((b'g'..=b'z').contains(&code));
+        assert_eq!(request[request.len() - 1], b'\r');
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        running.await.unwrap().unwrap();
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(15),
+            "routed RECALL was replayed after confirmation",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_write_once_negative_confirmation_is_typed_error_without_retry() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_command_checksum(false);
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move { pci.routed_write_once(&[0x20], 4, 7, &[0xAA, 0xBB]).await }
+        });
+        let request = line(&mut remote).await;
+        assert_eq!(&request[..request.len() - 2], b"\\46200904A307AABB");
+        let code = request[request.len() - 2];
+        assert!((b'g'..=b'z').contains(&code));
+        assert_eq!(request[request.len() - 1], b'\r');
+        // Negative PCI delivery confirmation: typed rejection, send-once.
+        remote.get_mut().write_all(&[code, b'#']).await.unwrap();
+        let error = running.await.unwrap().unwrap_err();
+        assert!(
+            error
+                .to_string()
+                .contains("PCI rejected routed CAL command"),
+            "unexpected routed WRITE rejection: {error}"
+        );
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(15),
+            "routed WRITE was replayed after negative confirmation",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_write_once_confirmation_timeout_sends_once() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_command_checksum(false);
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move { pci.routed_write_once(&[0x20], 4, 7, &[0xAA, 0xBB]).await }
+        });
+        let request = line(&mut remote).await;
+        assert_eq!(&request[..request.len() - 2], b"\\46200904A307AABB");
+        assert!((b'g'..=b'z').contains(&request[request.len() - 2]));
+        assert_eq!(request[request.len() - 1], b'\r');
+        // No peer reply: advance past the 12s production delivery-confirmation
+        // deadline on the paused clock. The production default is unchanged.
+        tokio::time::advance(Duration::from_secs(12)).await;
+        tokio::task::yield_now().await;
+        let error = running.await.unwrap().unwrap_err();
+        assert_eq!(error.kind(), ErrorKind::TimedOut);
+        assert!(
+            error
+                .to_string()
+                .contains("PCI delivery confirmation timed out"),
+            "unexpected routed WRITE timeout: {error}"
+        );
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(15),
+            "routed WRITE was replayed after confirmation timeout",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_write_once_duplicate_confirmation_completes_once() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_command_checksum(false);
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move { pci.routed_write_once(&[0x20], 4, 7, &[0xAA, 0xBB]).await }
+        });
+        let request = line(&mut remote).await;
+        assert_eq!(&request[..request.len() - 2], b"\\46200904A307AABB");
+        let code = request[request.len() - 2];
+        assert!((b'g'..=b'z').contains(&code));
+        assert_eq!(request[request.len() - 1], b'\r');
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        running.await.unwrap().unwrap();
+        // A late duplicate of the same confirmation must not cause a second
+        // send; the one-shot already completed on the first confirmation.
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        tokio::task::yield_now().await;
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(15),
+            "routed WRITE was replayed after duplicate confirmation",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_recall_once_negative_confirmation_is_typed_error_without_retry() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_command_checksum(false);
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move { pci.routed_recall_once(&[0x20], 4, 7, 2).await }
+        });
+        let request = line(&mut remote).await;
+        assert_eq!(&request[..request.len() - 2], b"\\462009041A0702");
+        let code = request[request.len() - 2];
+        assert!((b'g'..=b'z').contains(&code));
+        assert_eq!(request[request.len() - 1], b'\r');
+        // Negative PCI delivery confirmation: typed rejection, send-once.
+        remote.get_mut().write_all(&[code, b'#']).await.unwrap();
+        let error = running.await.unwrap().unwrap_err();
+        assert!(
+            error
+                .to_string()
+                .contains("PCI rejected routed CAL command"),
+            "unexpected routed RECALL rejection: {error}"
+        );
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(15),
+            "routed RECALL was replayed after negative confirmation",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_recall_once_confirmation_timeout_sends_once() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_command_checksum(false);
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move { pci.routed_recall_once(&[0x20], 4, 7, 2).await }
+        });
+        let request = line(&mut remote).await;
+        assert_eq!(&request[..request.len() - 2], b"\\462009041A0702");
+        assert!((b'g'..=b'z').contains(&request[request.len() - 2]));
+        assert_eq!(request[request.len() - 1], b'\r');
+        // No peer reply: advance past the 12s production delivery-confirmation
+        // deadline on the paused clock. The production default is unchanged.
+        tokio::time::advance(Duration::from_secs(12)).await;
+        tokio::task::yield_now().await;
+        let error = running.await.unwrap().unwrap_err();
+        assert_eq!(error.kind(), ErrorKind::TimedOut);
+        assert!(
+            error
+                .to_string()
+                .contains("PCI delivery confirmation timed out"),
+            "unexpected routed RECALL timeout: {error}"
+        );
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(15),
+            "routed RECALL was replayed after confirmation timeout",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_recall_once_duplicate_confirmation_completes_once() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_command_checksum(false);
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move { pci.routed_recall_once(&[0x20], 4, 7, 2).await }
+        });
+        let request = line(&mut remote).await;
+        assert_eq!(&request[..request.len() - 2], b"\\462009041A0702");
+        let code = request[request.len() - 2];
+        assert!((b'g'..=b'z').contains(&code));
+        assert_eq!(request[request.len() - 1], b'\r');
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        running.await.unwrap().unwrap();
+        // A late duplicate of the same confirmation must not cause a second
+        // send; the one-shot already completed on the first confirmation.
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        tokio::task::yield_now().await;
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(15),
+            "routed RECALL was replayed after duplicate confirmation",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_write_once_two_hop_negative_confirmation_is_typed_error_without_retry() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_command_checksum(false);
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move {
+                pci.routed_write_once(&[0x14, 0x15], 4, 7, &[0xAA, 0xBB])
+                    .await
+            }
+        });
+        let request = line(&mut remote).await;
+        // Two-bridge route [20, 21]; byte-matched to the shared pure encoder
+        // (`rc-write-two-nocheck` vector).
+        assert_eq!(&request[..request.len() - 2], b"\\4614121504A307AABB");
+        let code = request[request.len() - 2];
+        assert!((b'g'..=b'z').contains(&code));
+        assert_eq!(request[request.len() - 1], b'\r');
+        // Negative PCI delivery confirmation: typed rejection, send-once.
+        remote.get_mut().write_all(&[code, b'#']).await.unwrap();
+        let error = running.await.unwrap().unwrap_err();
+        assert!(
+            error
+                .to_string()
+                .contains("PCI rejected routed CAL command"),
+            "unexpected routed WRITE rejection: {error}"
+        );
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(15),
+            "routed WRITE was replayed after negative confirmation",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_write_once_two_hop_confirmation_timeout_sends_once() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_command_checksum(false);
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move {
+                pci.routed_write_once(&[0x14, 0x15], 4, 7, &[0xAA, 0xBB])
+                    .await
+            }
+        });
+        let request = line(&mut remote).await;
+        // Two-bridge route [20, 21]; byte-matched to the shared pure encoder
+        // (`rc-write-two-nocheck` vector).
+        assert_eq!(&request[..request.len() - 2], b"\\4614121504A307AABB");
+        assert!((b'g'..=b'z').contains(&request[request.len() - 2]));
+        assert_eq!(request[request.len() - 1], b'\r');
+        // No peer reply: advance past the 12s production delivery-confirmation
+        // deadline on the paused clock. The production default is unchanged.
+        tokio::time::advance(Duration::from_secs(12)).await;
+        tokio::task::yield_now().await;
+        let error = running.await.unwrap().unwrap_err();
+        assert_eq!(error.kind(), ErrorKind::TimedOut);
+        assert!(
+            error
+                .to_string()
+                .contains("PCI delivery confirmation timed out"),
+            "unexpected routed WRITE timeout: {error}"
+        );
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(15),
+            "routed WRITE was replayed after confirmation timeout",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_write_once_two_hop_positive_confirmation_completes() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_command_checksum(false);
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move {
+                pci.routed_write_once(&[0x14, 0x15], 4, 7, &[0xAA, 0xBB])
+                    .await
+            }
+        });
+        let request = line(&mut remote).await;
+        // Two-bridge route [20, 21]; byte-matched to the shared pure encoder
+        // (`rc-write-two-nocheck` vector).
+        assert_eq!(&request[..request.len() - 2], b"\\4614121504A307AABB");
+        let code = request[request.len() - 2];
+        assert!((b'g'..=b'z').contains(&code));
+        assert_eq!(request[request.len() - 1], b'\r');
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        running.await.unwrap().unwrap();
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(15),
+            "routed WRITE was replayed after confirmation",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_write_once_two_hop_duplicate_confirmation_completes_once() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_command_checksum(false);
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move {
+                pci.routed_write_once(&[0x14, 0x15], 4, 7, &[0xAA, 0xBB])
+                    .await
+            }
+        });
+        let request = line(&mut remote).await;
+        // Two-bridge route [20, 21]; byte-matched to the shared pure encoder
+        // (`rc-write-two-nocheck` vector).
+        assert_eq!(&request[..request.len() - 2], b"\\4614121504A307AABB");
+        let code = request[request.len() - 2];
+        assert!((b'g'..=b'z').contains(&code));
+        assert_eq!(request[request.len() - 1], b'\r');
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        running.await.unwrap().unwrap();
+        // A late duplicate of the same confirmation must not cause a second
+        // send; the one-shot already completed on the first confirmation.
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        tokio::task::yield_now().await;
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(15),
+            "routed WRITE was replayed after duplicate confirmation",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_recall_once_two_hop_negative_confirmation_is_typed_error_without_retry() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_command_checksum(false);
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move { pci.routed_recall_once(&[0x14, 0x15], 4, 7, 2).await }
+        });
+        let request = line(&mut remote).await;
+        // Two-bridge route [20, 21]; byte-matched to the shared pure encoder,
+        // the Python oracle (`RoutedCALCommand` recall encode), and vector
+        // rows `rc-recall-two-nocheck`/`rc-recall-two-srchk` in `routed_cal.jsonl`.
+        assert_eq!(&request[..request.len() - 2], b"\\46141215041A0702");
+        let code = request[request.len() - 2];
+        assert!((b'g'..=b'z').contains(&code));
+        assert_eq!(request[request.len() - 1], b'\r');
+        // Negative PCI delivery confirmation: typed rejection, send-once.
+        remote.get_mut().write_all(&[code, b'#']).await.unwrap();
+        let error = running.await.unwrap().unwrap_err();
+        assert!(
+            error
+                .to_string()
+                .contains("PCI rejected routed CAL command"),
+            "unexpected routed RECALL rejection: {error}"
+        );
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(15),
+            "routed RECALL was replayed after negative confirmation",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_recall_once_two_hop_confirmation_timeout_sends_once() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_command_checksum(false);
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move { pci.routed_recall_once(&[0x14, 0x15], 4, 7, 2).await }
+        });
+        let request = line(&mut remote).await;
+        // Two-bridge route [20, 21]; byte-matched to the shared pure encoder,
+        // the Python oracle (`RoutedCALCommand` recall encode), and vector
+        // rows `rc-recall-two-nocheck`/`rc-recall-two-srchk` in `routed_cal.jsonl`.
+        assert_eq!(&request[..request.len() - 2], b"\\46141215041A0702");
+        assert!((b'g'..=b'z').contains(&request[request.len() - 2]));
+        assert_eq!(request[request.len() - 1], b'\r');
+        // No peer reply: advance past the 12s production delivery-confirmation
+        // deadline on the paused clock. The production default is unchanged.
+        tokio::time::advance(Duration::from_secs(12)).await;
+        tokio::task::yield_now().await;
+        let error = running.await.unwrap().unwrap_err();
+        assert_eq!(error.kind(), ErrorKind::TimedOut);
+        assert!(
+            error
+                .to_string()
+                .contains("PCI delivery confirmation timed out"),
+            "unexpected routed RECALL timeout: {error}"
+        );
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(15),
+            "routed RECALL was replayed after confirmation timeout",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_recall_once_two_hop_positive_confirmation_completes() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_command_checksum(false);
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move { pci.routed_recall_once(&[0x14, 0x15], 4, 7, 2).await }
+        });
+        let request = line(&mut remote).await;
+        // Two-bridge route [20, 21]; byte-matched to the shared pure encoder
+        // (`rc-recall-two-nocheck` vector).
+        assert_eq!(&request[..request.len() - 2], b"\\46141215041A0702");
+        let code = request[request.len() - 2];
+        assert!((b'g'..=b'z').contains(&code));
+        assert_eq!(request[request.len() - 1], b'\r');
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        running.await.unwrap().unwrap();
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(15),
+            "routed RECALL was replayed after confirmation",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_recall_once_two_hop_duplicate_confirmation_completes_once() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_command_checksum(false);
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move { pci.routed_recall_once(&[0x14, 0x15], 4, 7, 2).await }
+        });
+        let request = line(&mut remote).await;
+        // Two-bridge route [20, 21]; byte-matched to the shared pure encoder
+        // (`rc-recall-two-nocheck` vector).
+        assert_eq!(&request[..request.len() - 2], b"\\46141215041A0702");
+        let code = request[request.len() - 2];
+        assert!((b'g'..=b'z').contains(&code));
+        assert_eq!(request[request.len() - 1], b'\r');
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        running.await.unwrap().unwrap();
+        // A late duplicate of the same confirmation must not cause a second
+        // send; the one-shot already completed on the first confirmation.
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        tokio::task::yield_now().await;
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(15),
+            "routed RECALL was replayed after duplicate confirmation",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_write_once_six_hop_positive_confirmation_completes() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_command_checksum(false);
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move {
+                pci.routed_write_once(&[0x14, 0x15, 0x16, 0x17, 0x18, 0x19], 4, 7, &[0xAA, 0xBB])
+                    .await
+            }
+        });
+        let request = line(&mut remote).await;
+        // Six-bridge route [20, 21, 22, 23, 24, 25] (max accepted; bridges
+        // are distinct bytes in 1..254). Prefix derived from the Rust pure
+        // helper `routed_write_request` and cross-checked against the Python
+        // oracle `RoutedCALCommand(bridges=(0x14..0x19)).encode(confirmation=b'g')`
+        // (both yield payload hex `461436151617181904A307AABB`); byte-matched
+        // to vector row `rc-write-six-nocheck`
+        // (`\461436151617181904A307AABBg\r`) in
+        // `rust/testdata/vectors/routed_cal.jsonl`.
+        assert_eq!(
+            &request[..request.len() - 2],
+            b"\\461436151617181904A307AABB"
+        );
+        let code = request[request.len() - 2];
+        assert!((b'g'..=b'z').contains(&code));
+        assert_eq!(request[request.len() - 1], b'\r');
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        running.await.unwrap().unwrap();
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(15),
+            "routed WRITE was replayed after confirmation",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_write_once_six_hop_negative_confirmation_is_typed_error_without_retry() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_command_checksum(false);
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move {
+                pci.routed_write_once(&[0x14, 0x15, 0x16, 0x17, 0x18, 0x19], 4, 7, &[0xAA, 0xBB])
+                    .await
+            }
+        });
+        let request = line(&mut remote).await;
+        // Six-bridge route [20, 21, 22, 23, 24, 25] (max accepted); prefix
+        // matches the six-hop positive peer (`\461436151617181904A307AABB`).
+        assert_eq!(
+            &request[..request.len() - 2],
+            b"\\461436151617181904A307AABB"
+        );
+        let code = request[request.len() - 2];
+        assert!((b'g'..=b'z').contains(&code));
+        assert_eq!(request[request.len() - 1], b'\r');
+        // Negative PCI delivery confirmation: typed rejection, send-once.
+        remote.get_mut().write_all(&[code, b'#']).await.unwrap();
+        let error = running.await.unwrap().unwrap_err();
+        assert!(
+            error
+                .to_string()
+                .contains("PCI rejected routed CAL command"),
+            "unexpected routed WRITE rejection: {error}"
+        );
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(15),
+            "routed WRITE was replayed after negative confirmation",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_write_once_six_hop_confirmation_timeout_sends_once() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_command_checksum(false);
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move {
+                pci.routed_write_once(&[0x14, 0x15, 0x16, 0x17, 0x18, 0x19], 4, 7, &[0xAA, 0xBB])
+                    .await
+            }
+        });
+        let request = line(&mut remote).await;
+        // Six-bridge route [20, 21, 22, 23, 24, 25] (max accepted); prefix
+        // matches the six-hop positive peer (`\461436151617181904A307AABB`).
+        assert_eq!(
+            &request[..request.len() - 2],
+            b"\\461436151617181904A307AABB"
+        );
+        assert!((b'g'..=b'z').contains(&request[request.len() - 2]));
+        assert_eq!(request[request.len() - 1], b'\r');
+        // No peer reply: advance past the 12s production delivery-confirmation
+        // deadline on the paused clock. The production default is unchanged.
+        tokio::time::advance(Duration::from_secs(12)).await;
+        tokio::task::yield_now().await;
+        let error = running.await.unwrap().unwrap_err();
+        assert_eq!(error.kind(), ErrorKind::TimedOut);
+        assert!(
+            error
+                .to_string()
+                .contains("PCI delivery confirmation timed out"),
+            "unexpected routed WRITE timeout: {error}"
+        );
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(15),
+            "routed WRITE was replayed after confirmation timeout",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_write_once_six_hop_duplicate_confirmation_completes_once() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_command_checksum(false);
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move {
+                pci.routed_write_once(&[0x14, 0x15, 0x16, 0x17, 0x18, 0x19], 4, 7, &[0xAA, 0xBB])
+                    .await
+            }
+        });
+        let request = line(&mut remote).await;
+        // Six-bridge route [20, 21, 22, 23, 24, 25] (max accepted); prefix
+        // matches the six-hop positive peer (`\461436151617181904A307AABB`).
+        assert_eq!(
+            &request[..request.len() - 2],
+            b"\\461436151617181904A307AABB"
+        );
+        let code = request[request.len() - 2];
+        assert!((b'g'..=b'z').contains(&code));
+        assert_eq!(request[request.len() - 1], b'\r');
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        running.await.unwrap().unwrap();
+        // A late duplicate of the same confirmation must not cause a second
+        // send; the one-shot already completed on the first confirmation.
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        tokio::task::yield_now().await;
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(15),
+            "routed WRITE was replayed after duplicate confirmation",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_recall_once_six_hop_positive_confirmation_completes() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_command_checksum(false);
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move {
+                pci.routed_recall_once(&[0x14, 0x15, 0x16, 0x17, 0x18, 0x19], 4, 7, 2)
+                    .await
+            }
+        });
+        let request = line(&mut remote).await;
+        // Six-bridge route [20, 21, 22, 23, 24, 25] (max accepted; bridges
+        // are distinct bytes in 1..254). Prefix derived from the Rust pure
+        // helper `routed_recall_request` and cross-checked against the Python
+        // oracle `RoutedCALCommand(bridges=(0x14..0x19)).encode(confirmation=b'g')`
+        // (both yield payload hex `4614361516171819041A0702`); byte-matched
+        // to vector row `rc-recall-six-nocheck`
+        // (`\4614361516171819041A0702g\r`) in
+        // `rust/testdata/vectors/routed_cal.jsonl`.
+        assert_eq!(&request[..request.len() - 2], b"\\4614361516171819041A0702");
+        let code = request[request.len() - 2];
+        assert!((b'g'..=b'z').contains(&code));
+        assert_eq!(request[request.len() - 1], b'\r');
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        running.await.unwrap().unwrap();
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(15),
+            "routed RECALL was replayed after confirmation",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_recall_once_six_hop_negative_confirmation_is_typed_error_without_retry() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_command_checksum(false);
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move {
+                pci.routed_recall_once(&[0x14, 0x15, 0x16, 0x17, 0x18, 0x19], 4, 7, 2)
+                    .await
+            }
+        });
+        let request = line(&mut remote).await;
+        // Six-bridge route [20, 21, 22, 23, 24, 25] (max accepted); prefix
+        // matches the six-hop positive peer (`\4614361516171819041A0702`).
+        assert_eq!(&request[..request.len() - 2], b"\\4614361516171819041A0702");
+        let code = request[request.len() - 2];
+        assert!((b'g'..=b'z').contains(&code));
+        assert_eq!(request[request.len() - 1], b'\r');
+        // Negative PCI delivery confirmation: typed rejection, send-once.
+        remote.get_mut().write_all(&[code, b'#']).await.unwrap();
+        let error = running.await.unwrap().unwrap_err();
+        assert!(
+            error
+                .to_string()
+                .contains("PCI rejected routed CAL command"),
+            "unexpected routed RECALL rejection: {error}"
+        );
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(15),
+            "routed RECALL was replayed after negative confirmation",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_recall_once_six_hop_confirmation_timeout_sends_once() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_command_checksum(false);
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move {
+                pci.routed_recall_once(&[0x14, 0x15, 0x16, 0x17, 0x18, 0x19], 4, 7, 2)
+                    .await
+            }
+        });
+        let request = line(&mut remote).await;
+        // Six-bridge route [20, 21, 22, 23, 24, 25] (max accepted); prefix
+        // matches the six-hop positive peer (`\4614361516171819041A0702`).
+        assert_eq!(&request[..request.len() - 2], b"\\4614361516171819041A0702");
+        assert!((b'g'..=b'z').contains(&request[request.len() - 2]));
+        assert_eq!(request[request.len() - 1], b'\r');
+        // No peer reply: advance past the 12s production delivery-confirmation
+        // deadline on the paused clock. The production default is unchanged.
+        tokio::time::advance(Duration::from_secs(12)).await;
+        tokio::task::yield_now().await;
+        let error = running.await.unwrap().unwrap_err();
+        assert_eq!(error.kind(), ErrorKind::TimedOut);
+        assert!(
+            error
+                .to_string()
+                .contains("PCI delivery confirmation timed out"),
+            "unexpected routed RECALL timeout: {error}"
+        );
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(15),
+            "routed RECALL was replayed after confirmation timeout",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_recall_once_six_hop_duplicate_confirmation_completes_once() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_command_checksum(false);
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move {
+                pci.routed_recall_once(&[0x14, 0x15, 0x16, 0x17, 0x18, 0x19], 4, 7, 2)
+                    .await
+            }
+        });
+        let request = line(&mut remote).await;
+        // Six-bridge route [20, 21, 22, 23, 24, 25] (max accepted); prefix
+        // matches the six-hop positive peer (`\4614361516171819041A0702`).
+        assert_eq!(&request[..request.len() - 2], b"\\4614361516171819041A0702");
+        let code = request[request.len() - 2];
+        assert!((b'g'..=b'z').contains(&code));
+        assert_eq!(request[request.len() - 1], b'\r');
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        running.await.unwrap().unwrap();
+        // A late duplicate of the same confirmation must not cause a second
+        // send; the one-shot already completed on the first confirmation.
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        tokio::task::yield_now().await;
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(15),
+            "routed RECALL was replayed after duplicate confirmation",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_write_once_six_hop_srchk_positive_confirmation_completes() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_command_checksum(true);
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move {
+                pci.routed_write_once(&[0x14, 0x15, 0x16, 0x17, 0x18, 0x19], 4, 7, &[0xAA, 0xBB])
+                    .await
+            }
+        });
+        let request = line(&mut remote).await;
+        // Six-bridge route [20, 21, 22, 23, 24, 25] (max accepted) with SRCHK
+        // on; byte-matched to the shared pure encoder and vector row
+        // `rc-write-six-srchk` in `rust/testdata/vectors/routed_cal.jsonl`
+        // (`\461436151617181904A307AABBEAg\r`): payload hex is exact; only
+        // the allocator-owned confirmation byte may differ from fixed `g`.
+        let expected = cbus_protocol::pci_observation::routed_write_request(
+            &[0x14, 0x15, 0x16, 0x17, 0x18, 0x19],
+            4,
+            7,
+            &[0xAA, 0xBB],
+            true,
+        )
+        .unwrap();
+        assert_eq!(
+            &request[..request.len() - 2],
+            &expected[..expected.len() - 2]
+        );
+        assert_eq!(
+            &request[..request.len() - 2],
+            b"\\461436151617181904A307AABBEA"
+        );
+        let code = request[request.len() - 2];
+        assert!((b'g'..=b'z').contains(&code));
+        assert_eq!(request[request.len() - 1], b'\r');
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        running.await.unwrap().unwrap();
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(15),
+            "routed WRITE was replayed after confirmation",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_write_once_six_hop_srchk_negative_confirmation_is_typed_error_without_retry() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_command_checksum(true);
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move {
+                pci.routed_write_once(&[0x14, 0x15, 0x16, 0x17, 0x18, 0x19], 4, 7, &[0xAA, 0xBB])
+                    .await
+            }
+        });
+        let request = line(&mut remote).await;
+        // Six-bridge route [20, 21, 22, 23, 24, 25] (max accepted) with SRCHK
+        // on; byte-matched to the shared pure encoder and vector row
+        // `rc-write-six-srchk` in `rust/testdata/vectors/routed_cal.jsonl`
+        // (`\461436151617181904A307AABBEAg\r`): payload hex is exact; only
+        // the allocator-owned confirmation byte may differ from fixed `g`.
+        let expected = cbus_protocol::pci_observation::routed_write_request(
+            &[0x14, 0x15, 0x16, 0x17, 0x18, 0x19],
+            4,
+            7,
+            &[0xAA, 0xBB],
+            true,
+        )
+        .unwrap();
+        assert_eq!(
+            &request[..request.len() - 2],
+            &expected[..expected.len() - 2]
+        );
+        assert_eq!(
+            &request[..request.len() - 2],
+            b"\\461436151617181904A307AABBEA"
+        );
+        let code = request[request.len() - 2];
+        assert!((b'g'..=b'z').contains(&code));
+        assert_eq!(request[request.len() - 1], b'\r');
+        // Negative PCI delivery confirmation: typed rejection, send-once.
+        remote.get_mut().write_all(&[code, b'#']).await.unwrap();
+        let error = running.await.unwrap().unwrap_err();
+        assert!(
+            error
+                .to_string()
+                .contains("PCI rejected routed CAL command"),
+            "unexpected routed WRITE rejection: {error}"
+        );
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(15),
+            "routed WRITE was replayed after negative confirmation",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_write_once_six_hop_srchk_confirmation_timeout_sends_once() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_command_checksum(true);
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move {
+                pci.routed_write_once(&[0x14, 0x15, 0x16, 0x17, 0x18, 0x19], 4, 7, &[0xAA, 0xBB])
+                    .await
+            }
+        });
+        let request = line(&mut remote).await;
+        // Six-bridge route [20, 21, 22, 23, 24, 25] (max accepted) with SRCHK
+        // on; byte-matched to the shared pure encoder and vector row
+        // `rc-write-six-srchk` in `rust/testdata/vectors/routed_cal.jsonl`
+        // (`\461436151617181904A307AABBEAg\r`): payload hex is exact; only
+        // the allocator-owned confirmation byte may differ from fixed `g`.
+        let expected = cbus_protocol::pci_observation::routed_write_request(
+            &[0x14, 0x15, 0x16, 0x17, 0x18, 0x19],
+            4,
+            7,
+            &[0xAA, 0xBB],
+            true,
+        )
+        .unwrap();
+        assert_eq!(
+            &request[..request.len() - 2],
+            &expected[..expected.len() - 2]
+        );
+        assert_eq!(
+            &request[..request.len() - 2],
+            b"\\461436151617181904A307AABBEA"
+        );
+        assert!((b'g'..=b'z').contains(&request[request.len() - 2]));
+        assert_eq!(request[request.len() - 1], b'\r');
+        // No peer reply: advance past the 12s production delivery-confirmation
+        // deadline on the paused clock. The production default is unchanged.
+        tokio::time::advance(Duration::from_secs(12)).await;
+        tokio::task::yield_now().await;
+        let error = running.await.unwrap().unwrap_err();
+        assert_eq!(error.kind(), ErrorKind::TimedOut);
+        assert!(
+            error
+                .to_string()
+                .contains("PCI delivery confirmation timed out"),
+            "unexpected routed WRITE timeout: {error}"
+        );
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(15),
+            "routed WRITE was replayed after confirmation timeout",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_write_once_six_hop_srchk_duplicate_confirmation_completes_once() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_command_checksum(true);
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move {
+                pci.routed_write_once(&[0x14, 0x15, 0x16, 0x17, 0x18, 0x19], 4, 7, &[0xAA, 0xBB])
+                    .await
+            }
+        });
+        let request = line(&mut remote).await;
+        // Six-bridge route [20, 21, 22, 23, 24, 25] (max accepted) with SRCHK
+        // on; byte-matched to the shared pure encoder and vector row
+        // `rc-write-six-srchk` in `rust/testdata/vectors/routed_cal.jsonl`
+        // (`\461436151617181904A307AABBEAg\r`): payload hex is exact; only
+        // the allocator-owned confirmation byte may differ from fixed `g`.
+        let expected = cbus_protocol::pci_observation::routed_write_request(
+            &[0x14, 0x15, 0x16, 0x17, 0x18, 0x19],
+            4,
+            7,
+            &[0xAA, 0xBB],
+            true,
+        )
+        .unwrap();
+        assert_eq!(
+            &request[..request.len() - 2],
+            &expected[..expected.len() - 2]
+        );
+        assert_eq!(
+            &request[..request.len() - 2],
+            b"\\461436151617181904A307AABBEA"
+        );
+        let code = request[request.len() - 2];
+        assert!((b'g'..=b'z').contains(&code));
+        assert_eq!(request[request.len() - 1], b'\r');
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        running.await.unwrap().unwrap();
+        // A late duplicate of the same confirmation must not cause a second
+        // send; the one-shot already completed on the first confirmation.
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        tokio::task::yield_now().await;
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(15),
+            "routed WRITE was replayed after duplicate confirmation",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_recall_once_six_hop_srchk_positive_confirmation_completes() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_command_checksum(true);
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move {
+                pci.routed_recall_once(&[0x14, 0x15, 0x16, 0x17, 0x18, 0x19], 4, 7, 2)
+                    .await
+            }
+        });
+        let request = line(&mut remote).await;
+        // Six-bridge route [20, 21, 22, 23, 24, 25] (max accepted) with SRCHK
+        // on; byte-matched to the shared pure encoder and vector row
+        // `rc-recall-six-srchk` in `rust/testdata/vectors/routed_cal.jsonl`
+        // (`\4614361516171819041A0702D6g\r`): payload hex is exact; only the
+        // allocator-owned confirmation byte may differ from fixed `g`.
+        let expected = cbus_protocol::pci_observation::routed_recall_request(
+            &[0x14, 0x15, 0x16, 0x17, 0x18, 0x19],
+            4,
+            7,
+            2,
+            true,
+        )
+        .unwrap();
+        assert_eq!(
+            &request[..request.len() - 2],
+            &expected[..expected.len() - 2]
+        );
+        assert_eq!(
+            &request[..request.len() - 2],
+            b"\\4614361516171819041A0702D6"
+        );
+        let code = request[request.len() - 2];
+        assert!((b'g'..=b'z').contains(&code));
+        assert_eq!(request[request.len() - 1], b'\r');
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        running.await.unwrap().unwrap();
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(15),
+            "routed RECALL was replayed after confirmation",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_recall_once_six_hop_srchk_negative_confirmation_is_typed_error_without_retry() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_command_checksum(true);
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move {
+                pci.routed_recall_once(&[0x14, 0x15, 0x16, 0x17, 0x18, 0x19], 4, 7, 2)
+                    .await
+            }
+        });
+        let request = line(&mut remote).await;
+        // Six-bridge route [20, 21, 22, 23, 24, 25] (max accepted) with SRCHK
+        // on; byte-matched to the shared pure encoder and vector row
+        // `rc-recall-six-srchk` in `rust/testdata/vectors/routed_cal.jsonl`
+        // (`\4614361516171819041A0702D6g\r`): payload hex is exact; only the
+        // allocator-owned confirmation byte may differ from fixed `g`.
+        let expected = cbus_protocol::pci_observation::routed_recall_request(
+            &[0x14, 0x15, 0x16, 0x17, 0x18, 0x19],
+            4,
+            7,
+            2,
+            true,
+        )
+        .unwrap();
+        assert_eq!(
+            &request[..request.len() - 2],
+            &expected[..expected.len() - 2]
+        );
+        assert_eq!(
+            &request[..request.len() - 2],
+            b"\\4614361516171819041A0702D6"
+        );
+        let code = request[request.len() - 2];
+        assert!((b'g'..=b'z').contains(&code));
+        assert_eq!(request[request.len() - 1], b'\r');
+        // Negative PCI delivery confirmation: typed rejection, send-once.
+        remote.get_mut().write_all(&[code, b'#']).await.unwrap();
+        let error = running.await.unwrap().unwrap_err();
+        assert!(
+            error
+                .to_string()
+                .contains("PCI rejected routed CAL command"),
+            "unexpected routed RECALL rejection: {error}"
+        );
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(15),
+            "routed RECALL was replayed after negative confirmation",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_recall_once_six_hop_srchk_confirmation_timeout_sends_once() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_command_checksum(true);
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move {
+                pci.routed_recall_once(&[0x14, 0x15, 0x16, 0x17, 0x18, 0x19], 4, 7, 2)
+                    .await
+            }
+        });
+        let request = line(&mut remote).await;
+        // Six-bridge route [20, 21, 22, 23, 24, 25] (max accepted) with SRCHK
+        // on; byte-matched to the shared pure encoder and vector row
+        // `rc-recall-six-srchk` in `rust/testdata/vectors/routed_cal.jsonl`
+        // (`\4614361516171819041A0702D6g\r`): payload hex is exact; only the
+        // allocator-owned confirmation byte may differ from fixed `g`.
+        let expected = cbus_protocol::pci_observation::routed_recall_request(
+            &[0x14, 0x15, 0x16, 0x17, 0x18, 0x19],
+            4,
+            7,
+            2,
+            true,
+        )
+        .unwrap();
+        assert_eq!(
+            &request[..request.len() - 2],
+            &expected[..expected.len() - 2]
+        );
+        assert_eq!(
+            &request[..request.len() - 2],
+            b"\\4614361516171819041A0702D6"
+        );
+        assert!((b'g'..=b'z').contains(&request[request.len() - 2]));
+        assert_eq!(request[request.len() - 1], b'\r');
+        // No peer reply: advance past the 12s production delivery-confirmation
+        // deadline on the paused clock. The production default is unchanged.
+        tokio::time::advance(Duration::from_secs(12)).await;
+        tokio::task::yield_now().await;
+        let error = running.await.unwrap().unwrap_err();
+        assert_eq!(error.kind(), ErrorKind::TimedOut);
+        assert!(
+            error
+                .to_string()
+                .contains("PCI delivery confirmation timed out"),
+            "unexpected routed RECALL timeout: {error}"
+        );
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(15),
+            "routed RECALL was replayed after confirmation timeout",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_recall_once_six_hop_srchk_duplicate_confirmation_completes_once() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_command_checksum(true);
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move {
+                pci.routed_recall_once(&[0x14, 0x15, 0x16, 0x17, 0x18, 0x19], 4, 7, 2)
+                    .await
+            }
+        });
+        let request = line(&mut remote).await;
+        // Six-bridge route [20, 21, 22, 23, 24, 25] (max accepted) with SRCHK
+        // on; byte-matched to the shared pure encoder and vector row
+        // `rc-recall-six-srchk` in `rust/testdata/vectors/routed_cal.jsonl`
+        // (`\4614361516171819041A0702D6g\r`): payload hex is exact; only the
+        // allocator-owned confirmation byte may differ from fixed `g`.
+        let expected = cbus_protocol::pci_observation::routed_recall_request(
+            &[0x14, 0x15, 0x16, 0x17, 0x18, 0x19],
+            4,
+            7,
+            2,
+            true,
+        )
+        .unwrap();
+        assert_eq!(
+            &request[..request.len() - 2],
+            &expected[..expected.len() - 2]
+        );
+        assert_eq!(
+            &request[..request.len() - 2],
+            b"\\4614361516171819041A0702D6"
+        );
+        let code = request[request.len() - 2];
+        assert!((b'g'..=b'z').contains(&code));
+        assert_eq!(request[request.len() - 1], b'\r');
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        running.await.unwrap().unwrap();
+        // A late duplicate of the same confirmation must not cause a second
+        // send; the one-shot already completed on the first confirmation.
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        tokio::task::yield_now().await;
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(15),
+            "routed RECALL was replayed after duplicate confirmation",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_write_once_two_hop_srchk_positive_confirmation_completes() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_command_checksum(true);
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move {
+                pci.routed_write_once(&[0x14, 0x15], 4, 7, &[0xAA, 0xBB])
+                    .await
+            }
+        });
+        let request = line(&mut remote).await;
+        // Two-bridge route [20, 21] with SRCHK on; byte-matched to the shared
+        // pure encoder and vector row `rc-write-two-srchk` in
+        // `rust/testdata/vectors/routed_cal.jsonl`
+        // (`\4614121504A307AABB6Cg\r`): payload hex is exact; only the
+        // allocator-owned confirmation byte may differ from fixed `g`.
+        let expected = cbus_protocol::pci_observation::routed_write_request(
+            &[0x14, 0x15],
+            4,
+            7,
+            &[0xAA, 0xBB],
+            true,
+        )
+        .unwrap();
+        assert_eq!(
+            &request[..request.len() - 2],
+            &expected[..expected.len() - 2]
+        );
+        assert_eq!(&request[..request.len() - 2], b"\\4614121504A307AABB6C");
+        let code = request[request.len() - 2];
+        assert!((b'g'..=b'z').contains(&code));
+        assert_eq!(request[request.len() - 1], b'\r');
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        running.await.unwrap().unwrap();
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(15),
+            "routed WRITE was replayed after confirmation",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_write_once_two_hop_srchk_negative_confirmation_is_typed_error_without_retry() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_command_checksum(true);
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move {
+                pci.routed_write_once(&[0x14, 0x15], 4, 7, &[0xAA, 0xBB])
+                    .await
+            }
+        });
+        let request = line(&mut remote).await;
+        // Two-bridge route [20, 21] with SRCHK on; byte-matched to the shared
+        // pure encoder and vector row `rc-write-two-srchk` in
+        // `rust/testdata/vectors/routed_cal.jsonl`
+        // (`\4614121504A307AABB6Cg\r`): payload hex is exact; only the
+        // allocator-owned confirmation byte may differ from fixed `g`.
+        let expected = cbus_protocol::pci_observation::routed_write_request(
+            &[0x14, 0x15],
+            4,
+            7,
+            &[0xAA, 0xBB],
+            true,
+        )
+        .unwrap();
+        assert_eq!(
+            &request[..request.len() - 2],
+            &expected[..expected.len() - 2]
+        );
+        assert_eq!(&request[..request.len() - 2], b"\\4614121504A307AABB6C");
+        let code = request[request.len() - 2];
+        assert!((b'g'..=b'z').contains(&code));
+        assert_eq!(request[request.len() - 1], b'\r');
+        // Negative PCI delivery confirmation: typed rejection, send-once.
+        remote.get_mut().write_all(&[code, b'#']).await.unwrap();
+        let error = running.await.unwrap().unwrap_err();
+        assert!(
+            error
+                .to_string()
+                .contains("PCI rejected routed CAL command"),
+            "unexpected routed WRITE rejection: {error}"
+        );
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(15),
+            "routed WRITE was replayed after negative confirmation",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_write_once_two_hop_srchk_confirmation_timeout_sends_once() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_command_checksum(true);
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move {
+                pci.routed_write_once(&[0x14, 0x15], 4, 7, &[0xAA, 0xBB])
+                    .await
+            }
+        });
+        let request = line(&mut remote).await;
+        // Two-bridge route [20, 21] with SRCHK on; byte-matched to the shared
+        // pure encoder and vector row `rc-write-two-srchk` in
+        // `rust/testdata/vectors/routed_cal.jsonl`
+        // (`\4614121504A307AABB6Cg\r`): payload hex is exact; only the
+        // allocator-owned confirmation byte may differ from fixed `g`.
+        let expected = cbus_protocol::pci_observation::routed_write_request(
+            &[0x14, 0x15],
+            4,
+            7,
+            &[0xAA, 0xBB],
+            true,
+        )
+        .unwrap();
+        assert_eq!(
+            &request[..request.len() - 2],
+            &expected[..expected.len() - 2]
+        );
+        assert_eq!(&request[..request.len() - 2], b"\\4614121504A307AABB6C");
+        assert!((b'g'..=b'z').contains(&request[request.len() - 2]));
+        assert_eq!(request[request.len() - 1], b'\r');
+        // No peer reply: advance past the 12s production delivery-confirmation
+        // deadline on the paused clock. The production default is unchanged.
+        tokio::time::advance(Duration::from_secs(12)).await;
+        tokio::task::yield_now().await;
+        let error = running.await.unwrap().unwrap_err();
+        assert_eq!(error.kind(), ErrorKind::TimedOut);
+        assert!(
+            error
+                .to_string()
+                .contains("PCI delivery confirmation timed out"),
+            "unexpected routed WRITE timeout: {error}"
+        );
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(15),
+            "routed WRITE was replayed after confirmation timeout",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_write_once_two_hop_srchk_duplicate_confirmation_completes_once() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_command_checksum(true);
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move {
+                pci.routed_write_once(&[0x14, 0x15], 4, 7, &[0xAA, 0xBB])
+                    .await
+            }
+        });
+        let request = line(&mut remote).await;
+        // Two-bridge route [20, 21] with SRCHK on; byte-matched to the shared
+        // pure encoder and vector row `rc-write-two-srchk` in
+        // `rust/testdata/vectors/routed_cal.jsonl`
+        // (`\4614121504A307AABB6Cg\r`): payload hex is exact; only the
+        // allocator-owned confirmation byte may differ from fixed `g`.
+        let expected = cbus_protocol::pci_observation::routed_write_request(
+            &[0x14, 0x15],
+            4,
+            7,
+            &[0xAA, 0xBB],
+            true,
+        )
+        .unwrap();
+        assert_eq!(
+            &request[..request.len() - 2],
+            &expected[..expected.len() - 2]
+        );
+        assert_eq!(&request[..request.len() - 2], b"\\4614121504A307AABB6C");
+        let code = request[request.len() - 2];
+        assert!((b'g'..=b'z').contains(&code));
+        assert_eq!(request[request.len() - 1], b'\r');
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        running.await.unwrap().unwrap();
+        // A late duplicate of the same confirmation must not cause a second
+        // send; the one-shot already completed on the first confirmation.
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        tokio::task::yield_now().await;
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(15),
+            "routed WRITE was replayed after duplicate confirmation",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_recall_once_two_hop_srchk_negative_confirmation_is_typed_error_without_retry() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_command_checksum(true);
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move { pci.routed_recall_once(&[0x14, 0x15], 4, 7, 2).await }
+        });
+        let request = line(&mut remote).await;
+        // Two-bridge route [20, 21] with SRCHK on; byte-matched to the shared
+        // pure encoder and vector row `rc-recall-two-srchk` in
+        // `rust/testdata/vectors/routed_cal.jsonl`
+        // (`\46141215041A070258g\r`): payload hex is exact; only the
+        // allocator-owned confirmation byte may differ from fixed `g`.
+        let expected =
+            cbus_protocol::pci_observation::routed_recall_request(&[0x14, 0x15], 4, 7, 2, true)
+                .unwrap();
+        assert_eq!(
+            &request[..request.len() - 2],
+            &expected[..expected.len() - 2]
+        );
+        assert_eq!(&request[..request.len() - 2], b"\\46141215041A070258");
+        let code = request[request.len() - 2];
+        assert!((b'g'..=b'z').contains(&code));
+        assert_eq!(request[request.len() - 1], b'\r');
+        // Negative PCI delivery confirmation: typed rejection, send-once.
+        remote.get_mut().write_all(&[code, b'#']).await.unwrap();
+        let error = running.await.unwrap().unwrap_err();
+        assert!(
+            error
+                .to_string()
+                .contains("PCI rejected routed CAL command"),
+            "unexpected routed RECALL rejection: {error}"
+        );
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(15),
+            "routed RECALL was replayed after negative confirmation",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_recall_once_two_hop_srchk_confirmation_timeout_sends_once() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_command_checksum(true);
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move { pci.routed_recall_once(&[0x14, 0x15], 4, 7, 2).await }
+        });
+        let request = line(&mut remote).await;
+        // Two-bridge route [20, 21] with SRCHK on; byte-matched to the shared
+        // pure encoder and vector row `rc-recall-two-srchk` in
+        // `rust/testdata/vectors/routed_cal.jsonl`
+        // (`\46141215041A070258g\r`): payload hex is exact; only the
+        // allocator-owned confirmation byte may differ from fixed `g`.
+        let expected =
+            cbus_protocol::pci_observation::routed_recall_request(&[0x14, 0x15], 4, 7, 2, true)
+                .unwrap();
+        assert_eq!(
+            &request[..request.len() - 2],
+            &expected[..expected.len() - 2]
+        );
+        assert_eq!(&request[..request.len() - 2], b"\\46141215041A070258");
+        assert!((b'g'..=b'z').contains(&request[request.len() - 2]));
+        assert_eq!(request[request.len() - 1], b'\r');
+        // No peer reply: advance past the 12s production delivery-confirmation
+        // deadline on the paused clock. The production default is unchanged.
+        tokio::time::advance(Duration::from_secs(12)).await;
+        tokio::task::yield_now().await;
+        let error = running.await.unwrap().unwrap_err();
+        assert_eq!(error.kind(), ErrorKind::TimedOut);
+        assert!(
+            error
+                .to_string()
+                .contains("PCI delivery confirmation timed out"),
+            "unexpected routed RECALL timeout: {error}"
+        );
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(15),
+            "routed RECALL was replayed after confirmation timeout",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_recall_once_two_hop_srchk_positive_confirmation_completes() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_command_checksum(true);
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move { pci.routed_recall_once(&[0x14, 0x15], 4, 7, 2).await }
+        });
+        let request = line(&mut remote).await;
+        // Two-bridge route [20, 21] with SRCHK on; byte-matched to the shared
+        // pure encoder and vector row `rc-recall-two-srchk` in
+        // `rust/testdata/vectors/routed_cal.jsonl`
+        // (`\46141215041A070258g\r`): payload hex is exact; only the
+        // allocator-owned confirmation byte may differ from fixed `g`.
+        let expected =
+            cbus_protocol::pci_observation::routed_recall_request(&[0x14, 0x15], 4, 7, 2, true)
+                .unwrap();
+        assert_eq!(
+            &request[..request.len() - 2],
+            &expected[..expected.len() - 2]
+        );
+        assert_eq!(&request[..request.len() - 2], b"\\46141215041A070258");
+        let code = request[request.len() - 2];
+        assert!((b'g'..=b'z').contains(&code));
+        assert_eq!(request[request.len() - 1], b'\r');
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        running.await.unwrap().unwrap();
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(15),
+            "routed RECALL was replayed after confirmation",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_recall_once_two_hop_srchk_duplicate_confirmation_completes_once() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_command_checksum(true);
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move { pci.routed_recall_once(&[0x14, 0x15], 4, 7, 2).await }
+        });
+        let request = line(&mut remote).await;
+        // Two-bridge route [20, 21] with SRCHK on; byte-matched to the shared
+        // pure encoder and vector row `rc-recall-two-srchk` in
+        // `rust/testdata/vectors/routed_cal.jsonl`
+        // (`\46141215041A070258g\r`): payload hex is exact; only the
+        // allocator-owned confirmation byte may differ from fixed `g`.
+        let expected =
+            cbus_protocol::pci_observation::routed_recall_request(&[0x14, 0x15], 4, 7, 2, true)
+                .unwrap();
+        assert_eq!(
+            &request[..request.len() - 2],
+            &expected[..expected.len() - 2]
+        );
+        assert_eq!(&request[..request.len() - 2], b"\\46141215041A070258");
+        let code = request[request.len() - 2];
+        assert!((b'g'..=b'z').contains(&code));
+        assert_eq!(request[request.len() - 1], b'\r');
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        running.await.unwrap().unwrap();
+        // A late duplicate of the same confirmation must not cause a second
+        // send; the one-shot already completed on the first confirmation.
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        tokio::task::yield_now().await;
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(15),
+            "routed RECALL was replayed after duplicate confirmation",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_write_once_one_hop_srchk_positive_confirmation_completes() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_command_checksum(true);
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move { pci.routed_write_once(&[0x20], 4, 7, &[0xAA, 0xBB]).await }
+        });
+        let request = line(&mut remote).await;
+        // One-bridge route [32] with SRCHK on; byte-matched to the shared
+        // pure encoder and vector row `rc-write-one-srchk` in
+        // `rust/testdata/vectors/routed_cal.jsonl`
+        // (`\46200904A307AABB7Eg\r`): payload hex is exact; only the
+        // allocator-owned confirmation byte may differ from fixed `g`.
+        let expected = cbus_protocol::pci_observation::routed_write_request(
+            &[0x20],
+            4,
+            7,
+            &[0xAA, 0xBB],
+            true,
+        )
+        .unwrap();
+        assert_eq!(
+            &request[..request.len() - 2],
+            &expected[..expected.len() - 2]
+        );
+        assert_eq!(&request[..request.len() - 2], b"\\46200904A307AABB7E");
+        let code = request[request.len() - 2];
+        assert!((b'g'..=b'z').contains(&code));
+        assert_eq!(request[request.len() - 1], b'\r');
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        running.await.unwrap().unwrap();
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(15),
+            "routed WRITE was replayed after confirmation",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_recall_once_one_hop_srchk_positive_confirmation_completes() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_command_checksum(true);
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move { pci.routed_recall_once(&[0x20], 4, 7, 2).await }
+        });
+        let request = line(&mut remote).await;
+        // One-bridge route [32] with SRCHK on; byte-matched to the shared
+        // pure encoder and vector row `rc-recall-one-srchk` in
+        // `rust/testdata/vectors/routed_cal.jsonl`
+        // (`\462009041A07026Ag\r`).
+        let expected =
+            cbus_protocol::pci_observation::routed_recall_request(&[0x20], 4, 7, 2, true).unwrap();
+        assert_eq!(
+            &request[..request.len() - 2],
+            &expected[..expected.len() - 2]
+        );
+        assert_eq!(&request[..request.len() - 2], b"\\462009041A07026A");
+        let code = request[request.len() - 2];
+        assert!((b'g'..=b'z').contains(&code));
+        assert_eq!(request[request.len() - 1], b'\r');
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        running.await.unwrap().unwrap();
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(15),
+            "routed RECALL was replayed after confirmation",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_write_once_one_hop_srchk_negative_confirmation_is_typed_error_without_retry() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_command_checksum(true);
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move { pci.routed_write_once(&[0x20], 4, 7, &[0xAA, 0xBB]).await }
+        });
+        let request = line(&mut remote).await;
+        // One-bridge route [32] with SRCHK on; byte-matched to the shared
+        // pure encoder and vector row `rc-write-one-srchk` in
+        // `rust/testdata/vectors/routed_cal.jsonl`
+        // (`\46200904A307AABB7Eg\r`): payload hex is exact; only the
+        // allocator-owned confirmation byte may differ from fixed `g`.
+        let expected = cbus_protocol::pci_observation::routed_write_request(
+            &[0x20],
+            4,
+            7,
+            &[0xAA, 0xBB],
+            true,
+        )
+        .unwrap();
+        assert_eq!(
+            &request[..request.len() - 2],
+            &expected[..expected.len() - 2]
+        );
+        assert_eq!(&request[..request.len() - 2], b"\\46200904A307AABB7E");
+        let code = request[request.len() - 2];
+        assert!((b'g'..=b'z').contains(&code));
+        assert_eq!(request[request.len() - 1], b'\r');
+        // Negative PCI delivery confirmation: typed rejection, send-once.
+        remote.get_mut().write_all(&[code, b'#']).await.unwrap();
+        let error = running.await.unwrap().unwrap_err();
+        assert!(
+            error
+                .to_string()
+                .contains("PCI rejected routed CAL command"),
+            "unexpected routed WRITE rejection: {error}"
+        );
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(15),
+            "routed WRITE was replayed after negative confirmation",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_write_once_one_hop_srchk_confirmation_timeout_sends_once() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_command_checksum(true);
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move { pci.routed_write_once(&[0x20], 4, 7, &[0xAA, 0xBB]).await }
+        });
+        let request = line(&mut remote).await;
+        // One-bridge route [32] with SRCHK on; byte-matched to the shared
+        // pure encoder and vector row `rc-write-one-srchk` in
+        // `rust/testdata/vectors/routed_cal.jsonl`
+        // (`\46200904A307AABB7Eg\r`): payload hex is exact; only the
+        // allocator-owned confirmation byte may differ from fixed `g`.
+        let expected = cbus_protocol::pci_observation::routed_write_request(
+            &[0x20],
+            4,
+            7,
+            &[0xAA, 0xBB],
+            true,
+        )
+        .unwrap();
+        assert_eq!(
+            &request[..request.len() - 2],
+            &expected[..expected.len() - 2]
+        );
+        assert_eq!(&request[..request.len() - 2], b"\\46200904A307AABB7E");
+        assert!((b'g'..=b'z').contains(&request[request.len() - 2]));
+        assert_eq!(request[request.len() - 1], b'\r');
+        // No peer reply: advance past the 12s production delivery-confirmation
+        // deadline on the paused clock. The production default is unchanged.
+        tokio::time::advance(Duration::from_secs(12)).await;
+        tokio::task::yield_now().await;
+        let error = running.await.unwrap().unwrap_err();
+        assert_eq!(error.kind(), ErrorKind::TimedOut);
+        assert!(
+            error
+                .to_string()
+                .contains("PCI delivery confirmation timed out"),
+            "unexpected routed WRITE timeout: {error}"
+        );
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(15),
+            "routed WRITE was replayed after confirmation timeout",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_write_once_one_hop_srchk_duplicate_confirmation_completes_once() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_command_checksum(true);
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move { pci.routed_write_once(&[0x20], 4, 7, &[0xAA, 0xBB]).await }
+        });
+        let request = line(&mut remote).await;
+        // One-bridge route [32] with SRCHK on; byte-matched to the shared
+        // pure encoder and vector row `rc-write-one-srchk` in
+        // `rust/testdata/vectors/routed_cal.jsonl`
+        // (`\46200904A307AABB7Eg\r`): payload hex is exact; only the
+        // allocator-owned confirmation byte may differ from fixed `g`.
+        let expected = cbus_protocol::pci_observation::routed_write_request(
+            &[0x20],
+            4,
+            7,
+            &[0xAA, 0xBB],
+            true,
+        )
+        .unwrap();
+        assert_eq!(
+            &request[..request.len() - 2],
+            &expected[..expected.len() - 2]
+        );
+        assert_eq!(&request[..request.len() - 2], b"\\46200904A307AABB7E");
+        let code = request[request.len() - 2];
+        assert!((b'g'..=b'z').contains(&code));
+        assert_eq!(request[request.len() - 1], b'\r');
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        running.await.unwrap().unwrap();
+        // A late duplicate of the same confirmation must not cause a second
+        // send; the one-shot already completed on the first confirmation.
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        tokio::task::yield_now().await;
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(15),
+            "routed WRITE was replayed after duplicate confirmation",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_recall_once_one_hop_srchk_negative_confirmation_is_typed_error_without_retry() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_command_checksum(true);
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move { pci.routed_recall_once(&[0x20], 4, 7, 2).await }
+        });
+        let request = line(&mut remote).await;
+        // One-bridge route [32] with SRCHK on; byte-matched to the shared
+        // pure encoder and vector row `rc-recall-one-srchk` in
+        // `rust/testdata/vectors/routed_cal.jsonl`
+        // (`\462009041A07026Ag\r`): payload hex is exact; only the
+        // allocator-owned confirmation byte may differ from fixed `g`.
+        let expected =
+            cbus_protocol::pci_observation::routed_recall_request(&[0x20], 4, 7, 2, true).unwrap();
+        assert_eq!(
+            &request[..request.len() - 2],
+            &expected[..expected.len() - 2]
+        );
+        assert_eq!(&request[..request.len() - 2], b"\\462009041A07026A");
+        let code = request[request.len() - 2];
+        assert!((b'g'..=b'z').contains(&code));
+        assert_eq!(request[request.len() - 1], b'\r');
+        // Negative PCI delivery confirmation: typed rejection, send-once.
+        remote.get_mut().write_all(&[code, b'#']).await.unwrap();
+        let error = running.await.unwrap().unwrap_err();
+        assert!(
+            error
+                .to_string()
+                .contains("PCI rejected routed CAL command"),
+            "unexpected routed RECALL rejection: {error}"
+        );
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(15),
+            "routed RECALL was replayed after negative confirmation",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_recall_once_one_hop_srchk_confirmation_timeout_sends_once() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_command_checksum(true);
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move { pci.routed_recall_once(&[0x20], 4, 7, 2).await }
+        });
+        let request = line(&mut remote).await;
+        // One-bridge route [32] with SRCHK on; byte-matched to the shared
+        // pure encoder and vector row `rc-recall-one-srchk` in
+        // `rust/testdata/vectors/routed_cal.jsonl`
+        // (`\462009041A07026Ag\r`): payload hex is exact; only the
+        // allocator-owned confirmation byte may differ from fixed `g`.
+        let expected =
+            cbus_protocol::pci_observation::routed_recall_request(&[0x20], 4, 7, 2, true).unwrap();
+        assert_eq!(
+            &request[..request.len() - 2],
+            &expected[..expected.len() - 2]
+        );
+        assert_eq!(&request[..request.len() - 2], b"\\462009041A07026A");
+        assert!((b'g'..=b'z').contains(&request[request.len() - 2]));
+        assert_eq!(request[request.len() - 1], b'\r');
+        // No peer reply: advance past the 12s production delivery-confirmation
+        // deadline on the paused clock. The production default is unchanged.
+        tokio::time::advance(Duration::from_secs(12)).await;
+        tokio::task::yield_now().await;
+        let error = running.await.unwrap().unwrap_err();
+        assert_eq!(error.kind(), ErrorKind::TimedOut);
+        assert!(
+            error
+                .to_string()
+                .contains("PCI delivery confirmation timed out"),
+            "unexpected routed RECALL timeout: {error}"
+        );
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(15),
+            "routed RECALL was replayed after confirmation timeout",
+        )
+        .await;
+    }
+
+    #[tokio::test(start_paused = true)]
+    async fn routed_recall_once_one_hop_srchk_duplicate_confirmation_completes_once() {
+        let (pci, mut remote, _) = setup().await;
+        pci.set_command_checksum(true);
+        let running = tokio::spawn({
+            let pci = pci.clone();
+            async move { pci.routed_recall_once(&[0x20], 4, 7, 2).await }
+        });
+        let request = line(&mut remote).await;
+        // One-bridge route [32] with SRCHK on; byte-matched to the shared
+        // pure encoder and vector row `rc-recall-one-srchk` in
+        // `rust/testdata/vectors/routed_cal.jsonl`
+        // (`\462009041A07026Ag\r`): payload hex is exact; only the
+        // allocator-owned confirmation byte may differ from fixed `g`.
+        let expected =
+            cbus_protocol::pci_observation::routed_recall_request(&[0x20], 4, 7, 2, true).unwrap();
+        assert_eq!(
+            &request[..request.len() - 2],
+            &expected[..expected.len() - 2]
+        );
+        assert_eq!(&request[..request.len() - 2], b"\\462009041A07026A");
+        let code = request[request.len() - 2];
+        assert!((b'g'..=b'z').contains(&code));
+        assert_eq!(request[request.len() - 1], b'\r');
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        running.await.unwrap().unwrap();
+        // A late duplicate of the same confirmation must not cause a second
+        // send; the one-shot already completed on the first confirmation.
+        remote.get_mut().write_all(&[code, b'.']).await.unwrap();
+        tokio::task::yield_now().await;
+        assert_no_replay(
+            &mut remote,
+            Duration::from_secs(15),
+            "routed RECALL was replayed after duplicate confirmation",
+        )
+        .await;
     }
 
     #[tokio::test(start_paused = true)]

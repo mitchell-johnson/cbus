@@ -178,6 +178,37 @@ class RustRoutedCalSimulatorTests(unittest.TestCase):
                 self.assertEqual((code, error), (0, ''))
                 self.assertEqual(json.loads(output)['data_hex'], 'AABB')
 
+    def test_journaled_write_binds_baseline_and_recovery_reads_expected(self):
+        for depth in (0, 1, 6):
+            with self.subTest(depth=depth), tempfile.TemporaryDirectory() as directory:
+                project, bridges = self.project(Path(directory) / 'house.xml', depth)
+                journal = Path(directory) / 'attempt.json'
+                with self.simulator(bridges) as port:
+                    base = self.common(port)
+                    route = ['--project-file', str(project), '--project-name', 'HOUSE',
+                             '--source-network', '254', '--target-network', str(254 - depth)]
+                    # Seed a baseline: the fixture has no value before a WRITE.
+                    code, _, error = self.invoke([
+                        *base, 'routed-write', '4', '7', '55AABB', '--expected-ack-tag', '85', *route])
+                    self.assertEqual((code, error), (0, ''))
+                    code, output, error = self.invoke([
+                        *base, 'routed-write', '4', '7', '55CCDD', '--expected-ack-tag', '85',
+                        *route, '--journal', str(journal)])
+                    self.assertEqual((code, error), (0, ''))
+                    result = json.loads(output)
+                    self.assertEqual(result['journal']['phase'], 'acknowledged')
+                    self.assertEqual(result['journal']['baseline_hex'], 'AABB')
+                    code, output, error = self.invoke([
+                        '--compact', 'pci', '--host', '127.0.0.1', '--port', str(port),
+                        'routed-write', '--recover', '--journal', str(journal),
+                        '--project-file', str(project)])
+                    self.assertEqual((code, error), (0, ''))
+                    report = json.loads(output)
+                    self.assertEqual(report['classification'], 'expected')
+                    self.assertEqual(report['fresh_hex'], 'CCDD')
+                    self.assertFalse(report['writes_attempted'])
+                    self.assertFalse(report['nonvolatile_persistence_verified'])
+
 
 if __name__ == '__main__':
     unittest.main()
