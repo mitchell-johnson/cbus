@@ -2474,14 +2474,20 @@ impl Server {
             );
         }
         if start {
-            if let Some(name) = words.get(2) {
+            let response = if let Some(name) = words.get(2) {
                 let args = ["PROJECT", "USE", *name];
                 self.project_use(tag, &args)
             } else if self.current.is_some() {
                 ok(tag, vec![], "200 OK")
             } else {
                 err(tag, status::NOT_FOUND, "404 No project selected")
+            };
+            if response.status < 400 {
+                if let Some(name) = self.current.clone() {
+                    self.started_projects.insert(name);
+                }
             }
+            response
         } else {
             if let Some(name) = words.get(2) {
                 if self.current.as_deref() != Some(*name) || !self.projects.contains_key(*name) {
@@ -2489,7 +2495,9 @@ impl Server {
                 }
             }
             // STOP only deselects; it does not unload unsaved edits.
-            self.current = None;
+            if let Some(name) = self.current.take() {
+                self.started_projects.remove(&name);
+            }
             ok(tag, vec![], "200 OK")
         }
     }
@@ -5319,7 +5327,7 @@ mod tests {
             server
                 .handle("[net] DBCREATENET 254 Local Cni 127.0.0.1:1")
                 .status,
-            200
+            301
         );
         for address in [72, 0, 71, 66] {
             assert_eq!(
@@ -5448,9 +5456,9 @@ mod tests {
     fn every_manual_heading_reaches_a_named_handler() {
         for (index, name) in DOCUMENTED_COMMANDS.iter().enumerate() {
             let mut server = Server::new(AccessLevel::Program).with_programming(true);
-            let response = server.handle(&format!("[{index}] {name}"));
-            assert_ne!(
-                response.final_text, "400 Unknown command",
+            server.handle(&format!("[{index}] {name}"));
+            assert!(
+                !server.last_command_unknown(),
                 "manual command has no dispatcher: {name}"
             );
         }
@@ -5464,7 +5472,7 @@ mod tests {
             server
                 .handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
                 .status,
-            200
+            301
         );
         assert_eq!(server.handle("[3] AIRCON REFRESH 254/172 1").status, 200);
         assert_eq!(server.handle("[4] AIRCON REFRESH 254/172").status, 400);
@@ -5544,7 +5552,7 @@ mod tests {
             server
                 .handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
                 .status,
-            200
+            301
         );
         assert_eq!(server.handle("[3] ON 254/56/1").status, 200);
         assert_eq!(server.handle("[4] RAMP 254/56/2 50% 2m").status, 200);
@@ -5598,9 +5606,9 @@ mod tests {
         assert_eq!(names.len(), 268);
         for (index, name) in names.iter().enumerate() {
             let mut server = Server::new(AccessLevel::Program).with_programming(true);
-            let response = server.handle(&format!("[hidden-{index}] {name}"));
-            assert_ne!(
-                response.final_text, "400 Unknown command",
+            server.handle(&format!("[hidden-{index}] {name}"));
+            assert!(
+                !server.last_command_unknown(),
                 "decompiled command has no dispatcher: {name}"
             );
         }

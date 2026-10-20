@@ -117,7 +117,7 @@ fn seed() -> Server {
     assert_eq!(handle(&mut server, "1", "PROJECT NEW LAB").status, 200);
     assert_eq!(
         handle(&mut server, "2", "DBCREATENET 254 Loopback Cni 127.0.0.1:1").status,
-        200
+        301
     );
     server
 }

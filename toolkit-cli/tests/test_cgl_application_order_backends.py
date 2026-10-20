@@ -255,14 +255,14 @@ def journey(backend, variable, tmp_path):
 def seed(s, trap, *, chain=False):
     s.command('PROJECT NEW ' + PROJECT)
     s.command('PROJECT USE ' + PROJECT)
-    s.command(f'DBCREATENET 254 Local Cni {trap}', 200)
+    s.command(f'DBCREATENET 254 Local Cni {trap}',301)
     if chain:
         for parent, child in zip(range(254, 247, -1), range(253, 246, -1)):
-            s.command(f'DBCREATENET {child} Hop{254-child} Bridge {parent}/p/{child}', 200)
+            s.command(f'DBCREATENET {child} Hop{254-child} Bridge {parent}/p/{child}',301)
             s.command(f'DBADDSAFE //{PROJECT}/{parent} Unit {child} Bridge{child}', 301)
             s.command(f'DBSETSAFE //{PROJECT}/{parent}/p/{child}/UnitType BRIDGE')
             s.command(f'DBSETSAFE //{PROJECT}/{parent}/p/{child}/UnitName BRIDGE')
-        s.command(f'DBCREATENET 240 Island Cni {trap}', 200)
+        s.command(f'DBCREATENET 240 Island Cni {trap}',301)
     s.command('NET LOAD DB')
     # Deliberately never NET OPEN/SYNC: export routes use the closed label graph.
 

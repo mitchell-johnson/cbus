@@ -23,13 +23,13 @@ fn seed() -> (Server, Seeds) {
         server
             .handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
             .status,
-        200
+        301
     );
     assert_eq!(
         server
             .handle("[3] DBCREATENET 253 Remote Cni 127.0.0.1:10002")
             .status,
-        200
+        301
     );
     let app = copied_oid(
         &mut server,
@@ -390,7 +390,7 @@ fn cross_network_and_cross_project_copies_stay_isolated() {
         server
             .handle("[26] DBCREATENET 254 Elsewhere Cni 127.0.0.1:9")
             .status,
-        200
+        301
     );
     let other_app = copied_oid(
         &mut server,

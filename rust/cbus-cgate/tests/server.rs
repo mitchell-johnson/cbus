@@ -159,7 +159,7 @@ fn barcode_unit_numeric_safe_receipts_match_all_retained_original_route_setups()
                     "[network] DBCREATENET {network} Local Cni loopback"
                 ))
                 .status,
-            200
+            301
         );
         let response = server.handle(&format!("[native-receipt] {command}"));
         assert_eq!(response.status, 301, "{command}: {response:?}");
@@ -320,7 +320,7 @@ fn full_project_network_cycle() {
     assert_eq!(
         s.handle("[3] DBCREATENET 254 Local Cni 127.0.0.1:10001")
             .status,
-        200
+        301
     );
     assert_eq!(s.handle("[4] NET OPEN //TEST/254").status, 200);
     assert_eq!(s.handle("[5] NET SYNC //TEST/254").status, 200);
@@ -340,7 +340,7 @@ fn native_general_object_and_tree_commands_share_one_honest_model() {
     assert_eq!(
         s.handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
             .status,
-        200
+        301
     );
 
     // Native NEW is idempotent and ignores GROUP trailing tokens. PHANTOM
@@ -641,7 +641,7 @@ fn edlt_factory_default_method_has_a_bounded_mock_contract() {
     assert_eq!(
         s.handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
             .status,
-        200
+        301
     );
     assert_eq!(
         s.handle("[3] DBADDSAFE //TEST/254 Unit 5 Kitchen_eDLT")
@@ -673,7 +673,7 @@ fn level_lifecycle_group_xml_and_copy() {
     assert_eq!(
         s.handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
             .status,
-        200
+        301
     );
     // Creation answers 301 with a fresh OID; the group document reports
     // the row with no Value attribute while native NULL.
@@ -764,7 +764,7 @@ fn level_netvar_document_and_rename_travel() {
     assert_eq!(
         s.handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
             .status,
-        200
+        301
     );
     let added = s.handle("[3] DBADDSAFE //TEST/254/201/1 NetVar 7 Gain");
     assert_eq!(added.status, 301);
@@ -919,7 +919,7 @@ fn scalar_set_network_retries_zero_is_exact_and_volatile() {
     assert_eq!(
         s.handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
             .status,
-        200
+        301
     );
     let default = s.handle("[3] GET //TEST/254 Retries");
     assert_eq!(default.status, 300);
@@ -978,7 +978,7 @@ fn network_retries_do_not_cross_database_snapshot_boundaries() {
         server
             .handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
             .status,
-        200
+        301
     );
     assert_eq!(server.handle("[3] SET //SOURCE/254 Retries 0").status, 200);
     let get = |server: &mut Server, tag: &str, project: &str| {
@@ -1051,7 +1051,7 @@ fn scalar_set_move_contract_and_guards() {
     assert_eq!(
         s.handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
             .status,
-        200
+        301
     );
     assert_eq!(s.handle("[3] PROJECT USE TEST").status, 200);
     assert_eq!(
@@ -1194,7 +1194,7 @@ fn dbdelete_boundary_repeat_and_unselected() {
     assert_eq!(
         s.handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
             .status,
-        200
+        301
     );
     assert_eq!(s.handle("[3] PROJECT USE TEST").status, 200);
     for (tag, addr, name) in [("4", 20, "A"), ("5", 200, "B"), ("6", 30, "C")] {
@@ -1260,7 +1260,7 @@ fn dbdelete_boundary_repeat_and_unselected() {
         unselected
             .handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
             .status,
-        200
+        301
     );
     assert_eq!(
         unselected
@@ -1299,7 +1299,7 @@ fn dbcopy_unit_copy_fresh_identity_and_conflicts() {
     assert_eq!(
         s.handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
             .status,
-        200
+        301
     );
     assert_eq!(s.handle("[3] PROJECT USE TEST").status, 200);
     assert_eq!(s.handle("[4] DBADDSAFE //TEST/254 Unit 20 Src").status, 301);
@@ -1391,7 +1391,7 @@ fn dbset_unit_field_store_readback_and_absent() {
     assert_eq!(
         s.handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
             .status,
-        200
+        301
     );
     assert_eq!(s.handle("[3] PROJECT USE TEST").status, 200);
     assert_eq!(
@@ -1446,7 +1446,7 @@ fn network_rename_chain_moves_units_and_guards() {
     assert_eq!(
         s.handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
             .status,
-        200
+        301
     );
     assert_eq!(s.handle("[3] PROJECT USE TEST").status, 200);
     assert_eq!(
@@ -1524,7 +1524,7 @@ fn network_rename_chain_moves_units_and_guards() {
     assert_eq!(
         s.handle("[15d] DBCREATENET 252 Local Cni 127.0.0.1:10001")
             .status,
-        200
+        301
     );
     let busy = s.handle("[15e] DBRENAMENETSAFE 253 252");
     assert_eq!(busy.status, 401);
@@ -1556,7 +1556,7 @@ fn net_set_project_identify_native_grammar_and_guards() {
     assert_eq!(
         s.handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
             .status,
-        200
+        301
     );
     assert_eq!(s.handle("[3] PROJECT USE TEST").status, 200);
     let ok = s.handle("[4] NET SET_PROJECT_IDENTIFY //TEST/254 TEST");
@@ -1659,7 +1659,7 @@ fn project_rename_selection_follow_and_guards() {
     assert_eq!(
         s.handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
             .status,
-        200
+        301
     );
     assert_eq!(s.handle("[3] PROJECT USE TEST").status, 200);
     assert_eq!(
@@ -1686,7 +1686,11 @@ fn project_rename_selection_follow_and_guards() {
     let busy = s.handle("[11] PROJECT RENAME TEST T2");
     assert_eq!(busy.status, 409);
     let listed = s.handle("[12] PROJECT LIST");
-    assert!(listed.lines.iter().any(|l| l == "TEST"));
+    assert!(listed
+        .lines
+        .iter()
+        .chain(std::iter::once(&listed.final_text))
+        .any(|l| l.contains("project=TEST ")));
     // PROJECT NEW T2 above re-selected current; select TEST back first.
     assert_eq!(s.handle("[12b] PROJECT USE TEST").status, 200);
     assert_eq!(s.handle("[12c] NET OPEN //TEST/254").status, 200);
@@ -1702,8 +1706,14 @@ fn project_rename_selection_follow_and_guards() {
     let moved = s.handle("[13] PROJECT RENAME TEST T3");
     assert_eq!(moved.status, 200);
     let listed = s.handle("[14] PROJECT LIST");
-    assert!(listed.lines.iter().any(|l| l == "T3"));
-    assert!(!listed.lines.iter().any(|l| l == "TEST"));
+    let rows = || {
+        listed
+            .lines
+            .iter()
+            .chain(std::iter::once(&listed.final_text))
+    };
+    assert!(rows().any(|l| l.contains("project=T3 ")));
+    assert!(!rows().any(|l| l.contains("project=TEST ")));
     assert_eq!(s.handle("[15] NET OPEN //T3/254").status, 200);
     // Stale old-path reads fail closed on every layer.
     assert_eq!(s.handle("[15b] NET OPEN //TEST/254").status, 404);
@@ -1739,7 +1749,7 @@ fn calculator_catalogue_arithmetic_envelope_and_guards() {
     assert_eq!(
         s.handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
             .status,
-        200
+        301
     );
     assert_eq!(s.handle("[3] PROJECT USE TEST").status, 200);
     for (address, catalog, unit_type) in [
@@ -1795,7 +1805,7 @@ fn calculator_catalogue_arithmetic_envelope_and_guards() {
     assert_eq!(
         s.handle("[6b] DBCREATENET 253 Local Cni 127.0.0.1:10001")
             .status,
-        200
+        301
     );
     assert_eq!(
         s.handle("[6c] DBADDSAFE //TEST/253 Unit 1 Load").status,
@@ -1921,7 +1931,7 @@ fn bounded_cgl_json_import_export_filters_and_skip_boundaries() {
         server
             .handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
             .status,
-        200
+        301
     );
     assert_eq!(server.handle("[3] PROJECT USE TEST").status, 200);
     let document = r#"{"cglVersion":"1.1","localNetwork":254,"networks":[{"address":254,"name":"Local","applications":[{"address":56,"type":56,"name":"Lighting","groups":[{"address":1,"name":"Lounge","levels":[{"address":255,"name":"On"}]}]}]}]}"#;
@@ -2020,7 +2030,7 @@ fn mock_bus_del_drops_physical_keeps_database() {
     assert_eq!(
         s.handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
             .status,
-        200
+        301
     );
     assert_eq!(s.handle("[3] PROJECT USE TEST").status, 200);
     assert_eq!(
@@ -2113,7 +2123,7 @@ fn document_store_mirror_import_and_rejects() {
     assert_eq!(
         s.handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
             .status,
-        200
+        301
     );
     assert_eq!(s.handle("[3] PROJECT USE TEST").status, 200);
     assert_eq!(s.handle("[4] DBADDSAFE //TEST/254 Unit 20 Doc").status, 301);
@@ -2197,7 +2207,7 @@ fn dbsetxml_replaces_typed_unit_and_discards_unmodeled_xml_markup() {
         server
             .handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
             .status,
-        200
+        301
     );
     assert_eq!(server.handle("[3] PROJECT USE TEST").status, 200);
     assert_eq!(
@@ -2413,13 +2423,13 @@ fn dbsetxml_unit_enforces_project_wide_oid_uniqueness_and_retires_old_identity()
         server
             .handle("[2] DBCREATENET 254 Primary Cni loopback")
             .status,
-        200
+        301
     );
     assert_eq!(
         server
             .handle("[3] DBCREATENET 253 Secondary Cni loopback")
             .status,
-        200
+        301
     );
     assert_eq!(
         server
@@ -2500,7 +2510,7 @@ fn dbsetxml_replaces_evidenced_typed_database_trees_atomically() {
         server
             .handle("[2] DBCREATENET 254 Net Cni 127.0.0.1:1")
             .status,
-        200
+        301
     );
     let network_xml = server.handle("[3] DBGETXML //XMLT/254").lines[0].clone();
     let network_document =
@@ -2717,13 +2727,13 @@ fn dbsetxml_network_unit_topology_is_atomic_conflict_checked_and_retires_omissio
         server
             .handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
             .status,
-        200
+        301
     );
     assert_eq!(
         server
             .handle("[3] DBCREATENET 253 Other Cni 127.0.0.1:10002")
             .status,
-        200
+        301
     );
     assert_eq!(
         server
@@ -2896,7 +2906,7 @@ fn dbsetxml_combined_network_unit_matches_native_build_2001_capture() {
         server
             .handle("[3] DBCREATENET 254 Local Cni 127.0.0.1:1")
             .status,
-        200
+        301
     );
     let initial = server.handle("[4] DBGETXML //XCOMB/254");
     let initial_xml = initial.lines[0].strip_prefix("347-").unwrap();
@@ -3130,7 +3140,7 @@ fn dbsetxml_replacement_mapper_matches_owned_native_edge_vectors() {
         server
             .handle("[102] DBCREATENET 254 Local Cni 127.0.0.1:1")
             .status,
-        200
+        301
     );
     let initial = server.handle("[103] DBGETXML //XEDGE/254");
     let parsed =
@@ -3206,7 +3216,7 @@ fn dbsetxml_unit_mapper_keeps_known_optional_scalars_and_open_pp_catalogue() {
         server
             .handle("[network] DBCREATENET 254 Local Cni 127.0.0.1:1")
             .status,
-        200
+        301
     );
     assert_eq!(
         server
@@ -3253,7 +3263,7 @@ fn dbsetxml_duplicate_oid_matches_owned_native_vectors() {
         server
             .handle("[202] DBCREATENET 254 Local Cni 127.0.0.1:1")
             .status,
-        200
+        301
     );
     let initial = server.handle("[203] DBGETXML //XDUP/254");
     let parsed =
@@ -3986,7 +3996,7 @@ fn duplicate_unit_oid_mutations_match_owned_native_capture() {
         server
             .handle("[lifecycle-net] DBCREATENET 254 Local Cni 127.0.0.1:1")
             .status,
-        200
+        301
     );
     assert_eq!(
         server
@@ -4129,7 +4139,15 @@ fn dbsetxml_duplicate_leaf_applications_match_owned_native_vectors() {
     for row in &cases[..3] {
         let tag = row["tag"].as_u64().unwrap();
         let command = row["command"].as_str().unwrap();
-        assert_eq!(server.handle(&format!("[{tag}] {command}")).status, 200);
+        let expected = if command.starts_with("DBCREATENET ") {
+            301
+        } else {
+            200
+        };
+        assert_eq!(
+            server.handle(&format!("[{tag}] {command}")).status,
+            expected
+        );
     }
     let initial = server.handle("[303] DBGETXML //XAPP/254");
     let parsed =
@@ -4372,9 +4390,8 @@ fn dbsetxml_reversed_and_multiple_leaf_applications_match_owned_native_vectors()
                 .is_some_and(|submit| submit >= tag && submit <= tag + 2)
         });
         if command.starts_with("DBCREATENET ") {
-            // The synthetic setup has its own older DBCREATENET response
-            // difference; replacement and its readbacks are the vector.
-            assert_eq!(observed.status, 200, "tag {tag}: {observed:?}");
+            // Setup receipts are not part of the replacement vector.
+            assert_eq!(observed.status, 301, "tag {tag}: {observed:?}");
             continue;
         } else if command.starts_with("DBGETXML //") {
             if let Some(shape) = shape.filter(|shape| shape["submit_tag"].as_u64() == Some(tag + 1))
@@ -4572,8 +4589,7 @@ fn dbsetxml_nested_same_oid_applications_match_owned_native_vectors() {
             server.handle(&format!("[{tag}] {command}"))
         };
         if command.starts_with("DBCREATENET ") {
-            // The synthetic setup has a known older DBCREATENET reply difference.
-            assert_eq!(observed.status, 200, "tag {tag}: {observed:?}");
+            assert_eq!(observed.status, 301, "tag {tag}: {observed:?}");
             continue;
         }
         if command.starts_with("DBGETXML //")
@@ -4691,8 +4707,7 @@ fn dbsetxml_nested_same_oid_levels_match_owned_native_vectors() {
             server.handle(&format!("[{tag}] {command}"))
         };
         if command.starts_with("DBCREATENET ") {
-            // Native setup issues a 301 receipt; the existing mock issues 200.
-            assert_eq!(observed.status, 200, "tag {tag}: {observed:?}");
+            assert_eq!(observed.status, 301, "tag {tag}: {observed:?}");
             continue;
         }
         if command.starts_with("DBGETXML //")
@@ -4816,8 +4831,7 @@ fn dbsetxml_post_load_level_tags_roundtrip_matches_owned_native_vectors() {
             server.handle(&format!("[{tag}] {command}"))
         };
         if command.starts_with("DBCREATENET ") {
-            // The native setup issues 301; this mock's older setup issues 200.
-            assert_eq!(observed.status, 200, "tag {tag}: {observed:?}");
+            assert_eq!(observed.status, 301, "tag {tag}: {observed:?}");
             continue;
         }
         if command.starts_with("DBGETXML //")
@@ -5000,9 +5014,6 @@ fn dbsetxml_level_dlt_label_matches_owned_native_lifecycle() {
             .trim_end_matches("\r\n");
         let expected_status = if command.starts_with("DBGETXML ") {
             200
-        } else if command.starts_with("DBCREATENET ") {
-            // Native setup uses 301; the mock's established setup uses 200.
-            200
         } else {
             expected_final[..3].parse().unwrap()
         };
@@ -5114,12 +5125,11 @@ fn dbsetxml_group_dlt_labels_match_owned_native_lifecycle() {
         let expected_final = final_line
             .trim_start_matches(&format!("[{tag}] "))
             .trim_end_matches("\r\n");
-        let expected_status =
-            if command.starts_with("DBGETXML ") || command.starts_with("DBCREATENET ") {
-                200
-            } else {
-                expected_final[..3].parse().unwrap()
-            };
+        let expected_status = if command.starts_with("DBGETXML ") {
+            200
+        } else {
+            expected_final[..3].parse().unwrap()
+        };
         assert_eq!(observed.status, expected_status, "tag {tag}: {observed:?}");
         if command.starts_with("DBGETXML ") {
             let expected_xml = response[2]
@@ -5210,7 +5220,7 @@ fn dbsetxml_group_dlt_boundaries_match_owned_native_capture() {
         server
             .handle("[setup-network] DBCREATENET 254 Local Cni 127.0.0.1:1")
             .status,
-        200
+        301
     );
     let baseline = server.handle("[setup-read] DBGETXML //XGDB/254");
     let document =
@@ -5347,7 +5357,7 @@ fn dbsetxml_direct_and_combined_unit_namespace_mapper_matches_native_vm() {
         server
             .handle("[3] DBCREATENET 254 Local Cni 127.0.0.1:1")
             .status,
-        200
+        301
     );
     let initial = server.handle("[4] DBGETXML //XUNIT/254");
     let initial_xml = initial.lines[0].strip_prefix("347-").unwrap();
@@ -5447,7 +5457,7 @@ fn dbsetxml_combined_network_discards_unmodeled_namespace_markup() {
         server
             .handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:1")
             .status,
-        200
+        301
     );
     let network = server.handle("[3] DBGETXML //NSNEST/254");
     let xml = network.lines[0].strip_prefix("347-").unwrap();
@@ -5515,7 +5525,7 @@ fn dbsetxml_network_discards_opaque_extension_unit() {
         server
             .handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:1")
             .status,
-        200
+        301
     );
     let network = server.handle("[3] DBGETXML //NSOPAQUE/254");
     let xml = network.lines[0].strip_prefix("347-").unwrap();
@@ -5575,13 +5585,13 @@ fn legacy_database_scalar_tags_and_network_renames_are_coherent() {
         server
             .handle("[2] DBCREATENET 254 LocalA Cni 127.0.0.1:10001")
             .status,
-        200
+        301
     );
     assert_eq!(
         server
             .handle("[3] DBCREATENET 253 LocalB Bridge 254/p/253")
             .status,
-        200
+        301
     );
     assert_eq!(
         server
@@ -5769,7 +5779,7 @@ fn legacy_database_scalar_tags_and_network_renames_are_coherent() {
         server
             .handle("[38] DBCREATENET 1 Secret Cni nowhere")
             .status,
-        200
+        301
     );
     assert_eq!(server.handle("[39] PROJECT USE DBL1").status, 200);
     let listing = server.handle("[40] DBTAGLIST");
@@ -5818,7 +5828,7 @@ fn legacy_database_add_copy_and_cross_project_subtrees_use_fresh_oids() {
         server
             .handle("[2] DBCREATENET 254 Source Cni nowhere")
             .status,
-        200
+        301
     );
     let interface = server.handle("[2a] DBADD //SOURCE/254 Interface ignored");
     assert_eq!(interface.status, 301);
@@ -5912,7 +5922,7 @@ fn legacy_database_add_copy_and_cross_project_subtrees_use_fresh_oids() {
         server
             .handle("[17] DBCREATENET 1 Destination Cni nowhere")
             .status,
-        200
+        301
     );
     assert_eq!(server.handle("[18] PROJECT USE SOURCE").status, 200);
     let cross = server.handle("[19] DBCOPY //SOURCE/254/p/20 //DEST/1 ignored");
@@ -6047,7 +6057,7 @@ fn legacy_database_oid_copy_stays_in_selected_project_and_netvar_moves_its_tree(
         server
             .handle("[2] DBCREATENET 254 Original Cni nowhere")
             .status,
-        200
+        301
     );
     let unit = server.handle("[3] DBADD //ORIGIN/254 Unit");
     let unit_oid = unit.final_text.trim_start_matches("301 OID=").to_string();
@@ -6156,7 +6166,7 @@ fn legacy_database_create_update_verify_and_new_track_physical_inventory() {
         server
             .handle("[2] DBCREATENET 254 Physical Cni nowhere")
             .status,
-        200
+        301
     );
     assert_eq!(
         server.handle("[3] DBADDSAFE //LIFE/254 Unit 1 One").status,
@@ -6554,7 +6564,7 @@ fn dbsetxml_duplicate_group_oid_across_applications_refuses_atomically() {
         server
             .handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:1")
             .status,
-        200
+        301
     );
     let initial = server.handle("[3] DBGETXML //XDUPG/254");
     assert_eq!(initial.status, 200, "{initial:?}");

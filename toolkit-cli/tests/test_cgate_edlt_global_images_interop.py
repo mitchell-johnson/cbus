@@ -92,21 +92,24 @@ def normalized(value):
                  for part in value.split())
 
 
-def owned_command(owner, commands, command):
+def owned_command(owner, commands, command, codes=(200,)):
     """Record fixture cleanup separately from the public CLI's wire."""
     response = owner.command(command)
     commands.append({'command': command, 'status': response.code,
                      'lines': list(response.lines), 'final': response.final})
-    assert response.code == 200, commands[-1]
+    assert response.code in codes, commands[-1]
     return response
 
 
 def project_names(owner, commands):
-    response = owned_command(owner, commands, 'PROJECT LIST')
-    assert response.final == '200 OK'
-    assert all(line.startswith('200-') for line in response.lines[:-1]), response
-    names = [line[4:] for line in response.lines[:-1]]
-    assert names == sorted(set(names)), names
+    # Native PROJECT LIST: `123 project=<name> state=<state>` rows, or 124.
+    response = owned_command(owner, commands, 'PROJECT LIST', (123, 124))
+    if response.code == 124:
+        return []
+    rows = [re.fullmatch(r'123[- ]project=(\S+) state=\w+', line) for line in response.lines]
+    assert all(rows), response
+    names = sorted(row.group(1) for row in rows)
+    assert len(names) == len(set(names)), names
     return names
 
 

@@ -179,7 +179,8 @@ async fn general_tree_objects_are_native_shaped_local_and_keep_mqtt_live() {
         assert!(
             reply
                 .last()
-                .is_some_and(|line| matches!(line.as_str(), "200 OK" | "200 OK.")),
+                .is_some_and(|line| matches!(line.as_str(), "200 OK" | "200 OK.")
+                    || (text.starts_with("DBCREATENET ") && line.starts_with("301 OID="))),
             "{text}: {reply:?}"
         );
     }

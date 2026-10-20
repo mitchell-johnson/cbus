@@ -91,7 +91,7 @@ fn replay(native: &Value, profile: &str) {
             let created = server.handle(&format!(
                 "[3] DBCREATENET {network} Local{network} Cni 127.0.0.1:1"
             ));
-            assert_eq!(created.status, 200, "{created:?}");
+            assert_eq!(created.status, 301, "{created:?}");
         }
         let mut observed = Vec::new();
         let mut statuses = Vec::new();

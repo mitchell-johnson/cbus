@@ -8,7 +8,12 @@ async fn run(service: &Arc<Service>, client: &mut ClientState, command: &str) ->
 
 async fn ok_command(service: &Arc<Service>, client: &mut ClientState, command: &str) {
     let reply = run(service, client, command).await;
-    assert_eq!(reply.status, 200, "{command}: {reply:?}");
+    let expected = if command.starts_with("DBCREATENET ") {
+        301
+    } else {
+        200
+    };
+    assert_eq!(reply.status, expected, "{command}: {reply:?}");
 }
 
 async fn definitions(service: &Arc<Service>, project: &str) -> serde_json::Value {

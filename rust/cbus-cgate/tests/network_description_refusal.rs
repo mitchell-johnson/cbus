@@ -45,7 +45,12 @@ fn network_description_dbsetxml_is_refused_without_mutation() {
     let mut server = Server::new(AccessLevel::Program);
     for command in ["PROJECT NEW NETDESC", "DBCREATENET 254 Local Cni nowhere"] {
         let response = server.handle(&format!("[seed] {command}"));
-        assert_eq!(response.status, 200, "{response:?}");
+        let expected = if command.starts_with("DBCREATENET ") {
+            301
+        } else {
+            200
+        };
+        assert_eq!(response.status, expected, "{response:?}");
     }
     let baseline = server.handle("[base] DBGETXML //NETDESC/254");
     assert_eq!(baseline.status, 200, "{baseline:?}");

@@ -103,8 +103,7 @@ fn unsaved_dbsetxml_is_discarded_by_close_and_kept_by_save_like_native() {
             server.handle(&format!("[{tag}] {command}"))
         };
         match expected {
-            // Native DBCREATENET returns its OID; the modeled service 200.
-            301 if command.starts_with("DBCREATENET") => assert_eq!(response.status, 200),
+            301 if command.starts_with("DBCREATENET") => assert_eq!(response.status, 301),
             344 => {
                 assert_eq!(response.status, 200, "{tag} {command}: {response:?}");
                 let observed = rust_xml(&response);
@@ -140,7 +139,7 @@ fn never_saved_copy_and_delete_image_boundaries_are_explicit() {
         server
             .handle("[3] DBCREATENET 254 Local Cni 127.0.0.1:1")
             .status,
-        200
+        301
     );
     // Native drops a never-saved project on CLOSE (its LOAD then fails with
     // 408). Without a saved image the model keeps it rather than delete it.

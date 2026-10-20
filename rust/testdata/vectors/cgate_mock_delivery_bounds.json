@@ -9,7 +9,7 @@
   "backlog": {"downloads": 24, "tail_command": "PROJECT NEW MUST_NOT_REPLAY", "tail_readback": "PROJECT USE MUST_NOT_REPLAY", "readback_status": 404},
   "ordering": [
     {"command": "PROJECT NEW ORDERED", "status": 200, "terminal": "200 OK.", "event_contains": "project ORDERED created"},
-    {"command": "DBCREATENET 11 Local Cni 127.0.0.1:1", "status": 200, "terminal": "200 OK", "event_contains": "net 11 created"},
+    {"command": "DBCREATENET 11 Local Cni 127.0.0.1:1", "status": 301, "terminal": "301 OID=00000000-0000-0000-0000-000000000001", "event_contains": "net 11 created"},
     {"command": "DBGETXML //ORDERED/11", "status": 344, "wire_statuses": [343, 347, 347, 344]},
     {"command": "NOOP", "status": 200}
   ],

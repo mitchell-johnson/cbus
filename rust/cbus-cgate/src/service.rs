@@ -18281,7 +18281,14 @@ mod application_description_state_tests {
     fn issued_application_and_group_description_survive_durable_service_restart() {
         let mut original = Server::new(AccessLevel::Program);
         for command in ["PROJECT NEW DESC", "DBCREATENET 254 Local Cni nowhere"] {
-            assert_eq!(original.handle(&format!("[seed] {command}")).status, 200);
+            assert_eq!(
+                original.handle(&format!("[seed] {command}")).status,
+                if command.contains("DBCREATENET") {
+                    301
+                } else {
+                    200
+                }
+            );
         }
         let mut identities = Vec::new();
         for command in [

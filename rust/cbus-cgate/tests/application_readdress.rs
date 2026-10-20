@@ -6,7 +6,7 @@ fn harness() -> Server {
     assert_eq!(
         s.handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
             .status,
-        200
+        301
     );
     assert_eq!(
         s.handle("[3] DBADDSAFE //TMOVE/254 Application 80 App80")

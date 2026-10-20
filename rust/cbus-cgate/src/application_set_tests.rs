@@ -10,7 +10,7 @@ fn server() -> Server {
     assert_eq!(command(&mut model, "PROJECT NEW SAFEAPP").status, 200);
     assert_eq!(
         command(&mut model, "DBCREATENET 254 Local Cni 127.0.0.1:1").status,
-        200
+        301
     );
     for address in [72, 0, 71, 66, 50] {
         assert_eq!(
@@ -813,7 +813,7 @@ fn current_application_name_and_unrelated_parent_reservations_remain_admitted() 
                     &format!("DBCREATENET {network} Other Cni nowhere")
                 )
                 .status,
-                200
+                301
             );
             let created = command(
                 &mut model,

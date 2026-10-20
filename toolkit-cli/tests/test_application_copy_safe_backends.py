@@ -82,7 +82,7 @@ def journey(backend, variable, tmp_path):
 
 def seed(s, trap):
     inherited.seed(s, trap)
-    s.command(f'DBCREATENET 253 Other Cni {trap}')
+    s.command(f'DBCREATENET 253 Other Cni {trap}', 301)
     inherited.seed_typed_applications(s)
     s.command(f'DBADDSAFE //{PROJECT}/254 Application 56 Source', 301)
     null_level = ET.fromstring(SOURCE_XML).find('Group/Level')
@@ -226,7 +226,7 @@ def test_public_application_oid_copy_to_network_oid(backend, variable, tmp_path)
 def test_public_application_cross_project_copy_preserves_source(backend, variable, tmp_path):
     with journey(backend, variable, tmp_path) as (s, _, trap, evidence):
         before, source = seed(s, trap)
-        s.command('PROJECT NEW OTHER');s.command(f'DBCREATENET 1 Target Cni {trap}')
+        s.command('PROJECT NEW OTHER');s.command(f'DBCREATENET 1 Target Cni {trap}', 301)
         value, call = copy(s, parent='//OTHER/1', address=0, name='Cross')
         assert value['status'] == 301
         assert_copy_wire(call, SOURCE_PATH, '//OTHER/1', 0, 'Cross')

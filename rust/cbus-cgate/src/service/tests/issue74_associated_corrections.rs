@@ -15,7 +15,12 @@ async fn run(service: &Arc<Service>, client: &mut ClientState, command: &str) ->
 
 async fn ok_command(service: &Arc<Service>, client: &mut ClientState, command: &str) {
     let response = run(service, client, command).await;
-    assert_eq!(response.status, 200, "{command}: {response:?}");
+    let expected = if command.starts_with("DBCREATENET ") {
+        301
+    } else {
+        200
+    };
+    assert_eq!(response.status, expected, "{command}: {response:?}");
 }
 
 async fn created(service: &Arc<Service>, client: &mut ClientState, command: &str) -> String {

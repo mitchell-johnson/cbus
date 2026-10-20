@@ -250,7 +250,9 @@ def probe(product: str, binary: Path) -> dict:
                                  ("702", "PROJECT USE XUNIT"),
                                  ("703", "DBCREATENET 254 Local Cni 127.0.0.1:1")):
                 rows, events = send(sock, stream, tag, f"[{tag}] {command}\r\n")
-                if not rows[-1].startswith(f"[{tag}] 200 "):
+                # Native DBCREATENET answers with the new network's OID.
+                expected = "301 OID=" if command.startswith("DBCREATENET ") else "200 "
+                if not rows[-1].startswith(f"[{tag}] {expected}"):
                     raise ValueError(f"seed {command} failed: {rows}")
                 receipt["setup"][tag] = {"rows": rows, "events": events}
             rows, events = send(sock, stream, "704", "[704] DBGETXML //XUNIT/254\r\n")
@@ -352,8 +354,8 @@ def validate_receipt(receipt: dict) -> None:
     greeting = setup.get("greeting", "")
     if not greeting.startswith("201 ") or not greeting.endswith("\r\n"):
         raise ValueError("Unit mapper greeting framing changed")
-    for tag in ("701", "702", "703"):
-        if not setup.get(tag, {}).get("rows", [""])[-1].startswith(f"[{tag}] 200 "):
+    for tag, expected in (("701", "200 "), ("702", "200 "), ("703", "301 OID=")):
+        if not setup.get(tag, {}).get("rows", [""])[-1].startswith(f"[{tag}] {expected}"):
             raise ValueError(f"Unit mapper seed {tag} changed")
     seeded = ET.fromstring(xml_payload(setup["704"]["rows"], "704", original=False))
     network_oid = seeded.findtext("OID")

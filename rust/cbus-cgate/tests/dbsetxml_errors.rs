@@ -46,7 +46,12 @@ fn dbsetxml_error_matrix_matches_native_statuses_without_mutation() {
         "[2] PROJECT USE XERR",
         "[3] DBCREATENET 254 Local Cni 127.0.0.1:1",
     ] {
-        assert_eq!(server.handle(line).status, 200, "{line}");
+        let expected = if line.contains("DBCREATENET ") {
+            301
+        } else {
+            200
+        };
+        assert_eq!(server.handle(line).status, expected, "{line}");
     }
     let initial = server.handle("[4] DBGETXML //XERR/254");
     let parsed =

@@ -6,7 +6,7 @@ fn harness() -> (Server, String, String) {
     assert_eq!(
         s.handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
             .status,
-        200
+        301
     );
     assert_eq!(
         s.handle("[3] DBADDSAFE //T131/254 Application 80 App80")
@@ -33,7 +33,7 @@ fn netvar_harness() -> (Server, String, String) {
     assert_eq!(
         s.handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
             .status,
-        200
+        301
     );
     assert_eq!(
         s.handle("[3] DBADDSAFE //TN131/254 Application 56 Lighting")
@@ -197,7 +197,7 @@ fn ordinary_missing_and_foreign_values_refuse_without_alias() {
     assert_eq!(
         s.handle("[10] DBCREATENET 254 Elsewhere Cni 127.0.0.1:9")
             .status,
-        200
+        301
     );
     assert_eq!(s.handle("[11] PROJECT USE T131").status, 200);
     // An unselected project is refused like every other ordinary route.
@@ -532,7 +532,7 @@ fn ordinary_application_copied_netvar_level_keeps_numeric_ownership() {
     assert_eq!(
         s.handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
             .status,
-        200
+        301
     );
     assert_eq!(
         s.handle("[3] DBADDSAFE //N131/254 Application 56 Lighting")

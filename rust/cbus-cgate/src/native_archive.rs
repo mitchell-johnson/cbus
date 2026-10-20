@@ -1333,7 +1333,7 @@ mod tests {
             server
                 .handle("[net] DBCREATENET 254 Local Cni 127.0.0.1:1")
                 .status,
-            200
+            301
         );
         for address in [72, 0, 71, 66] {
             assert_eq!(

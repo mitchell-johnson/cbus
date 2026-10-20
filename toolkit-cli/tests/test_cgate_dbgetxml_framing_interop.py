@@ -34,7 +34,7 @@ def test_python_client_and_pipelined_xml_roundtrip(product, variable, binary_nam
     with owned_server(product, binary) as port:
         with CGateClient("127.0.0.1", port, timeout=5) as client:
             assert client.command("PROJECT NEW XWIRE").code == 200
-            assert client.command("DBCREATENET 254 Local Cni 127.0.0.1:1").code == 200
+            assert client.command("DBCREATENET 254 Local Cni 127.0.0.1:1").code == 301
             before = client.command("DBGETXML //XWIRE/254")
             assert before.code == 344
             assert before.lines[0] == "343-Begin XML snippet"

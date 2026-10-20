@@ -42,6 +42,8 @@ fn seed(value: &serde_json::Value) -> (Server, Vec<String>) {
                     .unwrap()
                     .to_string(),
             );
+        } else if body.starts_with("DBCREATENET ") {
+            assert_eq!(response.status, 301, "{response:?}");
         } else {
             assert_eq!(response.status, 200, "{response:?}");
         }
@@ -241,8 +243,11 @@ fn application_description_xml_roundtrip_matches_owned_vector() {
     let mut server = Server::new(AccessLevel::Program);
     let mut issued = Vec::new();
     for command in scope["seed_commands"].as_array().unwrap() {
-        let response = server.handle(&format!("[seed] {}", command.as_str().unwrap()));
-        if let Some(oid) = response.final_text.strip_prefix("301 OID=") {
+        let body = command.as_str().unwrap();
+        let response = server.handle(&format!("[seed] {body}"));
+        if body.starts_with("DBCREATENET ") {
+            assert_eq!(response.status, 301, "{response:?}");
+        } else if let Some(oid) = response.final_text.strip_prefix("301 OID=") {
             issued.push(oid.to_string());
         } else {
             assert_eq!(response.status, 200, "{response:?}");
@@ -295,7 +300,11 @@ fn application_description_xml_survives_project_copy_and_application_copy() {
     let mut server = Server::new(AccessLevel::Program);
     let mut issued = Vec::new();
     for command in rows[0]["seed_commands"].as_array().unwrap() {
-        let response = server.handle(&format!("[seed] {}", command.as_str().unwrap()));
+        let body = command.as_str().unwrap();
+        let response = server.handle(&format!("[seed] {body}"));
+        if body.starts_with("DBCREATENET ") {
+            continue;
+        }
         if let Some(oid) = response.final_text.strip_prefix("301 OID=") {
             issued.push(oid.to_string());
         }

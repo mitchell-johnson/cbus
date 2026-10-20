@@ -913,7 +913,14 @@ mod tests {
             "PROJECT USE T",
             "DBCREATENET 254 Net Cni 127.0.0.1:1",
         ] {
-            assert_eq!(server.handle(&format!("[p] {command}")).status, 200);
+            assert_eq!(
+                server.handle(&format!("[p] {command}")).status,
+                if command.contains("DBCREATENET") {
+                    301
+                } else {
+                    200
+                }
+            );
         }
         add_source(&mut server, 20, "5 6 7");
         let check = server.handle("[1] CONVERTUNIT CHECK 1 //T/254/p/20 DIMDD4 CAT-D4");
