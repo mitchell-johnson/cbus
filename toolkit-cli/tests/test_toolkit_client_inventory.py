@@ -81,6 +81,9 @@ def test_mock_replies_fit_toolkit_parsers():
 
         # TcgcMark relies on an unregistered verb answering a syntax error.
         assert send("Mark") == ["400 Syntax Error."]
+        assert send("login") == ["210 Access level: Program"]
+        assert send("login user") == ["400 Syntax Error."]
+        assert send("login user secret") == ["211 Access level set to: Program"]
         assert send("noop") == ["200 OK."]
 
         assert send("project new TOOLKIT") == ["200 OK."]
@@ -107,6 +110,21 @@ def test_mock_replies_fit_toolkit_parsers():
             f"135 project=TOOLKIT address=//TOOLKIT/254 OID={oid} interfaceType=Cni "
             "interfaceAddress=127.0.0.1:10001 state=new interfaceState=closed"
         ]
+
+        # TcgcID marks itself done after one row, so ID must answer one line.
+        assert send("ID //TOOLKIT/254/p/20 type") == [
+            "401 Bad object or device ID: //TOOLKIT/254/p/20 (Object not found )"
+        ]
+        assert send("DBADDSAFE //TOOLKIT/254 Unit 20 Keypad")[-1].startswith("301 OID=")
+        assert send("DBSETSAFE //TOOLKIT/254/p/20/UnitType KEYE1")[-1].startswith("200 ")
+        assert send("ID //TOOLKIT/254/p/20 type") == ["521 Unit unavailable: Identify failed."]
+        assert send("net open 254")[-1].startswith("200 ")
+        assert send("ID //TOOLKIT/254/p/20 type") == ["300 p/254/20 type=KEYE1"]
+        version = send("ID //TOOLKIT/254/p/20 version")
+        assert len(version) == 1 and version[0].startswith("300 p/254/20 version="), version
+        assert send("ID //TOOLKIT/254/p/20 bogus") == ["521 Unit unavailable: Identify failed."]
+        assert send("do //TOOLKIT/254/p/20 qsync") == ["202 Done: //TOOLKIT/254/p/20"]
+        assert send("net close 254")[-1].startswith("200 ")
 
         assert send("pp lock TheLock //TOOLKIT/254")[-1].startswith("200 ")
         assert send("pp start TheSession TheLock")[-1].startswith("200 ")

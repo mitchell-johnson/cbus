@@ -6604,3 +6604,70 @@ fn dbsetxml_duplicate_group_oid_across_applications_refuses_atomically() {
         initial.lines
     );
 }
+
+#[test]
+fn toolkit_login_id_and_qsync_match_native_reply_lines() {
+    // C-Gate 3.4 handlers oT (LOGIN), nB (ID) and ny (DO), as Toolkit's
+    // TcgcLogin, TcgcID and TcgcDoQSync parse them.
+    let mut s = Server::new(AccessLevel::Program);
+    assert_eq!(
+        s.handle("[1] LOGIN").final_text,
+        "210 Access level: Program"
+    );
+    assert_eq!(s.handle("[2] LOGIN user").final_text, "400 Syntax Error.");
+    let login = s.handle("[3] LOGIN user secret");
+    assert_eq!(
+        (login.status, login.final_text.as_str()),
+        (211, "211 Access level set to: Program")
+    );
+    assert_eq!(s.handle("[4] PROJECT NEW TEST").status, 200);
+    assert_eq!(s.handle("[5] PROJECT USE TEST").status, 200);
+    assert_eq!(
+        s.handle("[6] DBCREATENET 254 Local Cni 127.0.0.1:1").status,
+        301
+    );
+    assert_eq!(
+        s.handle("[7] DBADDSAFE //TEST/254 Unit 20 Keypad").status,
+        301
+    );
+    assert_eq!(
+        s.handle("[8] DBSETSAFE //TEST/254/p/20/UnitType KEYE1")
+            .status,
+        200
+    );
+    assert_eq!(
+        s.handle("[9] ID //TEST/254/p/20 type").final_text,
+        "521 Unit unavailable: Identify failed."
+    );
+    assert_eq!(s.handle("[10] NET OPEN //TEST/254").status, 200);
+    let id = s.handle("[11] ID //TEST/254/p/20 type");
+    assert!(id.lines.is_empty());
+    assert_eq!(
+        (id.status, id.final_text.as_str()),
+        (300, "300 p/254/20 type=KEYE1")
+    );
+    for (tag, line, expected) in [
+        (
+            "12",
+            "ID //TEST/254/p/20 all",
+            "521 Unit unavailable: Identify failed.",
+        ),
+        (
+            "13",
+            "ID //TEST/254/p/21 type",
+            "401 Bad object or device ID: //TEST/254/p/21 (Object not found )",
+        ),
+        ("14", "ID", "400 Syntax Error."),
+        (
+            "15",
+            "DO //TEST/254/p/20 qsync",
+            "202 Done: //TEST/254/p/20",
+        ),
+    ] {
+        assert_eq!(
+            s.handle(&format!("[{tag}] {line}")).final_text,
+            expected,
+            "{line}"
+        );
+    }
+}
