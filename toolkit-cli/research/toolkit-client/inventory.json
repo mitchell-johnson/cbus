@@ -1,0 +1,476 @@
+{
+  "schema_version": 1,
+  "subject": "Native reply-code compares of the C-Bus Toolkit 1.18.0.2754 C-Gate client",
+  "purpose": "Machine-readable record of every reply check each native Toolkit C-Gate client class performs, so repository tests and cgate-mock can assert against them.",
+  "recording": "Transcribed from the static decompile findings recorded in repository issue #161. Nothing here is observed behaviour; it is recovered client source semantics. Replies not among an entry's recorded fragments are treated as unmodeled by this repository's fail-closed handlers.",
+  "recovery": {
+    "method": "Static analysis of C-Bus Toolkit 1.18.0.2754.",
+    "tools": [
+      "REA over the managed DLLs (SharpCGateCommunicator 7.15)",
+      "Ghidra 12.1.4 decompile of the Delphi CBusToolkit.exe with CBusToolkit.map symbols (680 methods, every CIS_Tcgc* class, the socket layer and the reply parser)"
+    ],
+    "execution": "Nothing was executed.",
+    "off_repository_bounds": [
+      "vendor binaries",
+      "decompiled source",
+      "key material"
+    ]
+  },
+  "managed_client_facts": {
+    "client": "SharpCGateCommunicator 7.15",
+    "tls_port": 20123,
+    "plain_port": 20023,
+    "default_timeout_seconds": 10,
+    "timeouts_seconds": {
+      "DBGetXml": 11,
+      "PPLoad": 60,
+      "PPSave": 20,
+      "ProjectLoad": 15,
+      "ProjectSave": 15,
+      "PPGetUnitSpec": 15,
+      "PPInfo": 15
+    },
+    "timeout_error_code": 9999
+  },
+  "shared_reply_parser": {
+    "command_framing": "Commands go out as [<id>] <command>.",
+    "line_reading": "Replies are read line by line to LF.",
+    "event_line": "A line whose 1st and 3rd characters are # (#c#, #e#, #s#) is an event.",
+    "no_command_waiting": {
+      "421": "connection refused",
+      "201": "connected; Toolkit reads the cmd-syntax version from it"
+    },
+    "tagged_lines": "Otherwise the first character must be [ or the line is dropped. Digits to ] are the id; the next character must be a space.",
+    "status_code": "The code runs to the first space or -; - marks a continuation row. The code goes through StrToIntDef(code, 0).",
+    "row_dispatch": "Every row, continuations included, goes to the class's OnProcessResults in order; rows are never merged. Unknown ids are dropped.",
+    "completion": "A command finishes when the character after a 3-digit code is a space. Some classes finish earlier.",
+    "error_policy": "Only the first error raised counts."
+  },
+  "low_confidence": [
+    "argument layouts (from string joins)",
+    "DBGet 401",
+    "ProjectSave 408",
+    "the Event 412-421 range"
+  ],
+  "classes": [
+    {
+      "class": "TreeXML",
+      "command_text": "TreeXML <net>",
+      "recording": "complete",
+      "accept": {"347": "rows appended"},
+      "policy": "Everything else ignored; a 401 yields empty XML."
+    },
+    {
+      "class": "NetList",
+      "recording": "complete",
+      "accept": {"131": "rows only"}
+    },
+    {
+      "class": "NetListAll",
+      "recording": "complete",
+      "accept": {"135": "rows"},
+      "finishes_on": ["135 ", "no networks found"]
+    },
+    {
+      "class": "TcgcIdentify",
+      "command_text": "ID <addr> type|version",
+      "recording": "complete",
+      "rows": "one row only",
+      "accept": {"300": "with type= or version= prefix"},
+      "reject": [
+        "827 C-Bus Send Error",
+        "821 Unit unavailable",
+        "401 Bad object or device ID",
+        "anything else: Could not read unit ID"
+      ]
+    },
+    {
+      "class": "Mark",
+      "recording": "complete",
+      "accept": {},
+      "policy": "Only 400 Syntax counts."
+    },
+    {
+      "class": "APIver",
+      "command_text": "apiver",
+      "recording": "complete",
+      "accept": {"138": "x=a.b form"},
+      "reject": {"400": "syntax error"}
+    },
+    {
+      "class": "Login",
+      "recording": "complete",
+      "accept": {"210": "level between : and # is one of NONE, CONNECT, MONITOR, OPERATE, ADMIN, PROGRAM, DEBUG, CLIPSAL"},
+      "reject": ["400", "422"]
+    },
+    {
+      "class": "OnOffRampAirconSetHVACModeEnableSet",
+      "classes": ["On", "Off", "Ramp", "AirconSetHVACMode", "EnableSet"],
+      "recording": "complete",
+      "policy": "Reply ignored."
+    },
+    {
+      "class": "RampGroup",
+      "recording": "complete",
+      "accept": {"200": "200"},
+      "reject": {"other": "Group light level cannot be changed"}
+    },
+    {
+      "class": "GetFamily",
+      "classes": ["Get*", "GetCustom", "GetAsterisk", "GetDCPVersion"],
+      "recording": "partial",
+      "reject": [
+        "Parameter <p> not found",
+        "Network not found",
+        "Unit not found",
+        "Operation not supported by:",
+        "Bad application address",
+        "Syntax Error",
+        "Bad object",
+        "420",
+        "GetCustom also: 408 No Catalog Available"
+      ],
+      "finishes_on": {
+        "GetAsterisk": ["300 ", "402 "],
+        "GetDCPVersion": ["300 ... dcpversion"]
+      }
+    },
+    {
+      "class": "OKSuccessClasses",
+      "classes": [
+        "Noop", "NetLoadDB", "KFISet", "PPLock", "TriggerEvent", "Upload",
+        "PPStart", "PPEnd", "PPSet", "PPLoadFromFile", "PPResetToDefaults",
+        "ProjectUse", "ProjectDelete", "ProjectNew", "ProjectCopy",
+        "ProjectRename", "ProjectLoad", "ProjectClose", "ProjectStop"
+      ],
+      "recording": "complete",
+      "accept": {"200": "OK"},
+      "reject": [
+        "425 Lock failed",
+        "408 Programming session not found",
+        "460 no such parameter",
+        "already exists",
+        "project not open",
+        "Project is in use by another session"
+      ],
+      "upgrade_trigger": ["dbversion", "schemaversion"]
+    },
+    {
+      "class": "ProjectStart",
+      "recording": "complete",
+      "reject": ["project not closed", "408"],
+      "accept": {"200": "OK"}
+    },
+    {
+      "class": "ProjectList",
+      "recording": "complete",
+      "accept": {"123": "rows"},
+      "finishes_on": ["123 "],
+      "reject": {"124": "no projects found"}
+    },
+    {
+      "class": "ProjectDirAll",
+      "recording": "complete",
+      "extends": "ProjectList",
+      "reject": ["408 Not a directory", "420 Access denied"]
+    },
+    {
+      "class": "ProjectSave",
+      "recording": "complete",
+      "verbatim": ["200", "401", "408", "420", "466", "(Access is denied)"],
+      "accept": {"200": "OK"},
+      "reject": ["401", "408 (low confidence)", "420", "466", "(Access is denied)"]
+    },
+    {
+      "class": "ProjectIdentify",
+      "recording": "complete",
+      "accept": {"305": "row", "nt=": "fragment"}
+    },
+    {
+      "class": "DBGet",
+      "recording": "complete",
+      "accept": ["300", "342"],
+      "reject": ["400", "401 (low confidence)", "408", "420", "440"]
+    },
+    {
+      "class": "DBSet",
+      "recording": "complete",
+      "accept": {"200": "OK"},
+      "reject": ["400", "401", "440", "446"]
+    },
+    {
+      "class": "DBAdd",
+      "recording": "complete",
+      "accept": [{"301": "...="}, "200 OK"],
+      "reject": [
+        "401 Object is null",
+        "has a maximum of",
+        "Address is not unique"
+      ]
+    },
+    {
+      "class": "DBCopy",
+      "recording": "complete",
+      "accept": ["200", {"301": "OID="}]
+    },
+    {
+      "class": "DBSetXML",
+      "recording": "complete",
+      "accept": [{"301": "OID="}],
+      "reject": {"446": "unable to set xml"}
+    },
+    {
+      "class": "DBGetXML",
+      "recording": "complete",
+      "accept": {"347": "rows"},
+      "finishes_on": ["344"],
+      "reject": {"401": "bad object"}
+    },
+    {
+      "class": "DBCreateNet",
+      "recording": "complete",
+      "accept": ["200", "301"],
+      "reject": ["400", "408"]
+    },
+    {
+      "class": "DBDelete",
+      "recording": "complete",
+      "accept": {"200": "OK"},
+      "reject": {"401": "Bad object ... not found"}
+    },
+    {
+      "class": "DBRenameNet",
+      "recording": "complete",
+      "accept": {"200": "ok"},
+      "reject": {"other": "bad object"}
+    },
+    {
+      "class": "ConfigGet",
+      "command_text": "config obget",
+      "recording": "complete",
+      "finishes_on": {"303": "ends"},
+      "reject": ["401 Bad object or device ID", "400 Syntax Error"]
+    },
+    {
+      "class": "ConfigGetSetOB",
+      "command_text": "config obset <object> <key> [<value>]",
+      "recording": "complete",
+      "finishes_on": {"303": "ends"},
+      "reject": ["401 Bad object or device ID", "400 Syntax Error"]
+    },
+    {
+      "class": "Event",
+      "recording": "partial",
+      "accept": ["200", "306"],
+      "reject": ["408"],
+      "inferred_low_confidence": "412-421 range"
+    },
+    {
+      "class": "DoQSync",
+      "recording": "complete",
+      "accept": ["202"],
+      "reject": ["401", "408", "420"]
+    },
+    {
+      "class": "DoPsyncResetHardwareRecallResetOpStats",
+      "classes": ["DoPsync", "ResetHardware", "Recall", "ResetOpStats"],
+      "recording": "complete",
+      "accept": {"202": "Done"},
+      "reject": [
+        "401 Bad object",
+        "420 Access denied",
+        "408 No Catalog Available"
+      ]
+    },
+    {
+      "class": "SyncReadRawValuesSingleUnravel",
+      "classes": ["Sync", "ReadRawValues", "SingleUnravel"],
+      "recording": "complete",
+      "accept": {"202": "Done"}
+    },
+    {
+      "class": "NetUnravel",
+      "recording": "complete",
+      "accept": {"200": "OK", "120": "progress rows"},
+      "progress_fragments": [
+        "Readdressed unit ... from address ... to address",
+        "Restored top unit to address"
+      ],
+      "reject": [
+        "(Not enough lines of MMI response)",
+        "(Incomplete MMI results",
+        "FAILED: another operation in progress"
+      ]
+    },
+    {
+      "class": "NetSync",
+      "recording": "complete",
+      "fragments": [
+        "120-Net Sync: started at",
+        "Unit error count: ",
+        "Unit errors at: ",
+        "120 ... units at",
+        "DUPLICATE"
+      ]
+    },
+    {
+      "class": "NetSyncNew",
+      "recording": "partial",
+      "fragments": ["New Unit Found", "303 Duplicate Units Found"],
+      "reject": "408 variants (some finish, some raise)"
+    },
+    {
+      "class": "NetTextFamily",
+      "classes": [
+        "NetOpen", "NetClose", "NetDelete", "NetFlush", "NetPingu",
+        "NetRename", "NetCheckunit"
+      ],
+      "recording": "partial",
+      "fragments": [
+        "200 ok",
+        "Units=",
+        "flush failed, sync in progress",
+        "Open failed: ..."
+      ]
+    },
+    {
+      "class": "NetClock",
+      "recording": "complete",
+      "accept": {"200": "OK", "120": "progress rows"},
+      "fragments": ["address="]
+    },
+    {
+      "class": "NetProjectIdentifySet",
+      "recording": "complete",
+      "accept": {"200": "OK"},
+      "reject": {"408": "Can't find unit to set project name in"}
+    },
+    {
+      "class": "PPGetPPQuickGet",
+      "classes": ["PPGet", "PPQuickGet"],
+      "recording": "complete",
+      "accept": {"315": "rows"},
+      "finishes_on": ["315 "],
+      "reject": [
+        "No such parameter",
+        "Parameter not found",
+        "401 Element ... not found"
+      ]
+    },
+    {
+      "class": "PPLoadPPSave",
+      "classes": ["PPLoad", "PPSave"],
+      "recording": "complete",
+      "fragments": ["120-read a/b", "120-saved a/b"]
+    },
+    {
+      "class": "PPUnits",
+      "recording": "complete",
+      "accept": {"121": "rows"},
+      "reject": {"other": "no open sessions"}
+    },
+    {
+      "class": "PPGetUnitSpecCatalog",
+      "recording": "complete",
+      "accept": {"347": "rows"},
+      "reject": {"408": "No Catalog Available"}
+    },
+    {
+      "class": "PPUnlock",
+      "recording": "complete",
+      "reject": {"426": "Unlock failed"}
+    },
+    {
+      "class": "PortList",
+      "recording": "complete",
+      "accept": {"125": "rows"},
+      "reject": {"other": "no ports"}
+    },
+    {
+      "class": "PortProbe",
+      "recording": "complete",
+      "accept": {"230": "ok"},
+      "reject": ["431", "432", "408", "PC interface not detected"]
+    },
+    {
+      "class": "PortCNIScan",
+      "recording": "complete",
+      "accept": {"129": "rows"},
+      "finishes_on": ["130 "]
+    },
+    {
+      "class": "FileDir",
+      "recording": "complete",
+      "accept": ["304", "305"],
+      "reject": ["408", "access denied"]
+    },
+    {
+      "class": "Download",
+      "recording": "complete",
+      "accept": {"345": "rows"},
+      "reject": {"406": "error"}
+    },
+    {
+      "class": "CGLExport",
+      "recording": "complete",
+      "accept": ["347", "344"],
+      "reject": ["400", "401", "408"]
+    },
+    {
+      "class": "CGLImport",
+      "recording": "complete",
+      "accept": ["380", "200"],
+      "reject": ["400", "408"]
+    },
+    {
+      "class": "SessionIdSessionIdAll",
+      "classes": ["SessionId", "SessionIdAll"],
+      "recording": "complete",
+      "accept": {
+        "300": "row with sessionID=, origin=, from=, tag= fragments"
+      }
+    },
+    {
+      "class": "SessionIdTag",
+      "recording": "complete",
+      "accept": {"200": "OK"}
+    },
+    {
+      "class": "KFIGet",
+      "recording": "complete",
+      "fragments": ["300-kfi...", "300 kfi8"]
+    },
+    {
+      "class": "SendCALIdentify",
+      "recording": "complete",
+      "accept": {"300": "row with Response= fragment"}
+    },
+    {
+      "class": "StartBackgroundJob",
+      "recording": "complete",
+      "accept": {"200": "OK"},
+      "reject": ["408", "420"]
+    },
+    {
+      "class": "Shutdown",
+      "recording": "complete",
+      "accept": {"600": "row"}
+    },
+    {
+      "class": "ShutdownConfirm",
+      "recording": "complete",
+      "accept": {"206": "row"}
+    },
+    {
+      "class": "Set",
+      "recording": "complete",
+      "accept": {"200": "ok"},
+      "reject": ["bad object", "operation failed"]
+    },
+    {
+      "class": "UnknownVerb",
+      "recording": "complete",
+      "reject": {"400": "Syntax Error."}
+    }
+  ]
+}

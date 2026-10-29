@@ -1637,6 +1637,36 @@ def build_parser():
     trigger_parser = cgops.add_parser("edlt-scene-trigger", help="Invoke one retained eDLT scene Trigger binding")
     trigger_parser.add_argument("--spec-dir", type=Path, default=os.environ.get("CBUS_UNITSPEC_DIR"))
     scene_trigger_options(trigger_parser)
+    cgops.add_parser("apiver", help="Report the C-Gate protocol-version handshake Toolkit demands before use")
+    config = cgops.add_parser("config", help="Read or set one native CONFIG object value with the recovered ConfigGet checks")
+    cfops = config.add_subparsers(dest="remote_action", required=True)
+    p = cfops.add_parser("obget", help="Read one object value; a 303 row finishes")
+    p.add_argument("object")
+    p.add_argument("object_key", metavar="KEY")
+    p = cfops.add_parser("obset", help="Stage one durable internal CONFIG override; a 303 row finishes")
+    p.add_argument("object")
+    p.add_argument("object_key", metavar="KEY")
+    p.add_argument("value", nargs="?")
+    port = cgops.add_parser("port", help="Issue Toolkit's recovered PORT serial-port commands")
+    portops = port.add_subparsers(dest="remote_action", required=True)
+    p = portops.add_parser("probe", help="Probe one server serial port; 230 ok succeeds")
+    p.add_argument("name")
+    p = portops.add_parser("cniscan", help="Scan one port for C-NI devices; row 130 finishes")
+    p.add_argument("name")
+    p.add_argument("--fast", action="store_true", help="Append the recovered fast variant to the scan")
+    p = cgops.add_parser("id", help="Read one unit ID row with the recovered TcgcIdentify checks")
+    p.add_argument("address")
+    p.add_argument("attribute", choices=("type", "version"))
+    p = cgops.add_parser("unit-get", help="Read one unit parameter with the recovered Get-family checks")
+    p.add_argument("address")
+    p.add_argument("parameter", choices=_unit_get_parameters())
+    p = cgops.add_parser("unit-do", help="Send one Toolkit `do <unit> readrawvalues` command")
+    p.add_argument("address")
+    p.add_argument("operation", choices=("readrawvalues",))
+    p = cgops.add_parser("unit-reset-hardware", help="Plan or request Toolkit's destructive DO ResetHardware once")
+    p.add_argument("address")
+    p.add_argument("--request", action="store_true",
+                   help="Send the destructive reset; without this the command only plans it and never connects")
     ex = cgops.add_parser("exec", help="One exact C-Gate command; preserves spaces and quotes")
     ex.add_argument("command")
     batch = cgops.add_parser("run", help="Run a UTF-8 file of commands in one session; stop on first error")
@@ -1706,6 +1736,12 @@ def build_parser():
             p.add_argument("--vertical-offset", type=_byte, default=0)
         if action == "clear":
             p.add_argument("--unicode", dest="unicode_label", action="store_true")
+    p = labelops.add_parser(
+        "kfiget",
+        help="Read one native LABEL KFIGET value with the recovered checks",
+    )
+    p.add_argument("address")
+    p.add_argument("group", type=_byte)
     p = labelops.add_parser(
         "cache-clear",
         help="Request native LABEL CLEAR for every cached key or one key; erasure is not verified",
@@ -1810,7 +1846,7 @@ def build_parser():
     p.add_argument("--no-burden", action="store_true", help="Clear Get Network Burden")
     p.add_argument("--no-clock", action="store_true", help="Clear Get Network Clock")
     p.add_argument("--project", help="Select this loaded project in the C-Gate session first")
-    for action in ("state", "open", "close", "sync", "sync-new", "discover", "check-units", "unravel", "clocks", "tree", "rename", "set-project", "wait-ready", "calculate"):
+    for action in ("state", "open", "close", "flush", "delete", "sync", "sync-new", "discover", "check-units", "unravel", "clocks", "tree", "rename", "set-project", "wait-ready", "calculate"):
         p = netops.add_parser(action)
         p.add_argument("address")
         if action == "sync":
@@ -1848,6 +1884,10 @@ def build_parser():
             p.add_argument("--output-file", help="Server-side output file, which must already exist and may be overwritten")
         if action in ("copy", "rename", "archive", "restore"):
             p.add_argument("other", help="New project name, or server-side archive path")
+    # Toolkit's ProjectStart lifecycle stays outside the recorded pinned parser
+    # loop (tests/project_legacy_transform_receipt_source.py).
+    p_start = prop.add_parser("start", help="Run Toolkit's recovered ProjectStart lifecycle")
+    p_start.add_argument("name")
     database = cgops.add_parser("database", help="Edit the native project tree using C-Gate business rules")
     dbop = database.add_subparsers(dest="remote_action", required=True)
     p = dbop.add_parser("network-new", help="Create a network definition and load its closed model")
@@ -2809,6 +2849,11 @@ def _project(args):
     return {"file": p.save(args.output or args.file), "result": result}, 0
 
 
+def _unit_get_parameters():
+    from .native_commands import UNIT_GET_PARAMETERS
+    return UNIT_GET_PARAMETERS
+
+
 def _cgate_timeout(args):
     """Use operation-specific waits for scans and long DALI commissioning plans."""
     if getattr(args, "cgate_timeout_explicit", False):
@@ -2867,6 +2912,14 @@ def _cgate(args):
     import ssl
     from .cgate import CGateClient
     timeout = _cgate_timeout(args)
+    from .native import _token as _native_token
+    if args.action == "unit-reset-hardware" and not args.request:
+        planned = f"DO {_native_token(args.address, 'unit address')} ResetHardware"
+        return {"operation": "unit-reset-hardware", "planned_command": planned,
+                "request_sent": False, "automatic_replay": False,
+                "device_effects_verified": False,
+                "note": "Pass --request to send the destructive reset once; "
+                        "an uncertain outcome is never retried."}, 0
     if args.action == "network" and args.remote_action == "definition":
         from .network_definitions import cli_command
         cli_command(args)
@@ -2918,7 +2971,7 @@ def _cgate(args):
                     if line.strip() and not line.lstrip().startswith(("#", "//"))]
         if not commands:
             raise ValueError("Command file is empty")
-    elif args.action not in ("project", "database", "unit", "physical-pp", "dali", "cgl", "network", "label", "conversion", "events", "trigger", "enable", "scene", "address", "serials", "edlt-labels", "edlt-label-audit", "edlt-widget-groups", "file-upload", "edlt-project-images"):
+    elif args.action not in ("project", "database", "unit", "physical-pp", "dali", "cgl", "network", "label", "conversion", "events", "trigger", "enable", "scene", "address", "serials", "edlt-labels", "edlt-label-audit", "edlt-widget-groups", "file-upload", "edlt-project-images", "apiver", "config", "port", "id"):
         tokens = ["TERMINATERAMP" if args.action == "stop" else args.action.upper(), args.address]
         if args.action == "get":
             tokens.append(args.attribute)
@@ -3002,6 +3055,31 @@ def _cgate(args):
     connection_limits.update(export_connection_limits)
     with tweaker_lifecycle_guard, tweaker_connection_guard(args), barcode_connection_guard(args), connection_guard(args), CGateClient(args.host, args.port or (20123 if args.tls else 20023),
                      timeout=timeout, ssl_context=context, **connection_limits) as client:
+        if args.action == "apiver":
+            from .native_commands import apiver as native_apiver
+            return native_apiver(client), 0
+        if args.action == "config":
+            from .native_commands import config_obget, config_obset
+            if args.remote_action == "obget":
+                return config_obget(client, args.object, args.object_key), 0
+            return config_obset(client, args.object, args.object_key, args.value), 0
+        if args.action == "port":
+            from .native_commands import port_probe, port_cniscan
+            if args.remote_action == "probe":
+                return port_probe(client, args.name), 0
+            return port_cniscan(client, args.name, fast=args.fast), 0
+        if args.action == "id":
+            from .native_commands import unit_id
+            return unit_id(client, args.address, args.attribute), 0
+        if args.action == "unit-get":
+            from .native_commands import unit_parameter
+            return unit_parameter(client, args.address, args.parameter), 0
+        if args.action == "unit-do":
+            from .native_commands import unit_do
+            return unit_do(client, args.address, args.operation), 0
+        if args.action == "unit-reset-hardware":
+            from .native_commands import unit_reset_hardware
+            return unit_reset_hardware(client, args.address), 0
         if args.action == "file-upload":
             from .file_transfer import upload
             return upload(file_upload_plan, client), 0
@@ -3035,6 +3113,9 @@ def _cgate(args):
             from .edlt_widget_groups import read_edlt_widget_groups
             return read_edlt_widget_groups(client, args.address).as_dict(), 0
         if args.action == "label":
+            if args.remote_action == "kfiget":
+                from .native_commands import label_kfiget
+                return label_kfiget(client, args.address, args.group), 0
             if args.remote_action == "cache-clear":
                 from .labels import NativeLabelCache
                 return NativeLabelCache(client).clear(
@@ -3068,6 +3149,9 @@ def _cgate(args):
             if response.status != 200:
                 raise RuntimeError("C-Gate did not accept the label command: " + response.final)
             return {"queued": True, "device_verified": False, "response": response}, 0
+        if args.action == "project" and args.remote_action == "start":
+            from .native import start_project
+            return start_project(client, args.name), 0
         if args.action == "project":
             from .native import NativeProjects
             manager = NativeProjects(client)
@@ -3678,6 +3762,10 @@ def _network(args, client):
         return network.check_units(args.address, args.unit)
     if action == "unravel":
         return network.unravel(args.address, units=args.unit, match_database=args.match_database)
+    if action == "flush":
+        return network.flush(args.address)
+    if action == "delete":
+        return network.delete(args.address)
     if action == "diagnose":
         from .unit_diagnostics import NetworkDiagnostics
         if args.project is not None:

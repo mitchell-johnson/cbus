@@ -89,6 +89,17 @@ class NativeProjects:
         return response
 
 
+def start_project(client, name):
+    """Run Toolkit's recovered `project start <p>` lifecycle (issues #161, #162).
+
+    Toolkit's ProjectStart class accepts "200 OK" and refuses "project not
+    closed" plus 408; every other completion fails closed through the
+    transport. The operation is registered outside NativeProjects and outside
+    the archived source-contract nodes.
+    """
+    return _command(client, f"PROJECT START {_project(name)}")
+
+
 class NativeDatabase:
     def __init__(self, client):
         self.client = client

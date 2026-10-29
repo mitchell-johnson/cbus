@@ -8,6 +8,8 @@ import re
 import time
 
 from .native import _address, _project, _token
+from .cgate import CGateError
+from .native_commands import NativeCommandError
 from .programming import quote_value
 from .serials import parse_native_serial
 
@@ -157,6 +159,58 @@ def _units(addresses):
     if not addresses:
         raise ValueError("Unit selection cannot be empty")
     return ",".join(_address(address) for address in addresses)
+
+
+def _family_receipt():
+    """Honest envelope for one exact NetTextFamily command send."""
+    return {"sent": True, "automatic_replay": False,
+            "device_effects_verified": False, "persistence_verified": False,
+            "project_save_verified": False}
+
+
+def _family_refused(operation, command, response, fragments=()):
+    """Fail on a complete server error reply using the recorded NetTextFamily fragments."""
+    final = response.final if response is not None else ""
+    matched = any(fragment in final for fragment in fragments)
+    line = f"C-Gate refused {operation}: {final}"
+    line += " (recorded native error)" if matched else "  reply classification: unrecorded"
+    raise NativeCommandError(line, {
+        **_family_receipt(), "operation": operation, "command": command,
+        "cgate_accepted": False, "response": final,
+        "reply_classification": "recorded" if matched else "unrecorded",
+    })
+
+
+def _family_transport_refusal(operation, command, error, *, statusless_fallthrough=None):
+    """Receipt for a transport-level rejection of a NetTextFamily command.
+
+    Toolkit's own parser completes every tagged row including 7xx/8xx/9xx
+    rows; this transport only completes 1xx..6xx rows. A recorded fragment
+    cannot be matched once the row is dropped, so such replies are reported
+    as `statusless_row` rather than refused-fragments.
+    """
+    statusless = "did not begin with a status code" in str(error)
+    if statusless and statusless_fallthrough:
+        raise NativeCommandError(statusless_fallthrough, {
+            **_family_receipt(), "operation": operation, "command": command,
+            "cgate_accepted": False, "reply_classification": "statusless_row",
+        }) from None
+    line = f"C-Gate refused {operation}: {error}  reply classification: "
+    line += "statusless_row" if statusless else "transport_error"
+    raise NativeCommandError(line, {
+        **_family_receipt(), "operation": operation, "command": command,
+        "cgate_accepted": False,
+        "reply_classification": "statusless_row" if statusless else "transport_error",
+    }) from None
+
+
+def _family_unmodeled(operation, command, reply_text):
+    """Fail on a reply the recovered NetTextFamily record does not model."""
+    raise NativeCommandError(
+        f"unmodeled C-Gate reply for {operation} ({command}): {reply_text!r}", {
+            **_family_receipt(), "operation": operation, "command": command,
+            "cgate_accepted": False, "reply_classification": "unmodeled",
+        })
 
 
 def _project_identity(value):
@@ -331,6 +385,53 @@ class NativeNetworks:
 
     def check_units(self, address, units=None):
         return self.client.command(f"NET CHECKUNIT {_token(address)} {_units(units)}")
+
+    def flush(self, address):
+        """Toolkit's `net flush <n>` with the recovered NetTextFamily checks.
+
+        Success requires the recorded successful lowercase ``200 ok``
+        fragment. This receipt applies the stricter end-to-end rule: the
+        complete final row must equal the fragment. The
+        recorded in-progress refusal and every other reply fail closed and
+        the command is never sent twice.
+        """
+        command = f"NET FLUSH {_token(address)}"
+        operation = "net-flush"
+        try:
+            response = self.client.command(command)
+        except CGateError as error:
+            _family_refused(operation, command, error.response,
+                            ("flush failed, sync in progress",))
+        except RuntimeError as error:
+            _family_transport_refusal(operation, command, error)
+        if response.final == "200 ok":
+            receipt = _family_receipt()
+            receipt.update({"operation": operation, "command": command,
+                            "cgate_accepted": True, "response": response.final})
+            return receipt
+        _family_unmodeled(operation, command, response.final)
+
+    def delete(self, address):
+        """Toolkit's `net delete <n>`; one exact send, never replayed.
+
+        The recovered NetTextFamily record is partial, so success still needs
+        its documented lowercase ``200 ok`` fragment under the same stricter
+        end-to-end final row, and unknown replies fail closed.
+        """
+        command = f"NET DELETE {_token(address)}"
+        operation = "net-delete"
+        try:
+            response = self.client.command(command)
+        except CGateError as error:
+            _family_refused(operation, command, error.response, ())
+        except RuntimeError as error:
+            _family_transport_refusal(operation, command, error)
+        if response.final == "200 ok":
+            receipt = _family_receipt()
+            receipt.update({"operation": operation, "command": command,
+                            "cgate_accepted": True, "response": response.final})
+            return receipt
+        _family_unmodeled(operation, command, response.final)
 
     def unravel(self, address, *, units=None, match_database=False):
         command = f"NET {'UNRAVEL' if units is None else 'UNRAVELUNIT'} {_token(address)}"

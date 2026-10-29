@@ -19,6 +19,26 @@ The Python `cbus-toolkit` application is installed separately; see [toolkit.md](
 | Emulate the C-Gate 3.4 command surface | `cgate-mock` | Opens a TCP listener and mutates in-memory state |
 | Recheck committed compatibility vectors | `cbus-vector-check` | Reads local JSONL vectors |
 
+### Recovered Toolkit command families
+
+These typed workflows implement command families that Toolkit 1.18 sends and
+that were previously reachable only through `cgate exec`; each sends Toolkit's
+own recovered command text and classifies replies exactly as far as
+`toolkit-cli/research/toolkit-client/inventory.json` records them. An
+unrecorded reply fails closed, is printed with an `unmodeled` or
+`unrecorded`/`statusless_row`/`transport_error` classification, and the
+command is never retried.
+
+- `cbus-toolkit cgate apiver` — the server/protocol version handshake Toolkit demands before use.
+- `cbus-toolkit cgate network flush`, `network delete` — native network commands with the recovered NetTextFamily checks; `delete` is destructive to the loaded project's network and is sent once.
+- `cbus-toolkit cgate project start NAME` — Toolkit's ProjectStart lifecycle.
+- `cbus-toolkit cgate config obget`, `config obset` — the recovered ConfigGet family; `obset` is a durable internal override only.
+- `cbus-toolkit cgate label kfiget` — native `LABEL KFIGET`; the argument layout is one of the recovery's low-confidence items.
+- `cbus-toolkit cgate port probe`, `port cniscan [--fast]` — server serial-port commands; `port refresh` and the AIRCON SAL family are deferred (see the record's decision table). `probe` reaches whatever is on the selected server port.
+- `cbus-toolkit cgate unit-get`, `unit-do`, `unit-reset-hardware`, `id` — the recovered `GET`/`DO`/`ID` unit families; `unit-reset-hardware` requires `--request`, is sent once and never retried, and no receipt claims the physical effect verified.
+- Deferrals and covered-by records (`net unravel`, `TreeXML`, `TRANSFORM MIGRATE_SQL`, `START_BACKGROUND_JOB`, AIRCON) live in `toolkit-cli/research/toolkit-client/README.md`.
+- `network delete` has no additional gate beyond its exact-once send, matching `cgate project delete`; `port probe`/`cniscan` reach whatever is attached to the selected server's port. The added command names can make previous argparse-prefix abbreviations ambiguous — use full command names.
+
 ### Toolkit preference effects
 
 `cbus-toolkit cgate --preferences STATE.json` uses 127.0.0.1 for an empty or
