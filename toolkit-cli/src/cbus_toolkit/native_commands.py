@@ -209,6 +209,36 @@ def label_kfiget(client, address, group):
     _unmodeled(operation, command, response.final)
 
 
+def port_list(client):
+    """Toolkit's `port list` — 125 rows, a `125 ` row finishes (issue #161).
+
+    The recovered class scans 125- rows and finishes on `125 `; its reported
+    "no ports" case is the same completion with an empty list. Anything
+    else fails closed.
+    """
+    command = "port list"
+    operation = "port-list"
+    try:
+        response = client.command(command)
+    except CGateError as error:
+        _refused(operation, command, error.response)
+    except RuntimeError as error:
+        _transport_refusal(operation, command, error)
+    if response.status not in (125, 126):
+        _unmodeled(operation, command, response.final)
+    data_rows = [row for row in response.lines if row.startswith("125-")]
+    empty = response.status == 126 or "no ports" in response.final
+    if empty and data_rows:
+        # The recovered fragment marks an empty list; it must not coexist
+        # with port rows.
+        _unmodeled(operation, command, response.final)
+    return {"operation": operation, "command": command, "sent": True,
+            "cgate_accepted": True, "rows": data_rows,
+            "no_ports": empty,
+            "response": response.final, "automatic_replay": False,
+            "device_effects_verified": False}
+
+
 def port_probe(client, name):
     """Toolkit `port probe <port>`; `230 ok` succeeds (issue #161)."""
     command = f"port probe {_token(name, 'port name')}"

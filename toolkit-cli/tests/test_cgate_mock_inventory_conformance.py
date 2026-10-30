@@ -337,6 +337,20 @@ class CgateMockInventoryConformance(unittest.TestCase):
 
     # -- PPGetUnitSpecCatalog (408 No Catalog Available / 347 rows) -------------
 
+    def test_port_list_streams_125_rows_and_finishes_on_the_125_row(self):
+        # A populated list completes on `125 ` rows; the native empty-list
+        # completion is the recovered `126 no ports found` row.
+        response = self.command("port list")
+        self.assertIn(response.status, (125, 126), response.final)
+        if response.status == 126:
+            self.assertIn("no ports", response.final, response.final)
+            self.assertFalse([row for row in response.lines
+                              if row.startswith("125-")], response.lines)
+        else:
+            self.assertTrue(response.final.startswith("125"), response.final)
+            self.assertTrue(all(row.startswith("125-") or row.startswith("125 ")
+                                for row in response.lines), response.lines)
+
     def test_pp_get_unit_catalog_without_catalogue_reports_the_recorded_408(self):
         response = self.refusal("PP GET_UNIT_CATALOG")
         self.assertEqual(response.status, 408, response.final)
@@ -491,7 +505,7 @@ DRIVEN_CLASSES = (
     "ConfigGet", "ConfigGetSetOB", "PortProbe", "KFIGet", "Download",
     "FileDir", "PortCNIScan", "Shutdown", "ShutdownConfirm",
     "DBRenameNet", "PPGetUnitSpecCatalog", "TreeXML", "APIver",
-    "TransformReplyFamily",
+    "TransformReplyFamily", "PortList",
 )
 
 # Classes with a recorded `command_text` outside #160's tables. TcgcIdentify's

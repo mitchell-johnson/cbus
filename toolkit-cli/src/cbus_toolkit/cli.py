@@ -1649,6 +1649,7 @@ def build_parser():
     p.add_argument("value", nargs="?")
     port = cgops.add_parser("port", help="Issue Toolkit's recovered PORT serial-port commands")
     portops = port.add_subparsers(dest="remote_action", required=True)
+    portops.add_parser("list", help="List the server serial ports; row 125 finishes")
     p = portops.add_parser("probe", help="Probe one server serial port; 230 ok succeeds")
     p.add_argument("name")
     p = portops.add_parser("cniscan", help="Scan one port for C-NI devices; row 130 finishes")
@@ -3068,7 +3069,9 @@ def _cgate(args):
                 return config_obget(client, args.object, args.object_key), 0
             return config_obset(client, args.object, args.object_key, args.value), 0
         if args.action == "port":
-            from .native_commands import port_probe, port_cniscan
+            from .native_commands import port_list, port_probe, port_cniscan
+            if args.remote_action == "list":
+                return port_list(client), 0
             if args.remote_action == "probe":
                 return port_probe(client, args.name), 0
             return port_cniscan(client, args.name, fast=args.fast), 0

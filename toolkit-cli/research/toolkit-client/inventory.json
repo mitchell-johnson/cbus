@@ -388,9 +388,10 @@
     },
     {
       "class": "PortList",
+      "command_text": "port list",
       "recording": "complete",
-      "accept": {"125": "rows"},
-      "reject": {"other": "no ports"}
+      "accept": {"125": "rows", "126": "row: no ports found (empty list)"},
+      "fragments": ["no ports"]
     },
     {
       "class": "PortProbe",

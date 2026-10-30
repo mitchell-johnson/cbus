@@ -42,6 +42,10 @@ class ToolkitCommandFamilyTests(unittest.TestCase):
         self.assertIn("error:", process.stderr)
         return process.stderr
 
+
+class ToolkitFamilyWireTests(ToolkitCommandFamilyTests):
+    """Every recovered-surface wire/failure case (single copy, no subclasses)."""
+
     # -- project start ----------------------------------------------------------
 
     def test_project_start_sends_recovered_text_and_accepts_200(self):
@@ -364,3 +368,35 @@ class TransformMigrateSqlTests(ToolkitCommandFamilyTests):
         with peer([[b"[1] 200 OK.\r\n"]]) as ((host, port), sent):
             failure = self.cli_failure(host, port, "project", "transform-migrate-sql", "WAYTOLONG")
         self.assertEqual(sent, [])
+
+
+class PortListTests(ToolkitCommandFamilyTests):
+    """Toolkit's recovered `port list` family (#161 PortList, #165)."""
+
+    def test_port_list_streams_rows_and_finishes_on_125(self):
+        with peer([[b"[1] 125-COM1 availability=yes light=L1\r\n",
+                    b"[1] 125-TCP Server\r\n",
+                    b"[1] 125 \r\n"]]) as ((host, port), sent):
+            result = self.cli(host, port, "port", "list")
+        self.assertEqual(sent, [b"[1] port list\r\n"])
+        self.assertEqual(result["operation"], "port-list")
+        self.assertEqual(result["rows"], ["125-COM1 availability=yes light=L1",
+                                          "125-TCP Server"])
+        self.assertFalse(result["no_ports"])
+        self.assertTrue(result["cgate_accepted"])
+
+    def test_port_list_no_ports_is_a_recorded_completion_with_an_empty_list(self):
+        cases = (
+            (b"[1] 125  no ports\r\n",),
+            (b"[1] 126  no ports found\r\n",),
+        )
+        for reply in cases:
+            with self.subTest(reply=reply), peer([[*reply]]) as ((host, port), sent):
+                result = self.cli(host, port, "port", "list")
+                self.assertEqual(result["no_ports"], True)
+                self.assertTrue(result["cgate_accepted"])
+
+    def test_port_list_unmodeled_finish_fails_closed(self):
+        with peer([[b"[1] 200 ok\r\n"]]) as ((host, port), sent):
+            failure = self.cli_failure(host, port, "port", "list")
+        self.assertEqual(failure["reply_classification"], "unmodeled")

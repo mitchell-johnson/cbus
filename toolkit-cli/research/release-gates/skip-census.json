@@ -622,7 +622,7 @@
         "unclassified"
       ],
       "native": "none",
-      "gated_tests": 41,
+      "gated_tests": 42,
       "native_runnable_tests": 0,
       "native_selected_tests": 0,
       "sites": [
@@ -686,6 +686,7 @@
             "CgateMockInventoryConformance::test_net_checkunit_final_row_matches_the_200_ok_text",
             "CgateMockInventoryConformance::test_net_clocks_streams_address_rows_and_finishes_on_200_ok",
             "CgateMockInventoryConformance::test_port_cniscan_streams_129_rows_and_finishes_on_the_130_row",
+            "CgateMockInventoryConformance::test_port_list_streams_125_rows_and_finishes_on_the_125_row",
             "CgateMockInventoryConformance::test_port_probe_bare_name_replies_230_ok",
             "CgateMockInventoryConformance::test_pp_get_unit_catalog_without_catalogue_reports_the_recorded_408",
             "CgateMockInventoryConformance::test_send_literal_completes_on_a_response_row",
