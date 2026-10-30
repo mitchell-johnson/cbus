@@ -63,7 +63,7 @@ through `cgate exec`, research probes or the obligation JSON
 | `do <unit> ResetHardware` | implemented (gated) | `cgate unit-reset-hardware <unit> --request` sends it; without `--request` the command only plans the exact action. Destructive physical action follows the hardware-acceptance issue; no replay after an uncertain outcome. |
 | `AIRCON set_ward_off ...`, `AIRCON set_zone_hvac_mode ...` | deferred | Hardware-touching SAL to AIRCON units; follows the hardware-acceptance issue (#176). Revisit after the fixture programme admits AIRCON endpoints. |
 | `START_BACKGROUND_JOB <job>` | deferred | The successful reply class is recovered, but the valid job identities are not; a typed command would accept unmodelled job names. Revisit together with cgate-mock's background-job surface (#160). |
-| `TRANSFORM MIGRATE_SQL <project>` | deferred | No per-class reply checks were recovered for the MIGRATE_SQL leaf, and the maintained native migration is already forwarded by `cgate project transform` (`TRANSFORM PROJECT`). Revisit with a dedicated receipt. |
+| `TRANSFORM MIGRATE_SQL <project>` | implemented | `cgate project transform-migrate-sql`; shares the transform reply family recorded in `inventory.json` (issue #160). |
 
 Receipts printed by implemented commands mark exactly what is verified: a
 C-Gate-side acceptance, a delivered physical action and an asynchronous result

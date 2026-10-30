@@ -16,7 +16,7 @@ from __future__ import annotations
 import re
 
 from .cgate import CGateError
-from .native import _token
+from .native import _project, _token
 
 # Unit parameters named by the recovered Get* client classes (issue #162).
 UNIT_GET_PARAMETERS = (
@@ -366,3 +366,43 @@ def unit_id(client, address, attribute):
                                       "accepted": False,
                                       "response": final,
                                       "reply_classification": "unmodeled"}))
+
+
+def transform_migrate_sql(client, name):
+    """Run Toolkit's recovered `TRANSFORM MIGRATE_SQL <project>` (issue #160).
+
+    The migration shares TRANSFORM PROJECT's recovered reply family: `199`
+    rows ending with a "200 OK" row complete the migration; 401/402/405/408,
+    a "420 Access denied" or a "460 ... to be filled" refusal fail. A
+    successful row whose text names dbversion or schemaversion starts
+    Toolkit's upgrade flow; the receipt marks the row without treating it
+    as an error.
+    """
+    operation = "transform-migrate-sql"
+    command = f"TRANSFORM MIGRATE_SQL {_project(name)}"
+    try:
+        response = client.command(command)
+    except CGateError as error:
+        final = error.response.final
+        matched = ("Access denied" in final or "to be filled" in final
+                   or final.split(" ", 1)[0] in ("401", "402", "405", "408", "420", "460"))
+        line = f"C-Gate refused {operation}: {final}"
+        line += " (recorded native error)" if matched else "  reply classification: unrecorded"
+        raise NativeCommandError(line, _details(operation, command, {
+            "accepted": False, "response": final,
+            "reply_classification": "recorded" if matched else "unrecorded",
+        })) from None
+    except RuntimeError as error:
+        _transport_refusal(operation, command, error)
+    if response.status != 200:
+        # Toolkit's transform rows end on the "200 OK" row; anything else
+        # finishing first (for example a lone "199 " row) fails closed.
+        _unmodeled(operation, command, response.final)
+    receipt = {"operation": operation, "command": command, "sent": True,
+               "accepted": True, "cgate_accepted": True,
+               "status": response.status, "rows": list(response.lines),
+               "response": response.final, "automatic_replay": False,
+               "device_effects_verified": False}
+    receipt["native_upgrade_flow_detected"] = (
+        "dbversion" in response.final or "schemaversion" in response.final)
+    return receipt

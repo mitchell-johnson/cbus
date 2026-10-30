@@ -50,9 +50,9 @@
     "unclassified": "condition the static interpreter cannot attribute"
   },
   "summary": {
-    "test_modules": 934,
+    "test_modules": 935,
     "modules_without_skip_sites": 595,
-    "modules_with_skip_sites": 339,
+    "modules_with_skip_sites": 340,
     "modules_by_category": {
       "cgate_test_host": 136,
       "external_cgate_project": 1,
@@ -66,8 +66,8 @@
       "private_evidence_input": 4,
       "private_vendor_tree": 9,
       "runtime_capability": 6,
-      "rust_binaries": 20,
-      "unclassified": 41,
+      "rust_binaries": 21,
+      "unclassified": 42,
       "unit_specs": 150,
       "vendor_firmware": 4,
       "windows": 12
@@ -75,7 +75,7 @@
     "native_modules": {
       "all": 142,
       "partial": 20,
-      "none": 177
+      "none": 178
     },
     "native_runnable_tests": 261,
     "native_selected_required_tests": 261,
@@ -612,6 +612,102 @@
           ],
           "tests": [
             "test_python_client_and_pipelined_xml_roundtrip"
+          ]
+        }
+      ]
+    },
+    "tests/test_cgate_mock_inventory_conformance.py": {
+      "categories": [
+        "rust_binaries",
+        "unclassified"
+      ],
+      "native": "none",
+      "gated_tests": 41,
+      "native_runnable_tests": 0,
+      "native_selected_tests": 0,
+      "sites": [
+        {
+          "scope": "tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance",
+          "kind": "decorator.skipUnless",
+          "condition": "MOCK_BIN",
+          "reason": "cgate-mock binary is not built",
+          "environment": [
+            "CBUS_CGATE_MOCK_BIN"
+          ],
+          "categories": [
+            "rust_binaries"
+          ],
+          "offline": "unknown",
+          "native": "unknown"
+        },
+        {
+          "scope": "tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_native_login_quirk_is_commented_not_reverted",
+          "kind": "body.call",
+          "condition": null,
+          "reason": "LOGIN's native 211 quirk is owned by the LOGIN/#159 slice",
+          "environment": [],
+          "categories": [
+            "unclassified"
+          ],
+          "offline": "skips",
+          "native": "skips"
+        }
+      ],
+      "not_native": [
+        {
+          "requires": [
+            "rust_binaries"
+          ],
+          "tests": [
+            "CgateMockInventoryConformance::test_aircon_lowercase_method_surface_is_queued_for_sending",
+            "CgateMockInventoryConformance::test_aircon_set_zone_hvac_mode_method_surface_is_queued_too",
+            "CgateMockInventoryConformance::test_aircon_unknown_method_reports_the_recovered_text",
+            "CgateMockInventoryConformance::test_aircon_uppercase_console_grammar_stays_native",
+            "CgateMockInventoryConformance::test_apiver_reports_the_recovered_138_x_equals_a_b_fragments",
+            "CgateMockInventoryConformance::test_calculator_test_failure_classifies_as_a_408_catalog_refusal",
+            "CgateMockInventoryConformance::test_config_obget_refuses_an_unresolvable_object",
+            "CgateMockInventoryConformance::test_config_obget_streams_a_value_row_and_finishes_on_303",
+            "CgateMockInventoryConformance::test_config_obget_syntax_error_fails_the_recovered_way",
+            "CgateMockInventoryConformance::test_config_obget_terminates_so_toolkit_sees_the_303_finish",
+            "CgateMockInventoryConformance::test_config_obset_writes_the_value_and_finishes_on_303",
+            "CgateMockInventoryConformance::test_dbrenamenet_refuses_non_numeric_sources",
+            "CgateMockInventoryConformance::test_dbrenamenet_refuses_unknown_networks_as_recorded",
+            "CgateMockInventoryConformance::test_dbrenamenet_success_reports_the_recovered_200_ok_text",
+            "CgateMockInventoryConformance::test_event_genuinely_bad_mode_strings_keep_the_408_row",
+            "CgateMockInventoryConformance::test_event_mode_words_accepted_by_toolkit_replay_200",
+            "CgateMockInventoryConformance::test_every_dispatching_inventory_class_has_a_conformance_case",
+            "CgateMockInventoryConformance::test_file_dir_lists_directory_rows_for_the_virtual_root",
+            "CgateMockInventoryConformance::test_file_download_of_a_missing_file_reports_an_operation_failure",
+            "CgateMockInventoryConformance::test_file_download_streams_the_345_envelope_after_an_upload",
+            "CgateMockInventoryConformance::test_label_kfiget_streams_kfi_continuation_rows_then_the_final_row",
+            "CgateMockInventoryConformance::test_label_kfiget_syntax_refuses_when_the_group_is_missing",
+            "CgateMockInventoryConformance::test_label_kfiget_without_dataset_replies_the_final_kfi_row",
+            "CgateMockInventoryConformance::test_net_checkunit_empty_network_selection_fails_closed",
+            "CgateMockInventoryConformance::test_net_checkunit_final_row_matches_the_200_ok_text",
+            "CgateMockInventoryConformance::test_net_clocks_streams_address_rows_and_finishes_on_200_ok",
+            "CgateMockInventoryConformance::test_port_cniscan_streams_129_rows_and_finishes_on_the_130_row",
+            "CgateMockInventoryConformance::test_port_probe_bare_name_replies_230_ok",
+            "CgateMockInventoryConformance::test_pp_get_unit_catalog_without_catalogue_reports_the_recorded_408",
+            "CgateMockInventoryConformance::test_send_literal_completes_on_a_response_row",
+            "CgateMockInventoryConformance::test_shutdown_and_confirm_reply_their_recorded_rows",
+            "CgateMockInventoryConformance::test_start_background_job_known_job_replies_200_ok",
+            "CgateMockInventoryConformance::test_start_background_job_unknown_job_refuses_the_recovered_syntax",
+            "CgateMockInventoryConformance::test_transform_migrate_sql_streams_199_rows_then_200_ok",
+            "CgateMockInventoryConformance::test_transform_migrate_sql_uses_the_logged_transform_shape",
+            "CgateMockInventoryConformance::test_transform_new_verb_replies_an_unknown_project_refusal",
+            "CgateMockInventoryConformance::test_transform_project_streams_199_rows_then_200_ok",
+            "CgateMockInventoryConformance::test_transform_project_success_bodies_avoid_upgrade_tokens",
+            "CgateMockInventoryConformance::test_transform_project_without_test_flag_uses_the_same_shape",
+            "CgateMockInventoryConformance::test_treexml_completes_on_the_snippet_wrapper"
+          ]
+        },
+        {
+          "requires": [
+            "rust_binaries",
+            "unclassified"
+          ],
+          "tests": [
+            "CgateMockInventoryConformance::test_native_login_quirk_is_commented_not_reverted"
           ]
         }
       ]

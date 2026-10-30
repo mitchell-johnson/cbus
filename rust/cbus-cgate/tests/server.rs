@@ -873,39 +873,49 @@ fn label_clear_cache_contract_has_no_synthetic_event() {
     assert!(s.drain_events().is_empty());
 }
 
-/// Mock determinism for the LABEL key-file helpers: KFISET stores a value
-/// under the target, KFIGET reads it back, and a valueless KFISET fails.
+/// Mock determinism for the LABEL key-file helpers: KFISET stores a group's
+/// dataset under a (target, group) key, KFIGET streams that dataset as
+/// `300-kfi…` continuation rows and finishes on a `300 kfi<group>` row
+/// (Toolkit's recovered KFIGet check, issue #160). A KFISET without a group
+/// fails.
 #[test]
 fn label_kfi_round_trip_and_valueless_reject() {
     let mut s = Server::new(AccessLevel::Program);
-    // Never-set targets report 300 with an empty value, never 404.
-    let unset = s.handle("[0] LABEL KFIGET //TEST/252/p/99");
+    // Never-set groups report the single final row shaped like the recovered
+    // fragment, never 404.
+    let unset = s.handle("[0] LABEL KFIGET //TEST/252/p/99 7");
     assert_eq!(unset.status, 300);
-    assert_eq!(unset.final_text, "300 ");
-    let stored = s.handle("[1] LABEL KFISET //TEST/252/p/30 myvalue");
+    assert!(unset.lines.is_empty());
+    assert_eq!(unset.final_text, "300 kfi7");
+    let stored = s.handle("[1] LABEL KFISET //TEST/252/p/30 8 myvalue");
     assert_eq!(stored.status, 200);
-    let fetched = s.handle("[2] LABEL KFIGET //TEST/252/p/30");
+    let fetched = s.handle("[2] LABEL KFIGET //TEST/252/p/30 8");
     assert_eq!(fetched.status, 300);
-    assert!(fetched.lines.is_empty());
-    assert_eq!(fetched.final_text, "300 myvalue");
+    assert_eq!(fetched.lines, ["300-kfimyvalue".to_string()]);
+    assert_eq!(fetched.final_text, "300 kfi8");
     // Distinct targets do not share one slot; multi-word values join.
-    let other = s.handle("[3] LABEL KFISET //TEST/252/p/31 hello world");
+    let other = s.handle("[3] LABEL KFISET //TEST/252/p/31 8 hello world");
     assert_eq!(other.status, 200);
-    let refetched = s.handle("[4] LABEL KFIGET //TEST/252/p/30");
-    assert_eq!(refetched.final_text, "300 myvalue");
-    let other_fetched = s.handle("[5] LABEL KFIGET //TEST/252/p/31");
-    assert_eq!(other_fetched.final_text, "300 hello world");
-    // A valueless KFISET fails and preserves the stored value; a second
-    // KFISET overwrites it.
+    let refetched = s.handle("[4] LABEL KFIGET //TEST/252/p/30 8");
+    assert_eq!(refetched.final_text, "300 kfi8");
+    let other_fetched = s.handle("[5] LABEL KFIGET //TEST/252/p/31 8");
+    assert_eq!(other_fetched.final_text, "300 kfi8");
+    assert_eq!(
+        other_fetched.lines,
+        ["300-kfihello".to_string(), "300-kfiworld".to_string()]
+    );
+    // A KFISET without a group fails and preserves the stored dataset; a
+    // later KFISET overwrites it.
     let missing = s.handle("[6] LABEL KFISET //TEST/252/p/30");
     assert_eq!(missing.status, 400);
-    assert!(missing.final_text.contains("requires a target and value"));
-    let preserved = s.handle("[7] LABEL KFIGET //TEST/252/p/30");
-    assert_eq!(preserved.final_text, "300 myvalue");
-    let overwrite = s.handle("[8] LABEL KFISET //TEST/252/p/30 newvalue");
+    let preserved = s.handle("[7] LABEL KFIGET //TEST/252/p/30 8");
+    assert_eq!(preserved.final_text, "300 kfi8");
+    assert_eq!(preserved.lines, ["300-kfimyvalue".to_string()]);
+    let overwrite = s.handle("[8] LABEL KFISET //TEST/252/p/30 8 newvalue");
     assert_eq!(overwrite.status, 200);
-    let replaced = s.handle("[9] LABEL KFIGET //TEST/252/p/30");
-    assert_eq!(replaced.final_text, "300 newvalue");
+    let replaced = s.handle("[9] LABEL KFIGET //TEST/252/p/30 8");
+    assert_eq!(replaced.final_text, "300 kfi8");
+    assert_eq!(replaced.lines, ["300-kfinewvalue".to_string()]);
 }
 
 /// The sole local scalar-SET exception pins the owned native capture used by
@@ -2000,8 +2010,10 @@ fn bounded_cgl_json_import_export_filters_and_skip_boundaries() {
     for (command, status) in [
         ("[10] CGL IMPORT TEST", 400),
         ("[11] REPOSITORY USE 1", 502),
-        ("[12] TRANSFORM MIGRATE_SQL project.db", 502),
-        ("[13] TRANSFORM PROJECT TEST", 502),
+        // Toolkit's two transform leaves reply in the recovered 199/200 and
+        // 408 shapes (issue #160); the other leaves stay fail-closed 502.
+        ("[12] TRANSFORM MIGRATE_SQL project.db", 408),
+        ("[13] TRANSFORM PROJECT TEST", 200),
         ("[14] TRANSFORM SQL_TO_XML project.db", 502),
         ("[15] TRANSFORM SQL_TO_XML_CGATE2 project.db", 502),
         ("[16] TRANSFORM XML_TO_SQL project.xml", 502),
@@ -5737,7 +5749,7 @@ fn legacy_database_scalar_tags_and_network_renames_are_coherent() {
         "401 Bad object or device ID: Can't rename network to the same address"
     );
     let safe = server.handle("[29] DBRENAMENETSAFE 254 252");
-    assert_eq!(safe.final_text, "200 OK.");
+    assert_eq!(safe.final_text, "200 ok");
     let bridge = server.handle("[30] DBGETXML //DBL1/253");
     assert!(bridge
         .lines

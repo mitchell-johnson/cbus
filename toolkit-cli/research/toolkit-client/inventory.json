@@ -46,6 +46,12 @@
     "completion": "A command finishes when the character after a 3-digit code is a space. Some classes finish earlier.",
     "error_policy": "Only the first error raised counts."
   },
+  "compatibility_notes": [
+    {
+      "observer": "repository issue #160",
+      "note": "Native servers answer LOGIN user pass with 211; the Toolkit client parses only 210/400/422. cgate-mock keeps its native behavior and the quirk is documented, not modelled."
+    }
+  ],
   "low_confidence": [
     "argument layouts (from string joins)",
     "DBGet 401",
@@ -466,6 +472,14 @@
       "recording": "complete",
       "accept": {"200": "ok"},
       "reject": ["bad object", "operation failed"]
+    },
+    {
+      "class": "TransformReplyFamily",
+      "command_text": "TRANSFORM PROJECT <p> [--test] / TRANSFORM MIGRATE_SQL <p>",
+      "recording": "complete",
+      "accept": {"199": "rows: DBVersions match / Transform from", "200": "OK"},
+      "reject": ["401", "402", "405", "408", "420 Access denied", "460 ... to be filled"],
+      "upgrade_trigger": ["dbversion", "schemaversion"]
     },
     {
       "class": "UnknownVerb",

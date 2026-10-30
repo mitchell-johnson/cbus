@@ -248,7 +248,7 @@ class NativeSerials:
                 errors.append("Physical unit multiplicity check: " + str(error))
             if response is not None:
                 for line in response.lines:
-                    if line == "200 OK." or re.fullmatch(r"120[- ]Command still in progress, please wait\.", line): continue
+                    if line == "200 OK." or line == "200 ok" or re.fullmatch(r"120[- ]Command still in progress, please wait\.", line): continue
                     match = re.fullmatch(r"120[- ](.+) at address: ([0-9]{1,3})", line)
                     if not match or match[1] not in _CHECK_STATUS:
                         errors.append("Unexpected native unit multiplicity response: " + line)

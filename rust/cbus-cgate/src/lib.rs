@@ -264,6 +264,10 @@ impl EventMode {
     /// Apply C-Gate 3.4's first mode token, retaining partial mutations on
     /// later syntax errors. Missing later components retain their old levels;
     /// bytes after the third component are ignored by the native parser.
+    ///
+    /// Toolkit's event listener also sends the bare downstream components
+    /// `c0`/`c1`/`s0`/`s1` (issue #160): a word without an `e` marker is
+    /// parsed from that component, keeping the baseline event level.
     pub fn apply_native(&mut self, word: &str) -> Result<(), &'static str> {
         if word.eq_ignore_ascii_case("on") {
             *self = Self::DEFAULT;
@@ -274,11 +278,27 @@ impl EventMode {
             return Ok(());
         }
         let b = word.as_bytes();
-        if !b
-            .first()
-            .is_some_and(|marker| marker.eq_ignore_ascii_case(&b'e'))
-        {
+        if !b.first().is_some_and(|marker| {
+            marker.eq_ignore_ascii_case(&b'e')
+                || marker.eq_ignore_ascii_case(&b's')
+                || marker.eq_ignore_ascii_case(&b'c')
+        }) {
             return Err("Bad mode string");
+        }
+        if !b[0].eq_ignore_ascii_case(&b'e') {
+            // A `s`/`c` word carries exactly one bare component.
+            let Some(&level) = b.get(1) else {
+                return Err("Bad mode string");
+            };
+            if !level.is_ascii_digit() || b.len() != 2 {
+                return Err("Bad mode string");
+            }
+            if b[0].eq_ignore_ascii_case(&b's') {
+                self.status = level - b'0';
+            } else {
+                self.config = level - b'0';
+            }
+            return Ok(());
         }
         let Some(&event_level) = b.get(1) else {
             return Ok(());
@@ -1758,9 +1778,9 @@ fn project_identity_argument(body: &str) -> Result<String, ProjectIdentityArgume
 /// CGL import progress `380`,
 /// PINGU/digest `302`, SYNCNEW discovery/failure `303`/`408`, multiplicity
 /// `120`), and retained DALI command/response diagnostics (`100`, `320`).
-const ENVELOPE_CODES: [u16; 32] = [
-    100, 120, 125, 126, 130, 134, 233, 300, 302, 303, 304, 305, 315, 320, 321, 322, 323, 324, 325,
-    326, 342, 343, 345, 346, 347, 380, 408, 451, 470, 471, 472, 473,
+const ENVELOPE_CODES: [u16; 33] = [
+    100, 120, 125, 126, 130, 134, 199, 233, 300, 302, 303, 304, 305, 315, 320, 321, 322, 323, 324,
+    325, 326, 342, 343, 345, 346, 347, 380, 408, 451, 470, 471, 472, 473,
 ];
 
 /// True when a reply line already carries a native multi-status envelope.
@@ -1789,6 +1809,12 @@ fn has_status_prefix(line: &str) -> bool {
     // SHOW cgate * contains one unreadable debug-only KCount property inside
     // its otherwise-300 table. Keep this native mixed-status row exact.
     if line == "420-Access denied: cgate (Insufficient access level for read)" {
+        return true;
+    }
+    // SEND reports a failed literal send per network before its 300
+    // response (issue #160, decompiled `nK`). Admit only that fixed native
+    // suffix.
+    if line.starts_with("524-//") && line.ends_with(": Command send error") {
         return true;
     }
     let b = line.as_bytes();
@@ -3169,6 +3195,10 @@ impl Server {
             _ if starts_with(&upper, "EVENT") || starts_with(&upper, "EVENTS") => {
                 self.event_sub(&cmd.tag, &words)
             }
+            _ if starts_with(&upper, "START_BACKGROUND_JOB") => {
+                self.start_background_job(&cmd.tag, &words)
+            }
+            _ if eq_verb(&upper, "SEND") => self.send_literal(&cmd.tag, &words),
             _ if starts_with(&upper, "GETSTATE") => self.getstate(&cmd.tag, &words),
             _ if starts_with(&upper, "LOGIN") => ok(&cmd.tag, vec![], "200 OK"),
             _ if starts_with(&upper, "LOGOUT") => ok(&cmd.tag, vec![], "200 OK"),
@@ -6539,11 +6569,10 @@ impl Server {
     fn pp_get_unit_catalog(&mut self, tag: &str, _words: &[&str]) -> Response {
         match self.catalog() {
             Ok(catalog) => Self::pp_xml_reply(tag, catalog.xml_lines),
-            Err(error) => err(
-                tag,
-                status::CONFLICT_STATE,
-                &format!("408 get unit catalog failed {error}"),
-            ),
+            // Toolkit's PPGetUnitSpecCatalog class records exactly this row
+            // as the catalogue failure (issue #160); a complete 4xx row
+            // without a loaded catalogue remains the mock's modelled shape.
+            Err(_) => err(tag, status::CONFLICT_STATE, "408 No Catalog Available"),
         }
     }
 
@@ -11472,7 +11501,10 @@ impl Server {
         }
         self.remap_network_paths(&current, src, dst);
         self.push_event(format!("#e# net renamed {src} {dst}"));
-        ok(tag, vec![], "200 OK.")
+        // Toolkit's DBRenameNet class accepts the lowercase recovered
+        // fragment `200 ok` for both spellings (issue #160); the same-address
+        // early exit above keeps its retained OK text.
+        ok(tag, vec![], "200 ok")
     }
 
     /// Remap database paths across a network rename, using an exact-segment
@@ -13572,7 +13604,74 @@ impl Server {
             })
             .collect();
         self.push_event(format!("#e# net {net} checkunit {}", words[3]));
-        ok(tag, lines, "200 OK.")
+        // Toolkit's NetTextFamily class matches its success text against the
+        // lowercase recovered fragment `200 ok` (issue #160), unlike the
+        // `200 OK` shape of the OKSuccessClasses, so the finish row keeps
+        // Toolkit's own casing here.
+        ok(tag, lines, "200 ok")
+    }
+
+    /// Native `START_BACKGROUND_JOB <job-name>` (top-level `pf`, Clipsal
+    /// access floor; issue #160). Only the retained `XmlToSqlTransformJob`
+    /// is defined; the job's outcome is not reported through this reply and
+    /// the mock runs no job.
+    fn start_background_job(&self, tag: &str, words: &[&str]) -> Response {
+        if matches!(self.access, AccessLevel::Admin | AccessLevel::Monitor) {
+            return err(tag, status::ACCESS_DENIED, "420 Access denied.");
+        }
+        match words.get(1) {
+            None => err(tag, status::BAD_REQUEST, "400 Syntax Error."),
+            Some(job) if job.eq_ignore_ascii_case("XmlToSqlTransformJob") => {
+                ok(tag, vec![], "200 OK.")
+            }
+            Some(_) => err(
+                tag,
+                status::BAD_REQUEST,
+                "400 Syntax Error: Invalid parameter : The background job is not defined.",
+            ),
+        }
+    }
+
+    /// Native `SEND <network-id> <command>` (top-level `nK`, Program level;
+    /// issue #160): sends one literal CAL token to each matched network and
+    /// answers `300 Response=<reply>`. The mock has no CAL responder: a
+    /// closed network adds the native `524 ... Command send error` row
+    /// before the empty response, and an open one answers with the empty
+    /// response directly.
+    fn send_literal(&self, tag: &str, words: &[&str]) -> Response {
+        if matches!(self.access, AccessLevel::Admin | AccessLevel::Monitor) {
+            return err(tag, status::ACCESS_DENIED, "420 Access denied.");
+        }
+        let (Some(object), Some(_command)) = (words.get(1), words.get(2)) else {
+            return err(tag, status::BAD_REQUEST, "400 Syntax Error.");
+        };
+        let (project, net) = split_network(object);
+        let project = if project.is_empty() {
+            self.current.clone().unwrap_or_default()
+        } else {
+            project
+        };
+        let network = net.parse::<u8>().ok().and_then(|net| {
+            self.projects
+                .get(&project)?
+                .networks
+                .get(&net)
+                .map(|n| (net, n))
+        });
+        let Some((net, network)) = network else {
+            return err(tag, status::UNAUTHORIZED, "401 Bad object or device ID.");
+        };
+        let lines = if network.state == NetworkState::Closed {
+            vec![format!("524-//{project}/{net}: Command send error")]
+        } else {
+            Vec::new()
+        };
+        Response {
+            tag: tag.to_string(),
+            lines,
+            final_text: "300 Response=".to_string(),
+            status: 300,
+        }
     }
 
     /// Native `NET UNRAVEL[UNIT] address [units] [matchdb]`.
@@ -13622,25 +13721,38 @@ impl Server {
             Ok(v) => v,
             Err(r) => return r,
         };
-        let target = if words.len() == 4 {
-            if words[3].eq_ignore_ascii_case("R") {
-                "recover".to_string()
-            } else {
-                let n: i64 = words[3].parse().unwrap_or(-1);
-                if !(1..=10).contains(&n) {
-                    return err(
-                        tag,
-                        status::BAD_REQUEST,
-                        "400 Clock target must be in 1..10",
-                    );
-                }
-                n.to_string()
+        // Native `NET CLOCKS address [R|1..10]` validates the optional tail
+        // before the model records the scan; the mock marks no hardware.
+        if words.len() == 4 && !words[3].eq_ignore_ascii_case("R") {
+            let n: i64 = words[3].parse().unwrap_or(-1);
+            if !(1..=10).contains(&n) {
+                return err(
+                    tag,
+                    status::BAD_REQUEST,
+                    "400 Clock target must be in 1..10",
+                );
             }
-        } else {
-            "query".to_string()
-        };
+        }
         self.push_event(format!("#e# net {net} clocks"));
-        ok(tag, vec![format!("target={target}")], "200 OK")
+        // Toolkit's NetClock class tolerates `120-` progress rows and
+        // requires an `address=` fragment; 120- rows also reset Toolkit's
+        // reply timeout on long scans (issue #160). The mock has no clock
+        // hardware, so one neutral row per modeled output unit is streamed
+        // with the zeroed captured row fields of the native shape.
+        let current = self.current.clone().unwrap_or_default();
+        let mut addresses: Vec<u8> = self.projects[&current].networks[&net]
+            .units
+            .keys()
+            .copied()
+            .collect();
+        addresses.sort();
+        let lines = addresses
+            .into_iter()
+            .map(|address| {
+                format!("120-address={address} output_units=1 clocks_enabled=0 clocks_active=0 burdens_enabled=0")
+            })
+            .collect();
+        ok(tag, lines, "200 OK")
     }
 
     /// Native `NET RENAME address new-address [nofixrefs]`.
@@ -14277,6 +14389,79 @@ mod tests {
             physical: HashMap::new(),
             levels: HashMap::new(),
         }
+    }
+
+    #[test]
+    fn literal_send_and_background_job_rows_match_the_toolkit_checks() {
+        // A `START_BACKGROUND_JOB` and `SEND` contract (issue #160).
+        let mut s = Server::new(AccessLevel::Program);
+        assert_eq!(s.handle("[1] PROJECT NEW TEST").status, 200);
+        assert_eq!(
+            s.handle("[2] DBCREATENET 254 Local Cni 127.0.0.1:10001")
+                .status,
+            200
+        );
+        let job = s.handle("[3] START_BACKGROUND_JOB XmlToSqlTransformJob");
+        assert_eq!(job.status, 200);
+        assert_eq!(job.final_text, "200 OK.");
+        let unknown_job = s.handle("[4] START_BACKGROUND_JOB Nope");
+        assert_eq!(unknown_job.status, 400);
+        assert!(
+            unknown_job
+                .final_text
+                .contains("The background job is not defined."),
+            "{unknown_job:?}"
+        );
+        assert_eq!(s.handle("[5] START_BACKGROUND_JOB").status, 400);
+        // A closed network adds the native send-error row before the empty
+        // 300 Response= completion row Toolkit's SendCALIdentify finishes on.
+        let sent = s.handle("[6] send 254 0021");
+        assert_eq!(sent.status, 300);
+        assert_eq!(sent.final_text, "300 Response=");
+        assert_eq!(
+            sent.lines,
+            ["524-//TEST/254: Command send error".to_string()]
+        );
+        let unknown_net = s.handle("[7] send 299 0021");
+        assert_eq!(unknown_net.status, 401);
+        assert_eq!(
+            s.handle("[8] send").status,
+            400,
+            "SEND without an object is the native syntax error"
+        );
+    }
+
+    #[test]
+    fn event_mode_words_toolkit_sends_replay_across_the_baseline() {
+        // The bare downstream components Toolkit's listener sends complete
+        // like the e-words (issue #160); garbage stays the recorded failure.
+        let mut mode = EventMode::OFF;
+        assert_eq!(mode.apply_native("c0"), Ok(()));
+        assert_eq!(mode.status, 0);
+        assert_eq!(mode.config, 0);
+        assert_eq!(mode.apply_native("c1"), Ok(()));
+        assert_eq!(mode.config, 1);
+        let mut mode = EventMode::OFF;
+        assert_eq!(mode.apply_native("s1"), Ok(()));
+        assert_eq!(mode.status, 1);
+        assert_eq!(mode.to_string(), "e0s1c0");
+        // The e-words keep the retained grammar, including after s/c changes.
+        let mut mode = EventMode::OFF;
+        assert_eq!(mode.apply_native("s1"), Ok(()));
+        assert_eq!(mode.apply_native("e9"), Ok(()));
+        assert_eq!(mode.to_string(), "e9s1c0");
+        assert_eq!(mut_mode_with("e20s0c0"), Err("Bad mode string"));
+        assert_eq!(mut_mode_with("x9"), Err("Bad mode string"));
+        assert_eq!(mut_mode_with("s"), Err("Bad mode string"));
+        assert_eq!(mut_mode_with("c00"), Err("Bad mode string"));
+        let mut mode = EventMode::OFF;
+        assert_eq!(mode.apply_native("c1"), Ok(()));
+        assert!(!mode.is_off());
+        assert!(mode.delivers(EventCategory::Config));
+    }
+
+    fn mut_mode_with(word: &str) -> Result<(), &'static str> {
+        EventMode::OFF.clone().apply_native(word)
     }
 
     fn application_order_server() -> Server {
@@ -15087,13 +15272,25 @@ mod tests {
         assert_eq!(pingu.status, 200);
         assert!(pingu.lines.iter().any(|l| l == "302-Units=20"));
         assert_eq!(pingu.final_text, "200 OK.");
-        assert_eq!(s.handle("[17] NET CHECKUNIT //TEST/254 20").status, 200);
+        let check = s.handle("[17] NET CHECKUNIT //TEST/254 20");
+        assert_eq!(check.status, 200);
+        // Toolkit's recovered NetTextFamily fragment is the lowercase row.
+        assert_eq!(check.final_text, "200 ok");
         assert_eq!(
             s.handle("[18] NET UNRAVELUNIT //TEST/254 20 matchdb")
                 .status,
             200
         );
-        assert_eq!(s.handle("[19] NET CLOCKS //TEST/254 2").status, 200);
+        let clocks = s.handle("[19] NET CLOCKS //TEST/254 2");
+        assert_eq!(clocks.status, 200);
+        assert_eq!(clocks.final_text, "200 OK");
+        assert_eq!(
+            clocks.lines,
+            [
+                "120-address=20 output_units=1 clocks_enabled=0 clocks_active=0 burdens_enabled=0"
+                    .to_string()
+            ]
+        );
         assert_eq!(s.handle("[20] NET CLOCKS //TEST/254 R").status, 200);
         assert_eq!(s.handle("[21] TREEXML //TEST/254").status, 344);
         let calc = s.handle("[22] CALCULATOR TEST //TEST/254");

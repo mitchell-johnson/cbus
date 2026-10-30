@@ -272,6 +272,10 @@ pub(crate) fn command(model: &Server, tag: &str, words: &[&str]) -> Response {
     if words.len() < 3 {
         return err(tag, 400, "400 Syntax Error.");
     }
+    // Issue #160 records the calculator's catalogue failure shape (408) but
+    // a native capture for the success row set is still pending; until that
+    // capture exists this failure path and the owned 134 report rows below
+    // are intentionally the only shapes this mock answers.
     let Some(directory) = model.unitspec_dir.as_deref() else {
         return err(
             tag,

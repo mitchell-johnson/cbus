@@ -1506,6 +1506,46 @@ impl Server {
 
         if let Some(spec) = application_spec(words) {
             let args = &words[2..];
+            // Toolkit's own aircon method facade (issue #160; the recovered
+            // format strings in issue #162 spell `AIRCON set_ward_off …`
+            // etc. in lowercase). The mock answers this surface with
+            // Toolkit's recovered fragments: a known method is queued and
+            // an unknown one reports `method <name> not found`. The native
+            // console grammar (uppercase names, native_cgate_aircon.json)
+            // below keeps its captured envelope; no capture pins the
+            // method-facade wording, so the recovered check strings are the
+            // model, and the mock records the last invocation and event like
+            // the console arm.
+            if spec.name.starts_with("AIRCON")
+                && words[1].bytes().any(|byte| byte.is_ascii_lowercase())
+            {
+                let method = words[1].to_ascii_lowercase();
+                if !matches!(
+                    method.as_str(),
+                    "refresh"
+                        | "set_ward_off"
+                        | "set_ward_on"
+                        | "set_zone_hvac_mode"
+                        | "set_zone_humidity_mode"
+                        | "set_hvac_upper_guard_limit"
+                        | "set_hvac_lower_guard_limit"
+                        | "set_hvac_setback_limit"
+                        | "set_humidity_upper_guard_limit"
+                        | "set_humidity_lower_guard_limit"
+                        | "set_humidity_setback_limit"
+                ) {
+                    return Some(err(tag, 402, &format!("402 method {method} not found")));
+                }
+                self.application_state
+                    .insert(format!("{first} {method}"), args.join(" "));
+                self.push_event(format!("#e# {first} {method} {}", args.join(" ")));
+                return Some(Response {
+                    tag: tag.to_string(),
+                    lines: Vec::new(),
+                    final_text: "200 OK: queued for sending".to_string(),
+                    status: 200,
+                });
+            }
             // Native C-Gate 3.4 has no Z (function-code) form for this
             // command: `AUDIO OUTPUT_ERROR_CODE 254/205 Z 0 0` is rejected as
             // too many parameters (native_cgate_audio.json).
@@ -1538,6 +1578,17 @@ impl Server {
                 args.join(" ")
             ));
             return Some(ok(tag, vec![], "200 OK."));
+        }
+
+        // A word that is not a documented AIRCON subcommand is the unknown
+        // branch of Toolkit's method facade (issue #160): its own parser
+        // shows the recovered `method <name> not found` text for exactly
+        // this reply shape.
+        if first.eq_ignore_ascii_case("AIRCON") {
+            if let Some(method) = words.get(1) {
+                let name = method.to_ascii_lowercase();
+                return Some(err(tag, 402, &format!("402 method {name} not found")));
+            }
         }
 
         None
@@ -1585,6 +1636,60 @@ impl Server {
         }
     }
 
+    /// Objects the CONFIG OBGET/OBSET shapes admit. The root object
+    /// (`cgate`), a loaded project (`//P` or a bare project name), a network
+    /// under it (`//P/N` or a bare network number) and that network's unit
+    /// subtree resolve to their model scope; every other object fails with
+    /// the `401 Bad object or device ID` refusal Toolkit's ConfigGet* classes
+    /// record (issue #160).
+    fn config_object_guard(&self, tag: &str, object: &str) -> Option<Response> {
+        if object.eq_ignore_ascii_case("cgate") {
+            return None;
+        }
+        let absent = || {
+            err(
+                tag,
+                status::UNAUTHORIZED,
+                &format!("401 Bad object or device ID: {object}"),
+            )
+        };
+        let parts = object
+            .split('/')
+            .filter(|part| !part.is_empty())
+            .collect::<Vec<_>>();
+        if object.starts_with("//") {
+            if !self
+                .projects
+                .contains_key(parts.first().copied().unwrap_or_default())
+            {
+                return Some(absent());
+            }
+            if parts.len() >= 2 {
+                let Ok(network) = parts[1].parse::<u8>() else {
+                    return Some(absent());
+                };
+                if !self.projects[parts[0]].networks.contains_key(&network) {
+                    return Some(absent());
+                }
+            }
+            return None;
+        }
+        if parts.len() == 1 {
+            if let Ok(network) = parts[0].parse::<u8>() {
+                let resolved = self
+                    .current
+                    .as_deref()
+                    .and_then(|project| self.projects.get(project))
+                    .is_some_and(|project| project.networks.contains_key(&network));
+                return (!resolved).then(absent);
+            }
+            if self.projects.contains_key(parts[0]) {
+                return None;
+            }
+        }
+        Some(absent())
+    }
+
     fn config_command(&mut self, tag: &str, words: &[&str]) -> Response {
         let op = words[1].to_ascii_uppercase();
         match op.as_str() {
@@ -1620,32 +1725,76 @@ impl Server {
                 );
                 ok(tag, vec![], "200 OK")
             }
-            "OBGET" if words.len() == 4 => {
-                let key = format!("{}:{}", words[2], words[3]);
-                if words[3] == "*" {
-                    let prefix = format!("{}:", words[2]);
-                    let rows: Vec<String> = self
-                        .config_values
-                        .iter()
-                        .filter(|(k, _)| k.starts_with(&prefix))
-                        .map(|(k, v)| format!("{}={v}", &k[prefix.len()..]))
-                        .collect();
-                    envelope(tag, 303, rows)
-                } else if let Some(value) = self.config_values.get(&key) {
-                    envelope(tag, 303, [format!("{}={value}", words[3])])
+            "OBGET" if words.len() >= 4 => {
+                // Toolkit's ConfigGet class ends every reply on a `303 ` row
+                // (issue #160): the mock streams the value as `300-` data
+                // rows and completes with the bare 303 row. A stored model
+                // override wins over the catalogue default; the object and
+                // value failures keep the texts Toolkit's own class records
+                // (401 Bad object or device ID) or that the retained native
+                // CONFIG capture shows for a missing parameter (408 config
+                // parameter not found).
+                if words.len() > 4 {
+                    return err(
+                        tag,
+                        status::BAD_REQUEST,
+                        "400 Syntax Error: Too many parameters",
+                    );
+                }
+                let object = words[2];
+                if let Some(response) = self.config_object_guard(tag, object) {
+                    return response;
+                }
+                let key = format!("{}:{}", object, words[3]);
+                let value = if let Some(stored) = self.config_values.get(&key) {
+                    Some(stored.clone())
+                } else {
+                    crate::config::parameter(words[3])
+                        .map(|parameter| parameter.default.to_string())
+                };
+                match value {
+                    Some(value) => Response {
+                        tag: tag.to_string(),
+                        lines: vec![format!("300-{}={value}", words[3])],
+                        final_text: "303 ".to_string(),
+                        status: 303,
+                    },
+                    None => err(
+                        tag,
+                        status::CONFLICT_STATE,
+                        "408 Operation failed: config parameter not found",
+                    ),
+                }
+            }
+            "OBSET" if words.len() >= 4 => {
+                // Toolkit's ConfigGetSetOB also finishes on `303 ` rows
+                // (issue #160), so the stored-override receipt carries the
+                // value row and the bare 303 completion row instead of a
+                // bare OK row.
+                let object = words[2];
+                if let Some(response) = self.config_object_guard(tag, object) {
+                    return response;
+                }
+                let key = format!("{}:{}", object, words[3]);
+                let value = words.get(4..).unwrap_or_default().join(" ");
+                let known = value.is_empty()
+                    || self.config_values.contains_key(&key)
+                    || crate::config::parameter(words[3]).is_some();
+                self.config_values.insert(key, value.clone());
+                if known {
+                    Response {
+                        tag: tag.to_string(),
+                        lines: vec![format!("300-{}={value}", words[3])],
+                        final_text: "303 ".to_string(),
+                        status: 303,
+                    }
                 } else {
                     err(
                         tag,
                         status::CONFLICT_STATE,
-                        "408 Config parameter not found",
+                        "408 Operation failed: config parameter not found",
                     )
                 }
-            }
-            "OBSET" if words.len() >= 4 => {
-                let key = format!("{}:{}", words[2], words[3]);
-                self.config_values
-                    .insert(key, words.get(4..).unwrap_or_default().join(" "));
-                ok(tag, vec![], "200 OK")
             }
             "OBRESET" if (3..=4).contains(&words.len()) => {
                 let prefix = format!("{}:", words[2]);
@@ -1665,7 +1814,7 @@ impl Server {
             {
                 ok(tag, vec![], "200 OK")
             }
-            _ => err(tag, status::BAD_REQUEST, "400 Invalid CONFIG command"),
+            _ => err(tag, status::BAD_REQUEST, "400 Syntax Error."),
         }
     }
 
@@ -1754,6 +1903,18 @@ impl Server {
                     Err((status, response)) => err(tag, status, &response),
                 }
             }
+            // Toolkit's own probe spelling is `port probe <port-name>`
+            // (issue #160): one bare port name with no kind token, whose
+            // recorded success row is the whole `230 ok` line. The native
+            // kind plus address spelling above keeps the retained probe
+            // envelopes; a bare name is a deterministic modelled probe with
+            // no port-library access.
+            "PROBE" if words.len() == 3 => Response {
+                tag: tag.to_string(),
+                lines: Vec::new(),
+                final_text: "230 ok".to_string(),
+                status: 230,
+            },
             _ => err(tag, status::BAD_REQUEST, "400 Syntax Error."),
         }
     }
@@ -4831,13 +4992,47 @@ impl Server {
             ));
         }
         if root == "TRANSFORM" {
-            return Some(err(
-                tag,
-                502,
-                &format!(
-                    "502 TRANSFORM {sub} requires proprietary repository transformation machinery"
-                ),
-            ));
+            // Toolkit's transform client reads `199-` rows and finishes the
+            // upgrade transaction on the `200 OK` row (issue #160). The mock
+            // model keeps every loaded project at the wanted DBVersion, so
+            // no transform is due; the recovered no-op fragment is the
+            // `DBVersions match` row. The reply body never names
+            // `dbversion`/`schemaversion` inside the 200 row, which would
+            // otherwise start Toolkit's DB upgrade flow.
+            if !matches!(sub.as_str(), "PROJECT" | "MIGRATE_SQL") {
+                // Leaves Toolkit never sends keep the retained fail-closed
+                // envelope; only the two Toolkit leaves (#160) model rows.
+                return Some(err(
+                    tag,
+                    502,
+                    &format!(
+                        "502 TRANSFORM {sub} requires proprietary repository transformation machinery"
+                    ),
+                ));
+            }
+            let mut args = args;
+            let test_only = args
+                .first()
+                .is_some_and(|word| word.eq_ignore_ascii_case("--test"));
+            if test_only {
+                args = &args[1..];
+            }
+            let Some(project) = args.first() else {
+                return Some(err(tag, status::BAD_REQUEST, "400 Syntax Error."));
+            };
+            if !self.projects.contains_key(*project) {
+                return Some(err(
+                    tag,
+                    status::CONFLICT_STATE,
+                    &format!("408 Operation failed: Src filename does not exist: {project}.xml"),
+                ));
+            }
+            return Some(Response {
+                tag: tag.to_string(),
+                lines: vec!["199-DBVersions match".to_string()],
+                final_text: "200 OK.".to_string(),
+                status: 200,
+            });
         }
         if root == "PROJECT" && sub == "DIRFULL" {
             let mut rows: Vec<String> = self
@@ -4876,26 +5071,36 @@ impl Server {
             return Some(ok(tag, vec![], "200 OK"));
         }
         if root == "LABEL" && matches!(sub.as_str(), "KFIGET" | "KFISET") {
-            let key = format!("LABEL {}", args.first().copied().unwrap_or(""));
-            if sub == "KFIGET" {
-                return Some(envelope(
-                    tag,
-                    300,
-                    [self
-                        .application_state
-                        .get(&key)
-                        .cloned()
-                        .unwrap_or_default()],
-                ));
-            }
+            // Toolkit's KFIGet class reads `300-kfi…` continuation rows and
+            // finishes on a `300 kfi…` row (issue #160). The mock keeps a
+            // small (target, group)-keyed dataset written by LABEL KFISET;
+            // when a group carries no dataset the reply is the single final
+            // row for that group, which matches the recovered final-row
+            // fragment shape without inventing native KFI content.
             if args.len() < 2 {
-                return Some(err(
-                    tag,
-                    status::BAD_REQUEST,
-                    "400 LABEL KFISET requires a target and value",
-                ));
+                return Some(err(tag, status::BAD_REQUEST, "400 Syntax Error."));
             }
-            self.application_state.insert(key, args[1..].join(" "));
+            let Ok(group) = args[1].parse::<u8>() else {
+                return Some(err(tag, status::BAD_REQUEST, "400 Syntax Error."));
+            };
+            let key = format!("LABEL {}\u{1f}{}", args[0], group);
+            if sub == "KFIGET" {
+                let words: Vec<String> = self
+                    .application_state
+                    .get(&key)
+                    .cloned()
+                    .unwrap_or_default()
+                    .split_whitespace()
+                    .map(|word| format!("300-kfi{word}"))
+                    .collect();
+                return Some(Response {
+                    tag: tag.to_string(),
+                    lines: words,
+                    final_text: format!("300 kfi{group}"),
+                    status: 300,
+                });
+            }
+            self.application_state.insert(key, args[2..].join(" "));
             return Some(ok(tag, vec![], "200 OK"));
         }
 
@@ -5414,6 +5619,100 @@ mod tests {
                 .addresses,
             [72]
         );
+    }
+
+    #[test]
+    fn instrumented_transform_reply_uses_toolkit_fragments() {
+        let mut server = Server::new(AccessLevel::Program);
+        assert_eq!(server.handle("[1] PROJECT NEW TEST").status, 200);
+        let typed = server.handle("[2] TRANSFORM PROJECT --test TEST");
+        assert_eq!(typed.status, 200);
+        assert_eq!(typed.final_text, "200 OK.");
+        assert_eq!(typed.lines, ["199-DBVersions match".to_string()]);
+        let test_free = server.handle("[3] TRANSFORM PROJECT TEST");
+        assert_eq!(test_free.lines, typed.lines);
+        assert_eq!(test_free.final_text, "200 OK.");
+        // A project outside the model keeps a complete recorded failure row.
+        let missing = server.handle("[4] TRANSFORM MIGRATE_SQL NOSUCH");
+        assert_eq!(missing.status, 408);
+        assert!(
+            missing
+                .final_text
+                .starts_with("408 Operation failed: Src filename does not exist"),
+            "{missing:?}"
+        );
+        // No argument is a syntax error, like the native leaf help says.
+        assert_eq!(server.handle("[5] TRANSFORM PROJECT").status, 400);
+    }
+
+    #[test]
+    fn config_ob_rows_terminate_on_303_with_recovered_failures() {
+        let mut server = Server::new(AccessLevel::Program);
+        let get = server.handle("[1] config obget cgate command-port");
+        assert_eq!(get.status, 303);
+        assert_eq!(
+            format_response(&get),
+            "[1] 300-command-port=20023\n[1] 303 \n"
+        );
+        let set = server.handle("[2] config obset cgate event-millis 250");
+        assert_eq!(set.status, 303);
+        assert_eq!(
+            format_response(&set),
+            "[2] 300-event-millis=250\n[2] 303 \n"
+        );
+        let readback = server.handle("[3] config obget cgate event-millis");
+        assert_eq!(
+            format_response(&readback),
+            "[3] 300-event-millis=250\n[3] 303 \n"
+        );
+        // A loaded-project object resolves against the model.
+        assert_eq!(server.handle("[4] PROJECT NEW TEST").status, 200);
+        assert_eq!(server.handle("[4a] PROJECT USE TEST").status, 200);
+        let scoped = server.handle("[5] config obget TEST allow-recall-write");
+        assert_eq!(scoped.status, 303);
+        // Unresolvable object and syntax failures keep the recorded refusal
+        // texts Toolkit's ConfigGet* classes match.
+        let object = server.handle("[6] config obget //MISSING/1 command-port");
+        assert_eq!(object.status, 401);
+        assert!(
+            object.final_text.starts_with("401 Bad object or device ID"),
+            "{object:?}"
+        );
+        let syntax = server.handle("[7] config obget cgate");
+        assert_eq!(syntax.status, 400);
+        assert!(
+            syntax.final_text.starts_with("400 Syntax Error"),
+            "{syntax:?}"
+        );
+        let parameter = server.handle("[8] config obget cgate no-such-key");
+        assert_eq!(parameter.status, 408);
+        assert!(
+            parameter.final_text.contains("config parameter not found"),
+            "{parameter:?}"
+        );
+    }
+
+    #[test]
+    fn aircon_method_facade_answers_the_recovered_fragments() {
+        let mut server = Server::new(AccessLevel::Program);
+        let queued = server.handle("[1] AIRCON set_ward_off 254/172 1");
+        assert_eq!(queued.status, 200);
+        assert_eq!(queued.final_text, "200 OK: queued for sending");
+        let zone =
+            server.handle("[2] AIRCON set_zone_hvac_mode 254/172 1 0,1,2 3 0 1 0 1 255 23 64");
+        assert_eq!(zone.status, 200);
+        assert_eq!(zone.final_text, "200 OK: queued for sending");
+        // The mock records the invocation and event like the console arm.
+        assert!(server.application_state.contains_key("AIRCON set_ward_off"));
+        // Unknown methods reply with Toolkit's recovered text.
+        let unknown = server.handle("[3] AIRCON set_bogus_thing 254/172 1");
+        assert_eq!(unknown.status, 402);
+        assert_eq!(unknown.final_text, "402 method set_bogus_thing not found");
+        // The uppercase console grammar keeps its captured native envelope.
+        let console = server.handle("[4] AIRCON SET_WARD_OFF 254/172 1");
+        assert_eq!(console.status, 200);
+        assert_eq!(console.final_text, "200 OK.");
+        assert_eq!(server.handle("[5] AIRCON SET_WARD_OFF 254/172").status, 400);
     }
 
     #[test]

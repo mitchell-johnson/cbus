@@ -1888,6 +1888,10 @@ def build_parser():
     # loop (tests/project_legacy_transform_receipt_source.py).
     p_start = prop.add_parser("start", help="Run Toolkit's recovered ProjectStart lifecycle")
     p_start.add_argument("name")
+    # TRANSFORM MIGRATE_SQL shares transform's recovered reply family (issue #160)
+    # but has no --test flag in the recovered command text.
+    p_migrate = prop.add_parser("transform-migrate-sql", help="Run Toolkit's recovered TRANSFORM MIGRATE_SQL migration")
+    p_migrate.add_argument("name")
     database = cgops.add_parser("database", help="Edit the native project tree using C-Gate business rules")
     dbop = database.add_subparsers(dest="remote_action", required=True)
     p = dbop.add_parser("network-new", help="Create a network definition and load its closed model")
@@ -3152,6 +3156,9 @@ def _cgate(args):
         if args.action == "project" and args.remote_action == "start":
             from .native import start_project
             return start_project(client, args.name), 0
+        if args.action == "project" and args.remote_action == "transform-migrate-sql":
+            from .native_commands import transform_migrate_sql
+            return transform_migrate_sql(client, args.name), 0
         if args.action == "project":
             from .native import NativeProjects
             manager = NativeProjects(client)

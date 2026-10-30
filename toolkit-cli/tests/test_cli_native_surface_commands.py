@@ -317,3 +317,50 @@ class ToolkitCommandFamilyTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TransformMigrateSqlTests(ToolkitCommandFamilyTests):
+    """Toolkit's recovered TRANSFORM MIGRATE_SQL lifecycle (#160, #162)."""
+
+    def test_transform_migrate_sql_streams_199_rows_and_finishes_on_200(self):
+        with peer([[b"[1] 199-Before: DBVersions match\r\n",
+                    b"[1] 199-After: Transform from 2.2 to 2.3\r\n",
+                    b"[1] 200 OK.\r\n"]]) as ((host, port), sent):
+            result = self.cli(host, port, "project", "transform-migrate-sql", "SERVER")
+        self.assertEqual(sent, [b"[1] TRANSFORM MIGRATE_SQL SERVER\r\n"])
+        self.assertEqual(result["operation"], "transform-migrate-sql")
+        self.assertEqual(result["status"], 200)
+        self.assertFalse(result["native_upgrade_flow_detected"])
+        self.assertTrue(result["cgate_accepted"])
+        self.assertFalse(result["device_effects_verified"])
+        self.assertFalse(result["automatic_replay"])
+
+    def test_transform_migrate_sql_marks_the_recovered_upgrade_trigger(self):
+        with peer([[b"[1] 200 OK dbversion=2.3\r\n"]]) as ((host, port), sent):
+            result = self.cli(host, port, "project", "transform-migrate-sql", "SERVER")
+        self.assertEqual(result["native_upgrade_flow_detected"], True)
+
+    def test_transform_migrate_sql_refuses_the_recorded_error_set(self):
+        cases = (
+            (b"[1] 408 Modification refused: Src filename does not exist\r\n", "408"),
+            (b"[1] 420 Access denied\r\n", "Access denied"),
+            (b"[1] 460 Validation status: field 2 to be filled\r\n", "to be filled"),
+        )
+        for reply, fragment in cases:
+            with self.subTest(reply=reply), peer([[reply]]) as ((host, port), sent):
+                failure = self.cli_failure(host, port, "project", "transform-migrate-sql", "SERVER")
+            self.assertEqual(sent, [b"[1] TRANSFORM MIGRATE_SQL SERVER\r\n"])
+            self.assertEqual(failure["reply_classification"], "recorded")
+            self.assertIn(fragment, json.dumps(failure))
+
+    def test_transform_migrate_sql_lone_199_completion_fails_closed(self):
+        with peer([[b"[1] 199-Before: DBVersions match\r\n",
+                    b"[1] 199 Transform from 2.2 to 2.3\r\n"]]) as ((host, port), sent):
+            failure = self.cli_failure(host, port, "project", "transform-migrate-sql", "SERVER")
+        self.assertEqual(sent, [b"[1] TRANSFORM MIGRATE_SQL SERVER\r\n"])
+        self.assertEqual(failure["reply_classification"], "unmodeled")
+
+    def test_transform_migrate_sql_name_length_is_verified_before_sending(self):
+        with peer([[b"[1] 200 OK.\r\n"]]) as ((host, port), sent):
+            failure = self.cli_failure(host, port, "project", "transform-migrate-sql", "WAYTOLONG")
+        self.assertEqual(sent, [])
