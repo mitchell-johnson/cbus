@@ -37,15 +37,31 @@ Run from `toolkit-cli/` without installing:
 
 ```sh
 PYTHONPATH=src python3 -m cbus_toolkit --compact pci --host 192.168.1.21 --local-unit 16 recall 31 0x36 8
-PYTHONPATH=src python3 -m cbus_toolkit --compact pci --host 192.168.1.21 --local-unit 16 write 31 0x37 0a
+PYTHONPATH=src python3 -m cbus_toolkit --compact pci --host 192.168.1.21 --local-unit 16 \
+  --checksum write --addressing direct 31 0x37 420a
 ```
+
+Writes to classic units (KEYE etc.) need all three of these, or they silently do nothing:
+
+- **`--addressing direct`**: `pci write` defaults to `programming` addressing
+  (`\46<unit>0900...`), which KEYE units ignore. The result is a timeout.
+- **`--checksum`**: the unit ACKs an unchecksummed STORE but does not apply it.
+- **A tag byte first**: `hex_data` is `<tag><data...>` (legacy STORE). The ACK
+  echoes the tag (`32 <param> <tag>`). `420a` writes one byte, 0x0a, with tag 0x42.
+  Without a tag the data byte is taken as the tag and nothing is stored.
+
+Writes take effect immediately (no save/NVM step for these 2.x units). Check
+`EEPROMCheckSumActive` (0x1E) first: if it has odd parity, the EEPROM checksum at
+0x1F would also need updating. On unit 31 it is 0x00, so the checksum is inactive.
+Params with `Protection` of `lock` in the spec need the unlock CAL before the
+STORE. `checksum` protection does not.
 
 - Each CLI call opens a fresh TCP session, and the CNI starts every session in
   basic mode: it echoes the command (without CR) and sends occasional `++`
   power-up notifications. The client discards the echo; before that fix this
   showed up as `Frame must contain an even number of hexadecimal characters`.
   Interface options set with `A3300019` do not survive to the next session.
-- Do not pass `--checksum`; replies already carry a checksum the client checks.
+- `recall` works with or without `--checksum`; replies always carry a checksum.
 - `recall`/`write` are raw parameter access. Read before and after every write.
 
 ## Groups worth knowing
@@ -54,7 +70,14 @@ PYTHONPATH=src python3 -m cbus_toolkit --compact pci --host 192.168.1.21 --local
 |---|---|---|---|
 | 5 | outside wall light rear | Relay 1 (unit 0) ch 6 | unit 31 key 2 |
 | 6 | outside wall light side | Relay 1 ch 7 | unit 31 key 3 |
-| 7-11 | prov 1-5 (HomeKit names them) | Relay 1 ch 8-12 | none originally |
+| 7 | prov 1 = **Patio** in HomeKit | Relay 1 ch 8 | unit 31 key 2 (block 3, added 2026-11-01) |
+| 8-11 | prov 2-5 | Relay 1 ch 9-12 | none |
+
+Change log (live unit edits, so the next person can undo them):
+
+- 2026-11-01, unit 31: GroupAddress[3] (0x53) ff -> 07, and BlockAllocation[1]
+  (0x37) 02 -> 0a, so the rear-lights key also switches the patio. To undo, write
+  `4202` to 0x37 and `41ff` to 0x53.
 
 ## Key units (KEYE1/2/3, 5031NMML, fw 2.5.00, spec `KEYE.xml`)
 
