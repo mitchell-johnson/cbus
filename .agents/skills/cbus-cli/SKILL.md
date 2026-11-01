@@ -13,7 +13,7 @@ Use the Python Toolkit CLI for project and commissioning workflows, and the Rust
 - For exact commands, arguments, outputs, and exit behavior, read [references/cli.md](references/cli.md).
 - For crate responsibilities, data flow, project files, and MQTT behavior, read [references/system.md](references/system.md).
 - For C-Gate commands, sessions, wire framing, and the Toolkit compatibility boundary, read [references/cgate.md](references/cgate.md).
-- For common operating, test, and diagnostic sequences, read [references/workflows.md](references/workflows.md).
+- For common operating, test, and diagnostic sequences, read [references/workflows.md](references/workflows.md). This includes making a classic key drive an extra group, and the direct-PCI STORE rules (direct addressing, checksum, tag byte).
 
 ## Operating rules
 

@@ -504,6 +504,9 @@ class PCIClient:
                 sock.settimeout(self._remaining(deadline))
                 self._confirmation_index += 1
                 sock.sendall(wire)
+                # A CNI in basic mode echoes the command without its CR.
+                echo = wire.rstrip(b"\r")
+                pending = b""
                 while not (confirmed and response is not None):
                     sock.settimeout(self._remaining(deadline))
                     chunk = sock.recv(4096)
@@ -513,6 +516,20 @@ class PCIClient:
                         if reply_count is not None and reply_data and len(reply_data) != reply_count:
                             raise ProtocolError(f"Recall length mismatch: requested {reply_count}, received {len(reply_data)}")
                         raise ConnectionError("PCI disconnected before request completed")
+                    if echo is not None:
+                        # Power-up "+" notifications may precede the echo.
+                        pending += chunk
+                        body = pending.lstrip(b"+!\r\n")
+                        chunk = pending[:len(pending) - len(body)]
+                        if body and echo.startswith(body) and len(body) < len(echo):
+                            pending = body  # partial echo; wait for the rest
+                        elif body:
+                            chunk += body[len(echo):] if body.startswith(echo) else body
+                            pending, echo = b"", None
+                        else:
+                            pending = b""
+                        if not chunk:
+                            continue
                     # Handle every event in this read, including trailing events
                     # after a response and confirmation have both been received.
                     for event in self.stream.feed(chunk):

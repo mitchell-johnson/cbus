@@ -64,6 +64,45 @@ gocbyt, and goc2. Apply to any loaded specification containing an NCC parameter
 needs cmqttd's routed NVM capability, even when another method is selected. The
 complete contract is `toolkit-cli/docs/physical-programming.md`.
 
+## Make one classic key drive an extra group
+
+Classic key units (for example KEYE1/2/3 5031NMML, spec `KEYE.xml`) map each
+key to blocks through `BlockAllocation` (one bitmask byte per key) and each
+block to a group through `GroupAddress`. To make one key switch a second group,
+put the group in a free block (`GroupAddress` value `0xFF`) and OR that block's
+bit into the key's `BlockAllocation`. Other keys and the key's indicator are
+unchanged. Prefer `physical-pp` above. Get the layout from
+`cbus-toolkit memory --spec-dir DIR layout KEYE.xml BlockAllocation`; never
+copy vendor specs into the repository.
+
+Identify the key by observation, not by labels or by what someone recalls. Watch
+`homeassistant/light/+/state` on the bridge's MQTT broker while the user presses
+the key. `cbus_source_addr` names the unit, and the user confirms which lights
+actually changed.
+
+### Direct PCI fallback
+
+Use this only when the CNI can be freed, because it accepts a single TCP client.
+Stopping cmqttd frees it but takes MQTT control offline until restart.
+
+```sh
+cbus-toolkit pci --host CNI_HOST --local-unit PCI_UNIT recall UNIT 0x36 8
+cbus-toolkit pci --host CNI_HOST --local-unit PCI_UNIT \
+  --checksum write --addressing direct UNIT PARAM TAGDATA
+```
+
+- Every CLI call opens a new TCP session, which a CNI starts in basic mode. The
+  client discards the echoed command and any leading `++`.
+- `pci write` defaults to `--addressing programming`, which classic units
+  ignore, so the call times out. Pass `--addressing direct`.
+- Without `--checksum`, the unit ACKs the STORE but does not apply it.
+- `hex_data` is a legacy STORE: the first byte is a tag, which the unit echoes
+  as `32 PARAM TAG`, and the data follows it. `420a` stores `0x0A`.
+- If `EEPROMCheckSumActive` (`0x1E`) has odd parity, the checksum at `0x1F`
+  must be maintained as well. `lock`-protected parameters need the Unlock
+  exchange first.
+- Recall each written range and record the old bytes so the edit can be undone.
+
 ## Test a PCI/CNI client locally
 
 Start the simulator in one process:
