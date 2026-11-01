@@ -216,6 +216,23 @@ class ClientTests(unittest.TestCase):
                 self.assertEqual(client.unsolicited[0], Confirmation(b"z", "."))
                 self.assertEqual(client.unsolicited[-1].cals, (AcknowledgeCAL(1, 0x42),))
 
+    def test_basic_mode_echo_of_sent_command_is_discarded(self):
+        # Live CNI 5500CN2 5.5.00 capture: a fresh TCP session is in basic
+        # mode, so the command is echoed without its CR before the reply.
+        sent = b"\\461F001A3608g\r"
+        response = b"\\461F001A3608gg.861F1000893601020408102040808D\r\n"
+        with peer(self, [(sent, [response[:5], response[5:]])]) as port:
+            with PCIClient("127.0.0.1", port) as client:
+                self.assertEqual(client.recall(31, 0x36, 8), bytes((1, 2, 4, 8, 16, 32, 64, 128)))
+
+    def test_basic_mode_echo_after_power_up_notifications_is_discarded(self):
+        sent = b"\\461F001A4501g\r"
+        chunks = [b"++\r\n", b"\\461F001A4501gg.861F10", b"0082450084\r\n"]
+        with peer(self, [(sent, chunks)]) as port:
+            with PCIClient("127.0.0.1", port) as client:
+                self.assertEqual(client.recall(31, 0x45, 1), b"\0")
+                self.assertEqual(client.unsolicited[0], Notification("+"))
+
     def test_programming_write_waits_for_confirmation_and_matching_ack(self):
         response = DATA_ACK + b"\x11g" + b"." + PROGRAMMING_ACK
         with peer(self, [(b"\\46050900A40041A000g\r", [response[:17], response[17:]])]) as port:
