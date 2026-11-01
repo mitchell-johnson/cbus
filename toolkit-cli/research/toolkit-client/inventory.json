@@ -2,7 +2,7 @@
   "schema_version": 1,
   "subject": "Native reply-code compares of the C-Bus Toolkit 1.18.0.2754 C-Gate client",
   "purpose": "Machine-readable record of every reply check each native Toolkit C-Gate client class performs, so repository tests and cgate-mock can assert against them.",
-  "recording": "Transcribed from the static decompile findings recorded in repository issue #161. Nothing here is observed behaviour; it is recovered client source semantics. Replies not among an entry's recorded fragments are treated as unmodeled by this repository's fail-closed handlers.",
+  "recording": "Transcribed from the static decompile findings recorded in repository issue #161. Nothing here is observed behaviour; it is recovered client source semantics. Wave-2 rows (issue #166/#167/#168/#169 findings and the PPGet 462 row in issue #167) clarify facts recorded by those issues. Replies not among an entry's recorded fragments are treated as unmodeled by this repository's fail-closed handlers.",
   "recovery": {
     "method": "Static analysis of C-Bus Toolkit 1.18.0.2754.",
     "tools": [
@@ -356,6 +356,9 @@
       "classes": ["PPGet", "PPQuickGet"],
       "recording": "complete",
       "accept": {"315": "rows"},
+      "accept_also": {
+        "462": "row: issue #167 records that the managed PPGet accepts advisory rows; cgate-mock reaches 462 only as PP LOAD range advisories"
+      },
       "finishes_on": ["315 "],
       "reject": [
         "No such parameter",
@@ -368,6 +371,11 @@
       "classes": ["PPLoad", "PPSave"],
       "recording": "complete",
       "fragments": ["120-read a/b", "120-saved a/b"]
+    },
+    {
+      "class": "PPListLock",
+      "recording": "complete",
+      "accept": {"121": "rows"}
     },
     {
       "class": "PPUnits",

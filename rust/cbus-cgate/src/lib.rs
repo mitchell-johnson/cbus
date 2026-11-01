@@ -4548,18 +4548,53 @@ impl Server {
         if !project.is_empty() && project != current {
             return err(tag, status::NOT_FOUND, "404 Project not selected");
         }
-        let Some(proj) = self.current_project_mut() else {
-            return err(tag, status::NOT_FOUND, "404 No project selected");
+        let (addresses, at_list) = {
+            let Some(proj) = self.current_project_mut() else {
+                return err(tag, status::NOT_FOUND, "404 No project selected");
+            };
+            let Some(entry) = proj.networks.get_mut(&net) else {
+                return err(tag, status::NOT_FOUND, "404 Network not found");
+            };
+            if entry.state == NetworkState::Closed {
+                return err(tag, status::CONFLICT_STATE, "408 Network is closed");
+            }
+            entry.state = NetworkState::Ok;
+            let mut addresses: Vec<u8> = entry.physical.keys().copied().collect();
+            addresses.sort();
+            let at_list = addresses
+                .iter()
+                .map(|address| address.to_string())
+                .collect::<Vec<_>>()
+                .join(", ");
+            (addresses, at_list)
         };
-        let Some(entry) = proj.networks.get_mut(&net) else {
-            return err(tag, status::NOT_FOUND, "404 Network not found");
-        };
-        if entry.state == NetworkState::Closed {
-            return err(tag, status::CONFLICT_STATE, "408 Network is closed");
-        }
-        entry.state = NetworkState::Ok;
         self.push_event(format!("#e# net {net} sync ok"));
-        ok(tag, vec![], "200 OK")
+        // Toolkit's NetSync class (issue #166) matches the recovered
+        // `120-Net Sync: started at`, `Unit error count: `, `Unit errors at: `
+        // and `…units at` progress fragments. The owned runs
+        // (docs/native-duplicate-discovery-acceptance.json and
+        // rust/testdata/fixtures/native_cgate_unravel_cases.json) stream them
+        // as `120-` rows and finish the reply on `200 OK.`; the model streams
+        // the same captured row shapes over its own inventory. Rows that need
+        // device identity or duplicate-MMI states (the `Serials found at
+        // address …` / `address=<a> type=…` / DUPLICATE rows) have no model
+        // channel and stay native/service-side.
+        let stamp = chrono::Utc::now()
+            .format("%a %b %e %H:%M:%S UTC %Y")
+            .to_string();
+        ok(
+            tag,
+            vec![
+                format!("120-Net Sync: started at {stamp}"),
+                format!("120-Net Sync: Unit count: {}", addresses.len()),
+                format!("120-Net Sync: Units at: {at_list}"),
+                "120-Net Sync: Unit error count: 0".to_string(),
+                "120-Net Sync: Unit errors at: ".to_string(),
+                format!("120-Net Sync: finished at {stamp}"),
+                format!("120-Net Sync: Next Sync scheduled for {stamp}"),
+            ],
+            "200 OK.",
+        )
     }
 
     fn net_state(&mut self, tag: &str, words: &[&str]) -> Response {
@@ -7741,7 +7776,15 @@ impl Server {
             );
         }
         if self.locks.contains_key(words[2]) {
-            return err(tag, status::CONFLICT_EXISTS, "409 Lock already held");
+            // The reply text is recorded: #167's PPLock class rejects with
+            // `425 Lock failed`, and the authorization probe
+            // (rust/testdata/fixtures/native_cgate_authorization_probe.json,
+            // Clipsal/Max PP LOCK) captures the same refusal text. The
+            // duplicate-lock trigger-to-reply mapping is a deliberate mock
+            // model choice (the probe's refusal is a role gate, not a
+            // duplicate-lock capture), replacing the modelled 409 row of
+            // issue #160's probe table.
+            return err(tag, 425, "425 Lock failed");
         }
         let address = self.pp_lock_address(words[3]);
         self.locks.insert(words[2].to_string(), address);
@@ -7754,7 +7797,9 @@ impl Server {
             return err(tag, status::BAD_REQUEST, "400 PP UNLOCK requires a name");
         }
         if self.locks.remove(words[2]).is_none() {
-            return err(tag, status::NOT_FOUND, "404 Lock not found");
+            // Native programming probe: an unlock without its lock answers
+            // `426 Unlock failed` (issue #167's recovered PPUnlock check).
+            return err(tag, 426, "426 Unlock failed");
         }
         ok(tag, vec![], "200 OK")
     }
@@ -7853,11 +7898,18 @@ impl Server {
                 "400 PP START requires a name and lock",
             );
         }
-        if !self.locks.contains_key(words[3]) {
-            return err(tag, status::NOT_FOUND, "404 Lock not found");
-        }
         if self.sessions.contains_key(words[2]) {
             return err(tag, status::CONFLICT_EXISTS, "409 Session already open");
+        }
+        if !self.locks.contains_key(words[3]) {
+            // Native programming probe (native_cgate_programming_authorization_probe.json,
+            // Clipsal/Max roles): a start whose lock is missing answers
+            // `408 Operation failed: Unable to create programming session`.
+            return err(
+                tag,
+                status::CONFLICT_STATE,
+                "408 Operation failed: Unable to create programming session",
+            );
         }
         self.sessions.insert(
             words[2].to_string(),
@@ -8532,7 +8584,7 @@ impl Server {
                 "400 PP RESET_TO_DEFAULTS requires a session",
             );
         }
-        let (_, mut session) = match self.pp_session(tag, words) {
+        let (_, mut session) = match self.pp_admin_session(tag, words) {
             Ok(v) => v,
             Err(r) => return r,
         };
@@ -8570,8 +8622,24 @@ impl Server {
                 "400 PP QUICKGET requires a database unit",
             );
         }
+        // Toolkit's QuickGet class rejects the recorded NP fragment
+        // `401 Element … not found` (issues #161/#167); the mock phrases its
+        // missing-unit refusals in the same canonical DB family shape the
+        // native records capture
+        // (rust/testdata/fixtures/native_cgate_cross_kind_oid_mutations.json:
+        // `401 Bad object or device ID: Element <element> not found.`).
+        let element_not_found = || {
+            err(
+                tag,
+                status::ABSENT,
+                &format!(
+                    "401 Bad object or device ID: Element {requested} not found.",
+                    requested = words[2]
+                ),
+            )
+        };
         let Some((proj_name, net, addr)) = self.unit_of(words[2]) else {
-            return err(tag, status::ABSENT, "401 Unit not found");
+            return element_not_found();
         };
         if proj_name != self.current.clone().unwrap_or_default() {
             return err(tag, status::NOT_FOUND, "404 Project not selected");
@@ -8582,7 +8650,7 @@ impl Server {
             .and_then(|p| p.networks.get(&net))
             .and_then(|n| n.units.get(&addr))
         else {
-            return err(tag, status::ABSENT, "401 Unit not found");
+            return element_not_found();
         };
         let pp_values = self.stored_unit_pp_values(&proj_name, unit);
         let wanted = words.get(3).copied().unwrap_or("*");
@@ -13502,6 +13570,18 @@ impl Server {
     }
 
     /// Native `NET SYNCNEW address [unit]`.
+    ///
+    /// The service crate (pci-backed flows) stages SYNCNEW through this model
+    /// before its own physical discovery, so this surface accepts the staged
+    /// scan (200) whenever the physical peer can still discover. The one
+    /// recorded finish this surface answers itself is the modeled-address
+    /// abort: `408 Operation failed: Unit already in model` — the same row
+    /// the service returns from its own pre-check, so a staged scan and the
+    /// mock surface classify the identical recorded row (issue #166). The
+    /// remaining recorded finishes (`Unit at given address not found`,
+    /// `No new units found`, the `New Unit Found`/`303 Duplicate Units
+    /// Found` rows) need the installation-MMI channel and stay in
+    /// `service.rs`.
     fn net_syncnew(&mut self, tag: &str, words: &[&str]) -> Response {
         if !(3..=4).contains(&words.len()) {
             return err(
@@ -13514,8 +13594,32 @@ impl Server {
             Ok(v) => v,
             Err(r) => return r,
         };
-        if words.len() == 4 && !valid_byte(words[3]) {
-            return err(tag, status::BAD_REQUEST, "400 Invalid unit address");
+        if words.len() == 4 {
+            if !valid_byte(words[3]) {
+                return err(tag, status::BAD_REQUEST, "400 Invalid unit address");
+            }
+            let address = words[3]
+                .parse::<u8>()
+                .expect("NET SYNCNEW unit byte validated");
+            let current = self.current.clone().unwrap_or_default();
+            let modeled = self.projects[&current].networks[&net]
+                .units
+                .contains_key(&address)
+                || self.projects[&current].networks[&net]
+                    .physical
+                    .contains_key(&address);
+            if modeled {
+                // Service parity: the modeled-address abort runs before any
+                // discovery and answers the recorded 408. No discovery ran,
+                // so no event is pushed here.
+                return err(
+                    tag,
+                    status::CONFLICT_STATE,
+                    "408 Operation failed: Unit already in model",
+                );
+            }
+            self.push_event(format!("#e# net {net} syncnew"));
+            return ok(tag, vec![], "200 OK");
         }
         self.push_event(format!("#e# net {net} syncnew"));
         ok(tag, vec![], "200 OK")
@@ -15267,7 +15371,30 @@ mod tests {
         assert_eq!(tgt.status, 300);
         assert!(tgt.final_text.contains("TargetInterfaceState=running"));
         assert_eq!(s.handle("[14] NET SYNC //TEST/254 fast 3").status, 200);
+        // The captured NetSync progress family (issue #166): the owned runs
+        // stream the exact fragments and finish on `200 OK.`.
+        let sync = s.handle("[14b] NET SYNC //TEST/254 fast");
+        assert_eq!(sync.status, 200);
+        let sync_rows: Vec<&String> = sync.lines.iter().collect();
+        assert!(sync_rows
+            .iter()
+            .any(|row| row.starts_with("120-Net Sync: started at ")));
+        assert!(sync_rows
+            .iter()
+            .any(|row| row.contains("Unit error count: ")));
+        assert!(sync_rows.iter().any(|row| row.contains("Unit errors at: ")));
+        assert!(sync_rows.iter().any(|row| row.contains("Units at: 20")));
+        assert_eq!(sync.final_text, "200 OK.");
+        // The service stages SYNCNEW through this model, so the staged scan
+        // stays 200; only the modeled-address abort answers the recorded
+        // `Unit already in model` row here (the remaining recorded finishes
+        // belong to the PCI-backed service surface).
         assert_eq!(s.handle("[15] NET SYNCNEW //TEST/254").status, 200);
+        assert_eq!(
+            s.handle("[15c] NET SYNCNEW //TEST/254 20").final_text,
+            "408 Operation failed: Unit already in model"
+        );
+        assert_eq!(s.handle("[15d] NET SYNCNEW //TEST/254 21").status, 200);
         let pingu = s.handle("[16] NET PINGU //TEST/254");
         assert_eq!(pingu.status, 200);
         assert!(pingu.lines.iter().any(|l| l == "302-Units=20"));
@@ -15459,7 +15586,9 @@ mod tests {
         );
         // Lock/start/session verbs.
         assert_eq!(s.handle("[6] PP LOCK L1 //TEST/254").status, 200);
-        assert_eq!(s.handle("[7] PP LOCK L1 //TEST/254").status, 409);
+        // Native probe shape: a refused programming lock replies 425
+        // (native_cgate_programming_authorization_probe.json).
+        assert_eq!(s.handle("[7] PP LOCK L1 //TEST/254").status, 425);
         assert_eq!(s.handle("[8] PP START S1 L1").status, 200);
         assert_eq!(s.handle("[9] PP START S1 L1").status, 409);
         // NEW keeps identity out of the parameter namespace (native
@@ -15514,9 +15643,14 @@ mod tests {
         assert_eq!(s.handle("[22] PP END S1").status, 200);
         assert_eq!(s.handle("[23] PP END S2").status, 200);
         assert_eq!(s.handle("[24] PP UNLOCK L1").status, 200);
-        assert_eq!(s.handle("[25] PP UNLOCK L1").status, 404);
+        // Native probe shape: unlocking an absent lock replies 426.
+        assert_eq!(s.handle("[25] PP UNLOCK L1").status, 426);
         // Starts require a held lock; saves require database destinations.
-        assert_eq!(s.handle("[26] PP START S3 L1").status, 404);
+        assert_eq!(s.handle("[26] PP START S3 L1").status, 408);
+        assert_eq!(
+            s.handle("[26b] PP START S3 L1").final_text,
+            "408 Operation failed: Unable to create programming session"
+        );
         assert_eq!(s.handle("[27] PP LOCK L2 //TEST/254").status, 200);
         assert_eq!(s.handle("[28] PP START S3 L2").status, 200);
         assert_eq!(s.handle("[29] PP NEW S3 KEY1 1.2.67").status, 200);

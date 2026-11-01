@@ -30,6 +30,25 @@ added there before they are green again against this mock.
 The mock binary is located the same way the other interop suites do it
 (``CBUS_CGATE_MOCK_BIN`` or a fresh sibling ``rust/target/debug/cgate-mock``)
 and the whole module skips cleanly when it is absent.
+
+Wave 2 (issues #166/#167/#168/#169 and #164) adds the recorded checks for
+the dispatching client classes that #160 left open:
+
+- the PP session family: ``PP GET``/``PP QUICKGET``, lock/start/end,
+  list/units, load/save, ``LOAD_FROM_FILE`` and ``RESET_TO_DEFAULTS``;
+- ``NET SYNC``'s captured ``120-Net Sync: …`` progress family, the
+  ``SYNCNEW`` recorded 408 finishes, and the unravel accepted rows;
+- ``LABEL KFISET``/``CLEAREDLT``/``CLEAR`` and the recorder's EVENT envelopes;
+- the ``TRANSFORM PROJECT --xslt-file/--output-file`` edge shapes bound to
+  ``research/fixtures/project-legacy-transform-versions-native-receipt.json``
+  (the owned native runs) and ``docs/project-legacy-transform.md``.
+
+Recorded fragments whose native shape needs a physical peer (the unravels of
+``service``) or the vendor XSLT engine stay out: they are listed in the
+report as gaps and their cases still assert every recorded fragment the
+model surface can produce. Nothing in this suite invents reply text; every
+assertion quotes the issue's recorded fragments, the committed native
+fixtures or the shipped #160 record.
 """
 from __future__ import annotations
 
@@ -489,6 +508,334 @@ class CgateMockInventoryConformance(unittest.TestCase):
         response = self.refusal("file download missing.xml")
         self.assertEqual(response.status, 408, response.final)
 
+    # -- PPGet / PPQuickGet (#167; inventory PPGetPPQuickGet) -------------------
+
+    def test_pp_get_after_sets_streams_315_rows_and_ends_on_the_315_row(self):
+        self.command("PP LOCK L1 //TEST/254")
+        self.assertEqual(self.command("PP START S1 L1").status, 200)
+        self.assertEqual(self.command("PP SET S1 UnitName Alice").status, 200)
+        self.assertEqual(self.client.command('PP SET S1 Note "Hello World"').status, 200)
+        response = self.command("PP GET S1 *")
+        self.assertEqual(response.status, 315, response.final)
+        # The recovered final-row shape: the table completes on a `315 ` row
+        # after `315-` continuation rows.
+        self.assertTrue(response.final.startswith("315 UnitName="), response.final)
+        self.assertIn("315-Note=Hello World", response.lines, response.lines)
+
+    def test_pp_get_single_value_completes_on_the_315_row(self):
+        self.command("PP LOCK L1 //TEST/254")
+        self.assertEqual(self.command("PP START S1 L1").status, 200)
+        self.assertEqual(self.command("PP SET S1 UnitName Alice").status, 200)
+        response = self.command("PP GET S1 UnitName")
+        self.assertEqual(response.status, 315, response.final)
+        self.assertEqual(list(response.lines), ["315 UnitName=Alice"], response.lines)
+
+    def test_pp_get_missing_parameter_reports_the_recorded_no_such_parameter_text(self):
+        self.command("PP LOCK L1 //TEST/254")
+        self.assertEqual(self.command("PP START S1 L1").status, 200)
+        response = self.refusal("PP GET S1 NoParameter")
+        # Toolkit's own class rejects exactly this text (issue #167). The
+        # 460 code is the OKSuccessClasses reject-family code the #160
+        # record adopts for this fragment; the PP class records the text.
+
+        self.assertEqual(response.status, 460, response.final)
+        self.assertIn("No such parameter", response.final)
+
+    def test_pp_quickget_streams_the_cached_database_row_until_the_315_row(self):
+        response = self.command("PP QUICKGET //TEST/254/p/20 UnitName")
+        self.assertEqual(response.status, 315, response.final)
+        self.assertEqual(response.final, "315 UnitName=Lounge", response.final)
+
+    def test_pp_quickget_missing_parameter_reports_the_recorded_parameter_text(self):
+        response = self.refusal("PP QUICKGET //TEST/254/p/20 Nope")
+        self.assertIn("Parameter not found", response.final)
+
+    def test_pp_quickget_missing_unit_reports_the_recorded_401_element_row(self):
+        response = self.refusal("PP QUICKGET //TEST/254/p/21 UnitName")
+        # The recorded NP reject fragment: `401 Element … not found`; the
+        # mock phrases it with the canonical "Bad object or device ID" family
+        # the DB records capture (native_cgate_cross_kind_oid_mutations.json).
+        self.assertTrue(response.final.startswith("401"), response.final)
+        self.assertIn("Element", response.final)
+        self.assertIn("not found", response.final)
+
+    def test_managed_pp_get_462_rows_are_recorded_but_not_modelled_here(self):
+        # issue #167: "Managed PPGet also accepts 462". The mock emits 462
+        # rows only as PP LOAD range advisories, which need a configured
+        # unitspec directory (manual.rs has no 462 emitter of its own), so no
+        # case is drivable in this suite and none is invented.
+        self.skipTest(
+            "462 advisory rows are PP LOAD catalogue warnings; unreachable "
+            "without a unitspec directory, so not driven (inventory note)")
+
+    # -- PP lock/start/end/cancel/list/units family (#167) ----------------------
+
+    def test_pp_lock_second_lock_reports_the_recorded_425_text(self):
+        self.assertEqual(self.command("PP LOCK L1 //TEST/254").status, 200)
+        response = self.refusal("PP LOCK L1 //TEST/254")
+        self.assertEqual(response.final, "425 Lock failed", response.final)
+
+    def test_pp_unlock_missing_lock_reports_the_recorded_426_text(self):
+        response = self.refusal("PP UNLOCK missing")
+        self.assertEqual(response.status, 426, response.final)
+        self.assertIn("Unlock failed", response.final)
+
+    def test_pp_lock_start_end_cancel_hold_the_recorded_200_rows(self):
+        self.assertEqual(self.command("PP LOCK L1 //TEST/254").status, 200)
+        self.assertEqual(self.command("PP START S1 L1").status, 200)
+        self.assertEqual(self.command("PP END S1").status, 200)
+        self.assertEqual(self.client.command("PP CANCEL_LOCK //TEST/254").status, 200)
+
+    def test_pp_list_lock_streams_the_121_rows(self):
+        # The 121 completion/row count is recorded; the `name=… address=…`
+        # row text is a mock-surface pin (no native capture records the row
+        # serialization; captures only record `122 no open locks`).
+        self.assertEqual(self.command("PP LOCK L2 //TEST/254").status, 200)
+        response = self.client.command("PP LIST_LOCK")
+        self.assertEqual(response.status, 121, response.final)
+        self.assertTrue(any("name=L2 address=//TEST/254" in row
+                            for row in response.lines), response.lines)
+
+    def test_pp_units_reports_121_rows_then_the_recorded_no_open_sessions_case(self):
+        # The 121 completion and the recorded `no open sessions` case are
+        # captured; success-row text stays a mock-surface pin.
+        self.assertEqual(self.command("PP LOCK L1 //TEST/254").status, 200)
+        self.assertEqual(self.command("PP START S1 L1").status, 200)
+        opened = self.client.command("PP UNITS")
+        self.assertEqual(opened.status, 121, opened.final)
+        self.assertTrue(any("name=S1 address=//TEST/254" in row
+                            for row in opened.lines), opened.lines)
+        self.command("PP END S1")
+        closed = self.client.command("PP UNITS")
+        self.assertEqual(closed.status, 122, closed.final)
+        self.assertIn("no open sessions", closed.final)
+
+    def test_pp_load_from_file_keeps_the_recorded_missing_session_row(self):
+        # The suite runs without a unitspec directory, so the recovered 200 OK
+        # success (issue #167: OKSuccessClasses) belongs to the unitspec
+        # suites; the record's missing-session row is drivable here.
+        response = self.refusal("PP LOAD_FROM_FILE missing missing.xml")
+        self.assertEqual(response.status, 408, response.final)
+        self.assertIn("Programming session not found", response.final)
+
+    def test_pp_load_failures_of_the_new_session_fall_in_the_recovered_rows(self):
+        # The deterministic workspace unit carries no unit type, so the
+        # database-seeded load refuses exactly like native (the "408
+        # Operation failed: …" row Toolkit's PPLoad class would classify).
+        self.command("PP LOCK L1 //TEST/254")
+        self.assertEqual(self.command("PP START S1 L1").status, 200)
+        response = self.refusal("PP LOAD S1 /db//TEST/254/p/20")
+        self.assertEqual(response.status, 408, response.final)
+
+    def test_pp_save_completes_on_the_save_family_200_rows(self):
+        self.command("PP LOCK L1 //TEST/254")
+        self.assertEqual(self.command("PP START S1 L1").status, 200)
+        self.assertEqual(self.command("PP SET S1 Note Staged").status, 200)
+        self.assertEqual(self.command("PP SAVE S1 /db//TEST/254/p/20").status, 200)
+        self.assertEqual(self.command("PP SAVE_TO_SOURCE S1").status, 200)
+
+    def test_pp_load_save_progress_fragments_stay_physical_pp_cases(self):
+        # The recorded PPLoad/PPSave fragments (`120-read a/b`,
+        # `120-saved a/b`) are the physical programming-method peer replies
+        # (issue #167, and the owned native transcripts in
+        # rust/testdata/fixtures/native_cgate_pp_method_transcripts.json
+        # bind the exact rows to physical sessions). The model's session is
+        # database/staged: it has no device read/write channel and inventing
+        # byte counts would fabricate device state, so these fragments stay
+        # on the physical surface.
+        self.skipTest(
+            "read/saved byte progress rows are physical programming-method "
+            "peer replies; the model surface never invents the counts")
+
+    def test_pp_reset_to_defaults_replies_the_recovered_rows(self):
+        self.command("PP LOCK L1 //TEST/254")
+        self.assertEqual(self.command("PP START S1 L1").status, 200)
+        # issue #167's reset flow: `pp load`, `pp reset_to_defaults`, `pp get`
+        # — the reset answer is the OKSuccessClasses 200 OK. The recorded
+        # missing-session probe row (native programming probe) is drivable
+        # before that:
+        self.assertEqual(
+            self.refusal("PP RESET_TO_DEFAULTS missing").final,
+            "408 Operation failed: Programming session not found")
+        self.assertEqual(self.command("PP RESET_TO_DEFAULTS S1").status, 200)
+
+    # -- NET SYNC (issue #166 NetSync fragments) ---------------------------------
+
+    def test_net_sync_streams_the_recorded_rows_then_the_captured_200_end(self):
+        self.assertEqual(self.command("NET OPEN //TEST/254").status, 200)
+        response = self.command("NET SYNC //TEST/254 fast")
+        self.assertEqual(response.code, 200, response.final)
+        rows = [*response.lines, response.final]
+        # The exact recorded fragments of issue #166, streamed as `120-`
+        # progress rows in the order the owned runs captured:
+        self.assertTrue(rows[0].startswith("120-Net Sync: started at "), rows)
+        self.assertTrue(any("Unit error count: " in row for row in rows), rows)
+        self.assertTrue(any("Unit errors at: " in row for row in rows), rows)
+        self.assertTrue(any("Units at: 20" in row for row in rows), rows)
+        # The owned capture (docs/native-duplicate-discovery-acceptance.json,
+        # rust/testdata/fixtures/native_cgate_unravel_cases.json) ends this
+        # family on the plain `200 OK.` row, which both Toolkit's class and
+        # the shared parser accept. (The client's `lines` include the final
+        # row, so the progress rows are `lines[:-1]`.)
+        self.assertEqual(response.final, "200 OK.", response.final)
+        self.assertTrue(
+            all(row.startswith("120-") for row in response.lines[:-1]),
+            response.lines,
+        )
+
+    def test_net_sync_rety_fragment_rows_are_stable_across_retries(self):
+        self.assertEqual(self.command("NET OPEN //TEST/254").status, 200)
+        for retries in (None, "2"):
+            with self.subTest(retries=retries):
+                command = "NET SYNC //TEST/254" + (f" {retries}" if retries else "")
+                response = self.command(command)
+                self.assertEqual(response.code, 200, response.final)
+                self.assertTrue(any("Unit error count: " in row
+                                    for row in response.lines), response.lines)
+
+    def test_net_sync_duplicate_marker_rows_stay_pci_peer_cases(self):
+        # issue #166 also records a DUPLICATE marker for NET SYNC. No owned
+        # capture pins a mocked row shape for it (the duplicate-aware runs
+        # report it via the checkunit rows and the syncnew 303 family), and
+        # the model surface cannot express two units at one address.
+        self.skipTest(
+            "net sync DUPLICATE rows need a duplicate physical inventory; not modelled")
+
+    # -- NET SYNCNEW (issue #166 NetSyncNew fragments) ----------------------------
+
+    def test_net_syncnew_selected_unit_in_the_model_answers_in_the_model_record(self):
+        # The one recorded SYNCNEW finish this model surface answers itself:
+        # a modeled address is claimed before any discovery, exactly as the
+        # service crate's own pre-check returns it (issue #166).
+        response = self.refusal("NET SYNCNEW //TEST/254 20")
+        self.assertEqual(response.status, 408, response.final)
+        self.assertEqual(response.final, "408 Operation failed: Unit already in model",
+                         response.final)
+
+    def test_net_syncnew_staged_discovery_finishes_stay_service_cases(self):
+        # `Unit at given address not found`, `No new units found`, the `New
+        # Unit Found` and `303 Duplicate Units Found` rows are reached after
+        # the installation-MMI scan (and cmqttd's peer tests assert their
+        # exact rows there). The service crate stages SYNCNEW through this
+        # model before its own discovery, so this surface keeps the 200
+        # staged acceptance and cannot answer those rows without hanging the
+        # shared flow.
+        self.skipTest(
+            "recorded finishes need the install-MMI scan; service.rs owns them")
+
+    # -- NET UNRAVEL (issue #166 NetUnravel checks) -------------------------------
+
+    def test_net_unravel_completes_on_the_accepted_200_ok_row(self):
+        for command in ("NET UNRAVEL //TEST/254",
+                        "NET UNRAVEL //TEST/254 20",
+                        "NET UNRAVEL //TEST/254 MATCHDB"):
+            with self.subTest(command=command):
+                self.assertEqual(self.command(command).status, 200)
+
+    def test_net_unravelunit_completes_on_the_captured_200_ok_row(self):
+        # rust/testdata/fixtures/native_cgate_unravel_cases.json pins every
+        # native UNRAVELUNIT capture at "200 OK."; the model answer stays
+        # inside that captured completion.
+        response = self.command("NET UNRAVELUNIT //TEST/254 20")
+        self.assertEqual(response.status, 200, response.final)
+
+    def test_unravel_progress_and_error_rows_are_pci_peer_cases(self):
+        self.skipTest(
+            "120-Unravel rows and the recorded MMI-budget/refusal rows use the "
+            "UnravelBusFixture peer; the model surface has no MMI scan")
+
+    # -- LABEL KFISET / CLEAREDLT / CLEAR (issues #168, #169) ---------------------
+
+    def test_label_kfiset_replies_the_200_ok_success_class(self):
+        self.assertEqual(self.command("LABEL KFISET //TEST/254 8").status, 200)
+
+    def test_label_clear_reports_the_recorded_200_ok_row(self):
+        self.assertEqual(self.command("LABEL CLEAR //TEST/254/56 20").status, 200)
+
+    def test_label_clearedlt_reports_the_200_ok_row(self):
+        response = self.command("LABEL CLEAREDLT //TEST/254/p/20")
+        self.assertEqual(response.status, 200, response.final)
+        self.assertEqual(response.final, "200 OK.", response.final)
+
+    def test_event_numeric_codes_are_not_recorded_so_not_asserted(self):
+        self.skipTest(
+            "issue #168 records no numeric EVENT send; c0/c1/s0/s1 and e+/e0..e9 "
+            "are the recorded surface and stay pinned by the existing cases")
+
+    # -- TRANSFORM PROJECT --xslt-file/--output-file edges (#164) -----------------
+
+    def _stage_stylesheet(self):
+        """Stage a server-side stylesheet name in the mock's virtual FILE root.
+
+        The recorded native run resolved its stylesheet from the server
+        working directory (`transform/v22tov23.xslt`); the mock binds server
+        side paths to its process-local virtual FILE namespace, which the
+        suite stages with FILE MKDIR/UPLOAD exactly like the recorded
+        harness staged the vendor file.
+        """
+        self.assertEqual(self.command("FILE MKDIR transform").status, 200)
+        upload = self.client.command_document(
+            "FILE UPLOAD transform/v22tov23.xslt",
+            "dGVzdC1zdHlsaXNoZWV0LWV2aWRlbmNl")
+        self.assertEqual(upload.status, 200, upload.final)
+
+    def _stage_output(self):
+        """Stage the pre-existing server-side output file the record requires."""
+        self.assertEqual(self.command("FILE MKDIR output").status, 200)
+        upload = self.client.command_document(
+            "FILE UPLOAD output/VOUT.xml", "b3duZWQtb3V0cHV0LXNlbnRpbmVs")
+        self.assertEqual(upload.status, 200, upload.final)
+
+    def test_transform_explicit_stylesheet_test_plan_replies_the_recorded_rows(self):
+        # project-legacy-transform-versions-native-receipt.json
+        # `custom_stylesheet_output.preview`: the exact 199 rows and `200 OK.`
+        self._stage_stylesheet()
+        response = self.command(
+            "TRANSFORM PROJECT --test TEST transform/v22tov23.xslt")
+        self.assertEqual(list(response.lines[:-1]),
+                         ["199-Calculated transform list:",
+                          "199-Transform with XSLT file: transform/v22tov23.xslt"],
+                         response.lines)
+        self.assertEqual(response.final, "200 OK.", response.final)
+
+    def test_transform_explicit_stylesheet_save_records_the_accepted_run(self):
+        # The recorded shape is exactly one 200 row for a pre-existing
+        # output file; the mock's virtual namespace has no file engine, so
+        # the output bytes stay unmutated here and only the reply shape is
+        # pinned (the byte-overwrite lives in the native/service engine).
+        self._stage_stylesheet()
+        self._stage_output()
+        response = self.command(
+            "TRANSFORM PROJECT TEST transform/v22tov23.xslt output/VOUT.xml")
+        self.assertEqual(list(response.lines[:-1]), [], response.lines)
+        self.assertEqual(response.final, "200 OK.", response.final)
+        # The recorded run created no source backup and left the source; the
+        # mock's virtual namespace still names the original output file, and
+        # no `.0` side artifact appeared.
+        self.assertFalse(
+            [row for row in self.client.command("file dir output").lines
+             if re.search(r'name="VOUT\.xml\.0"', row)],
+            self.client.command("file dir output").lines)
+
+    def test_transform_missing_stylesheet_reports_the_recorded_408_fragment(self):
+        response = self.refusal("TRANSFORM PROJECT TEST no-such.xslt")
+        self.assertTrue(response.final.startswith("408"), response.final)
+        self.assertIn("xslt file not found", response.final)
+
+    def test_transform_missing_output_reports_the_recorded_no_write_permission_row(self):
+        self._stage_stylesheet()
+        response = self.refusal(
+            "TRANSFORM PROJECT TEST transform/v22tov23.xslt output/ABSENT.xml")
+        self.assertTrue(response.final.startswith("408"), response.final)
+        self.assertIn("No write permission for output file", response.final)
+
+    def test_transform_extra_tokens_keep_the_400_syntax_family_row(self):
+        self._stage_stylesheet()
+        response = self.refusal(
+            "TRANSFORM PROJECT TEST transform/v22tov23.xslt output/VOUT.xml extra")
+        self.assertTrue(response.final.startswith("400"), response.final)
+        self.assertIn("Syntax Error", response.final)
+
     # -- LOGIN quirk (documented; no behavior change asserted) ------------------
 
     def test_native_login_quirk_is_commented_not_reverted(self):
@@ -505,7 +852,9 @@ DRIVEN_CLASSES = (
     "ConfigGet", "ConfigGetSetOB", "PortProbe", "KFIGet", "Download",
     "FileDir", "PortCNIScan", "Shutdown", "ShutdownConfirm",
     "DBRenameNet", "PPGetUnitSpecCatalog", "TreeXML", "APIver",
-    "TransformReplyFamily", "PortList",
+    "TransformReplyFamily", "PortList", "PPGetPPQuickGet", "PPUnlock",
+    "PPUnits", "PPLoadPPSave", "PPListLock", "NetSync", "NetSyncNew",
+    "NetUnravel", "NetClock", "NetTextFamily", "OKSuccessClasses",
 )
 
 # Classes with a recorded `command_text` outside #160's tables. TcgcIdentify's

@@ -5020,12 +5020,106 @@ impl Server {
             let Some(project) = args.first() else {
                 return Some(err(tag, status::BAD_REQUEST, "400 Syntax Error."));
             };
+            // Recorded native syntax (native help receipt):
+            // `TRANSFORM PROJECT [--test] <project-name> [<xslt-file-name>
+            // [<output-project-name>]]`; more tokens leave the recorded form.
+            if args.len() > 3 {
+                return Some(err(tag, status::BAD_REQUEST, "400 Syntax Error."));
+            }
             if !self.projects.contains_key(*project) {
                 return Some(err(
                     tag,
                     status::CONFLICT_STATE,
                     &format!("408 Operation failed: Src filename does not exist: {project}.xml"),
                 ));
+            }
+            if let Some(stylesheet) = args.get(1) {
+                // Recovered stylesheet/output edges
+                // (toolkit-cli/docs/project-legacy-transform.md and
+                // toolkit-cli/research/fixtures/project-legacy-transform-versions-native-receipt.json
+                // `custom_stylesheet_output`): the stylesheet resolves on the
+                // C-Gate server working directory and a bare new output name
+                // is refused. The mock binds server-side paths to its
+                // process-local virtual FILE namespace, so resolution is
+                // `crate::file::read_bytes`. The byte-true XSLT transformation
+                // itself stays native and service-side
+                // (service/transform.rs drives the transformation engine for
+                // the durable service; the vendor transform/ XSLTs stay
+                // off-repo), and the default `--test` server backup that the
+                // legacy-transform receipts record (the source `.xml.0`
+                // file-mutating preview) is likewise not file-modelled here:
+                // no project XML bytes exist in this model.
+                if let Err(error) = crate::file::read_bytes(self, stylesheet) {
+                    let detail = if error.contains("Illegal path element") {
+                        error
+                    } else {
+                        // The recorded native fragment for an unresolvable
+                        // stylesheet name (`xslt file not found`) inside the
+                        // observed `Transform failed:` family.
+                        "xslt file not found".to_string()
+                    };
+                    return Some(err(
+                        tag,
+                        status::CONFLICT_STATE,
+                        &format!("408 Operation failed: Transform failed: {detail}"),
+                    ));
+                }
+                if let Some(output) = args.get(2) {
+                    // The output file must already exist and may be
+                    // overwritten (the recorded run accepted an existing
+                    // server output file and refused a bare new name with
+                    // `No write permission for output file`).
+                    if let Err(error) = crate::file::read_bytes(self, output) {
+                        let detail = if error.contains("Illegal path element") {
+                            error
+                        } else {
+                            "No write permission for output file".to_string()
+                        };
+                        return Some(err(
+                            tag,
+                            status::CONFLICT_STATE,
+                            &format!("408 Operation failed: Transform failed: {detail}"),
+                        ));
+                    }
+                    // The recorded --test plan leaves the source and the
+                    // output untouched and creates no backup; the save run
+                    // overwrites the output with transformed bytes. Byte
+                    // generation is the native/service XSLT engine's job, so
+                    // this model only records the accepted run (no file bytes
+                    // are written or invented here).
+                    if test_only {
+                        return Some(Response {
+                            tag: tag.to_string(),
+                            lines: vec![
+                                "199-Calculated transform list:".to_string(),
+                                format!("199-Transform with XSLT file: {stylesheet}"),
+                            ],
+                            final_text: "200 OK.".to_string(),
+                            status: 200,
+                        });
+                    }
+                    self.application_state.insert(
+                        format!("TRANSFORM PROJECT {project}"),
+                        format!("xslt={stylesheet} output={output}"),
+                    );
+                    return Some(ok(tag, vec![], "200 OK."));
+                }
+                if test_only {
+                    return Some(Response {
+                        tag: tag.to_string(),
+                        lines: vec![
+                            "199-Calculated transform list:".to_string(),
+                            format!("199-Transform with XSLT file: {stylesheet}"),
+                        ],
+                        final_text: "200 OK.".to_string(),
+                        status: 200,
+                    });
+                }
+                self.application_state.insert(
+                    format!("TRANSFORM PROJECT {project}"),
+                    format!("xslt={stylesheet} in_place=true"),
+                );
+                return Some(ok(tag, vec![], "200 OK."));
             }
             return Some(Response {
                 tag: tag.to_string(),
