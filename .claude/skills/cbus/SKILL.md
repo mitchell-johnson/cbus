@@ -68,26 +68,28 @@ STORE. `checksum` protection does not.
 
 | Group | Label | Output | Key input |
 |---|---|---|---|
-| 5 | outside wall light rear | Relay 1 (unit 0) ch 6 | unit 31 key 2 |
-| 6 | outside wall light side (**physically the rear lights**; label is wrong) | Relay 1 ch 7 | unit 31 key 3 (bottom) |
-| 7 | prov 1 = **Patio** in HomeKit | Relay 1 ch 8 | unit 31 key 3 (block 3, added 2026-11-01) |
+| 5 | outside wall light rear | Relay 1 (unit 0) ch 6 | unit 31 key 3 (bottom), since 2026-11-01 |
+| 6 | outside wall light side | Relay 1 ch 7 | unit 31 key 2 (middle), since 2026-11-01 |
+| 7 | prov 1 = **Patio** in HomeKit | Relay 1 ch 8 | unit 31 key 3 (block 3), since 2026-11-01 |
 | 8-11 | prov 2-5 | Relay 1 ch 9-12 | none |
 
 Change log (live unit edits, so the next person can undo them):
 
-- 2026-11-01, unit 31: GroupAddress[3] (0x53) ff -> 07, and BlockAllocation[2]
-  (0x38) 04 -> 0c, so the bottom key (the user's "rear lights", group 6) also
-  switches the patio. To undo, write `4304` to 0x38 and `41ff` to 0x53.
-  (Key 2 was patched first by mistake and restored to 02.)
+- 2026-11-01, unit 31 (final state): GroupAddress 0x50 = `21 06 05 07 ff..`
+  (was `21 05 06 ff ..`), BlockAllocation 0x36 = `01 02 0c 08 ..` (was
+  `01 02 04 08 ..`). Middle key = side (6); bottom key = rear (5) + patio (7).
+  To restore the original, write `4405` to 0x51, `4506` to 0x52, `4304` to
+  0x38 and `41ff` to 0x53.
 
 ## Key units (KEYE1/2/3, 5031NMML, fw 2.5.00, spec `KEYE.xml`)
 
 Downstairs 3-gangs: unit 23 Lounge (24, 33, 27), 25 Bottom of Stairs
-(38, 27, 25), 31 Dining (Ranch Slider) (33, 5, 6). Values are GroupAddress
-blocks 0..2. Keys are numbered top to bottom (key 3 = bottom). C-Bus labels
-can be wrong: group 6 "side" is what the user calls the rear lights. Before
-writing, confirm a key by having the user press it while watching MQTT
-(`cbus_source_addr` shows the unit), rather than trusting labels.
+(38, 27, 25), 31 Dining (Ranch Slider) (33, 6, 5+7 since 2026-11-01). Values are GroupAddress
+blocks 0..2. Keys are numbered top to bottom (key 3 = bottom). The group labels
+for 5 (rear) and 6 (side) are correct. The user's own description of which
+button does what was wrong at first, so before writing, have them press the key
+while you watch MQTT (`cbus_source_addr` shows the unit) and confirm which
+physical lights respond.
 
 Memory layout (confirmed against vendor `KEYE.xml`):
 
