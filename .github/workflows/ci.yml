@@ -176,6 +176,7 @@ jobs:
           --trace "${RUNNER_TEMP}/cgate-interop-trace.json"
           --output "${RUNNER_TEMP}/cgate-interop-results.json"
           --require-module tests/test_rust_cgate_interop.py
+          --require-module tests/test_cgate_mock_inventory_conformance.py
           --require-module tests/test_cgate_named_database_interop.py
           --require-module tests/test_cgate_barcode_database_interop.py
           --require-module tests/test_cgate_neopro_csv_interop.py

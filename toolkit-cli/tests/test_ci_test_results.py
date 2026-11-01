@@ -499,9 +499,11 @@ class NewInteropSelectionTests(unittest.TestCase):
         )
         public_modules = ('tests/test_thermostat_remote_references_backends.py', 'tests/test_thermostat_remote_levels_backends.py', 'tests/test_thermostat_output_groups_backends.py', 'tests/test_thermostat_output_add_backends.py', 'tests/test_thermostat_output_edit_backends.py', 'tests/test_thermostat_output_default_unicode_backends.py', 'tests/test_thermostat_damper_controls_backends.py')
         complete_ids = re.findall(r"'(tests/[^']+::[^']+)'", make)
-        # New owner-temperature registrations do not alter inherited identities.
+        # New owner-temperature and mock-inventory conformance registrations
+        # do not alter inherited identities.
         complete_ids = [row for row in complete_ids
-                        if not row.startswith(('tests/test_thermostat_temperature_owner_backends.py::',
+                        if not row.startswith(('tests/test_cgate_mock_inventory_conformance.py::',
+                                               'tests/test_thermostat_temperature_owner_backends.py::',
                                                'tests/test_cgl_application_order_backends.py::',
                                                'tests/test_application_copy_safe_backends.py::',
                                                'tests/test_application_safe_set_backends.py::',
@@ -768,7 +770,7 @@ class NewInteropSelectionTests(unittest.TestCase):
         self.assertEqual(len(set(total)), 5)
         self.assertEqual(hashlib.sha256(('\n'.join(sorted(total)) + '\n').encode()).hexdigest(), 'b14d154114f2583ead0aa02d1f8941dd2e2ea164525597d4cc2d20e17559451d')
         inherited = [n for n in re.findall(r"'(tests/[^']+::[^']+)'", make)
-                     if not n.startswith((module + '::', 'tests/test_conversion_xml_preservation_backends.py::', 'tests/test_thermostat_zone_controls_backends.py::', 'tests/test_conversion_xml_restart_backends.py::'))]
+                     if not n.startswith((module + '::', 'tests/test_cgate_mock_inventory_conformance.py::', 'tests/test_conversion_xml_preservation_backends.py::', 'tests/test_thermostat_zone_controls_backends.py::', 'tests/test_conversion_xml_restart_backends.py::'))]
         self.assertEqual(len(inherited), 1056)
         self.assertEqual(len(inherited), len(set(inherited)))
         self.assertEqual(hashlib.sha256(('\n'.join(sorted(inherited)) + '\n').encode()).hexdigest(), '3a5b0584311acab115319254599a580f254062391c7b42108fcb93b15ea81a05')
@@ -802,7 +804,8 @@ class NewInteropSelectionTests(unittest.TestCase):
             'tests/test_thermostat_temperature_owner_backends.py::test_public_temperature_owner_refuses_before_backup[unsigned-overflow-pc_tsb5-{backend}]',
         )
         complete = [row for row in re.findall(r"'(tests/[^']+::[^']+)'", make)
-                    if not row.startswith(('tests/test_cgl_application_order_backends.py::',
+                    if not row.startswith(('tests/test_cgate_mock_inventory_conformance.py::',
+                                           'tests/test_cgl_application_order_backends.py::',
                                            'tests/test_application_copy_safe_backends.py::',
                                            'tests/test_application_safe_set_backends.py::',
                                            'tests/test_ordinary_level_value_backends.py::',
@@ -1089,6 +1092,38 @@ class NewInteropSelectionTests(unittest.TestCase):
                             actual.add(module + '::' + cls.name + '::' + method.name)
         self.assertEqual(len(expected), 27)
         self.assertEqual(actual, set(expected))
+
+    def test_mock_inventory_conformance_roster_and_audit_row(self):
+        """The #160 conformance driver runs in the mock lane and is audited."""
+        root = Path(__file__).resolve().parents[2]
+        make = (root / "toolkit-cli/Makefile").read_text()
+        workflow = (root / ".github/workflows/ci.yml").read_text()
+        module = "tests/test_cgate_mock_inventory_conformance.py"
+        self.assertTrue((root / "toolkit-cli" / module).is_file())
+        body = make.split("check-cgate-interop: compile\n", 1)[1].split("\n\n", 1)[0]
+        # The contract of the target: one CBUS_CGATE_MOCK_BIN export covers
+        # the single pytest invocation, so the module runs there completely.
+        # Its roster stays QUOTED per-case: the retained installed-wheel
+        # acceptance pins exactly seven whole modules, so a new whole-module
+        # entry would silently change that receipt's accounting. SCM-style
+        # ids also keep every single-node pin digest untouched.
+        self.assertNotIn("\t\t" + module + " \\\\\n", body)
+        plain_paths = re.findall(r"(?m)^\t\t(tests/test_[A-Za-z0-9_]+\.py) \\$", body)
+        self.assertEqual(plain_paths, ["tests/test_rust_cgate_interop.py"])
+        quoted_ids = re.findall(r"'(tests/test_cgate_mock_inventory_conformance\.py::[^']+)'", body)
+        self.assertGreaterEqual(len(quoted_ids), 60)
+        self.assertEqual(len(quoted_ids), len(set(quoted_ids)))
+        self.assertIn('\tCBUS_CGATE_MOCK_BIN="$(CGATE_MOCK_BIN)" $(PY) -m pytest \\\n',
+                      body)
+        section = workflow.split("--selection cgate-mock\n", 1)[1].split(
+            "\n      - name:", 1)[0]
+        self.assertEqual(section.count("--require-module " + module + "\n"), 1)
+        # The module skips cleanly without a fresh mock binary, so it may run
+        # in the offline lane, but no other audit selection may require it.
+        for selection in ("offline", "installed-wheel", "cmqttd"):
+            other = workflow.split("--selection " + selection + "\n", 1)[1].split(
+                "\n      - name:", 1)[0]
+            self.assertEqual(other.count("--require-module " + module + "\n"), 0)
 
 
 class CITestResultsTests(unittest.TestCase):
