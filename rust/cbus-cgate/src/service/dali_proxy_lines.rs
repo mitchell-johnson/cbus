@@ -39,6 +39,26 @@ const OBJECT_FIELDS: [&str; 14] = [
     "tertiaryGroupAddress",
 ];
 
+/// Per-leaf source byte offsets inside one 32-byte ObjectProperties slot,
+/// mirroring `compile_object`. Native never writes byte 7 or bytes 10..31,
+/// and several admitted fields overlap native byte 4/5/6.
+const ADMITTED_OBJECT_FIELDS: [(&str, &[usize]); 14] = [
+    ("groupAddress", &[0]),
+    ("warnBeforeOffLevel", &[1]),
+    ("logicAssignmentBitmask16", &[2, 3]),
+    ("applicationIndex", &[4]),
+    ("disableDaliToCbus", &[4]),
+    ("minLogic", &[4]),
+    ("warnBeforeOffTime", &[4]),
+    ("colourZone", &[5]),
+    ("colourType", &[5]),
+    ("fadeInstantOff", &[5, 6]),
+    ("fadeInstantMax", &[6]),
+    ("fadeInstantLvl", &[6]),
+    ("secondaryGroupAddress", &[8]),
+    ("tertiaryGroupAddress", &[9]),
+];
+
 fn bytes(values: &[Option<u8>], address: u32, count: usize) -> Option<Vec<u8>> {
     let start = usize::try_from(address.checked_sub(256)?).ok()?;
     values
@@ -484,10 +504,108 @@ pub(super) fn compile(
     Ok(output)
 }
 
+/// Identity and source byte ownership of every admitted line leaf, in the
+/// per-line family order of the CLI's evidence-bound line admission table
+/// (same set: the leaf shapes the executed original-runtime receipt
+/// `all_line_families` in
+/// `toolkit-cli/research/fixtures/dali-ext-proxy-original-vectors.json`
+/// covers and whose dirty write the native exclusions leave effective; both
+/// lines 0/A and 1/B; 16 virtual groups, three masks, 97 ObjectProperties
+/// slots, the inverse address map, four scalars and 17 scene-trigger slots). Byte ownership is the serializer's
+/// source mapping for the leaf value, including overlapping byte-4/5/6
+/// ObjectProperties flags and excluding family-reserved bytes (object byte 7
+/// and bytes 10..31, and each sceneTriggerMap slot's reserved byte 19).
+/// Scan-type leaves own their 8 map bytes; the inverse map owns the 64
+/// shared map bytes. The four `REFUSED_LINE_FAMILIES` are omitted.
+pub(super) fn admitted_leaves() -> Vec<(String, Vec<u32>)> {
+    fn push(leaves: &mut Vec<(String, Vec<u32>)>, line: u32, suffix: String, addresses: Vec<u32>) {
+        leaves.push((
+            format!("/cdg/extParams/proxy/line/{line}/{suffix}"),
+            addresses,
+        ));
+    }
+    let mut leaves = Vec::new();
+    for line in 0u32..2 {
+        for slot in 0..16 {
+            let base = 7168 + line * 128 + slot * 8;
+            push(
+                &mut leaves,
+                line,
+                format!("virtualGroups/{slot}/members"),
+                (0..8).map(|offset| base + offset).collect(),
+            );
+        }
+        for (family, base) in [
+            ("usedDevices", 8800),
+            ("remoteOnMask", 560),
+            ("remoteOffMask", 576),
+        ] {
+            push(
+                &mut leaves,
+                line,
+                format!("{family}/members"),
+                (0..8).map(|offset| base + line * 8 + offset).collect(),
+            );
+        }
+        for slot in 0u32..97 {
+            let base = 768 + line * 3104 + slot * 32;
+            for &(field, offsets) in ADMITTED_OBJECT_FIELDS.iter() {
+                push(
+                    &mut leaves,
+                    line,
+                    format!("objectProperties/{slot}/{field}"),
+                    offsets.iter().map(|&offset| base + offset as u32).collect(),
+                );
+            }
+        }
+        push(
+            &mut leaves,
+            line,
+            "shortAddressToOid/map".to_string(),
+            (0..64).map(|offset| 7040 + line * 64 + offset).collect(),
+        );
+        for (field, address) in [
+            ("missingDeviceThreshold/threshold", 519),
+            ("wboEnableGroup/group", 516),
+            ("wboEnableGroupRestoreLevel/level", 554),
+            ("statusUpdatingInterval/interval", 614),
+        ] {
+            push(&mut leaves, line, field.to_string(), vec![address + line]);
+        }
+        for slot in 0u32..17 {
+            let base = 7936 + line * 340 + slot * 20;
+            push(
+                &mut leaves,
+                line,
+                format!("sceneTriggerMap/{slot}/triggerGroup"),
+                vec![base + 2],
+            );
+            push(
+                &mut leaves,
+                line,
+                format!("sceneTriggerMap/{slot}/actionSelector"),
+                (0..2).chain(3..19).map(|offset| base + offset).collect(),
+            );
+        }
+    }
+    leaves
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use std::collections::BTreeMap;
+
+    /// Line families that are serialized for recall but never admitted as
+    /// edit targets: native writes over them with another family (the
+    /// forward map), or their dirty bytes are statically or conditionally
+    /// excluded. The leaf-owner enumeration must omit them.
+    const REFUSED_LINE_FAMILIES: [&str; 4] = [
+        "lampRunningTime",
+        "oidToShortAddress",
+        "statusCorrectionMask",
+        "statusCorrectionInterval",
+    ];
 
     #[test]
     fn native_line_layout_and_reserved_bits_are_independent_literals() {
@@ -626,6 +744,165 @@ mod tests {
                     case["target_bytes"][address.to_string()],
                     byte,
                     "{name}: original target address {address}"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn refused_line_families_are_layout_families_the_advertisement_omits() {
+        for family in REFUSED_LINE_FAMILIES {
+            assert!(
+                FAMILIES.contains(&family),
+                "{family} is a native layout family"
+            );
+        }
+        for (path, _) in admitted_leaves() {
+            let family = path.split('/').nth(6).expect("line proxy path family");
+            assert!(
+                !REFUSED_LINE_FAMILIES.contains(&family),
+                "{path} must not be advertised"
+            );
+        }
+    }
+
+    #[test]
+    fn admitted_leaf_rows_match_the_line_family_layout_shapes() {
+        let leaves = admitted_leaves();
+        assert_eq!(leaves.len(), 2832, "1416 rows per line");
+        let mut families = BTreeSet::new();
+        let mut counts: BTreeMap<&str, usize> = BTreeMap::new();
+        for (path, _) in &leaves {
+            let parts: Vec<_> = path.split('/').collect();
+            assert_eq!(
+                parts[1..5].join("/"),
+                "cdg/extParams/proxy/line",
+                "{path} is a line proxy leaf path"
+            );
+            assert!(parts[5] == "0" || parts[5] == "1", "{path}");
+            let family = parts[6];
+            families.insert(family.to_string());
+            *counts.entry(family).or_default() += 1;
+        }
+        let expected_families: BTreeSet<&str> = FAMILIES
+            .iter()
+            .copied()
+            .filter(|name| !REFUSED_LINE_FAMILIES.contains(name))
+            .collect();
+        assert_eq!(
+            families.iter().map(String::as_str).collect::<BTreeSet<_>>(),
+            expected_families,
+            "every non-refused layout family is advertised"
+        );
+        // 16 mask slots, three 8-byte masks, 97 slots times 14 fields, the
+        // inverse map, four scalars and 17 scene-trigger slot pairs per line.
+        for (family, total) in [
+            ("virtualGroups", 32),
+            ("usedDevices", 2),
+            ("remoteOnMask", 2),
+            ("remoteOffMask", 2),
+            ("objectProperties", 2716),
+            ("shortAddressToOid", 2),
+            ("missingDeviceThreshold", 2),
+            ("wboEnableGroup", 2),
+            ("wboEnableGroupRestoreLevel", 2),
+            ("statusUpdatingInterval", 2),
+            ("sceneTriggerMap", 68),
+        ] {
+            assert_eq!(counts[family], total, "{family} row count");
+        }
+    }
+
+    #[test]
+    fn every_admitted_leaf_lies_inside_the_executed_original_receipt() {
+        let receipt: Value = serde_json::from_str(include_str!(
+            "../../../../toolkit-cli/research/fixtures/dali-ext-proxy-original-vectors.json"
+        ))
+        .unwrap();
+        let global = |address: u32| {
+            matches!(
+                address,
+                256..=257 | 512..=515 | 518 | 521..=553 | 556 | 558..=559 |
+                608..=610 | 616..=645 | 656..=665
+            )
+        };
+        let refused = |address: u32| {
+            (592..608).contains(&address)
+                || (612..614).contains(&address)
+                || (7424..7936).contains(&address)
+                // Each sceneTriggerMap slot's reserved byte 19 is written by
+                // the whole-family serializer but is not any leaf's source
+                // byte: the CLI keeps it family-owned, never leaf-owned.
+                || (7936..8616).contains(&address) && (address - 7936) % 340 % 20 == 19
+        };
+        // Per line 0 and 1, the admitted leaves own exactly the executed
+        // line-family bytes whose dirty writes are not statically excluded or
+        // overwritten; shared map bytes belong to the admitted inverse rows.
+        let owned: BTreeSet<u32> = admitted_leaves()
+            .into_iter()
+            .flat_map(|(_, addresses)| addresses)
+            .collect();
+        assert_eq!(owned.len(), 2832, "distinct owned bytes across both lines");
+        for (name, case) in receipt["cases"].as_object().unwrap() {
+            let mut values =
+                vec![Some(case["input"]["default_current_byte"].as_u64().unwrap() as u8); 11120];
+            for (address, value) in case["input"]["current_overrides"].as_object().unwrap() {
+                values[address.parse::<usize>().unwrap() - 256] =
+                    Some(value.as_u64().unwrap() as u8);
+            }
+            let proxy = json!({"cdg": {"extParams": {"proxy": {"line": decode(&values)}}}});
+            for (path, _) in admitted_leaves() {
+                assert!(
+                    proxy.pointer(&path).is_some(),
+                    "{name}: {path} decodes inside the receipt model"
+                );
+            }
+            let version = case["global_model_staged"]["configVersion"]
+                .as_object()
+                .unwrap();
+            let major = version["major"].as_u64().unwrap();
+            let minor = version["minor"].as_u64().unwrap();
+            // Pre-1.5 models serialize without the ObjectProperties fade byte;
+            // its leaf rows also own byte 6 because the fade fields are
+            // refused rather than re-shape-trimmed for such staged versions
+            // (the CLI checks this the same way).
+            let modersion = major > 1 || major == 1 && minor > 5;
+            let unserialized_fade_byte = |address: u32| {
+                !modersion
+                    && (768..6976).contains(&address)
+                    && (address - if address < 3872 { 768 } else { 3872 }) % 32 == 6
+            };
+            let compiled: BTreeMap<_, _> = compile(
+                &values,
+                &case["line_model_staged"],
+                Some((major as u8, minor as u8)),
+            )
+            .unwrap()
+            .into_iter()
+            .collect();
+            let expected: BTreeSet<u32> = compiled
+                .keys()
+                .copied()
+                .filter(|address| {
+                    !global(*address) && !refused(*address) && !unserialized_fade_byte(*address)
+                })
+                .collect();
+            // The rows keep owning the fade byte because the fade leaves are
+            // refused outright for pre-1.5 staging (checked by the CLI the
+            // same way); the executed old-version cases serialize without it.
+            let comparable_owned = owned
+                .iter()
+                .copied()
+                .filter(|address| !unserialized_fade_byte(*address))
+                .collect::<BTreeSet<_>>();
+            assert_eq!(
+                comparable_owned, expected,
+                "{name}: admitted leaf ownership equals the executed effective line bytes"
+            );
+            if modersion {
+                assert!(
+                    owned.contains(&774) && owned.contains(&3878),
+                    "{name}: modern fade byte still owned"
                 );
             }
         }

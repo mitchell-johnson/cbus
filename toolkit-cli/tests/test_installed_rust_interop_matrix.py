@@ -20,9 +20,12 @@ check-cmqtt-interop: compile
 \tpython -m pytest 'tests/test_matrix_fixture.py::test_daemon' tests/test_cmqtt_programming_methods_interop.py -q
 
 """
-COUNTS = {"mock": 552, "daemon": 571}
+# The mock lane gains the #160 conformance driver's 76 quoted case ids
+# (tests/test_cgate_mock_inventory_conformance.py); whole modules stay as
+# accepted, so only the lane's required-id count and digest move.
+COUNTS = {"mock": 628, "daemon": 571}
 DIGESTS = {
-    "mock": "9d7f4c2e130560e0348fe511ca4eb4a45ae306519c00421e73fe3091616f61bc",
+    "mock": "efe7304233a831a153367a24f87876f25ec6333a8b2e5a055b0cc3c62219122d",
     "daemon": "996292d47b0991c6416e678a501a05b5b09a91144c65b487c3f1d8e814137d08",
 }
 
@@ -128,7 +131,7 @@ def test_current_backend_rosters_have_literal_full_digests_and_core_modules(gate
         assert chosen[backend] == configured[backend]
     assert len(configured["mock"]["whole_modules"]) == 1
     assert len(configured["daemon"]["whole_modules"]) == 6
-    assert sum(len(plan["required_ids"]) for plan in configured.values()) == 1123
+    assert sum(len(plan["required_ids"]) for plan in configured.values()) == 1199
     assert sum(len(plan["required_ids"]) - len(plan["quoted_ids"]) for plan in configured.values()) == 6
 
 

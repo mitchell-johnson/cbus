@@ -290,7 +290,14 @@ written typed ECG fields back. Extended writes do confirm each chunk by
 gateway RECALL; that confirmation does not establish downstream persistence.
 
 `CMQTT CAPABILITIES` includes `dali_session_extended_proxy`, with the exact
-133 writable global leaf paths, bounds and native ownership. Unknown recalled
+133 writable global leaf paths, bounds and native ownership, plus
+`writable_line_fields`: the identity and per-leaf source byte ownership of
+every line leaf it admits (1,416 rows per line; the four line families whose
+bytes native rules exclude or overwrite — `statusCorrectionMask`,
+`statusCorrectionInterval`, `lampRunningTime` and `oidToShortAddress` — are
+omitted). Its leaf identity list is the evidence-bound projection of the
+executed original line vector covered by
+`rust/testdata/vectors/dali_proxy_line_capability.json`. Unknown recalled
 families are preserved; edits needing missing source bytes, whole proxy
 replacement and raw/proxy ownership conflicts are refused. Literal raw-only
 `EXT_ONLY` does not implicitly compile the proxy. These declared admission
@@ -501,8 +508,10 @@ the state of a device after a partial plan.
 - Physical acceptance needs a real gateway with an unaddressed ballast for
   `ADDRESS_UNKNOWN`, and live ECGs for typed deployment. No downstream DALI
   device state, persistence, or behavior after a partial deploy is evidenced.
-- Complete native `SET` shapes, line-field physical CLI admission and original
-  Toolkit commissioning workflows remain open. The exact declared global-leaf
+- Complete native `SET` shapes, per-leaf line value-shape advertisement
+  (the line rows carry identity and byte ownership, not the kinds and
+  limits the CLI still reviews), and original Toolkit commissioning
+  workflows remain open. The exact declared global-leaf and line-leaf
   admission does not establish full editor parity.
 - The recovered colour steps (operations 99 and 100) are in no native plan
   and are not implemented.

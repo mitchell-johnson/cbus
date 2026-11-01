@@ -477,8 +477,12 @@ pub(super) fn capabilities() -> Value {
             })
         })
         .collect();
+    let line_leaves: Vec<_> = lines::admitted_leaves()
+        .into_iter()
+        .map(|(path, addresses)| json!({"path": path, "addresses": addresses}))
+        .collect();
     json!({"families": families, "leaf_count": fields.len(), "writable_global_fields": schema,
-        "line_families": 15, "whole_recalled_families": true,
+        "line_families": 15, "writable_line_fields": line_leaves, "whole_recalled_families": true,
         "catalogue_projection": false, "native_reserved_bits": true, "excluded_bytes": true,
         "raw_proxy_conflict_refused": true, "unknown_source_families_preserved": true,
         "raw_ext_only_proxy_serialized": false, "whole_proxy_replacement": false})
@@ -487,6 +491,52 @@ pub(super) fn capabilities() -> Value {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn emitted_line_leaf_capability_is_the_committed_wire_vector() {
+        let vector: Value = serde_json::from_str(include_str!(
+            "../../../testdata/vectors/dali_proxy_line_capability.json"
+        ))
+        .unwrap();
+        assert_eq!(
+            vector["format"], "cbus-dali-proxy-line-capability-wire-v1",
+            "committed wire vector identity"
+        );
+        let rows = vector["writable_line_fields"]
+            .as_array()
+            .expect("vector carries the exact writable_line_fields rows");
+        assert_eq!(rows.len(), 2832, "one row per admitted line leaf");
+        let expected: Vec<(String, Vec<u32>)> = rows
+            .iter()
+            .map(|row| {
+                (
+                    row["path"]
+                        .as_str()
+                        .expect("row path is a string")
+                        .to_string(),
+                    row["addresses"]
+                        .as_array()
+                        .expect("row addresses are a list")
+                        .iter()
+                        .map(|value| value.as_u64().expect("row address is an integer") as u32)
+                        .collect(),
+                )
+            })
+            .collect();
+        assert_eq!(
+            lines::admitted_leaves(),
+            expected,
+            "enumerated line leaves are exactly the committed wire rows"
+        );
+        let capabilities = capabilities();
+        assert_eq!(capabilities["line_families"], 15);
+        assert_eq!(capabilities["whole_recalled_families"], true);
+        assert_eq!(
+            capabilities["writable_line_fields"],
+            Value::Array(rows.clone()),
+            "capability document emits exactly the committed vector rows"
+        );
+    }
 
     #[test]
     fn original_zero_map_roundtrip_normalizes_native_reserved_bits() {

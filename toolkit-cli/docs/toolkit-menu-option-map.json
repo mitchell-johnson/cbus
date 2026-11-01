@@ -10,7 +10,7 @@
     },
     "capabilities": {
       "path": "src/cbus_toolkit/capabilities.json",
-      "sha256": "664438a2bb5cad160da788a2339c329acf3851905df51e71c9f4ccde7b8e86e1"
+      "sha256": "7e84844f1d611db8a68838760110e43b5807b69105b3899e8f52b7846aaeb3f4"
     }
   },
   "leaves": [

@@ -141,10 +141,22 @@ These are refused before any connection:
 After staging, `wboEnableGroupRestoreLevel` is refused while the line's
 `enableGroupLevelStoreOptions/wboEnableA`/`wboEnableB` stores the level.
 `objectProperties` fade controls are refused unless the staged
-`configVersion` is newer than 1.5. cmqttd advertises its line serializer
-only as `line_families: 15` and `whole_recalled_families: true`; it does not
-publish a per-leaf line schema. The CLI requires both values, and its line
-field table, not server advertisement, binds leaf ownership. Whole proxy
+`configVersion` is newer than 1.5. cmqttd advertises its line serializer as
+`line_families: 15` and `whole_recalled_families: true`, and in
+`dali_session_extended_proxy.writable_line_fields` publishes the identity and
+byte ownership of every line leaf it admits for native serialization
+(1,416 rows per line, covering both lines). The CLI requires both count
+values. When the per-leaf
+advertisement is present, each staged line edit must match it exactly as
+well as the same evidence table — a leaf needs both the server
+advertisement and the retained original-vector evidence, and neither alone
+suffices. An evidenced leaf the server does not advertise, a row with
+different byte ownership, or a duplicated row is refused before I/O with
+`DALI server line leaf ownership does not match this reviewed CLI plan`.
+If the advertisement list is absent or unparsable the CLI keeps the earlier
+evidence-table answer rather than opening anything; the refusals above all
+still hold, including for anything a broader advertisement would claim.
+Whole proxy
 replacement remains outside admission. A literal raw-only `EXT_ONLY`
 operation retains its direct-byte behavior without implicitly serializing
 the proxy.
@@ -222,7 +234,11 @@ documented in [the DALI service guide](../../docs/cgate-dali.md). The owned
 native transcripts use a scripted `SYS_DAL2` gateway and are not a physical
 gateway acceptance result. Focused API/CLI tests cover validation, capability
 refusal, session cleanup, exclusive attempt journals, definite failures and
-uncertain replies. The real-daemon interop module independently scripts
+uncertain replies; `tests/test_dali_line_capability_admission.py` additionally
+pins the CLI's evidence-bound line admission table row-for-row against the
+committed per-leaf line capability vector
+(`rust/testdata/vectors/dali_proxy_line_capability.json`) and covers the
+fail-closed consumption of that advertisement. The real-daemon interop module independently scripts
 gateway replies and checks native wire order through the production Python
 transport. These checks use synthetic projects and ephemeral loopback ports.
 

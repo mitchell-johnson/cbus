@@ -13,10 +13,10 @@ ROOT = Path(__file__).resolve().parents[1]
 INVENTORY = ROOT / "research" / "toolkit-client" / "inventory.json"
 
 ALLOWED_KEYS = {
-    "class", "classes", "command_text", "recording", "accept", "reject",
-    "policy", "rows", "finishes_on", "fragments", "progress_fragments",
-    "extends", "verbatim", "inferred_low_confidence", "low_confidence",
-    "upgrade_trigger",
+    "class", "classes", "command_text", "recording", "accept", "accept_also",
+    "reject", "policy", "rows", "finishes_on", "fragments",
+    "progress_fragments", "extends", "verbatim", "inferred_low_confidence",
+    "low_confidence", "upgrade_trigger",
 }
 ALLOWED_RECORDINGS = {"complete", "partial"}
 

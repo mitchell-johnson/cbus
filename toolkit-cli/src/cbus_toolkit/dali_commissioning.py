@@ -501,12 +501,34 @@ class DaliCommissioning:
                                  and contract.get("excluded_bytes") is True,
                                  "DALI native extended-proxy serializer is unavailable"))
             if len(global_edits) != len(proxy_edits):
-                # cmqttd advertises its line serializer only by family count;
-                # line leaf ownership is this CLI's original-vector table.
+                # The CLI keeps the family-count contract and its evidence-bound
+                # line table. A server-side advertised per-leaf line schema is
+                # consumed as an additional fail-closed cross-check: an edit
+                # needs both the advertisement's leaf identity and byte
+                # ownership, and the retained original-line-vector evidence;
+                # neither alone suffices, and a missing advertisement keeps the
+                # table-only answer rather than opening anything.
                 requirements.append((isinstance(contract, dict)
                                      and contract.get("line_families") == extended_proxy.LINE_FAMILY_COUNT
                                      and contract.get("whole_recalled_families") is True,
                                      "DALI native extended-proxy line serializer is unavailable"))
+                advertised = (contract.get("writable_line_fields")
+                              if isinstance(contract, dict) else None)
+                if isinstance(advertised, list):
+                    rows: dict[str, list[list[int]]] = {}
+                    for entry in advertised:
+                        if not (isinstance(entry, dict) and isinstance(entry.get("path"), str)
+                                and isinstance(entry.get("addresses"), list)
+                                and all(type(address) is int for address in entry["addresses"])):
+                            continue
+                        rows.setdefault(entry["path"], []).append(list(entry["addresses"]))
+                    for edit in (row for row in proxy_edits if "line_index" in row):
+                        spec = extended_proxy.LINE_FIELDS.get(edit["path"][len(extended_proxy.PREFIX):])
+                        claimed = rows.get(edit["path"], [])
+                        requirements.append((
+                            spec is not None and len(claimed) == 1
+                            and claimed[0] == list(spec["addresses"]),
+                            "DALI server line leaf ownership does not match this reviewed CLI plan"))
             schema = contract.get("writable_global_fields") if isinstance(contract, dict) else None
             indexed = {row.get("path"): row for row in schema if isinstance(row, dict)} if isinstance(schema, list) else {}
             for edit in evidence["edits"]:
