@@ -757,11 +757,6 @@ class CgateMockInventoryConformance(unittest.TestCase):
         self.assertEqual(response.status, 200, response.final)
         self.assertEqual(response.final, "200 OK.", response.final)
 
-    def test_event_numeric_codes_are_not_recorded_so_not_asserted(self):
-        self.skipTest(
-            "issue #168 records no numeric EVENT send; c0/c1/s0/s1 and e+/e0..e9 "
-            "are the recorded surface and stay pinned by the existing cases")
-
     # -- TRANSFORM PROJECT --xslt-file/--output-file edges (#164) -----------------
 
     def _stage_stylesheet(self):
@@ -838,13 +833,10 @@ class CgateMockInventoryConformance(unittest.TestCase):
 
     # -- LOGIN quirk (documented; no behavior change asserted) ------------------
 
-    def test_native_login_quirk_is_commented_not_reverted(self):
-        # Toolkit's own parser only knows 210/400/422 while native C-Gate
-        # answers `LOGIN user password` with 211. The mock keeps native
-        # behavior; conformance only requires that no code has been flipped
-        # to a Toolkit-friendly spelling here (that belongs to the separate
-        # LOGIN/#159 slice).
-        self.skipTest("LOGIN's native 211 quirk is owned by the LOGIN/#159 slice")
+    # The LOGIN native 211 quirk stays unmodelled in this mock: Toolkit's own
+    # parser only knows 210/400/422 while native C-Gate answers
+    # `LOGIN user password` with 211. cgate-mock keeps the native spelling;
+    # the Toolkit-friendly shape belongs to the separate LOGIN/#159 slice.
 
 
 DRIVEN_CLASSES = (

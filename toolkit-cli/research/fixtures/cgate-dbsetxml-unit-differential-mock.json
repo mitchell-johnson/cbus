@@ -13,9 +13,9 @@
   "vendor_jar_sha256": "3ec483945102b1355e06163e3ec964797629eb1c5aa50a525f859e5f14ced630",
   "binary": {
     "path": "/Users/mitchell/.local/share/opencode/worktree/da1ab5/cli-parity-main/rust/target/debug/cgate-mock",
-    "sha256": "e4ea0b5bace8d50e7e029985c7515690c35a5708a876bfc79219d45cf9d7f091"
+    "sha256": "db571b2a1d9d73e8717ce2b32e2c9ffc2bcc36a4c5429950f8550cc274537d12"
   },
-  "source_revision": "d0dd221f0d44dfa00101b4c3776a6406c3861545",
+  "source_revision": "f25441a9e89317a33635e7f09f35b34fbf7b57ee",
   "source_fingerprint": {
     ".github/workflows/ci.yml": "1fb9e14d2f927b2b6e276228c7e70403fca2ec9cc2b6aaf71ec250aa5f1790ad",
     "docs/cmqttd-cgate.md": "36017b711323416cd484693664fd9018316c964e675bf1810c0d9549c011fa05",
@@ -220,7 +220,7 @@
     "rust/testdata/vectors/dali_proxy_line_capability.json": "09e28817e0b744a6ed9cc6281be47ce5ee544c7661dc067a0bcff15d675cd5f7",
     "rust/testdata/vectors/ordinary_level_value_safe_owned.json": "649c34882af9979f14749a933994d127a2cd3a1231df9fce4fe9b9255d4f0fd4",
     "rust/testdata/vectors/selected_serial_plan.jsonl": "7d707b8e72436f528190025c93c3f018a31527b45152f85aa84b9e16b41120c1",
-    "toolkit-cli/Makefile": "0d8ec64e66f91d7fa223911e849ab4df1f83e22e696c09443200409622cb21c2",
+    "toolkit-cli/Makefile": "a2e5af4aae8ce8508969f25df649b5888b8825bea541ddcf33ba3daad2b089fd",
     "toolkit-cli/research/cgate_dbsetxml_unit_differential.py": "b75e484e851c36dc7ae838a62115ebade1c8aea94c19be7af29fbdf49624c555",
     "toolkit-cli/research/cgate_session_differential.py": "29fc1d9a5994c13522067c0b47d94fdadeb3b5f2b0e3ce0704f54102b4f986d4",
     "toolkit-cli/research/fixtures/dali-ext-proxy-original-vectors.json": "828bc12ec7bf628a48ffa412b8154211a4a1207a202fee0d8dd9809bae1c8715",

@@ -622,7 +622,7 @@
         "unclassified"
       ],
       "native": "none",
-      "gated_tests": 76,
+      "gated_tests": 74,
       "native_runnable_tests": 0,
       "native_selected_tests": 0,
       "sites": [
@@ -641,34 +641,10 @@
           "native": "unknown"
         },
         {
-          "scope": "tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_event_numeric_codes_are_not_recorded_so_not_asserted",
-          "kind": "body.call",
-          "condition": null,
-          "reason": "issue #168 records no numeric EVENT send; c0/c1/s0/s1 and e+/e0..e9 are the recorded surface and stay pinned by the existing cases",
-          "environment": [],
-          "categories": [
-            "unclassified"
-          ],
-          "offline": "skips",
-          "native": "skips"
-        },
-        {
           "scope": "tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_managed_pp_get_462_rows_are_recorded_but_not_modelled_here",
           "kind": "body.call",
           "condition": null,
           "reason": "462 advisory rows are PP LOAD catalogue warnings; unreachable without a unitspec directory, so not driven (inventory note)",
-          "environment": [],
-          "categories": [
-            "unclassified"
-          ],
-          "offline": "skips",
-          "native": "skips"
-        },
-        {
-          "scope": "tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_native_login_quirk_is_commented_not_reverted",
-          "kind": "body.call",
-          "condition": null,
-          "reason": "LOGIN's native 211 quirk is owned by the LOGIN/#159 slice",
           "environment": [],
           "categories": [
             "unclassified"
@@ -808,9 +784,7 @@
             "unclassified"
           ],
           "tests": [
-            "CgateMockInventoryConformance::test_event_numeric_codes_are_not_recorded_so_not_asserted",
             "CgateMockInventoryConformance::test_managed_pp_get_462_rows_are_recorded_but_not_modelled_here",
-            "CgateMockInventoryConformance::test_native_login_quirk_is_commented_not_reverted",
             "CgateMockInventoryConformance::test_net_sync_duplicate_marker_rows_stay_pci_peer_cases",
             "CgateMockInventoryConformance::test_net_syncnew_staged_discovery_finishes_stay_service_cases",
             "CgateMockInventoryConformance::test_pp_load_save_progress_fragments_stay_physical_pp_cases",

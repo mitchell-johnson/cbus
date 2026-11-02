@@ -188,7 +188,6 @@ check-cgate-interop: compile
 		'tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_dbrenamenet_success_reports_the_recovered_200_ok_text' \
 		'tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_event_genuinely_bad_mode_strings_keep_the_408_row' \
 		'tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_event_mode_words_accepted_by_toolkit_replay_200' \
-		'tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_event_numeric_codes_are_not_recorded_so_not_asserted' \
 		'tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_every_dispatching_inventory_class_has_a_conformance_case' \
 		'tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_file_dir_lists_directory_rows_for_the_virtual_root' \
 		'tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_file_download_of_a_missing_file_reports_an_operation_failure' \
@@ -200,7 +199,6 @@ check-cgate-interop: compile
 		'tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_label_kfiget_without_dataset_replies_the_final_kfi_row' \
 		'tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_label_kfiset_replies_the_200_ok_success_class' \
 		'tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_managed_pp_get_462_rows_are_recorded_but_not_modelled_here' \
-		'tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_native_login_quirk_is_commented_not_reverted' \
 		'tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_net_checkunit_empty_network_selection_fails_closed' \
 		'tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_net_checkunit_final_row_matches_the_200_ok_text' \
 		'tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_net_clocks_streams_address_rows_and_finishes_on_200_ok' \
