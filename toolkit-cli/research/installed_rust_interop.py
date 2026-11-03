@@ -33,6 +33,16 @@ OPTIONAL_SKIPS = {
         {"kind": "decorator.skipUnless", "reason": "vendor unitspec directory is absent"},
     "tests/test_cmqtt_programming_methods_interop.py::test_protection_matrix_matches_a_fresh_derivation":
         {"kind": "decorator.skipif", "reason": "Set CBUS_UNITSPEC_DIR to re-derive the matrix from decoded specs"},
+    "tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_managed_pp_get_462_rows_are_recorded_but_not_modelled_here":
+        {"kind": "body.call", "reason": "462 advisory rows are PP LOAD catalogue warnings; unreachable without a unitspec directory, so not driven (inventory note)"},
+    "tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_pp_load_save_progress_fragments_stay_physical_pp_cases":
+        {"kind": "body.call", "reason": "read/saved byte progress rows are physical programming-method peer replies; the model surface never invents the counts"},
+    "tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_net_sync_duplicate_marker_rows_stay_pci_peer_cases":
+        {"kind": "body.call", "reason": "net sync DUPLICATE rows need a duplicate physical inventory; not modelled"},
+    "tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_net_syncnew_staged_discovery_finishes_stay_service_cases":
+        {"kind": "body.call", "reason": "recorded finishes need the install-MMI scan; service.rs owns them"},
+    "tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_unravel_progress_and_error_rows_are_pci_peer_cases":
+        {"kind": "body.call", "reason": "120-Unravel rows and the recorded MMI-budget/refusal rows use the UnravelBusFixture peer; the model surface has no MMI scan"},
 }
 SELECTOR = re.compile(r"tests/[A-Za-z0-9_./-]+\.py(?:::[^\r\n]+)?\Z")
 

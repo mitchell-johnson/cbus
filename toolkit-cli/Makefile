@@ -198,15 +198,12 @@ check-cgate-interop: compile
 		'tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_label_kfiget_syntax_refuses_when_the_group_is_missing' \
 		'tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_label_kfiget_without_dataset_replies_the_final_kfi_row' \
 		'tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_label_kfiset_replies_the_200_ok_success_class' \
-		'tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_managed_pp_get_462_rows_are_recorded_but_not_modelled_here' \
 		'tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_net_checkunit_empty_network_selection_fails_closed' \
 		'tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_net_checkunit_final_row_matches_the_200_ok_text' \
 		'tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_net_clocks_streams_address_rows_and_finishes_on_200_ok' \
-		'tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_net_sync_duplicate_marker_rows_stay_pci_peer_cases' \
 		'tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_net_sync_rety_fragment_rows_are_stable_across_retries' \
 		'tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_net_sync_streams_the_recorded_rows_then_the_captured_200_end' \
 		'tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_net_syncnew_selected_unit_in_the_model_answers_in_the_model_record' \
-		'tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_net_syncnew_staged_discovery_finishes_stay_service_cases' \
 		'tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_net_unravel_completes_on_the_accepted_200_ok_row' \
 		'tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_net_unravelunit_completes_on_the_captured_200_ok_row' \
 		'tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_port_cniscan_streams_129_rows_and_finishes_on_the_130_row' \
@@ -219,7 +216,6 @@ check-cgate-interop: compile
 		'tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_pp_list_lock_streams_the_121_rows' \
 		'tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_pp_load_failures_of_the_new_session_fall_in_the_recovered_rows' \
 		'tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_pp_load_from_file_keeps_the_recorded_missing_session_row' \
-		'tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_pp_load_save_progress_fragments_stay_physical_pp_cases' \
 		'tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_pp_lock_second_lock_reports_the_recorded_425_text' \
 		'tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_pp_lock_start_end_cancel_hold_the_recorded_200_rows' \
 		'tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_pp_quickget_missing_parameter_reports_the_recorded_parameter_text' \
@@ -245,7 +241,6 @@ check-cgate-interop: compile
 		'tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_transform_project_success_bodies_avoid_upgrade_tokens' \
 		'tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_transform_project_without_test_flag_uses_the_same_shape' \
 		'tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_treexml_completes_on_the_snippet_wrapper' \
-		'tests/test_cgate_mock_inventory_conformance.py::CgateMockInventoryConformance::test_unravel_progress_and_error_rows_are_pci_peer_cases' \
 		'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[primary-collision-mock]' \
 		'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[secondary-collision-mock]' \
 		'tests/test_cgate_senll_controls_interop.py::test_public_senll_ordered_controls_save_and_reopen[same-boolean-duplicate-mock]' \

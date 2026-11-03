@@ -976,9 +976,9 @@ def test_conversion_xml_restart_preserves_ordered_1121_ids_and_seven_modules(run
         assert hashlib.sha256(('\n'.join(sorted(inherited)) + '\n').encode()).hexdigest() == inherited_digests[backend]
         assert hashlib.sha256(('\n'.join(inherited) + '\n').encode()).hexdigest() == inherited_ordered_digests[backend]
         assert plan['whole_modules'] == {'mock': ['tests/test_rust_cgate_interop.py'], 'daemon': ['tests/test_cmqtt_interop.py', 'tests/test_cmqtt_programming_methods_interop.py', 'tests/test_cmqtt_dali_commissioning_interop.py', 'tests/test_cmqtt_network_new_cli.py', 'tests/test_cmqtt_network_save_db_cli.py', 'tests/test_cgate_file_upload.py']}[backend]
-    # The mock lane gained the #160 conformance driver's 74 quoted case ids,
+    # The mock lane gained the #160 conformance driver's 69 quoted case ids,
     # so the running total moves from the accepted 1123 to 1198.
-    assert sum(len(plan['required_ids']) for plan in plans.values()) == 1197
+    assert sum(len(plan['required_ids']) for plan in plans.values()) == 1192
 
 
 @pytest.mark.parametrize('damage', ['none', 'missing-body', 'skipped-body', 'missing-call'])
